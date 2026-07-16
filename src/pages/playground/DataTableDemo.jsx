@@ -1,10 +1,9 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { DataTable } from '../../shared/components/data-table'
 import { Button } from '../../shared/components/ui/Button'
 import { PageToolbar } from '../../shared/components/data/PageToolbar'
 import { Plus } from 'lucide-react'
 
-// Sample data - customers list
 const SAMPLE_CUSTOMERS = Array.from({ length: 45 }, (_, i) => ({
   id: i + 1,
   name: `عميل ${i + 1}`,
@@ -104,7 +103,7 @@ export function DataTableDemo() {
 
   return (
     <div>
-      <PageToolbar title="عرض توضيحي - جدول البيانات" description="اختبار مكون DataTable مع الفرز والبحث والتصفيح والعمودي">
+      <PageToolbar title="عرض توضيحي - جدول البيانات" description="اختبر مكون DataTable مع الفرز والبحث والتصفيح والأعمدة">
         <Button variant="primary" className="gap-2">
           <Plus size={16} />
           إضافة عميل

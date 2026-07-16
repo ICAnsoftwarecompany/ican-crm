@@ -7,7 +7,6 @@ import { DataTable } from '../../shared/components/data-table'
 import { PageToolbar } from '../../shared/components/data/PageToolbar'
 import { NewCustomerDialog } from '../../features/customers/components/NewCustomerDialog'
 import { useCustomerMutations, useCustomers, useDeletedCustomers } from '../../features/customers/hooks/useCustomers'
-import { displayValue } from '../../shared/utils/apiResponse'
 
 export function CustomersPage() {
   const { t } = useTranslation()
@@ -194,4 +193,3 @@ export function CustomersPage() {
     </div>
   )
 }
-
