@@ -2,6 +2,7 @@ import { DataTableHeader } from './DataTableHeader'
 import { DataTableBody } from './DataTableBody'
 import { DataTableFooter } from './DataTableFooter'
 import { DataTableToolbar } from './DataTableToolbar'
+import { DataTableFilterRow } from './DataTableFilterRow'
 import { LoadingState } from './LoadingState'
 import { EmptyState } from './EmptyState'
 import { ErrorState } from './ErrorState'
@@ -151,11 +152,29 @@ export function DataTable({
       ) : (
         <div className="overflow-x-auto border border-[var(--border)] rounded-lg">
           <table className="w-full">
-            <DataTableHeader
-              columns={table.visibleColumns}
-              sorting={table.sorting}
-              onSort={table.setSortColumn}
-            />
+            <thead>
+              <DataTableHeader
+                columns={table.visibleColumns}
+                sorting={table.sorting}
+                onSort={table.setSortColumn}
+              />
+              {enableAdvancedFilters && (
+                <DataTableFilterRow
+                  columns={table.visibleColumns}
+                  filters={advancedFilters.filters}
+                  onFilterChange={(columnId, filter) => {
+                    advancedFilters.setFilter(columnId, filter)
+                    if (onFilterChange) {
+                      const updatedFilters = { ...advancedFilters.filters, [columnId]: filter }
+                      if (filter === null) {
+                        delete updatedFilters[columnId]
+                      }
+                      onFilterChange(updatedFilters)
+                    }
+                  }}
+                />
+              )}
+            </thead>
             <DataTableBody
               rows={table.rows}
               columns={table.visibleColumns}

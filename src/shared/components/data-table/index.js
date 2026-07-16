@@ -3,6 +3,7 @@ export { DataTableHeader } from './DataTableHeader'
 export { DataTableBody } from './DataTableBody'
 export { DataTableFooter } from './DataTableFooter'
 export { DataTableToolbar } from './DataTableToolbar'
+export { DataTableFilterRow } from './DataTableFilterRow'
 export { GlobalSearch } from './GlobalSearch'
 export { ColumnVisibilityToggle } from './ColumnVisibilityToggle'
 export { LoadingState } from './LoadingState'
@@ -15,6 +16,13 @@ export { ActiveFilters } from './ActiveFilters'
 export { ColumnFilter } from './ColumnFilter'
 export { ExportButton } from './ExportButton'
 export { ExportDialog } from './ExportDialog'
+
+// Filter Input Components
+export { TextFilterInput } from './filters/TextFilterInput'
+export { SelectFilterInput } from './filters/SelectFilterInput'
+export { NumberRangeInput } from './filters/NumberRangeInput'
+export { DateRangeInput } from './filters/DateRangeInput'
+export { BooleanFilterInput } from './filters/BooleanFilterInput'
 
 // Hooks
 export { useDataTable } from './hooks/useDataTable'
@@ -43,4 +51,3 @@ export {
   FILTER_OPERATORS,
   DEFAULT_FILTER_OPERATOR,
 } from './constants'
-
