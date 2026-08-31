@@ -1,0 +1,255 @@
+
+> ican-crm@0.1.0 dev
+> vite --port 3000
+
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m1245[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m3000[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://26.62.223.149:[1m3000[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.6:[1m3000[22m/[39m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+[2m10:22:30 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer.jsx, /src/index.css[22m
+[2m10:38:51 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/realtime/TenantNotificationsRealtime.jsx, /src/pages/customers/CustomersPage.jsx, /src/pages/conversations/ConversationsPage.jsx, /src/shared/components/layout/MainLayout.jsx, /src/features/conversations/components/MessengerSidebarPanel.jsx, /src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx[22m
+[2m10:40:06 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerSidebarPanel.jsx, /src/index.css[22m
+[2m10:40:29 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m10:40:36 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m10:40:47 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m10:40:50 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m10:46:24 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerLinkCustomerDialog.jsx, /src/index.css[22m
+[2m10:46:28 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerLinkCustomerDialog.jsx, /src/index.css[22m
+[2m10:47:49 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerLinkCustomerDialog.jsx, /src/index.css[22m
+[2m10:47:57 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerLinkCustomerDialog.jsx, /src/index.css[22m
+[2m10:52:57 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerSidebarPanel.jsx, /src/index.css[22m
+[2m10:53:01 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerSidebarPanel.jsx, /src/index.css[22m
+[2m10:53:07 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m10:53:15 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m11:12:50 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer.jsx, /src/index.css[22m
+[2m11:13:20 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer.jsx, /src/index.css[22m
+[2m11:13:25 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer.jsx, /src/index.css[22m
+[2m11:13:32 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer.jsx, /src/index.css[22m
+[2m11:13:39 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer.jsx, /src/index.css[22m
+[2m11:13:55 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer.jsx, /src/index.css[22m
+[2m11:14:48 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer.jsx, /src/index.css[22m
+[2m11:14:52 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer.jsx, /src/index.css[22m
+[2m11:14:56 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer.jsx, /src/index.css[22m
+[2m11:15:16 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer.jsx, /src/index.css[22m
+[2m11:15:19 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer.jsx, /src/index.css[22m
+[2m11:15:26 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/conversations/ConversationsPage.jsx, /src/features/conversations/components/MessengerSidebarPanel.jsx, /src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx, /src/features/conversations/components/MessengerLinkCustomerDialog.jsx[22m
+[2m11:15:29 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer.jsx, /src/index.css[22m
+[2m11:16:20 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer.jsx, /src/index.css[22m
+[2m11:21:55 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/realtime/TenantNotificationsRealtime.jsx, /src/pages/customers/CustomersPage.jsx, /src/pages/conversations/ConversationsPage.jsx, /src/shared/components/layout/MainLayout.jsx, /src/features/conversations/components/MessengerSidebarPanel.jsx, /src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx, /src/features/conversations/components/MessengerLinkCustomerDialog.jsx[22m
+[2m11:22:18 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerMessageAttachments.jsx, /src/index.css[22m
+[2m11:22:40 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerSidebarPanel.jsx, /src/index.css[22m
+[2m11:22:48 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m11:30:11 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerConversationHoverPreview.jsx, /src/index.css[22m
+[2m11:30:17 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerMessageAttachments.jsx, /src/index.css[22m
+[2m11:30:58 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatMessages.jsx, /src/index.css[22m
+[2m11:31:23 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatMessages.jsx, /src/index.css[22m
+[2m11:31:26 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatMessages.jsx, /src/index.css[22m
+[2m11:31:54 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m11:32:23 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data/PageToolbar.jsx, /src/index.css[22m
+[2m11:32:29 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m11:32:32 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerSidebarPanel.jsx, /src/index.css[22m
+[2m11:32:38 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerSidebarPanel.jsx, /src/index.css[22m
+[2m11:32:47 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerSidebarPanel.jsx, /src/index.css[22m
+[2m11:40:22 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerMessageAttachments.jsx, /src/index.css[22m
+[2m11:40:32 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerConversationHoverPreview.jsx, /src/index.css[22m
+[2m11:40:54 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatMessages.jsx, /src/index.css[22m
+[2m11:41:01 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatMessages.jsx, /src/index.css[22m
+[2m11:41:09 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/layout/Header.jsx, /src/index.css[22m
+[2m11:41:13 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m11:41:18 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m11:41:36 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatMessages.jsx, /src/index.css[22m
+[2m11:41:44 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatMessages.jsx, /src/index.css[22m
+[2m11:44:36 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m11:47:09 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerMessageAttachments.jsx, /src/index.css[22m
+[2m11:47:19 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatMessages.jsx, /src/index.css[22m
+[2m11:47:37 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatMessages.jsx, /src/index.css[22m
+[2m11:48:27 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatMessages.jsx, /src/index.css[22m
+[2m11:52:57 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerMessageAttachments.jsx, /src/index.css[22m
+[2m11:53:01 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerSidebarPanel.jsx, /src/index.css[22m
+[2m11:53:07 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m11:53:12 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m11:58:14 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/customers/pages/SalesTeams/CustomerTeamsPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/users/UsersPage.jsx, /src/pages/products/ProductsPage/ProductsPage.jsx, /src/pages/products/ProductsPage/ProductCategoriesPage.jsx, /src/pages/customers/pages/statusBoard/components/StatusCustomersColumn.jsx, /src/shared/components/data-table/DataTable.jsx, /src/pages/conversations/ConversationsPage.jsx, /src/features/conversations/components/MessengerSidebarPanel.jsx, /src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx, /src/realtime/TenantNotificationsRealtime.jsx, /src/shared/components/layout/MainLayout.jsx[22m
+[2m11:58:22 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/customers/pages/SalesTeams/CustomerTeamsPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/users/UsersPage.jsx, /src/pages/products/ProductsPage/ProductsPage.jsx, /src/pages/products/ProductsPage/ProductCategoriesPage.jsx, /src/pages/customers/pages/statusBoard/components/StatusCustomersColumn.jsx, /src/shared/components/data-table/DataTable.jsx, /src/pages/conversations/ConversationsPage.jsx, /src/features/conversations/components/MessengerSidebarPanel.jsx, /src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx[22m
+[2m11:58:28 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m11:58:32 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerSidebarPanel.jsx, /src/index.css[22m
+[2m11:58:52 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/shared/components/layout/MainLayout.jsx[22m
+[2m11:58:59 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/shared/components/layout/MainLayout.jsx[22m
+[2m11:59:02 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/shared/components/layout/MainLayout.jsx[22m
+[2m12:05:28 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/realtime/TenantNotificationsRealtime.jsx, /src/pages/customers/CustomersPage.jsx, /src/pages/conversations/ConversationsPage.jsx, /src/shared/components/layout/MainLayout.jsx, /src/features/conversations/components/MessengerSidebarPanel.jsx, /src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx, /src/features/conversations/components/MessengerLinkCustomerDialog.jsx, /src/features/conversations/components/MessengerConversationHoverPreview.jsx[22m
+[2m12:05:36 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m12:05:45 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerSidebarPanel.jsx, /src/index.css[22m
+[2m12:05:51 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx[22m
+[2m12:05:59 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx[22m
+[2m12:06:03 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx[22m
+[2m12:12:10 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/customers/pages/SalesTeams/CustomerTeamsPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/users/UsersPage.jsx, /src/pages/products/ProductsPage/ProductsPage.jsx, /src/pages/products/ProductsPage/ProductCategoriesPage.jsx, /src/pages/customers/pages/statusBoard/components/StatusCustomersColumn.jsx, /src/shared/components/data-table/DataTable.jsx, /src/pages/conversations/ConversationsPage.jsx, /src/features/conversations/components/MessengerSidebarPanel.jsx, /src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx, /src/realtime/TenantNotificationsRealtime.jsx, /src/shared/components/layout/MainLayout.jsx[22m
+[2m12:12:13 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/customers/pages/SalesTeams/CustomerTeamsPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/users/UsersPage.jsx, /src/pages/products/ProductsPage/ProductsPage.jsx, /src/pages/products/ProductsPage/ProductCategoriesPage.jsx, /src/pages/customers/pages/statusBoard/components/StatusCustomersColumn.jsx, /src/shared/components/data-table/DataTable.jsx, /src/pages/conversations/ConversationsPage.jsx, /src/features/conversations/components/MessengerSidebarPanel.jsx, /src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx[22m
+[2m12:12:25 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/realtime/TenantNotificationsRealtime.jsx, /src/pages/customers/CustomersPage.jsx, /src/pages/conversations/ConversationsPage.jsx, /src/shared/components/layout/MainLayout.jsx, /src/features/conversations/components/MessengerSidebarPanel.jsx, /src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx, /src/features/conversations/components/MessengerLinkCustomerDialog.jsx, /src/features/conversations/components/MessengerConversationHoverPreview.jsx[22m
+[2m12:12:30 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m12:12:35 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerSidebarPanel.jsx, /src/index.css[22m
+[2m12:12:39 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx[22m
+[2m12:12:48 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx[22m
+[2m12:12:52 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx[22m
+[2m4:41:15 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m4:41:36 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m4:41:57 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m4:42:08 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m4:42:14 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m5:08:04 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:09:01 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m5:09:24 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m5:10:11 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m5:10:15 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m5:17:08 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/shared/components/data-table/DataTable.jsx[22m
+[2m5:17:12 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/shared/components/data-table/DataTable.jsx[22m
+[2m5:17:17 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/pages/SalesTeams/CustomerTeamsPage.jsx, /src/pages/customers/CustomersPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/users/UsersPage.jsx, /src/pages/products/ProductsPage/ProductsPage.jsx, /src/pages/products/ProductsPage/ProductCategoriesPage.jsx, /src/pages/customers/pages/statusBoard/components/StatusCustomersColumn.jsx, /src/shared/components/data-table/DataTable.jsx[22m
+[2m5:17:23 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/pages/SalesTeams/CustomerTeamsPage.jsx, /src/pages/customers/CustomersPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/users/UsersPage.jsx, /src/pages/products/ProductsPage/ProductsPage.jsx, /src/pages/products/ProductsPage/ProductCategoriesPage.jsx, /src/pages/customers/pages/statusBoard/components/StatusCustomersColumn.jsx, /src/shared/components/data-table/DataTable.jsx[22m
+[2m5:17:31 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:17:48 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:17:56 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:18:07 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:24:17 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m5:24:24 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m5:24:31 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:24:40 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m5:28:26 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m5:35:02 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m5:35:08 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m5:40:31 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m5:40:38 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m5:40:42 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableFilterRow.jsx, /src/index.css[22m
+[2m5:40:45 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableHeader.jsx, /src/index.css[22m
+[2m5:45:04 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m5:51:32 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableRowSplitToggle.jsx, /src/index.css[22m
+[2m5:52:15 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:52:21 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:52:28 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m5:57:11 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m5:57:25 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:57:44 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m10:28:19 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/leads/LeadsPage.jsx, /src/pages/customers/components/CustomersBulkActions.jsx, /src/pages/customers/components/CustomerDetailsDrawer/CustomerDetailsDrawer.jsx, /src/pages/customers/components/CustomerDetailsDrawer/CustomerStatusChanger.jsx, /src/pages/customers/components/CustomerDetailsDrawer/tabs/TimeLineTap/TimelineTab.jsx[22m
+[2m1:44:27 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/customers/components/customers-table/CustomerPersonCell.jsx, /src/pages/customers/components/customers-table/CustomerMarketingSourceCell.jsx, /src/pages/customers/components/customers-table/CustomerProductsCell.jsx[22m
+[2m1:45:40 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/customers-table/CustomerPersonCell.jsx, /src/index.css[22m
+[2m1:46:07 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/customers-table/CustomerProductsCell.jsx, /src/index.css[22m
+[2m1:46:25 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/customers-table/CustomerMarketingSourceCell.jsx, /src/index.css[22m
+[2m1:46:54 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m1:47:29 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m1:47:33 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m1:48:16 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m1:48:23 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m1:48:40 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m1:48:45 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m1:49:06 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/customers-table/CustomerProductsCell.jsx, /src/index.css[22m
+[2m1:49:16 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/customers-table/CustomerMarketingSourceCell.jsx, /src/index.css[22m
+[2m1:49:27 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/customers-table/CustomerLeadActivitiesCell.jsx, /src/index.css[22m
+[2m2:25:56 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m2:33:52 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m2:34:00 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableBody.jsx, /src/index.css[22m
+[2m2:37:58 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/shared/components/data-table/DataTable.jsx[22m
+[2m2:38:03 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m2:38:17 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m2:38:38 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m2:38:52 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/TableStyleCustomizer.jsx, /src/index.css[22m
+[2m2:39:00 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m2:39:03 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m2:43:26 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/conversations/ConversationsPage.jsx, /src/features/conversations/components/MessengerSidebarPanel.jsx[22m
+[2m2:48:08 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/conversations/ConversationsPage.jsx, /src/features/conversations/components/MessengerSidebarPanel.jsx[22m
+[2m3:02:44 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/conversations/ConversationsPage.jsx, /src/features/conversations/components/MessengerSidebarPanel.jsx[22m
+[2m3:03:07 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerLinkCustomerDialog.jsx, /src/index.css[22m
+[2m3:04:27 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m3:04:39 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/layout/Header.jsx, /src/index.css[22m
+[2m3:04:49 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/layout/MainLayout.jsx, /src/index.css[22m
+[2m3:05:25 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/MessengerLinkCustomerDialog.jsx, /src/index.css[22m
+[2m3:05:28 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/layout/Header.jsx, /src/index.css[22m
+[2m3:05:34 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/GmailConversationsWorkspace.jsx, /src/index.css[22m
+[2m3:23:54 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/layout/Header.jsx, /src/index.css[22m
+[2m3:23:54 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/customers/pages/SalesTeams/CustomerTeamsPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/users/UsersPage.jsx, /src/pages/products/ProductsPage/ProductsPage.jsx, /src/pages/products/ProductsPage/ProductCategoriesPage.jsx, /src/pages/customers/pages/statusBoard/components/StatusCustomersColumn.jsx, /src/shared/components/data-table/DataTable.jsx, /src/realtime/TenantNotificationsRealtime.jsx, /src/shared/components/layout/MainLayout.jsx[22m
+[2m3:24:08 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/customers/pages/SalesTeams/CustomerTeamsPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/users/UsersPage.jsx, /src/pages/products/ProductsPage/ProductsPage.jsx, /src/pages/products/ProductsPage/ProductCategoriesPage.jsx, /src/pages/customers/pages/statusBoard/components/StatusCustomersColumn.jsx, /src/shared/components/data-table/DataTable.jsx[22m
+[2m3:24:33 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/GmailConversationsWorkspace.jsx, /src/index.css[22m
+[2m3:24:40 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/GmailConversationsWorkspace.jsx, /src/index.css[22m
+[2m3:24:52 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/GmailConversationsWorkspace.jsx, /src/index.css[22m
+[2m4:43:56 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/notifications/components/NotificationCenterButton.jsx, /src/index.css[22m
+[2m4:43:56 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/notifications/components/NotificationCenterPanel.jsx, /src/index.css[22m
+[2m4:49:58 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/App.jsx, /src/pages/customers/CustomersPage.jsx, /src/pages/customers/pages/SalesTeams/CustomerTeamsPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/users/UsersPage.jsx, /src/pages/products/ProductsPage/ProductsPage.jsx, /src/pages/products/ProductsPage/ProductCategoriesPage.jsx, /src/pages/customers/pages/statusBoard/components/StatusCustomersColumn.jsx, /src/shared/components/data-table/DataTable.jsx, /src/realtime/TenantNotificationsRealtime.jsx, /src/shared/components/layout/MainLayout.jsx, /src/shared/components/layout/Header.jsx, /src/features/conversations/components/GmailConversationsWorkspace.jsx, /src/features/notifications/components/NotificationCenterPanel.jsx, /src/features/notifications/components/NotificationCenterButton.jsx[22m
+[2m4:50:13 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/conversations/components/GmailNavbarButton.jsx, /src/index.css[22m
+[2m4:50:26 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/layout/Header.jsx, /src/index.css[22m
+[2m4:50:55 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/conversations/ConversationsPage.jsx, /src/index.css[22m
+[2m5:05:39 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m5:09:11 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m5:14:11 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx, /src/index.css[22m
+[2m5:14:12 AM[22m [36m[1m[vite][22m[39m [33mhmr invalidate [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx[22m Could not Fast Refresh ("useCustomersTableColumns" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m5:14:12 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m5:14:21 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx, /src/index.css[22m
+[2m5:14:23 AM[22m [36m[1m[vite][22m[39m [33mhmr invalidate [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx[22m Could not Fast Refresh ("useCustomersTableColumns" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m5:14:23 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m5:15:08 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx, /src/index.css[22m
+[2m5:15:09 AM[22m [36m[1m[vite][22m[39m [33mhmr invalidate [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx[22m Could not Fast Refresh ("useCustomersTableColumns" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m5:15:09 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m5:15:35 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx, /src/index.css[22m
+[2m5:15:38 AM[22m [36m[1m[vite][22m[39m [33mhmr invalidate [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx[22m Could not Fast Refresh ("useCustomersTableColumns" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m5:15:38 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m5:15:57 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m5:16:06 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m5:20:19 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTableToolbar.jsx, /src/index.css[22m
+[2m5:20:19 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:21:32 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/ColumnVisibilityToggle.jsx, /src/index.css[22m
+[2m5:22:09 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/ColumnVisibilityToggle.jsx[22m
+[2m5:22:41 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/ColumnVisibilityToggle.jsx[22m
+[2m5:24:01 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/ColumnVisibilityToggle.jsx[22m
+[2m5:24:09 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/ColumnVisibilityToggle.jsx[22m
+[2m5:24:12 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/ColumnVisibilityToggle.jsx[22m
+[2m5:24:12 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/ColumnVisibilityToggle.jsx[22m
+[2m5:46:50 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:46:59 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:47:21 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:47:26 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:47:31 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:47:55 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:48:02 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/pages/SalesTeams/CustomerTeamsPage.jsx, /src/pages/customers/CustomersPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/users/UsersPage.jsx, /src/pages/products/ProductsPage/ProductsPage.jsx, /src/pages/products/ProductsPage/ProductCategoriesPage.jsx, /src/pages/customers/pages/statusBoard/components/StatusCustomersColumn.jsx[22m
+[2m5:51:27 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:51:38 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:51:53 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m5:51:57 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/shared/components/data-table/DataTable.jsx, /src/index.css[22m
+[2m6:16:17 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/leads/LeadsPage.jsx, /src/pages/customers/components/CustomersBulkActions.jsx, /src/pages/customers/components/CustomerDetailsDrawer/CustomerDetailsDrawer.jsx, /src/pages/customers/components/CustomerDetailsDrawer/CustomerStatusChanger.jsx, /src/pages/customers/components/CustomerDetailsDrawer/tabs/TimeLineTap/TimelineTab.jsx[22m
+[2m6:16:26 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m6:16:35 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m6:16:44 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m6:16:59 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx, /src/index.css[22m
+[2m6:17:01 AM[22m [36m[1m[vite][22m[39m [33mhmr invalidate [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx[22m Could not Fast Refresh ("useCustomersTableColumns" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m6:17:01 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m6:22:40 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx, /src/index.css[22m
+[2m6:22:42 AM[22m [36m[1m[vite][22m[39m [33mhmr invalidate [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx[22m Could not Fast Refresh ("useCustomersTableColumns" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m6:22:42 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m6:27:21 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx, /src/index.css[22m
+[2m6:27:22 AM[22m [36m[1m[vite][22m[39m [33mhmr invalidate [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx[22m Could not Fast Refresh ("useCustomersTableColumns" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m6:27:22 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m6:27:26 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m6:27:38 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m6:29:11 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m6:29:30 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m6:30:25 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m6:34:50 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx, /src/index.css[22m
+[2m6:34:51 AM[22m [36m[1m[vite][22m[39m [33mhmr invalidate [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx[22m Could not Fast Refresh ("useCustomersTableColumns" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m6:34:51 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m6:35:04 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx, /src/index.css[22m
+[2m6:35:05 AM[22m [36m[1m[vite][22m[39m [33mhmr invalidate [39m[2m/src/pages/customers/components/CustomersTableColumns.jsx[22m Could not Fast Refresh ("useCustomersTableColumns" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m6:35:05 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx[22m
+[2m6:47:36 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersBulkActions.jsx, /src/index.css[22m
+[2m6:47:40 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m8:48:43 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/CustomerDetailsDrawer.jsx, /src/index.css[22m
+[2m8:48:55 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/CustomerDetailsDrawer.jsx, /src/index.css[22m
+[2m8:49:05 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/CustomerDetailsDrawer.jsx, /src/index.css[22m
+[2m8:49:20 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/tabs/HomeTab.jsx, /src/index.css[22m
+[2m8:49:31 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/tabs/TimeLineTap/TimelineTab.jsx, /src/index.css[22m
+[2m8:49:36 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/tabs/TasksTab/TasksTab.jsx, /src/index.css[22m
+[2m8:49:41 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/tabs/TasksTab/TaskList.jsx, /src/index.css[22m
+[2m8:49:46 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/tabs/NotesTab.jsx, /src/index.css[22m
+[2m8:49:51 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/tabs/FilesTab.jsx, /src/index.css[22m
+[2m8:49:55 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/tabs/EmailsTab.jsx, /src/index.css[22m
+[2m8:49:58 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/tabs/CalendarTab.jsx, /src/index.css[22m
+[2m8:50:22 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/tabs/TimeLineTap/TimelineTab.jsx, /src/index.css[22m
+[2m8:50:26 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/tabs/TimeLineTap/StatusActionTab.jsx, /src/index.css[22m
+[2m8:50:30 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/tabs/TimeLineTap/CallsTap/CallsActionTab.jsx, /src/index.css[22m
+[2m8:50:34 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomerDetailsDrawer/tabs/TimeLineTap/MeetingTap/MeetingsActionTab.jsx, /src/index.css[22m

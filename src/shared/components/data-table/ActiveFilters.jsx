@@ -7,8 +7,8 @@ export function ActiveFilters({ activeFilters, onRemoveFilter, onClearAll }) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
-      <div className="flex flex-wrap gap-2 flex-1">
+    <div className="flex flex-col gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3 sm:flex-row sm:items-center">
+      <div className="flex min-w-0 flex-1 flex-wrap gap-2">
         {activeFilters.map((filter) => (
           <FilterChip
             key={filter.columnId}
@@ -23,7 +23,7 @@ export function ActiveFilters({ activeFilters, onRemoveFilter, onClearAll }) {
         variant="outline"
         size="sm"
         onClick={onClearAll}
-        className="flex-shrink-0"
+        className="w-full flex-shrink-0 justify-center sm:w-auto"
       >
         مسح الكل
       </Button>

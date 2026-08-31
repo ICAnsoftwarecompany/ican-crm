@@ -1,0 +1,3628 @@
+{
+  "info": {
+    "_postman_id": "b364fa3e-aa31-404e-80b4-808fa1a83171",
+    "name": "Tenancy",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "36524950"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "login",
+                  "value": "test006",
+                  "type": "text",
+                  "uuid": "75da77e9-5244-4fc4-a0f4-099ba7f3b6ac"
+                },
+                {
+                  "key": "password",
+                  "value": "0000",
+                  "type": "text",
+                  "uuid": "3bc3fc75-928d-410c-922f-dc2dbc8c528d"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://cd1d-154-180-98-215.ngrok-free.app/api/tenant/auth/signin?api_password=TenantSecret",
+              "protocol": "https",
+              "host": [
+                "cd1d-154-180-98-215",
+                "ngrok-free",
+                "app"
+              ],
+              "path": [
+                "api",
+                "tenant",
+                "auth",
+                "signin"
+              ],
+              "query": [
+                {
+                  "key": "api_password",
+                  "value": "TenantSecret"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "logout",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://test12.localhost:8000/api/tenant/auth/logout?api_password=TenantSecret",
+              "protocol": "http",
+              "host": [
+                "test12",
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "tenant",
+                "auth",
+                "logout"
+              ],
+              "query": [
+                {
+                  "key": "api_password",
+                  "value": "TenantSecret"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Setting",
+      "item": []
+    },
+    {
+      "name": "Definitions",
+      "item": [
+        {
+          "name": "Status",
+          "item": [
+            {
+              "name": "Create Status",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "status",
+                      "value": "deal_status2",
+                      "type": "text",
+                      "uuid": "53c8f170-9617-4eff-9915-ae81f5765595"
+                    },
+                    {
+                      "key": "type",
+                      "value": "lead",
+                      "description": "customer,lead,deal",
+                      "type": "text",
+                      "uuid": "c775225c-f892-44f0-b886-3a4dfed0626d"
+                    },
+                    {
+                      "key": "active",
+                      "value": "1",
+                      "type": "text",
+                      "uuid": "0656d01d-edca-4149-b83d-953096240dc1"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{url_}}/api/tenant/definitions/create/status?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "definitions",
+                    "create",
+                    "status"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update Status",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "status",
+                      "value": "status1",
+                      "type": "text",
+                      "uuid": "53c8f170-9617-4eff-9915-ae81f5765595"
+                    },
+                    {
+                      "key": "type",
+                      "value": "deal",
+                      "description": "customer,lead,deal",
+                      "type": "text",
+                      "uuid": "c775225c-f892-44f0-b886-3a4dfed0626d"
+                    },
+                    {
+                      "key": "active",
+                      "value": "1",
+                      "type": "text",
+                      "uuid": "0656d01d-edca-4149-b83d-953096240dc1"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{url_}}/api/tenant/definitions/update/status/1?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "definitions",
+                    "update",
+                    "status",
+                    "1"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "status",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url_}}/api/tenant/definitions/status?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "definitions",
+                    "status"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Tags",
+          "item": [
+            {
+              "name": "Create tags",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "tag",
+                      "value": "test",
+                      "type": "text",
+                      "uuid": "53c8f170-9617-4eff-9915-ae81f5765595"
+                    },
+                    {
+                      "key": "type",
+                      "value": "lead",
+                      "description": "customer,lead,deal",
+                      "type": "text",
+                      "uuid": "c775225c-f892-44f0-b886-3a4dfed0626d"
+                    },
+                    {
+                      "key": "active",
+                      "value": "1",
+                      "type": "text",
+                      "uuid": "0656d01d-edca-4149-b83d-953096240dc1"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{url_}}/api/tenant/definitions/create/tags?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "definitions",
+                    "create",
+                    "tags"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update tags",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "tag",
+                      "value": "test",
+                      "type": "text",
+                      "uuid": "53c8f170-9617-4eff-9915-ae81f5765595"
+                    },
+                    {
+                      "key": "type",
+                      "value": "customer",
+                      "description": "customer,lead,deal",
+                      "type": "text",
+                      "uuid": "c775225c-f892-44f0-b886-3a4dfed0626d"
+                    },
+                    {
+                      "key": "active",
+                      "value": "0",
+                      "type": "text",
+                      "uuid": "0656d01d-edca-4149-b83d-953096240dc1"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{url_}}/api/tenant/definitions/update/tags/1?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "definitions",
+                    "update",
+                    "tags",
+                    "1"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "tags",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url_}}/api/tenant/definitions/status?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "definitions",
+                    "status"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Accounts",
+          "item": [
+            {
+              "name": "Create Users",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"name\": \"John Doe\",\r\n  \"email\": \"john@example.com\",\r\n  \"username\": \"johndoe\",\r\n  \"phone\": \"+201234567890\",\r\n  \"manager_id\": 2,\r\n  \"role\": \"admin\",\r\n  \"type\": \"internal\",\r\n  \"priority\": 1,\r\n  \"team_id\": 3,\r\n  \"password\": \"strongpassword123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://test12.localhost:8000/api/tenant/users/create/?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test12",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "users",
+                    "create",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Users",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"name\": \"John Doe\",\r\n  \"email\": \"john@example.com\",\r\n  \"username\": \"johndoe\",\r\n  \"phone\": \"+201234567890\",\r\n  \"manager_id\": 2,\r\n  \"role\": \"admin\",\r\n  \"type\": \"internal\",\r\n  \"priority\": 1,\r\n  \"team_id\": 3,\r\n  \"password\": \"strongpassword123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://test12.localhost:8000/api/tenant/users/update/{id}/?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test12",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "users",
+                    "update",
+                    "{id}",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Users",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"name\": \"John Doe\",\r\n  \"email\": \"john@example.com\",\r\n  \"username\": \"johndoe\",\r\n  \"phone\": \"+201234567890\",\r\n  \"manager_id\": 2,\r\n  \"role\": \"admin\",\r\n  \"type\": \"internal\",\r\n  \"priority\": 1,\r\n  \"team_id\": 3,\r\n  \"password\": \"strongpassword123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://test12.localhost:8000/api/tenant/users/get?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test12",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "users",
+                    "get"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Teams",
+          "item": [
+            {
+              "name": "create",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"name\": \"Development Team\",\r\n  \"team_leader_id\": \"2\",\r\n  \"active\": true,\r\n  \"members\": [1, 3, 5, 7]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://test12.localhost:8000/api/tenant/teams/create?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test12",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "teams",
+                    "create"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "a2f93985-2553-4322-9d61-bdb5666ef85d"
+                    },
+                    {
+                      "key": "team_leader_id",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "8022597e-8045-4453-845e-adf495e3ba08"
+                    },
+                    {
+                      "key": "active",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "5456efc5-26ce-44f7-8438-344eed86370f"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "http://test12.localhost:8000/api/tenant/teams/update/{teamId}?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test12",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "teams",
+                    "update",
+                    "{teamId}"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://test12.localhost:8000/api/tenant/teams/get?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test12",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "teams",
+                    "get"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "attach-members",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \r\n  \"members\": [1, 3, 5, 7]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://test12.localhost:8000/api/tenant/teams/attach-members/{teamId}?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test12",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "teams",
+                    "attach-members",
+                    "{teamId}"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "detach-members",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \r\n  \"members\": [1, 3, 5, 7]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://test12.localhost:8000/api/tenant/teams/detach-members/{teamId}?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test12",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "teams",
+                    "detach-members",
+                    "{teamId}"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Intgrations",
+      "item": [
+        {
+          "name": "Meta Intgrations",
+          "item": [
+            {
+              "name": "Ads",
+              "item": [
+                {
+                  "name": "Create Campaign",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"tenant_id\": \"test006\",\r\n  \"ad_account_id\": \"1307216564237374\",\r\n  \"name\": \"Campaign A\",\r\n  \"objective\": \"OUTCOME_LEADS\"\r\n}\r\n",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url_}}/api/facebook/campaign/create",
+                      "host": [
+                        "{{url_}}"
+                      ],
+                      "path": [
+                        "api",
+                        "facebook",
+                        "campaign",
+                        "create"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "adset create",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{token_sales}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"tenant_id\": \"test006\",\r\n    \"ad_account_id\": \"1307216564237374\",\r\n    \"campaign_id\": \"52533288626728\",\r\n    \"name\": \"Test AdSet\",\r\n    \"daily_budget\": 10000,\r\n    \"billing_event\": \"IMPRESSIONS\",\r\n    \"optimization_goal\": \"LEAD_GENERATION\",\r\n    \"countries\": [\"EG\"],\r\n    \"age_min\": 18,\r\n    \"age_max\": 65,\r\n    \"advantage_audience\": true\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url_}}/api/facebook/adset/create",
+                      "host": [
+                        "{{url_}}"
+                      ],
+                      "path": [
+                        "api",
+                        "facebook",
+                        "adset",
+                        "create"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Create Ad",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"tenant_id\": \"test006\",\r\n  \"ad_account_id\": \"1307216564237374\",\r\n\r\n  \"adset_id\": \"52533297243328\",\r\n\r\n  \"page_id\": \"1125790023953354\",\r\n\r\n  \"lead_form_id\": \"850376477632737\",\r\n\r\n  \"name\": \"Ad Test 1\",\r\n  \r\n\r\n  \"title\": \"احصل على عرض خاص\",\r\n  \"message\": \"سجل الآن وسيتم التواصل معك\"\r\n\r\n//   \"image_url\": \"https://media0101.elcinema.com/uploads/_640x_00bddaa211767391d72d0ea5e0f757e8afac05d6f297c4fc9ce3f58196171e0f.jpg\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url_}}/api/facebook/ad/create",
+                      "host": [
+                        "{{url_}}"
+                      ],
+                      "path": [
+                        "api",
+                        "facebook",
+                        "ad",
+                        "create"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "create lead-form",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"page_id\": \"1125790023953354\",\r\n  \"name\": \"CRM Lead Form Test\",\r\n  \"locale\": \"en_US\",\r\n  \"privacy_policy_url\": \"https://example.com/privacy\",\r\n  \"privacy_policy_link_text\": \"Privacy Policy\",\r\n  \"follow_up_action_url\": \"https://example.com/thank-you\",\r\n  \"questions\": [\r\n    {\r\n      \"type\": \"FULL_NAME\"\r\n    },\r\n    {\r\n      \"type\": \"EMAIL\"\r\n    },\r\n    {\r\n      \"type\": \"PHONE\"\r\n    }\r\n  ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url_}}/api/facebook/lead-form/create/test006",
+                      "host": [
+                        "{{url_}}"
+                      ],
+                      "path": [
+                        "api",
+                        "facebook",
+                        "lead-form",
+                        "create",
+                        "test006"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "WhatsApp",
+              "item": [
+                {
+                  "name": "Chats",
+                  "item": [
+                    {
+                      "name": "Get My Chats",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{url_}}/my/conversations/{{tenant}}",
+                          "host": [
+                            "{{url_}}"
+                          ],
+                          "path": [
+                            "my",
+                            "conversations",
+                            "{{tenant}}"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "get converstions messages",
+                      "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                      },
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n  \"name\": \"crm_follow_up\",\r\n  \"language\": \"en_US\",\r\n  \"category\": \"MARKETING\",\r\n  \"header\": {\r\n    \"format\": \"TEXT\",\r\n    \"text\": \"Hello from CRM\"\r\n  },\r\n  \"body\": \"Hello {{1}}, thank you for contacting us. Our team will contact you soon.\",\r\n  \"footer\": \"CRM Team\"\r\n}"
+                        },
+                        "url": {
+                          "raw": "{{url_}}/api/whatsapp/conversations/{{tenant}}/{{conversionsID}}",
+                          "host": [
+                            "{{url_}}"
+                          ],
+                          "path": [
+                            "api",
+                            "whatsapp",
+                            "conversations",
+                            "{{tenant}}",
+                            "{{conversionsID}}"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "conversations send messages",
+                      "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                      },
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"message\": \"Hello from CRM chat\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{url_}}/api/whatsapp/conversations/test006/1/send",
+                          "host": [
+                            "{{url_}}"
+                          ],
+                          "path": [
+                            "api",
+                            "whatsapp",
+                            "conversations",
+                            "test006",
+                            "1",
+                            "send"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Send Messages",
+                      "request": {
+                        "auth": {
+                          "type": "bearer",
+                          "bearer": [
+                            {
+                              "key": "token",
+                              "value": "{{token_sales}}",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "// {\r\n//   \"to\": \"201275886491\",\r\n//   \"template_name\": \"crm_test\",\r\n//   \"language\": \"en\"\r\n// }\r\n// {\r\n//   \"messaging_product\": \"whatsapp\",\r\n//   \"to\": \"201275886491\",\r\n//   \"type\": \"template\",\r\n//   \"template\": {\r\n//     \"name\": \"crm_test\",\r\n//     \"language\": {\r\n//       \"code\": \"en\"\r\n//     }\r\n//   }\r\n// }\r\n// {\r\n//   \"messaging_product\": \"whatsapp\",\r\n//   \"to\": \"201275886491\",\r\n//   \"type\": \"template\",\r\n//   \"template\": {\r\n//     \"name\": \"hello_world\",\r\n//     \"language\": {\r\n//       \"code\": \"en_US\"\r\n//     }\r\n//   }\r\n{\r\n  \"to\": \"201275886491\",\r\n  \"contact_name\": \"Ahmed\",\r\n  \"template_name\": \"hello_world\",\r\n  \"language\": \"en_US\"\r\n\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{url_}}/api/whatsapp/send/{{tenant}}",
+                          "host": [
+                            "{{url_}}"
+                          ],
+                          "path": [
+                            "api",
+                            "whatsapp",
+                            "send",
+                            "{{tenant}}"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Templetes",
+                  "item": [
+                    {
+                      "name": "Get  Messages Templetes",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{url_}}/api/whatsapp/templates/test006",
+                          "host": [
+                            "{{url_}}"
+                          ],
+                          "path": [
+                            "api",
+                            "whatsapp",
+                            "templates",
+                            "test006"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "create whatsapp template",
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n  \"name\": \"crm_follow_up\",\r\n  \"language\": \"en_US\",\r\n  \"category\": \"MARKETING\",\r\n  \"header\": {\r\n    \"format\": \"TEXT\",\r\n    \"text\": \"Hello from CRM\"\r\n  },\r\n  \"body\": \"Hello {{1}}, thank you for contacting us. Our team will contact you soon.\",\r\n  \"footer\": \"CRM Team\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{url_}}/api/whatsapp/template/create/test006",
+                          "host": [
+                            "{{url_}}"
+                          ],
+                          "path": [
+                            "api",
+                            "whatsapp",
+                            "template",
+                            "create",
+                            "test006"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Facebook",
+              "item": [
+                {
+                  "name": "OAuth Facebook",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "https://2153-154-180-32-110.ngrok-free.app/api/facebook/connect/test006",
+                      "protocol": "https",
+                      "host": [
+                        "2153-154-180-32-110",
+                        "ngrok-free",
+                        "app"
+                      ],
+                      "path": [
+                        "api",
+                        "facebook",
+                        "connect",
+                        "test006"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Facebook Pages",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{token_sales}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url_}}/api/tenant/facebook/pages/test006",
+                      "host": [
+                        "{{url_}}"
+                      ],
+                      "path": [
+                        "api",
+                        "tenant",
+                        "facebook",
+                        "pages",
+                        "test006"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "facebook refresh-token",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{token_sales}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url_}}/api/facebook/refresh-token/test006",
+                      "host": [
+                        "{{url_}}"
+                      ],
+                      "path": [
+                        "api",
+                        "facebook",
+                        "refresh-token",
+                        "test006"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "facebook assets",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{token_sales}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url_}}/api/facebook/assets/test006",
+                      "host": [
+                        "{{url_}}"
+                      ],
+                      "path": [
+                        "api",
+                        "facebook",
+                        "assets",
+                        "test006"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Massanger",
+              "item": [
+                {
+                  "name": "Sen Messsage",
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"recipient\": {\r\n        \"id\": \"28405526325713911\"\r\n    },\r\n    \"message\": {\r\n        \"text\": \"Hello!1\"\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url_}}/api/messenger/test-send",
+                      "host": [
+                        "{{url_}}"
+                      ],
+                      "path": [
+                        "api",
+                        "messenger",
+                        "test-send"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Manule Intgrations",
+          "item": [
+            {
+              "name": "Get Intgrations",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"provider\": \"facebook\",\r\n  \"tenant_id\":\"faceTest\",\r\n  \"external_id\": \"1143370238851368\",\r\n  \"credentials\": {\r\n    \"page_access_token\": \"EAAXP5vhvmwEBRRuNZABFSrh9l1V6Q7yMomJjKS3SAJmmqmKArgo2UofnOqIcnS9e9CZCvQrmPXVlPvs3PBMK3kXckXJ26FZApMztr871wYgvn9w80FIFRbmOh7xWEDylAjMXZBJ1DkiaERAIu6ZAoZB1PRrbIZBRbyZCOpsxjg8dZBc8tMbVBPrZCXMZBpDlb90IZCpmdeMdABqZAsssIX9D74EKz1MIYHzMSmBbsQJu8cwio\"\r\n  }\r\n}"
+                },
+                "url": {
+                  "raw": "http://faceTest.localhost:8000/api/tenant/integrations/get?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "faceTest",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "integrations",
+                    "get"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Edite Intgrations",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"provider\": \"facebook\",\r\n  \"tenant_id\":\"faceTest\",\r\n  \"external_id\": \"1143370238851368\",\r\n  \"credentials\": {\r\n    \"page_access_token\": \"EAAXP5vhvmwEBRcHUL5H6MQFHRhWxaaeT0QF3a1BZCrbNLZBAhsi26iYA5IbmamlZBZCLwe0yNsUdk7RtOZAQWFtVef0Wcl2lV6daAtUn9xUkvaejdAZCd3ZBFvN9nn9XqIQ7EC3NvqIu543rViDTQYpdl0Dxsui3vW5BHyJ5DG0gdhwBkrCdL5uncCzzuIClErByN4dS7FyXZAfszx2RaZAk0qRuaQSA3L9NwIlbkDVJpZApIZD\"\r\n  }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://faceTest.localhost:8000/api/tenant/integrations/edite/intgration/8?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "faceTest",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "integrations",
+                    "edite",
+                    "intgration",
+                    "8"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Save Intgrations",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "//facebook pages saved\r\n{\r\n  \"provider\": \"facebook\",\r\n  \"tenant_id\":\"test006\",\r\n  \"type\":\"contact\",//lead,contact,both\r\n  \"external_id\": \"1143370238851368\",\r\n  \"credentials\": {\r\n    \"page_access_token\": \"EAAXP5vhvmwEBRuLXEVSEkrCZArKvelcZCjrJvfgLctM7goZBhx3KzMYCffjZBAcBEJBBsLMEszcZBU5zyMAFPWUIyI3ij5fZCtA1fMoTBXCZB74kClDatyKN4voEHvnShZBLohwlvYhzfHsrQlWezurvkZAo4lvwpRu65voFqRDFt35srN8U1ujS5YpUZAb9sjTOQlHkZAmcbEEVKsA6feJqZBVvVSoZAnyNLQebXOM49heZB8u4wZD\"\r\n  }\r\n}\r\n//{\r\n\r\n//   \"provider\": \"meta\",\r\n//   \"tenant_id\":\"test006\",\r\n\r\n//   \"type\": \"messaging\",\r\n\r\n//   \"name\": \"Main WhatsApp Number\",\r\n\r\n//   \"external_id\": \"1168175123041297\",\r\n\r\n//   \"credentials\": {\r\n//     \"phone_number_id\": \"1168175123041297\",\r\n//     \"waba_id\": \"1838581880655117\",\r\n//     \"access_token\": \"EAAXP5vhvmwEBRvAhZArkVwCv80NA1exhcZCEhFdL1vV9WUAG6q1Vpy5Gl0FoLPz7upkj3ezWDZCucK8xlXmapZAqFcRwU38jWIK4LXfuLKL9OeffCB287gmitmZAuECS1xOGoi0V0dQ0XDbxnngN1iJSkI5NvlvLgLmYUT1W2s7q3C7eZAOrR7pBqFNF3HxCkxSOp5ZBnfgPsKlSoT589SPAm7b6FkFwOQsvAI88QidZCtAuq4vLPGp6ri9LcAVT2bPWZCShwklLZBbzh8Q1eEFTNs\"\r\n//   },\r\n\r\n \r\n//   \"is_active\": true\r\n// }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://test006.localhost:8000/api/tenant/integrations/save/intgration?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test006",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "integrations",
+                    "save",
+                    "intgration"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "campaigns",
+      "item": [
+        {
+          "name": "campaign",
+          "item": [
+            {
+              "name": "Save",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"external_id\": null,\r\n    \"name\": \"Summer Campaign 2026\",\r\n    \"description\": \"Lead generation campaign for summer offers\",\r\n    \"start_date\": \"2026-05-01\",\r\n    \"end_date\": \"2026-06-30\",\r\n    \"budget\": 5000,\r\n    \"status\": \"active\",\r\n    \"target_audience\": \"People interested in real estate in Alexandria\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://test006.localhost:8000/api/tenant/campaigns/save/campaign?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test006",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "campaigns",
+                    "save",
+                    "campaign"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "edite",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n        \"external_id\":null,\r\n\r\n\"name\": \"Summer Campaign 2026\",\r\n\"description\": \"Lead generation campaign for summer offers\",\r\n\"start_date\": \"2026-05-01\",\r\n\"end_date\": \"2026-06-30\",\r\n\"budget\": 5000,\r\n\"status\": \"active\",\r\n\"target_audience\": \"People interested in real estate in Alexandria\"\r\n}\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://test006.localhost:8000/api/tenant/campaigns/edite/campaign/{id}?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test006",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "campaigns",
+                    "edite",
+                    "campaign",
+                    "{id}"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "active campaigns",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://faceTest.localhost:8000/api/tenant/campaigns/active?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "faceTest",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "campaigns",
+                    "active"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "inactive campaigns",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://faceTest.localhost:8000/api/tenant/campaigns/inactive?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "faceTest",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "campaigns",
+                    "inactive"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "details campaign",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://faceTest.localhost:8000/api/tenant/campaigns/details/{id}?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "faceTest",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "campaigns",
+                    "details",
+                    "{id}"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Ads",
+          "item": [
+            {
+              "name": "Save",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "test",
+                      "type": "text",
+                      "uuid": "86be1e35-8a9b-4079-81a1-43dcc1d46ca6"
+                    },
+                    {
+                      "key": "description",
+                      "value": "test",
+                      "type": "text",
+                      "uuid": "8c1dc288-991a-40af-8ce3-9683315bf70b"
+                    },
+                    {
+                      "key": "start_date",
+                      "value": "2026/10/10",
+                      "type": "text",
+                      "uuid": "f3e3bcd4-ac2f-400e-8462-cc5c532e8056"
+                    },
+                    {
+                      "key": "end_date",
+                      "value": "2026/11/11",
+                      "type": "text",
+                      "uuid": "e9847363-555f-4323-9f7d-62b4aabe375e"
+                    },
+                    {
+                      "key": "budget",
+                      "value": "12222",
+                      "type": "text",
+                      "uuid": "0913a7f6-9590-4968-aa93-c0daee00288b"
+                    },
+                    {
+                      "key": "status",
+                      "value": "active",
+                      "description": "active",
+                      "type": "text",
+                      "uuid": "735b5e86-5bad-484c-960d-7c0127043f7f"
+                    },
+                    {
+                      "key": "target_audience",
+                      "value": "parent",
+                      "type": "text",
+                      "uuid": "04f147df-0d1a-4997-954e-0485759fd54f"
+                    },
+                    {
+                      "key": "campaign_id",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "b1d453c5-7903-4198-9b4c-a27423d5f054"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "uuid": "8e1e78dc-fbe3-4fbb-8dca-f74a48c357f9",
+                      "src": "/C:/Users/hp/Desktop/9eac9ccf80d7bcfde82f44fbf31baa8c.jpg"
+                    },
+                    {
+                      "key": "external_id",
+                      "value": "443455334",
+                      "type": "text",
+                      "uuid": "c6c55bcb-f9db-4cdf-9dd9-2ba026d5e3b4"
+                    },
+                    {
+                      "key": "platform",
+                      "value": "face",
+                      "type": "text",
+                      "uuid": "b20461a5-8aa2-47d7-89d5-bdd7b2f79e7b"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{url_}}/api/tenant/ads/save/ads?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "ads",
+                    "save",
+                    "ads"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Edite",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "86be1e35-8a9b-4079-81a1-43dcc1d46ca6"
+                    },
+                    {
+                      "key": "description",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "8c1dc288-991a-40af-8ce3-9683315bf70b"
+                    },
+                    {
+                      "key": "start_date",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "f3e3bcd4-ac2f-400e-8462-cc5c532e8056"
+                    },
+                    {
+                      "key": "end_date",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "e9847363-555f-4323-9f7d-62b4aabe375e"
+                    },
+                    {
+                      "key": "budget",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "0913a7f6-9590-4968-aa93-c0daee00288b"
+                    },
+                    {
+                      "key": "status",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "735b5e86-5bad-484c-960d-7c0127043f7f"
+                    },
+                    {
+                      "key": "target_audience",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "04f147df-0d1a-4997-954e-0485759fd54f"
+                    },
+                    {
+                      "key": "campaign_id",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "b1d453c5-7903-4198-9b4c-a27423d5f054"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "uuid": "8e1e78dc-fbe3-4fbb-8dca-f74a48c357f9",
+                      "value": null
+                    },
+                    {
+                      "key": "external_id",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "fd7bd76a-7c0c-4737-ae9f-0da2a8d1882f"
+                    },
+                    {
+                      "key": "platform",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "46908604-0c02-4bdd-9cdb-9619a92684c4"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "http://faceTest.localhost:8000/api/tenant/ads/edite/ads/{id}?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "faceTest",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "ads",
+                    "edite",
+                    "ads",
+                    "{id}"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "ads",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://faceTest.localhost:8000/api/tenant/ads/active?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "faceTest",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "ads",
+                    "active"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "inactive ads",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url_}}/api/tenant/ads/inactive?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "ads",
+                    "inactive"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "details ads",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url_}}/api/tenant/ads/details/{id}?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "ads",
+                    "details",
+                    "{id}"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Ads Form",
+          "item": [
+            {
+              "name": "Save",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\"name\": \"Facebook Lead Form - Summer\",\r\n\"description\": \"Form used for collecting leads from Facebook ads\",\r\n\"status\": \"active\",\r\n\"ads_id\": null,\r\n\"campaign_id\": null,\r\n\"external_id\": \"23423423\",\r\n\"platform\": \"facebook\",\r\n\r\n\r\n  \"fields\": {\r\n   \"full_name\":\"string\",\"email\":\"string\",\"phone\":\"string\"\r\n  }\r\n}\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url_}}/api/tenant/ads-forms/save/ads-form?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "ads-forms",
+                    "save",
+                    "ads-form"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Edite",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\"name\": \"Facebook Lead Form - Summer\",\r\n\"description\": \"Form used for collecting leads from Facebook ads\",\r\n\"status\": \"active\",\r\n\"ads_id\": 1,\r\n\"campaign_id\": 1,\r\n\"external_id\": \"2232323232\",\r\n\"platform\": \"facebook\",\r\n\r\n\r\n  \"fields\": {\r\n   \"full_name\":\"string\",\"email\":\"string\",\"phone\":\"string\"\r\n  }\r\n}\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url_}}/api/tenant/ads-forms/edite/ads-form/{id}?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "ads-forms",
+                    "edite",
+                    "ads-form",
+                    "{id}"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "ads form",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url_}}/api/tenant/ads-forms/active?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "ads-forms",
+                    "active"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "inactive ads form",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url_}}/api/tenant/ads-forms/inactive?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "ads-forms",
+                    "inactive"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "details ads form",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url_}}/api/tenant/ads-forms/details/{id}?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "ads-forms",
+                    "details",
+                    "{id}"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Link Products",
+          "item": [
+            {
+              "name": "link-products",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"product_ids\": [1, 2],\r\n  \"campaign_id\": null,\r\n  \"ad_id\": null,\r\n  \"form_id\": 1,\r\n  \"note\": \"Attach products to ad\",\r\n  \"data\": {\r\n    \"source\": \"facebook\",\r\n    \"priority\": \"high\"\r\n  },\r\n  \"attach_to\": \"form\"//campaign,ad,form\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://test006.localhost:8000/api/tenant/link-products/save?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test006",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "link-products",
+                    "save"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Change Products stauts",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"ids\": [1, 2],\r\n  \"status\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://test006.localhost:8000/api/tenant/link-products/update-status?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test006",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "link-products",
+                    "update-status"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Leads",
+      "item": [
+        {
+          "name": "Lead Assignment",
+          "item": [
+            {
+              "name": "create rule",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"name\": \"Facebook Ramadan Leads\",\r\n\r\n  \"campaign_id\": 1,\r\n  \"ad_id\": null,\r\n  \"form_id\": null,\r\n  \"source\": \"facebook\",\r\n\r\n  \"assign_type\": \"round_robin\",\r\n\r\n  \"team_id\": 2,\r\n  \"user_id\": null,\r\n\r\n  \"priority\": 10,\r\n  \"active\": true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://faceTest.localhost:8000/api/tenant/lead-assignment/create/rule?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "faceTest",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "lead-assignment",
+                    "create",
+                    "rule"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update rule",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"name\": \"Facebook Ramadan Leads\",\r\n\r\n  \"campaign_id\": 1,\r\n  \"ad_id\": null,\r\n  \"form_id\": null,\r\n  \"source\": \"facebook\",\r\n\r\n  \"assign_type\": \"round_robin\",\r\n\r\n  \"team_id\": 2,\r\n  \"user_id\": null,\r\n\r\n  \"priority\": 10,\r\n  \"active\": true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://faceTest.localhost:8000/api/tenant/lead-assignment/update/rule/{id}?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "faceTest",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "lead-assignment",
+                    "update",
+                    "rule",
+                    "{id}"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "rules",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://test006.localhost:8000/api/tenant/lead-assignment/rules?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test006",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "lead-assignment",
+                    "rules"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Lead Actions",
+          "item": [
+            {
+              "name": "save action",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"lead_id\": 48,\r\n  \"action\": \"create_activity\",\r\n  \"type\": \"call\",\r\n  \"title\": \"Follow up call\",\r\n  \"description\": \"Calling the client to follow up on proposal\",\r\n  \"note\": \"Client prefers afternoon calls\",\r\n  \"data\": {\r\n    \"duration\": 15,\r\n    \"result\": \"no_answer\"\r\n  },\r\n  \"new_status_id\": 2,\r\n  \"new_status_title\": \"dine\",\r\n  \"old_status_title\":\"fail\",\r\n  \"activity_at\": \"2026-05-19 14:30:00\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://test006.localhost:8000/api/tenant/leads/save/action?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test006",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "leads",
+                    "save",
+                    "action"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Logs",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://test006.localhost:8000/api/tenant/leads/logs?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test006",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "leads",
+                    "logs"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "manual lead distribution",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"lead_ids\": [48,49]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://test006.localhost:8000/api/tenant/leads/manual/lead/distribution?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test006",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "leads",
+                    "manual",
+                    "lead",
+                    "distribution"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Lead Interesteds",
+          "item": [
+            {
+              "name": "save Lead Interesteds",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"lead_id\": 1,\r\n  \"interesteds\": [\r\n    {\r\n      \"product_id\": 10,\r\n      \"note\": \"Client is interested in premium package\",\r\n      \"interest_level\": \"high\"\r\n    },\r\n    {\r\n      \"product_id\": 12,\r\n      \"note\": \"Follow up next week\",\r\n      \"interest_level\": \"medium\"\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url_}}/api/tenant/interesteds/save?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "interesteds",
+                    "save"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Edite",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"lead_id\": 1,\r\n  \"interesteds\": [\r\n    {\r\n      \"id\": 5,\r\n      \"note\": \"Client changed decision\",\r\n      \"interest_level\": \"medium\"\r\n    },\r\n    {\r\n      \"id\": 6,\r\n      \"note\": \"Very interested now\",\r\n      \"interest_level\": \"high\"\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url_}}/api/tenant/interesteds/edite?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "interesteds",
+                    "edite"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Interesteds",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token_sales}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"lead_id\": 1,\r\n  \"interesteds\": [\r\n    {\r\n      \"id\": 5\r\n    },\r\n    {\r\n      \"id\": 6\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url_}}/api/tenant/interesteds/delete?api_password=TenantSecret",
+                  "host": [
+                    "{{url_}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tenant",
+                    "interesteds",
+                    "delete"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Categories",
+          "item": [
+            {
+              "name": "Create Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "cata1",
+                      "type": "text",
+                      "uuid": "498187a2-694d-4899-9a54-f2dcb9938d52"
+                    },
+                    {
+                      "key": "desc",
+                      "value": "cata1",
+                      "type": "text",
+                      "uuid": "33490ad2-88ab-4e56-9cc8-e8df561e9878"
+                    },
+                    {
+                      "key": "type",
+                      "value": "product",
+                      "description": "service,product",
+                      "type": "text",
+                      "uuid": "29624599-0394-427d-a31b-f97c8797430f"
+                    },
+                    {
+                      "key": "category_id",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "1cb36c5f-e9a5-4181-aafb-4f640777dc0c"
+                    },
+                    {
+                      "key": "data",
+                      "value": " [{\"name\":\"Latte\",\"price\":50}]",
+                      "description": "take json",
+                      "type": "text",
+                      "uuid": "f303637a-a083-4451-a20a-42557eee576e"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "uuid": "a80449b0-4c14-410b-8dce-8387b0a5f243",
+                      "src": "/C:/Users/hp/Desktop/github-logo-git-hub-icon-with-text-on-white-and-black-background-free-vector.jpg"
+                    },
+                    {
+                      "key": "status",
+                      "value": "1",
+                      "type": "text",
+                      "uuid": "45f80ed4-8ddc-4621-85ca-c05da4ce5f2c"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "http://test006.localhost:8000/api/tenant/category/create?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test006",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "category",
+                    "create"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "cata01",
+                      "type": "text",
+                      "uuid": "498187a2-694d-4899-9a54-f2dcb9938d52"
+                    },
+                    {
+                      "key": "desc",
+                      "value": "cata01",
+                      "type": "text",
+                      "uuid": "33490ad2-88ab-4e56-9cc8-e8df561e9878"
+                    },
+                    {
+                      "key": "type",
+                      "value": "service",
+                      "type": "text",
+                      "uuid": "29624599-0394-427d-a31b-f97c8797430f",
+                      "description": "product,service"
+                    },
+                    {
+                      "key": "category_id",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "1cb36c5f-e9a5-4181-aafb-4f640777dc0c"
+                    },
+                    {
+                      "key": "data",
+                      "value": " [{\"name\":\"Latte\",\"price\":50}]",
+                      "description": "take json",
+                      "type": "text",
+                      "uuid": "f303637a-a083-4451-a20a-42557eee576e"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "uuid": "a80449b0-4c14-410b-8dce-8387b0a5f243",
+                      "value": null
+                    },
+                    {
+                      "key": "status",
+                      "value": "1",
+                      "type": "text",
+                      "uuid": "45f80ed4-8ddc-4621-85ca-c05da4ce5f2c"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "http://test006.localhost:8000/api/tenant/category/update/{id}?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test006",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "category",
+                    "update",
+                    "{id}"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Data",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://testlead3.localhost:8000/api/tenant/category/data?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "testlead3",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "category",
+                    "data"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Category Info",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://test006.localhost:8000/api/tenant/category/info/1?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test006",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "category",
+                    "info",
+                    "1"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Product",
+          "item": [
+            {
+              "name": "Create Product",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "products[0][name]   ",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "498187a2-694d-4899-9a54-f2dcb9938d52"
+                    },
+                    {
+                      "key": "products[0][price] ",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "33490ad2-88ab-4e56-9cc8-e8df561e9878"
+                    },
+                    {
+                      "key": "products[0][desc]",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "29624599-0394-427d-a31b-f97c8797430f"
+                    },
+                    {
+                      "key": "products[0][image]",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "1cb36c5f-e9a5-4181-aafb-4f640777dc0c"
+                    },
+                    {
+                      "key": "products[0][data]  ",
+                      "value": " [{\"name\":\"Latte\",\"price\":50}]",
+                      "description": "take json",
+                      "type": "text",
+                      "uuid": "f303637a-a083-4451-a20a-42557eee576e"
+                    },
+                    {
+                      "key": "products[0][status]  ",
+                      "type": "file",
+                      "uuid": "a80449b0-4c14-410b-8dce-8387b0a5f243",
+                      "value": null
+                    },
+                    {
+                      "key": "products[0][category_id]  ",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "45f80ed4-8ddc-4621-85ca-c05da4ce5f2c"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "http://testlead3.localhost:8000/api/tenant/product/create?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "testlead3",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "product",
+                    "create"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update product",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "pro2",
+                      "type": "text",
+                      "uuid": "498187a2-694d-4899-9a54-f2dcb9938d52"
+                    },
+                    {
+                      "key": "desc",
+                      "value": "pro2",
+                      "type": "text",
+                      "uuid": "33490ad2-88ab-4e56-9cc8-e8df561e9878"
+                    },
+                    {
+                      "key": "price",
+                      "value": "7656",
+                      "type": "text",
+                      "uuid": "29624599-0394-427d-a31b-f97c8797430f"
+                    },
+                    {
+                      "key": "category_id",
+                      "value": "1",
+                      "type": "text",
+                      "uuid": "1cb36c5f-e9a5-4181-aafb-4f640777dc0c"
+                    },
+                    {
+                      "key": "data",
+                      "value": " [{\"name\":\"Latte\",\"price\":50}]",
+                      "description": "take json",
+                      "type": "text",
+                      "uuid": "f303637a-a083-4451-a20a-42557eee576e"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "uuid": "a80449b0-4c14-410b-8dce-8387b0a5f243",
+                      "value": null
+                    },
+                    {
+                      "key": "status",
+                      "value": "1",
+                      "type": "text",
+                      "uuid": "45f80ed4-8ddc-4621-85ca-c05da4ce5f2c"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "http://test006.localhost:8000/api/tenant/product/update/{id}?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test006",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "product",
+                    "update",
+                    "{id}"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Product",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://test006.localhost:8000/api/tenant/product/data?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test006",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "product",
+                    "data"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Product Info",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://test006.localhost:8000/api/tenant/product/info/{id}?api_password=TenantSecret",
+                  "protocol": "http",
+                  "host": [
+                    "test006",
+                    "localhost"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "tenant",
+                    "product",
+                    "info",
+                    "{id}"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_password",
+                      "value": "TenantSecret"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "create customers",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"customers\": [\r\n    {\r\n      \"name\": \"Ahmed\",\r\n      \"email\": \"a@test.com\",\r\n      \"phone\": \"010000\",\r\n      \"company\": \"ABC\",\r\n      \"type\": \"customer\",\r\n      \"status_type_id\": null,\r\n      \"lead_id\": null,\r\n      \"agent_id\": null,\r\n      \"tag_id\": null,\r\n      \"source\": \"Facebook Ads\",\r\n      \"linked_type\": \"manual\",\r\n      \"linked_by\": 1,\r\n      \"link_date\": \"2026-05-18\",\r\n      \"attributes\": {\r\n        \"budget\": 5000,\r\n        \"color\": \"blue\"\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"Mohamed\",\r\n      \"email\": \"m@test.com\",\r\n            \"source\": \"Facebook Ads\",\r\n\r\n      \"phone\": \"011111\",\r\n      \"company\": \"XYZ\",\r\n      \"type\": \"lead\",\r\n      \"attributes\": {\r\n        \"interest\": \"CRM\",\r\n        \"priority\": \"high\"\r\n      }\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://test006.localhost:8000/api/tenant/customers/create?api_password=TenantSecret",
+              "protocol": "http",
+              "host": [
+                "test006",
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "tenant",
+                "customers",
+                "create"
+              ],
+              "query": [
+                {
+                  "key": "api_password",
+                  "value": "TenantSecret"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Ahmed Updated\",\r\n  \"email\": \"ahmed.updated@test.com\",\r\n  \"phone\": \"0123456789\",\r\n  \"company\": \"New Company\",\r\n  \"type\": \"customer\",\r\n  \"status_type_id\": 1,\r\n  \"lead_id\": 2,\r\n  \"agent_id\": 3,\r\n  \"tag_id\": 4,\r\n  \"source\": \"Website\",\r\n  \"linked_type\": \"manual\",\r\n  \"linked_by\": 1,\r\n  \"link_date\": \"2026-05-18\",\r\n  \"attributes\": [\r\n    {\r\n      \"key\": \"budget\",\r\n      \"value\": \"7000\"\r\n    },\r\n    {\r\n      \"key\": \"color\",\r\n      \"value\": \"red\"\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://test006.localhost:8000/api/tenant/customers/update/{id}?api_password=TenantSecret",
+              "protocol": "http",
+              "host": [
+                "test006",
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "tenant",
+                "customers",
+                "update",
+                "{id}"
+              ],
+              "query": [
+                {
+                  "key": "api_password",
+                  "value": "TenantSecret"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "info",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://test006.localhost:8000/api/tenant/customers/info/{id}?api_password=TenantSecret",
+              "protocol": "http",
+              "host": [
+                "test006",
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "tenant",
+                "customers",
+                "info",
+                "{id}"
+              ],
+              "query": [
+                {
+                  "key": "api_password",
+                  "value": "TenantSecret"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "data",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://test006.localhost:8000/api/tenant/customers/data?api_password=TenantSecret",
+              "protocol": "http",
+              "host": [
+                "test006",
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "tenant",
+                "customers",
+                "data"
+              ],
+              "query": [
+                {
+                  "key": "api_password",
+                  "value": "TenantSecret"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"ids\": [1, 2, 3, 4]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://test006.localhost:8000/api/tenant/customers/delete?api_password=TenantSecret",
+              "protocol": "http",
+              "host": [
+                "test006",
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "tenant",
+                "customers",
+                "delete"
+              ],
+              "query": [
+                {
+                  "key": "api_password",
+                  "value": "TenantSecret"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "deleted data",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://test006.localhost:8000/api/tenant/customers/deleted/data?api_password=TenantSecret",
+              "protocol": "http",
+              "host": [
+                "test006",
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "tenant",
+                "customers",
+                "deleted",
+                "data"
+              ],
+              "query": [
+                {
+                  "key": "api_password",
+                  "value": "TenantSecret"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "restore delete",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"ids\": [1, 2, 3]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://test006.localhost:8000/api/tenant/customers/restore/deleted?api_password=TenantSecret",
+              "protocol": "http",
+              "host": [
+                "test006",
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "tenant",
+                "customers",
+                "restore",
+                "deleted"
+              ],
+              "query": [
+                {
+                  "key": "api_password",
+                  "value": "TenantSecret"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "force delete",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"ids\": [1, 2, 3]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://test006.localhost:8000/api/tenant/customers/force/delete?api_password=TenantSecret",
+              "protocol": "http",
+              "host": [
+                "test006",
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "tenant",
+                "customers",
+                "force",
+                "delete"
+              ],
+              "query": [
+                {
+                  "key": "api_password",
+                  "value": "TenantSecret"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sales Dashboard",
+      "item": [
+        {
+          "name": "My Leads",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://test006.localhost:8000/api/tenant/sales/dashboard/my-leads?api_password=TenantSecret",
+              "protocol": "http",
+              "host": [
+                "test006",
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "tenant",
+                "sales",
+                "dashboard",
+                "my-leads"
+              ],
+              "query": [
+                {
+                  "key": "api_password",
+                  "value": "TenantSecret"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "my teams",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://test006.localhost:8000/api/tenant/sales/dashboard/my-teams?api_password=TenantSecret",
+              "protocol": "http",
+              "host": [
+                "test006",
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "tenant",
+                "sales",
+                "dashboard",
+                "my-teams"
+              ],
+              "query": [
+                {
+                  "key": "api_password",
+                  "value": "TenantSecret"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "https://graph.facebook.com/v25.0/1125790023953354/subscribed_apps",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://graph.facebook.com/v25.0/1125790023953354/subscribed_apps?subscribed_fields=messages,messaging_postbacks&access_token=EAAXP5vhvmwEBRt7yx2Xf2uCoeM7T529Xvu0AEIaxt2ZCyDJHJ9ukwNR3izlcMErrmHIrgjIVuyyvFXcSniLuzvGKwsVZCbFvelzsgaZALwYNg2f9JZBA6AeeOOs6ecRh7WcHGBrOJdgsEAeXk7y6xQpFglNgZCG8iZBUEeZAowfW7ZAvdGIQnYRigthQKUPosuRAqigxLhbg",
+          "protocol": "https",
+          "host": [
+            "graph",
+            "facebook",
+            "com"
+          ],
+          "path": [
+            "v25.0",
+            "1125790023953354",
+            "subscribed_apps"
+          ],
+          "query": [
+            {
+              "key": "subscribed_fields",
+              "value": "messages,messaging_postbacks"
+            },
+            {
+              "key": "access_token",
+              "value": "EAAXP5vhvmwEBRt7yx2Xf2uCoeM7T529Xvu0AEIaxt2ZCyDJHJ9ukwNR3izlcMErrmHIrgjIVuyyvFXcSniLuzvGKwsVZCbFvelzsgaZALwYNg2f9JZBA6AeeOOs6ecRh7WcHGBrOJdgsEAeXk7y6xQpFglNgZCG8iZBUEeZAowfW7ZAvdGIQnYRigthQKUPosuRAqigxLhbg"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "token_sales",
+      "value": ""
+    },
+    {
+      "key": "url_",
+      "value": ""
+    }
+  ]
+}

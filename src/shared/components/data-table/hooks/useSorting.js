@@ -26,10 +26,11 @@ export function useSorting(initialSort = null) {
 
     const column = columns.find((c) => c.id === sorting.column)
     if (!column || !column.sortable) return rows
+    const sortingAccessor = column.sortAccessor || column.accessor
 
     const sorted = [...rows].sort((a, b) => {
-      const aVal = getNestedValue(a, column.accessor)
-      const bVal = getNestedValue(b, column.accessor)
+      const aVal = getNestedValue(a, sortingAccessor)
+      const bVal = getNestedValue(b, sortingAccessor)
 
       // Handle null/undefined
       if (aVal == null && bVal == null) return 0

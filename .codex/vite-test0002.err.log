@@ -1,0 +1,212 @@
+[2m12:46:56 AM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.
+[2m12:46:56 AM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.
+[2m12:47:09 AM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.
+[2m12:47:09 AM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.
+[2m12:47:09 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mE:/Projects/ican-crm/src/realtime/echo.js[39m:1:1
+[33m  1  |  import Echo from 'laravel-echo'
+     |  ^
+  2  |  import Pusher from 'pusher-js'
+  3  |  import { useAuthStore } from '../store/authStore'[39m
+      at TransformPluginContext._formatError (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at TransformPluginContext.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64259:14)
+      at async PluginContainer.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m12:47:09 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mE:/Projects/ican-crm/src/realtime/echo.js[39m:1:1
+[33m  1  |  import Echo from 'laravel-echo'
+     |  ^
+  2  |  import Pusher from 'pusher-js'
+  3  |  import { useAuthStore } from '../store/authStore'[39m
+      at TransformPluginContext._formatError (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at TransformPluginContext.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64259:14)
+      at async PluginContainer.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m12:47:09 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mE:/Projects/ican-crm/src/realtime/echo.js[39m:1:1
+[33m  1  |  import Echo from 'laravel-echo'
+     |  ^
+  2  |  import Pusher from 'pusher-js'
+  3  |  import { useAuthStore } from '../store/authStore'[39m
+      at TransformPluginContext._formatError (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at TransformPluginContext.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64259:14)
+      at async PluginContainer.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m12:47:09 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mE:/Projects/ican-crm/src/realtime/echo.js[39m:1:1
+[33m  1  |  import Echo from 'laravel-echo'
+     |  ^
+  2  |  import Pusher from 'pusher-js'
+  3  |  import { useAuthStore } from '../store/authStore'[39m
+      at TransformPluginContext._formatError (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at TransformPluginContext.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64259:14)
+      at async PluginContainer.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m12:55:36 AM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "./AppModal" from "src/shared/components/ui/FormDialog.jsx". Does the file exist?
+[2m12:55:37 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./AppModal" from "src/shared/components/ui/FormDialog.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mE:/Projects/ican-crm/src/shared/components/ui/FormDialog.jsx[39m:1:25
+[33m  15 |    window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+  16 |  }
+  17 |  import { AppModal } from "./AppModal";
+     |                            ^
+  18 |  import { Button } from "./Button";
+  19 |  import { Spinner } from "./Spinner";[39m
+      at TransformPluginContext._formatError (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 3)
+      at async TransformPluginContext.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m12:55:38 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./AppModal" from "src/shared/components/ui/FormDialog.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mE:/Projects/ican-crm/src/shared/components/ui/FormDialog.jsx[39m:1:25
+[33m  15 |    window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+  16 |  }
+  17 |  import { AppModal } from "./AppModal";
+     |                            ^
+  18 |  import { Button } from "./Button";
+  19 |  import { Spinner } from "./Spinner";[39m
+      at TransformPluginContext._formatError (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 3)
+      at async TransformPluginContext.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m12:55:38 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./AppModal" from "src/shared/components/ui/FormDialog.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mE:/Projects/ican-crm/src/shared/components/ui/FormDialog.jsx[39m:1:25
+[33m  15 |    window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+  16 |  }
+  17 |  import { AppModal } from "./AppModal";
+     |                            ^
+  18 |  import { Button } from "./Button";
+  19 |  import { Spinner } from "./Spinner";[39m
+      at TransformPluginContext._formatError (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 3)
+      at async TransformPluginContext.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m12:55:40 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./AppModal" from "src/shared/components/ui/FormDialog.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mE:/Projects/ican-crm/src/shared/components/ui/FormDialog.jsx[39m:1:25
+[33m  15 |    window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+  16 |  }
+  17 |  import { AppModal } from "./AppModal";
+     |                            ^
+  18 |  import { Button } from "./Button";
+  19 |  import { Spinner } from "./Spinner";[39m
+      at TransformPluginContext._formatError (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 3)
+      at async TransformPluginContext.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m12:55:42 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./AppModal" from "src/shared/components/ui/FormDialog.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mE:/Projects/ican-crm/src/shared/components/ui/FormDialog.jsx[39m:1:25
+[33m  15 |    window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+  16 |  }
+  17 |  import { AppModal } from "./AppModal";
+     |                            ^
+  18 |  import { Button } from "./Button";
+  19 |  import { Spinner } from "./Spinner";[39m
+      at TransformPluginContext._formatError (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 3)
+      at async TransformPluginContext.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+[2m12:55:42 AM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "./AppModal" from "src/shared/components/ui/FormDialog.jsx". Does the file exist?
+[2m12:55:42 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./AppModal" from "src/shared/components/ui/FormDialog.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mE:/Projects/ican-crm/src/shared/components/ui/FormDialog.jsx[39m:1:25
+[33m  15 |    window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+  16 |  }
+  17 |  import { AppModal } from "./AppModal";
+     |                            ^
+  18 |  import { Button } from "./Button";
+  19 |  import { Spinner } from "./Spinner";[39m
+      at TransformPluginContext._formatError (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 3)
+      at async TransformPluginContext.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m12:55:42 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./AppModal" from "src/shared/components/ui/FormDialog.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mE:/Projects/ican-crm/src/shared/components/ui/FormDialog.jsx[39m:1:25
+[33m  15 |    window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+  16 |  }
+  17 |  import { AppModal } from "./AppModal";
+     |                            ^
+  18 |  import { Button } from "./Button";
+  19 |  import { Spinner } from "./Spinner";[39m
+      at TransformPluginContext._formatError (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 3)
+      at async TransformPluginContext.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m12:55:42 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./AppModal" from "src/shared/components/ui/FormDialog.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mE:/Projects/ican-crm/src/shared/components/ui/FormDialog.jsx[39m:1:25
+[33m  15 |    window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+  16 |  }
+  17 |  import { AppModal } from "./AppModal";
+     |                            ^
+  18 |  import { Button } from "./Button";
+  19 |  import { Spinner } from "./Spinner";[39m
+      at TransformPluginContext._formatError (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 3)
+      at async TransformPluginContext.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///E:/Projects/ican-crm/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m12:58:32 AM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to load url /src/pages/customers/components/CustomersTrashButton.jsx (resolved id: E:/Projects/ican-crm/src/pages/customers/components/CustomersTrashButton.jsx) in E:/Projects/ican-crm/src/index.css. Does the file exist?
+[2m12:58:40 AM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to load url /src/pages/customers/components/CustomersTrashContent.jsx (resolved id: E:/Projects/ican-crm/src/pages/customers/components/CustomersTrashContent.jsx) in E:/Projects/ican-crm/src/pages/customers/pages/DeletedCustomersPage.jsx. Does the file exist?
+[2m12:58:52 AM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to load url /src/pages/customers/pages/DeletedCustomersPage.jsx (resolved id: E:/Projects/ican-crm/src/pages/customers/pages/DeletedCustomersPage.jsx) in E:/Projects/ican-crm/src/app/router/index.jsx. Does the file exist?

@@ -15,7 +15,14 @@ export { FilterChip } from './FilterChip'
 export { ActiveFilters } from './ActiveFilters'
 export { ColumnFilter } from './ColumnFilter'
 export { ExportButton } from './ExportButton'
+export { PrintButton } from './PrintButton'
 export { ExportDialog } from './ExportDialog'
+export { CopyButton } from './CopyButton'
+export { TableStyleCustomizer } from './TableStyleCustomizer'
+export { DateRangeFilter } from './DateRangeFilter'
+export { DataTableCompareDialog } from './DataTableCompareDialog'
+export { DataTableColumnSplitToggle } from './DataTableColumnSplitToggle'
+export { DataTableColumnSplitDialog } from './DataTableColumnSplitDialog'
 
 // Filter Input Components
 export { TextFilterInput } from './filters/TextFilterInput'
@@ -33,6 +40,8 @@ export { useColumnPreferences } from './hooks/useColumnPreferences'
 export { useLocalStorage } from './hooks/useLocalStorage'
 export { useAdvancedFilters } from './hooks/useAdvancedFilters'
 export { useExport } from './hooks/useExport'
+export { useTableFormatRules } from './hooks/useTableFormatRules'
+export { useTableFormatRulesRealtime } from '../../../realtime'
 
 // Utilities
 export { buildFilterQuery, applyAllFilters } from './utils/buildFilterQuery'
@@ -42,6 +51,19 @@ export {
   getExportFilename,
   buildExportPayload
 } from './utils/exportHelpers'
+export {
+  copyToClipboard,
+  copySelectedRowsToClipboard,
+  copyCellToClipboard,
+} from './utils/clipboardHelpers'
+export {
+  buildFormatRulePayload,
+  buildStylesFromFormatRules,
+  findMatchingFormatRule,
+  sanitizeRuleStyle,
+  serverStyleToLocalStyle,
+} from './utils/tableFormatRules'
+export { tableFormatRulesApi } from './api/tableFormatRulesApi'
 
 // Types and constants
 export {

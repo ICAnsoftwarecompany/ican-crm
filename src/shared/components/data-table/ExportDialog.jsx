@@ -17,11 +17,11 @@ export function ExportDialog({
       title="تصدير البيانات"
       size="md"
       footer={
-        <div className="flex gap-2 justify-end">
-          <Button type="button" variant="outline" onClick={onClose}>
+        <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <Button type="button" variant="outline" onClick={onClose} className="justify-center">
             إلغاء
           </Button>
-          <Button type="button" variant="primary" onClick={() => onExport()}>
+          <Button type="button" variant="primary" onClick={() => onExport()} className="justify-center">
             تصدير
           </Button>
         </div>

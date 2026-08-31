@@ -1,0 +1,111 @@
+{
+  "app": {
+    "name": "ICAN CRM"
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "leads": "العملاء المحتملون",
+    "customers": "العملاء",
+    "conversations": "المحادثات",
+    "campaigns": "الحملات",
+    "tasks": "المهام",
+    "products": "المنتجات والخدمات",
+    "teams": "الفرق",
+    "users": "المستخدمين",
+    "settings": "الإعدادات",
+    "templates": "القوالب"
+  },
+  "actions": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "add": "إضافة",
+    "search": "بحث",
+    "filter": "تصفية",
+    "export": "تصدير",
+    "import": "استيراد",
+    "confirm": "تأكيد",
+    "close": "إغلاق",
+    "back": "رجوع",
+    "next": "التالي",
+    "submit": "إرسال",
+    "logout": "تسجيل الخروج"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "username": "اسم المستخدم",
+    "password": "كلمة المرور",
+    "loginButton": "دخول",
+    "loggingIn": "جارٍ الدخول...",
+    "loginError": "بيانات الدخول غير صحيحة",
+    "welcomeBack": "مرحباً بعودتك",
+    "welcomeSubtitle": "سجّل دخولك للمتابعة"
+  },
+  "status": {
+    "new": "جديد",
+    "contacted": "تواصلنا",
+    "qualified": "مؤهل",
+    "won": "مكسوب",
+    "lost": "خسرنا",
+    "active": "نشط",
+    "inactive": "غير نشط"
+  },
+  "common": {
+    "loading": "جارٍ التحميل...",
+    "error": "حدث خطأ",
+    "noData": "لا توجد بيانات",
+    "retry": "إعادة المحاولة",
+    "language": "اللغة",
+    "darkMode": "الوضع الداكن",
+    "lightMode": "الوضع الفاتح"
+  },
+  "leads": {
+    "title": "العملاء المحتملون",
+    "newLead": "عميل محتمل جديد",
+    "noLeads": "لا يوجد عملاء محتملون",
+    "noLeadsDesc": "ابدأ بإضافة عميل محتمل جديد",
+    "name": "الاسم",
+    "phone": "الهاتف",
+    "source": "المصدر",
+    "assignedTo": "مسند إلى",
+    "createdAt": "تاريخ الإنشاء",
+    "tableView": "عرض جدول",
+    "kanbanView": "عرض كانبان",
+    "created": "تم إنشاء العميل المحتمل بنجاح"
+  },
+  "customers": {
+    "title": "العملاء",
+    "newCustomer": "عميل جديد",
+    "noCustomers": "لا يوجد عملاء",
+    "noCustomersDesc": "ابدأ بإضافة عميل جديد",
+    "name": "الاسم",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "created": "تم إنشاء العميل بنجاح",
+    "deleted": "تم حذف العميل",
+    "restored": "تم استرجاع العميل",
+    "active": "العملاء النشطون",
+    "trash": "سلة المحذوفات"
+  },
+  "conversations": {
+    "title": "المحادثات",
+    "noConversations": "لا توجد محادثات",
+    "typeMessage": "اكتب رسالة...",
+    "send": "إرسال",
+    "all": "الكل",
+    "whatsapp": "واتساب",
+    "messenger": "ماسنجر",
+    "facebook": "فيسبوك"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "totalLeads": "إجمالي العملاء المحتملين",
+    "converted": "معدل التحويل",
+    "activeConversations": "المحادثات النشطة",
+    "campaignReach": "وصول الحملات",
+    "today": "اليوم",
+    "thisWeek": "هذا الأسبوع",
+    "thisMonth": "هذا الشهر"
+  }
+}

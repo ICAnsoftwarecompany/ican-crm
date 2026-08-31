@@ -4,16 +4,85 @@ import { Button } from '../../shared/components/ui/Button'
 import { PageToolbar } from '../../shared/components/data/PageToolbar'
 import { Plus } from 'lucide-react'
 
-const SAMPLE_CUSTOMERS = Array.from({ length: 45 }, (_, i) => ({
-  id: i + 1,
-  name: `عميل ${i + 1}`,
-  email: `customer${i + 1}@example.com`,
-  phone: `+966${5 + Math.floor(Math.random() * 5)}${Math.random().toString().slice(2, 11)}`,
-  company: `شركة ${Math.floor(i / 5) + 1}`,
-  type: i % 2 === 0 ? 'customer' : 'lead',
-  status: ['نشط', 'معلق', 'مغلق'][Math.floor(Math.random() * 3)],
-  createdAt: new Date(2026, 6, Math.floor(Math.random() * 15) + 1).toLocaleDateString('ar-SA'),
-}))
+const FIRST_NAMES = [
+  'أحمد',
+  'محمد',
+  'محمود',
+  'علي',
+  'مصطفى',
+  'خالد',
+  'عمر',
+  'يوسف',
+  'سارة',
+  'منى',
+  'ريم',
+  'نور',
+  'هدى',
+  'ياسمين',
+  'فاطمة',
+  'مريم',
+]
+
+const LAST_NAMES = [
+  'حسن',
+  'إبراهيم',
+  'عبدالله',
+  'السيد',
+  'النجار',
+  'الشافعي',
+  'المنصور',
+  'العطار',
+  'مراد',
+  'سالم',
+  'فؤاد',
+  'جمال',
+]
+
+const COMPANIES = [
+  'شركة النور للتجارة',
+  'دلتا ماركتنج',
+  'أفق العقارية',
+  'رواد التقنية',
+  'المدينة الطبية',
+  'سما للخدمات',
+  'بيكسل للدعاية',
+  'النخبة للاستشارات',
+  'كود هاوس',
+  'جرين لاين',
+  'الشرق للتوزيع',
+  'براند ستوديو',
+]
+
+const CITIES = ['القاهرة', 'الجيزة', 'الإسكندرية', 'المنصورة', 'طنطا', 'الزقازيق', 'أسيوط', 'الغردقة']
+const SOURCES = ['Facebook Ads', 'WhatsApp', 'Messenger', 'Website', 'Referral', 'Lead Form']
+const SALES_REPS = ['أحمد سمير', 'مها خالد', 'كريم عادل', 'دينا فؤاد', 'حسام علي', 'ندى شريف']
+const STATUSES = ['نشط', 'معلق', 'مغلق', 'قيد المتابعة']
+
+const makePhone = (index) => {
+  const suffix = String(100000000 + index * 7919).slice(0, 9)
+  return `+20${suffix}`
+}
+
+const SAMPLE_CUSTOMERS = Array.from({ length: 300 }, (_, i) => {
+  const firstName = FIRST_NAMES[i % FIRST_NAMES.length]
+  const lastName = LAST_NAMES[(i * 3) % LAST_NAMES.length]
+  const id = i + 1
+
+  return {
+    id,
+    name: `${firstName} ${lastName}`,
+    email: `customer.${id}@ican-demo.com`,
+    phone: makePhone(id),
+    company: COMPANIES[i % COMPANIES.length],
+    city: CITIES[(i * 2) % CITIES.length],
+    source: SOURCES[(i * 5) % SOURCES.length],
+    assignedTo: SALES_REPS[(i * 7) % SALES_REPS.length],
+    type: i % 3 === 0 ? 'lead' : 'customer',
+    status: STATUSES[(i * 4 + Math.floor(i / 11)) % STATUSES.length],
+    dealValue: 1500 + (i % 35) * 725,
+    createdAt: new Date(2026, 6, (i % 22) + 1).toLocaleDateString('ar-EG'),
+  }
+})
 
 const COLUMNS = [
   {
@@ -24,6 +93,7 @@ const COLUMNS = [
     sortable: true,
     visible: true,
     width: 'w-32',
+    enableFilter: false,
   },
   {
     id: 'email',
@@ -33,6 +103,7 @@ const COLUMNS = [
     sortable: true,
     visible: true,
     width: 'w-40',
+    enableFilter: false,
   },
   {
     id: 'phone',
@@ -42,11 +113,39 @@ const COLUMNS = [
     sortable: false,
     visible: true,
     width: 'w-32',
+    enableFilter: false,
   },
   {
     id: 'company',
     header: 'الشركة',
     accessor: 'company',
+    searchable: true,
+    sortable: true,
+    visible: true,
+    width: 'w-28',
+  },
+  {
+    id: 'city',
+    header: 'المدينة',
+    accessor: 'city',
+    searchable: true,
+    sortable: true,
+    visible: true,
+    width: 'w-24',
+  },
+  {
+    id: 'source',
+    header: 'المصدر',
+    accessor: 'source',
+    searchable: true,
+    sortable: true,
+    visible: true,
+    width: 'w-28',
+  },
+  {
+    id: 'assignedTo',
+    header: 'المندوب',
+    accessor: 'assignedTo',
     searchable: true,
     sortable: true,
     visible: true,
@@ -87,6 +186,20 @@ const COLUMNS = [
     ),
   },
   {
+    id: 'dealValue',
+    header: 'قيمة الصفقة',
+    accessor: 'dealValue',
+    searchable: false,
+    sortable: true,
+    visible: true,
+    width: 'w-28',
+    render: (row) => (
+      <span className="font-bold text-blue-700">
+        {Number(row.dealValue).toLocaleString('ar-EG')} ج.م
+      </span>
+    ),
+  },
+  {
     id: 'createdAt',
     header: 'تاريخ الإنشاء',
     accessor: 'createdAt',
@@ -103,7 +216,7 @@ export function DataTableDemo() {
 
   return (
     <div>
-      <PageToolbar title="عرض توضيحي - جدول البيانات" description="اختبر مكون DataTable مع الفرز والبحث والتصفيح والأعمدة">
+      <PageToolbar title="عرض توضيحي - جدول البيانات" description="اختبر مكون DataTable مع 300 عميل، الفرز، البحث، التصفيح، الفلاتر، والأعمدة">
         <Button variant="primary" className="gap-2">
           <Plus size={16} />
           إضافة عميل
@@ -119,6 +232,7 @@ export function DataTableDemo() {
           emptyMessage="لا توجد عملاء"
           enableSorting={true}
           enableFiltering={true}
+          enableGlobalSearch={true}
           enablePagination={true}
           enableColumnVisibility={true}
           showToolbar={true}

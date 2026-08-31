@@ -20,7 +20,7 @@ export function usePagination(filteredRows) {
   }, [filteredRows, pagination.pageSize])
 
   const setPageIndex = (index) => {
-    const maxIndex = pageCount - 1
+    const maxIndex = Math.max(pageCount - 1, 0)
     setPagination((prev) => ({
       ...prev,
       pageIndex: Math.min(Math.max(index, 0), maxIndex),

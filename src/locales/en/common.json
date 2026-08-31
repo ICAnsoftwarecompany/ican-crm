@@ -1,0 +1,111 @@
+{
+  "app": {
+    "name": "ICAN CRM"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "leads": "Leads",
+    "customers": "Customers",
+    "conversations": "Conversations",
+    "campaigns": "Campaigns",
+    "tasks": "Tasks",
+    "products": "Products & Services",
+    "teams": "Teams",
+    "users": "Users",
+    "templates": "Templates",
+    "settings": "Settings"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "confirm": "Confirm",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": "Login",
+    "username": "Username",
+    "password": "Password",
+    "loginButton": "Sign In",
+    "loggingIn": "Signing in...",
+    "loginError": "Invalid credentials",
+    "welcomeBack": "Welcome Back",
+    "welcomeSubtitle": "Sign in to continue"
+  },
+  "status": {
+    "new": "New",
+    "contacted": "Contacted",
+    "qualified": "Qualified",
+    "won": "Won",
+    "lost": "Lost",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "noData": "No data available",
+    "retry": "Retry",
+    "language": "Language",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode"
+  },
+  "leads": {
+    "title": "Leads",
+    "newLead": "New Lead",
+    "noLeads": "No leads found",
+    "noLeadsDesc": "Start by adding a new lead",
+    "name": "Name",
+    "phone": "Phone",
+    "source": "Source",
+    "assignedTo": "Assigned To",
+    "createdAt": "Created At",
+    "tableView": "Table View",
+    "kanbanView": "Kanban View",
+    "created": "Lead created successfully"
+  },
+  "customers": {
+    "title": "Customers",
+    "newCustomer": "New Customer",
+    "noCustomers": "No customers found",
+    "noCustomersDesc": "Start by adding a new customer",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "created": "Customer created successfully",
+    "deleted": "Customer deleted",
+    "restored": "Customer restored",
+    "active": "Active Customers",
+    "trash": "Trash"
+  },
+  "conversations": {
+    "title": "Conversations",
+    "noConversations": "No conversations",
+    "typeMessage": "Type a message...",
+    "send": "Send",
+    "all": "All",
+    "whatsapp": "WhatsApp",
+    "messenger": "Messenger",
+    "facebook": "Facebook"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalLeads": "Total Leads",
+    "converted": "Conversion Rate",
+    "activeConversations": "Active Conversations",
+    "campaignReach": "Campaign Reach",
+    "today": "Today",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month"
+  }
+}

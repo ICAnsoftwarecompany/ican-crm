@@ -66,9 +66,9 @@ export function prepareExportData(rows, columns, visibleColumnsOnly = true) {
 }
 
 /**
- * Generate and download an Excel file
+ * Generate and download an Excel file with styling
  */
-export function generateExcelFile(rows, columns, filename = 'export.xlsx', visibleColumnsOnly = true) {
+export function generateExcelFile(rows, columns, filename = 'export.xlsx', visibleColumnsOnly = true, styles = {}) {
   const { data, headers } = prepareExportData(rows, columns, visibleColumnsOnly)
 
   if (data.length === 0) {
@@ -85,11 +85,83 @@ export function generateExcelFile(rows, columns, filename = 'export.xlsx', visib
       header: headers.map(h => h.id),
     })
 
-    // Set header row with better formatting
-    sheet['!A1'] = { v: headers[0].header, t: 's', s: { bold: true, fill: { fgColor: { rgb: 'D3D3D3' } } } }
+    // Apply styling if available
+    const { rowStyles = {}, cellStyles = {}, columnStyles = {}, tableStyle = {} } = styles || {}
+
+    // Helper function to convert hex color to RGB for XLSX
+    const hexToRgb = (hex) => {
+      if (!hex || hex === '#FFFFFF') return 'FFFFFF'
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+      if (!result) return 'FFFFFF'
+      return `${result[1]}${result[2]}${result[3]}`.toUpperCase()
+    }
+
+    // Apply column styles and header styling
     headers.forEach((h, idx) => {
-      const cell = String.fromCharCode(65 + idx) + '1'
-      sheet[cell] = { v: h.header, t: 's' }
+      const cellRef = String.fromCharCode(65 + idx) + '1'
+      const colStyle = columnStyles[h.id] || {}
+      
+      sheet[cellRef] = {
+        v: h.header,
+        t: 's',
+        s: {
+          font: { bold: true, color: { rgb: 'FFFFFF' } },
+          fill: { fgColor: { rgb: 'D3D3D3' } },
+          alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+        }
+      }
+    })
+
+    // Apply cell and row styles to data cells
+    let rowIndex = 2
+    Object.keys(data).forEach((dataRowIdx) => {
+      const rowNum = parseInt(dataRowIdx)
+      const displayRowIndex = rowNum + 1 // Excel uses 1-based indexing after header
+      
+      // Get the original row key (we need to map back to the data row)
+      // Since we don't have direct mapping, we'll use rowNum as rowKey placeholder
+      const rowKey = String(rowNum)
+
+      headers.forEach((h, colIdx) => {
+        const cellRef = String.fromCharCode(65 + colIdx) + displayRowIndex
+        const cellKey = `${rowKey}::${h.id}`
+        
+        const cellStyle = cellStyles[cellKey] || {}
+        const rowStyle = rowStyles[rowKey] || {}
+        const colStyle = columnStyles[h.id] || {}
+
+        // Resolve styles with priority: cell > row > column > table > default
+        const bgColor = cellStyle.bgColor || rowStyle.bgColor || colStyle.bgColor || tableStyle.bgColor || '#FFFFFF'
+        const textColor = cellStyle.textColor || rowStyle.textColor || colStyle.textColor || tableStyle.textColor || '#000000'
+        const fontSize = parseInt(cellStyle.fontSize || rowStyle.fontSize || colStyle.fontSize || tableStyle.fontSize || '14')
+        const fontWeight = cellStyle.fontWeight || rowStyle.fontWeight || colStyle.fontWeight || tableStyle.fontWeight || '400'
+        const fontFamily = cellStyle.fontFamily || rowStyle.fontFamily || colStyle.fontFamily || tableStyle.fontFamily || 'Calibri'
+
+        const cellStyle_obj = sheet[cellRef]?.s || {}
+
+        sheet[cellRef] = {
+          ...sheet[cellRef],
+          s: {
+            ...cellStyle_obj,
+            font: {
+              ...cellStyle_obj.font,
+              bold: fontWeight === '700' || fontWeight === '600',
+              color: { rgb: hexToRgb(textColor) },
+              sz: Math.max(8, Math.min(72, fontSize)),
+              name: fontFamily.split(',')[0],
+            },
+            fill: {
+              fgColor: { rgb: hexToRgb(bgColor) },
+              patternType: 'solid',
+            },
+            alignment: {
+              horizontal: 'right',
+              vertical: 'center',
+              wrapText: true,
+            },
+          }
+        }
+      })
     })
 
     // Auto-size columns based on header width

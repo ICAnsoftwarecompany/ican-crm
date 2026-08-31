@@ -14,41 +14,37 @@ export function DataTableFooter({
   canPrevPage,
   canNextPage,
 }) {
-  if (pageCount <= 1 && filteredRowCount <= PAGE_SIZE_OPTIONS[0]) {
-    return null
-  }
-
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4">
-      <div className="text-sm text-[var(--text-muted)] font-arabic">
+    <div className="flex flex-col items-stretch justify-between gap-3 py-4 sm:flex-row sm:items-center">
+      <div className="text-center text-sm text-[var(--text-muted)] font-arabic sm:text-start">
         {filteredRowCount === 0 ? 'لا توجد نتائج' : `عرض ${pageIndex * pageSize + 1} إلى ${Math.min((pageIndex + 1) * pageSize, filteredRowCount)} من ${filteredRowCount}`}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-center gap-2">
         <Select
           value={pageSize.toString()}
-          onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
+          onChange={(value) => onPageSizeChange?.(Number(value))}
           options={PAGE_SIZE_OPTIONS.map((size) => ({
             value: size.toString(),
             label: `${size} لكل صفحة`,
           }))}
-          className="w-32"
+          className="w-full sm:w-32"
         />
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:flex">
         <Button
           variant="outline"
           size="sm"
           onClick={onPrevPage}
           disabled={!canPrevPage}
-          className="gap-1"
+          className="justify-center gap-1"
         >
           <ChevronLeft size={16} />
           السابق
         </Button>
 
-        <div className="px-3 py-1 text-sm text-[var(--text)] font-arabic">
+        <div className="whitespace-nowrap px-2 py-1 text-center text-sm text-[var(--text)] font-arabic">
           {pageIndex + 1} من {pageCount}
         </div>
 
@@ -57,7 +53,7 @@ export function DataTableFooter({
           size="sm"
           onClick={onNextPage}
           disabled={!canNextPage}
-          className="gap-1"
+          className="justify-center gap-1"
         >
           التالي
           <ChevronRight size={16} />

@@ -6,7 +6,8 @@ export const ColumnDefinition = {
   searchable: Boolean,  // Include in global search
   sortable: Boolean,    // Allow sorting
   visible: Boolean,     // Initially visible
-  width: String,        // Tailwind width class
+  width: String,        // Tailwind width class or pixel value
+  pinned: Boolean,      // Initially pinned to left
   render: Function,     // Optional custom render (row) => ReactNode
 }
 
@@ -27,5 +28,7 @@ export const DataTableState = {
   sorting: SortingState,
   pagination: PaginationState,
   columnVisibility: Object, // { columnId: boolean, ... }
+  pinnedColumns: Object,    // { columnId: boolean, ... }
+  columnWidths: Object,     // { columnId: widthPx, ... }
   globalFilter: String,  // Global search term
 }

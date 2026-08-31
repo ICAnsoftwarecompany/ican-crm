@@ -1,5 +1,5 @@
 export const DEFAULT_PAGE_SIZE = 10
-export const PAGE_SIZE_OPTIONS = [10, 20, 50, 100]
+export const PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 1000]
 export const DEFAULT_SORT_DIRECTION = 'asc'
 export const STORAGE_KEY_PREFIX = 'datatable-'
 export const STORAGE_VERSION = 1

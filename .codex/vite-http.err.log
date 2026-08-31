@@ -1,0 +1,117 @@
+[2m4:04:03 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/tenant/tasks?per_page=40&api_password=TenantSecret[39m
+AggregateError [ETIMEDOUT]: 
+    at internalConnectMultiple (node:net:1121:18)
+    at afterConnectMultiple (node:net:1688:7)
+[2m4:04:03 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/tenant/meta/messenger/conversations?per_page=30&api_password=TenantSecret[39m
+AggregateError [ETIMEDOUT]: 
+    at internalConnectMultiple (node:net:1121:18)
+    at afterConnectMultiple (node:net:1688:7)
+[2m4:04:03 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/tenant/customers/data?per_page=50&api_password=TenantSecret[39m
+AggregateError [ETIMEDOUT]: 
+    at internalConnectMultiple (node:net:1121:18)
+    at afterConnectMultiple (node:net:1688:7)
+[2m4:04:03 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/tenant/definitions/status?type=lead&api_password=TenantSecret[39m
+AggregateError [ETIMEDOUT]: 
+    at internalConnectMultiple (node:net:1121:18)
+    at afterConnectMultiple (node:net:1688:7)
+[2m4:04:03 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/tenant/definitions/tags?api_password=TenantSecret[39m
+AggregateError [ETIMEDOUT]: 
+    at internalConnectMultiple (node:net:1121:18)
+    at afterConnectMultiple (node:net:1688:7)
+[2m4:04:05 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/tenant/customers/data?per_page=50&api_password=TenantSecret[39m
+AggregateError [ETIMEDOUT]: 
+    at internalConnectMultiple (node:net:1121:18)
+    at afterConnectMultiple (node:net:1688:7)
+[2m4:04:05 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/tenant/meta/messenger/conversations?per_page=100&api_password=TenantSecret[39m
+AggregateError [ETIMEDOUT]: 
+    at internalConnectMultiple (node:net:1121:18)
+    at afterConnectMultiple (node:net:1688:7)
+[2m4:04:05 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/tenant/definitions/status?api_password=TenantSecret[39m
+AggregateError [ETIMEDOUT]: 
+    at internalConnectMultiple (node:net:1121:18)
+    at afterConnectMultiple (node:net:1688:7)
+[2m4:04:05 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/tenant/customers/data?api_password=TenantSecret[39m
+AggregateError [ETIMEDOUT]: 
+    at internalConnectMultiple (node:net:1121:18)
+    at afterConnectMultiple (node:net:1688:7)
+[2m4:04:05 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/tenant/definitions/tags?api_password=TenantSecret[39m
+AggregateError [ETIMEDOUT]: 
+    at internalConnectMultiple (node:net:1121:18)
+    at afterConnectMultiple (node:net:1688:7)
+[2m4:04:05 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/tenant/definitions/status?type=lead&api_password=TenantSecret[39m
+AggregateError [ETIMEDOUT]: 
+    at internalConnectMultiple (node:net:1121:18)
+    at afterConnectMultiple (node:net:1688:7)
+[2m5:59:05 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/tenant/meta/messenger/conversations?per_page=100&api_password=TenantSecret[39m
+AggregateError [ETIMEDOUT]: 
+    at internalConnectMultiple (node:net:1121:18)
+    at afterConnectMultiple (node:net:1688:7)
+[2m5:21:34 AM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to load url /src/shared/components/data-table/ColumnVisibilityToggle.jsx (resolved id: E:/Projects/ican-crm/src/shared/components/data-table/ColumnVisibilityToggle.jsx) in E:/Projects/ican-crm/src/index.css. Does the file exist?
+[2m5:21:34 AM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to load url /src/shared/components/data-table/ColumnVisibilityToggle.jsx (resolved id: E:/Projects/ican-crm/src/shared/components/data-table/ColumnVisibilityToggle.jsx) in E:/Projects/ican-crm/src/index.css. Does the file exist?
+[2m5:24:03 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: E:\Projects\ican-crm\src\shared\components\data-table\ColumnVisibilityToggle.jsx: Unexpected token (150:8)
+
+[0m [90m 148 |[31m         {canReorder [33m?[31m (
+ [90m 149 |[31m
+[31m[1m>[22m[31m[90m 150 |[31m         ) [33m:[31m [36mnull[31m}
+ [90m     |[31m         [31m[1m^[22m[31m
+ [90m 151 |[31m
+ [90m 152 |[31m         [33m<[31m[33mdiv[31m className[33m=[31m[32m"flex-1 space-y-2 overflow-y-auto p-3"[31m[33m>[31m
+ [90m 153 |[31m           {configurableColumns[33m.[31mmap((col) [33m=>[31m ([0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mE:/Projects/ican-crm/src/shared/components/data-table/ColumnVisibilityToggle.jsx[39m:150:8
+[33m  148|          {canReorder ? (
+  149|  
+  150|          ) : null}
+     |          ^
+  151|  
+  152|          <div className="flex-1 space-y-2 overflow-y-auto p-3">[39m
+      at constructor (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:6616:19)
+      at JSXParserMixin.unexpected (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:6636:16)
+      at JSXParserMixin.parseParenAndDistinguishExpression (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:11709:12)
+      at JSXParserMixin.parseExprAtom (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:11348:23)
+      at JSXParserMixin.parseExprAtom (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:4776:20)
+      at JSXParserMixin.parseExprSubscripts (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10848:21)
+      at E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10817:39
+      at JSXParserMixin.allowInAnd (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:12443:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10817:17)
+      at JSXParserMixin.parseConditional (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10908:30)
+      at JSXParserMixin.parseMaybeConditional (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10902:17)
+      at JSXParserMixin.parseMaybeAssign (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10848:21)
+      at JSXParserMixin.parseExpressionBase (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10801:23)
+      at E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10797:39
+      at JSXParserMixin.allowInAnd (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:12443:12)
+      at JSXParserMixin.parseExpression (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10797:17)
+      at JSXParserMixin.jsxParseExpressionContainer (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:4644:31)
+      at JSXParserMixin.jsxParseElementAt (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:4723:36)
+      at JSXParserMixin.jsxParseElement (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:4761:17)
+      at JSXParserMixin.parseExprAtom (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:4771:19)
+      at JSXParserMixin.parseExprSubscripts (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10848:21)
+      at E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10817:39
+      at JSXParserMixin.allowInAnd (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:12443:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10817:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:12510:17)
+      at JSXParserMixin.parseExprListItem (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:12192:18)
+      at JSXParserMixin.parseCallExpressionArguments (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:11269:22)
+      at JSXParserMixin.parseCoverCallAndAsyncArrowHead (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:11203:29)
+      at JSXParserMixin.parseSubscript (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:11137:19)
+      at JSXParserMixin.parseSubscripts (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:11111:19)
+      at JSXParserMixin.parseExprSubscripts (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:11102:17)
+      at JSXParserMixin.parseUpdate (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (E:\Projects\ican-crm\node_modules\@babel\parser\lib\index.js:10848:21)

@@ -14,9 +14,9 @@ export function useDataTable({
   enablePagination = true,
   enableColumnVisibility = true,
 }) {
-  const { sorting, setSortColumn, sortRows } = useSorting(initialSort)
+  const { sorting, setSortColumn, clearSort, sortRows } = useSorting(initialSort)
   const { globalFilter, setGlobalFilter, filteredRows } = useFiltering(data, columns)
-  const { columnVisibility, toggleColumnVisibility, visibleColumns } = useColumnPreferences(
+  const { columnVisibility, toggleColumnVisibility, resetColumnVisibility, visibleColumns } = useColumnPreferences(
     columns,
     tableId
   )
@@ -49,6 +49,7 @@ export function useDataTable({
     // Sorting
     sorting,
     setSortColumn: enableSorting ? setSortColumn : undefined,
+    clearSort: enableSorting ? clearSort : undefined,
 
     // Filtering
     globalFilter,
@@ -68,5 +69,6 @@ export function useDataTable({
     // Column visibility
     columnVisibility,
     toggleColumnVisibility: enableColumnVisibility ? toggleColumnVisibility : undefined,
+    resetColumnVisibility: enableColumnVisibility ? resetColumnVisibility : undefined,
   }
 }

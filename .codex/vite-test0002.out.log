@@ -1,0 +1,39 @@
+
+> ican-crm@0.1.0 dev
+> vite --port 3000 --host 0.0.0.0 --port 3000
+
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m782[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m3000[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://26.62.223.149:[1m3000[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.5:[1m3000[22m/[39m
+[2m12:46:56 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/products/ProductsPage.jsx, /src/shared/components/data-table/DataTableBody.jsx, /src/shared/components/data-table/DataTable.jsx[22m
+[2m12:46:57 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/products/ProductsPage.jsx, /src/shared/components/data-table/DataTableBody.jsx, /src/shared/components/data-table/DataTable.jsx[22m
+[2m12:47:09 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/products/ProductsPage.jsx, /src/shared/components/data-table/DataTableBody.jsx, /src/shared/components/data-table/DataTable.jsx[22m
+[2m12:47:12 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/products/ProductsPage.jsx, /src/shared/components/data-table/DataTableBody.jsx, /src/shared/components/data-table/DataTable.jsx[22m
+[2m12:47:14 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/products/ProductsPage.jsx, /src/shared/components/data-table/DataTableBody.jsx, /src/shared/components/data-table/DataTable.jsx[22m
+[2m12:47:15 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/CustomersPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/products/ProductsPage.jsx, /src/shared/components/data-table/DataTableBody.jsx, /src/shared/components/data-table/DataTable.jsx[22m
+[2m12:55:35 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/pages/customization/CustomerStatusesTab.jsx, /src/index.css[22m
+[2m12:55:42 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/pages/customization/CustomerStatusesTab.jsx[22m
+[2m12:56:00 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/pages/customization/CustomerStatusesTab.jsx, /src/index.css[22m
+[2m12:56:04 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mvite.config.js.timestamp-1784843764591-1261cdb0e8ef5.mjs[22m
+[2m1:01:32 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/pages/customization/CustomerTagsTab.jsx, /src/index.css[22m
+[2m12:48:05 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m12:48:16 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m12:48:21 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m12:48:28 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m12:52:05 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersStats.jsx, /src/index.css[22m
+[2m12:54:36 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersPageHeader.jsx, /src/index.css[22m
+[2m12:54:36 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/CustomersPage.jsx, /src/index.css[22m
+[2m12:57:09 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/pages/DeletedCustomersPage.jsx, /src/index.css[22m
+[2m12:57:09 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersPageHeader.jsx, /src/index.css[22m
+[2m12:58:32 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersTrashButton.jsx, /src/index.css[22m
+[2m12:58:37 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersPageHeader.jsx, /src/index.css[22m
+[2m12:58:37 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/customers/pages/TrashCustomer/CustomersTrashButton.jsx[22m
+[2m12:58:39 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/components/CustomersTrashContent.jsx, /src/index.css[22m
+[2m12:58:41 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/pages/DeletedCustomersPage.jsx, /src/index.css[22m
+[2m12:58:42 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/customers/pages/TrashCustomer/CustomersTrashContent.jsx[22m
+[2m12:58:42 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/pages/DeletedCustomersPage.jsx, /src/index.css[22m
+[2m12:58:51 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/customers/pages/DeletedCustomersPage.jsx, /src/index.css[22m
+[2m12:58:54 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/customers/pages/TrashCustomer/DeletedCustomersPage.jsx[22m

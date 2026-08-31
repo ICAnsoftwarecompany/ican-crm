@@ -1,0 +1,20 @@
+
+> ican-crm@0.1.0 dev:https
+> vite --host 0.0.0.0 --port 3000
+
+Re-optimizing dependencies because vite config has changed
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m1932[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttps://localhost:[1m3000[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttps://26.62.223.149:[1m3000[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttps://192.168.1.6:[1m3000[22m/[39m
+[2m10:18:08 PM[22m [36m[1m[vite][22m[39m [32mvite.config.js changed, restarting server...[39m
+[2m10:18:08 PM[22m [36m[1m[vite][22m[39m [32mvite.config.js changed, restarting server...[39m
+[2m10:18:08 PM[22m [36m[1m[vite][22m[39m server restarted.
+[2m10:18:12 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/App.jsx, /src/realtime/TenantNotificationsRealtime.jsx[22m
+[2m10:18:14 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/pages/statusBoard/CustomerStatusBoardPage.jsx, /src/pages/customers/pages/CustomerLeadDetailsPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/customers/CustomersPage.jsx, /src/pages/products/ProductsPage/ProductCategoriesPage.jsx, /src/pages/products/ProductsPage/ProductsPage.jsx[22m
+[2m10:18:14 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/customers/pages/statusBoard/CustomerStatusBoardPage.jsx, /src/pages/customers/pages/CustomerLeadDetailsPage.jsx, /src/pages/playground/DataTableDemo.jsx, /src/pages/customers/CustomersPage.jsx, /src/pages/products/ProductsPage/ProductCategoriesPage.jsx, /src/pages/products/ProductsPage/ProductsPage.jsx, /src/pages/customers/pages/SalesTeams/CustomerTeamsPage.jsx[22m
+[2m10:18:17 PM[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+[2m10:18:17 PM[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+[2m10:18:18 PM[22m [36m[1m[vite][22m[39m server restarted.

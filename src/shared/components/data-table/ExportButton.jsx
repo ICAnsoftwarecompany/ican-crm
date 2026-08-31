@@ -12,7 +12,7 @@ export function ExportButton({ onClick, disabled = false }) {
       title="Export to Excel"
     >
       <Download size={16} />
-      Export Excel
+       Excel
     </Button>
   )
 }
