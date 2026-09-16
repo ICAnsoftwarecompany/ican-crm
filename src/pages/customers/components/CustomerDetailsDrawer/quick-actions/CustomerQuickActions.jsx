@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { cn } from '../../../../../shared/utils/cn'
-import { CallQuickAction } from '../tabs/TimeLineTap/CallsTap/CallAction/CallQuickAction'
+import { CallQuickAction, MeetingQuickAction } from '../../../../../features/call-meetings'
 import { EmailQuickAction } from './EmailQuickAction'
 import { FollowUpQuickAction } from './FollowUpQuickAction'
-import { MeetingQuickAction } from '../tabs/TimeLineTap/MeetingTap/MeetingAction/MeetingQuickAction'
+import { AddInterestQuickAction } from './interests'
 import { MessengerQuickAction } from './MessengerQuickAction'
 import { SmsQuickAction } from './SmsQuickAction'
+import { StatusQuickAction } from './StatusQuickAction'
 import { WhatsappQuickAction } from './WhatsappQuickAction'
 
-const STORAGE_KEY = 'customer-details-quick-actions-order'
+const STORAGE_KEY = 'customer-details-quick-actions-order:v2'
 const LONG_PRESS_MS = 280
 
 const ACTIONS = [
@@ -19,7 +20,28 @@ const ACTIONS = [
       <FollowUpQuickAction
         customer={props.customer}
         currentStatus={props.currentStatus}
+        statuses={props.statuses}
         onFollowUpAdded={props.onFollowUpAdded}
+      />
+    ),
+  },
+  {
+    id: 'status',
+    render: (props) => (
+      <StatusQuickAction
+        customer={props.customer}
+        currentStatus={props.currentStatus}
+        statuses={props.statuses}
+        onChanged={props.onStatusChanged}
+      />
+    ),
+  },
+  {
+    id: 'interest',
+    render: (props) => (
+      <AddInterestQuickAction
+        customer={props.customer}
+        onInterestChanged={props.onInterestChanged}
       />
     ),
   },
@@ -52,13 +74,30 @@ const ACTIONS = [
 function ensureFollowUpBeforeCall(order) {
   const nextOrder = order.filter(Boolean)
   const followUpIndex = nextOrder.indexOf('follow-up')
+  const statusIndex = nextOrder.indexOf('status')
   const callIndex = nextOrder.indexOf('call')
 
-  if (followUpIndex === -1 || callIndex === -1 || followUpIndex < callIndex) return nextOrder
+  if (followUpIndex !== -1 && statusIndex !== -1 && followUpIndex > statusIndex) {
+    const [followUp] = nextOrder.splice(followUpIndex, 1)
+    const nextStatusIndex = nextOrder.indexOf('status')
+    nextOrder.splice(Math.max(nextStatusIndex, 0), 0, followUp)
+  }
 
-  const [followUp] = nextOrder.splice(followUpIndex, 1)
+  const nextFollowUpIndex = nextOrder.indexOf('follow-up')
+  const nextStatusIndex = nextOrder.indexOf('status')
   const nextCallIndex = nextOrder.indexOf('call')
-  nextOrder.splice(Math.max(nextCallIndex, 0), 0, followUp)
+
+  if (nextStatusIndex !== -1 && nextCallIndex !== -1 && nextStatusIndex > nextCallIndex) {
+    const [status] = nextOrder.splice(nextStatusIndex, 1)
+    const updatedCallIndex = nextOrder.indexOf('call')
+    nextOrder.splice(Math.max(updatedCallIndex, 0), 0, status)
+  }
+
+  if (nextFollowUpIndex === -1 || nextCallIndex === -1 || nextFollowUpIndex < nextCallIndex) return nextOrder
+
+  const [followUp] = nextOrder.splice(nextFollowUpIndex, 1)
+  const updatedCallIndex = nextOrder.indexOf('call')
+  nextOrder.splice(Math.max(updatedCallIndex, 0), 0, followUp)
   return nextOrder
 }
 
@@ -101,7 +140,17 @@ function moveItem(items, sourceId, targetId) {
   return nextItems
 }
 
-export function CustomerQuickActions({ customer, currentStatus, onTimelineAction, onOpenChat, onFollowUpAdded }) {
+export function CustomerQuickActions({
+  customer,
+  currentStatus,
+  statuses = [],
+  onTimelineAction,
+  onOpenChat,
+  onFollowUpAdded,
+  onStatusChanged,
+  onInterestChanged,
+  className,
+}) {
   const longPressTimerRef = useRef(null)
   const recentDragTimerRef = useRef(null)
   const [order, setOrder] = useState(getStoredOrder)
@@ -168,7 +217,7 @@ export function CustomerQuickActions({ customer, currentStatus, onTimelineAction
   }
 
   return (
-    <div className="-mx-1 mt-3 overflow-x-auto px-1 pb-1">
+    <div className={cn('scrollbar-quick-actions -mx-1 mt-3 overflow-x-auto px-1 pb-0.5', className)}>
       <div className="flex min-w-max items-center gap-1">
         {orderedActions.map((action) => (
           <div
@@ -193,7 +242,16 @@ export function CustomerQuickActions({ customer, currentStatus, onTimelineAction
               draggingId && draggingId !== action.id && 'cursor-grabbing'
             )}
           >
-            {action.render({ customer, currentStatus, onTimelineAction, onOpenChat, onFollowUpAdded })}
+            {action.render({
+              customer,
+              currentStatus,
+              statuses,
+              onTimelineAction,
+              onOpenChat,
+              onFollowUpAdded,
+              onStatusChanged,
+              onInterestChanged,
+            })}
           </div>
         ))}
       </div>

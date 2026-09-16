@@ -5,10 +5,11 @@
   "nav": {
     "dashboard": "Dashboard",
     "leads": "Leads",
-    "customers": "Customers",
+    "customers": "Leads Center",
     "conversations": "Conversations",
     "campaigns": "Campaigns",
     "tasks": "Tasks",
+    "teamChat": "Team Chat",
     "products": "Products & Services",
     "teams": "Teams",
     "users": "Users",
@@ -75,17 +76,19 @@
     "created": "Lead created successfully"
   },
   "customers": {
-    "title": "Customers",
+    "title": "Leads Center",
     "newCustomer": "New Customer",
-    "noCustomers": "No customers found",
-    "noCustomersDesc": "Start by adding a new customer",
+    "noCustomers": "No leads found",
+    "freshLead": "Fresh lead",
+    "noFreshLeads": "No fresh leads found",
+    "noCustomersDesc": "Start by adding a new lead",
     "name": "Name",
     "phone": "Phone",
     "email": "Email",
     "created": "Customer created successfully",
     "deleted": "Customer deleted",
     "restored": "Customer restored",
-    "active": "Active Customers",
+    "active": "Active Leads",
     "trash": "Trash"
   },
   "conversations": {

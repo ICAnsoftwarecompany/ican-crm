@@ -3,6 +3,9 @@ import { PanelLeftClose, PanelLeftOpen, UsersRound } from 'lucide-react'
 import { cn } from '../../../shared/utils/cn'
 import { customerNavigationGroups, customerSettingsItem } from '../constants/customerNavigation'
 
+export const CUSTOMERS_SIDEBAR_BULK_ACTIONS_SLOT_ID = 'customers-bulk-actions-rail-slot'
+export const CUSTOMERS_BULK_ACTIONS_PIN_MODE_EVENT = 'customers:bulk-actions-pin-mode'
+
 function CustomersNavItem({ item, onNavigate, collapsed }) {
   const Icon = item.icon
 
@@ -54,7 +57,8 @@ export function CustomersSidebar({
   collapsed = false,
   onToggleCollapse,
 }) {
-  const ToggleIcon = collapsed ? PanelLeftOpen : PanelLeftClose
+  const effectiveCollapsed = collapsed
+  const ToggleIcon = effectiveCollapsed ? PanelLeftOpen : PanelLeftClose
 
   return (
     <aside
@@ -62,18 +66,18 @@ export function CustomersSidebar({
         'hidden shrink-0 border-e border-[var(--border)] bg-[var(--surface)] lg:flex',
         'sticky top-[4.5rem] h-[calc(100vh-4.5rem)] self-start flex-col overflow-hidden',
         'transition-[width] duration-200 ease-out',
-        collapsed ? 'w-16' : 'w-[260px]',
+        effectiveCollapsed ? 'w-16' : 'w-[260px]',
         className
       )}
       aria-label="قائمة العملاء"
     >
-      <div className={cn('border-b border-[var(--border)] p-3', collapsed && 'px-2')}>
-        <div className={cn('flex items-center gap-3', collapsed && 'flex-col justify-center gap-2')}>
+      <div className={cn('border-b border-[var(--border)] p-3', effectiveCollapsed && 'px-2')}>
+        <div className={cn('flex items-center gap-3', effectiveCollapsed && 'flex-col justify-center gap-2')}>
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#E8F9FA] text-[#007A80]">
             <UsersRound size={18} />
           </div>
 
-          {!collapsed && (
+          {!effectiveCollapsed && (
             <div className="min-w-0 flex-1">
               <h2 className="truncate text-sm font-bold text-[var(--text)]">إدارة العملاء</h2>
               <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">
@@ -91,8 +95,8 @@ export function CustomersSidebar({
                 'text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text)]',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00C2CB]',
               )}
-              aria-label={collapsed ? 'فتح قائمة العملاء' : 'غلق قائمة العملاء'}
-              title={collapsed ? 'فتح قائمة العملاء' : 'غلق قائمة العملاء'}
+              aria-label={effectiveCollapsed ? 'فتح قائمة العملاء' : 'غلق قائمة العملاء'}
+              title={effectiveCollapsed ? 'فتح قائمة العملاء' : 'غلق قائمة العملاء'}
             >
               <ToggleIcon size={16} />
             </button>
@@ -100,10 +104,10 @@ export function CustomersSidebar({
         </div>
       </div>
 
-      <nav className={cn('flex-1 overflow-y-auto scrollbar-thin', collapsed ? 'space-y-3 px-2 py-14' : 'space-y-5 p-3')}>
+      <nav className={cn('flex-1 overflow-y-auto scrollbar-thin', effectiveCollapsed ? 'space-y-3 px-2 py-14' : 'space-y-5 p-3')}>
         {customerNavigationGroups.map((group) => (
           <section key={group.id} className="space-y-1">
-            {!collapsed && (
+            {!effectiveCollapsed && (
               <h3 className="px-2 text-[11px] font-bold text-[var(--text-light)]">
                 {group.label}
               </h3>
@@ -113,18 +117,18 @@ export function CustomersSidebar({
                 key={item.to}
                 item={item}
                 onNavigate={onNavigate}
-                collapsed={collapsed}
+                collapsed={effectiveCollapsed}
               />
             ))}
           </section>
         ))}
       </nav>
 
-      <div className={cn('border-t border-[var(--border)] p-3', collapsed && 'px-2')}>
+      <div className={cn('border-t border-[var(--border)] p-3', effectiveCollapsed && 'px-2')}>
         <CustomersNavItem
           item={customerSettingsItem}
           onNavigate={onNavigate}
-          collapsed={collapsed}
+          collapsed={effectiveCollapsed}
         />
       </div>
     </aside>

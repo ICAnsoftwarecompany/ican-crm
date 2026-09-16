@@ -5,7 +5,7 @@ export function FollowUpCustomersPage() {
   return (
     <CustomerPlaceholderPage
       title="يحتاجون متابعة"
-      description="قائمة العملاء الذين يحتاجون إلى تواصل أو إجراء تالٍ من فريق المبيعات."
+      description="قائمة العملاء المحتملين الذين يحتاجون إلى تواصل أو إجراء تال من فريق المبيعات."
       icon={BellRing}
     />
   )

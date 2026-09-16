@@ -9,12 +9,13 @@ export function useDataTable({
   columns = [],
   tableId = 'default',
   initialSort = null,
+  sortFirstDirection = 'asc',
   enableSorting = true,
   enableFiltering = true,
   enablePagination = true,
   enableColumnVisibility = true,
 }) {
-  const { sorting, setSortColumn, clearSort, sortRows } = useSorting(initialSort)
+  const { sorting, setSortColumn, clearSort, sortRows } = useSorting(initialSort, sortFirstDirection)
   const { globalFilter, setGlobalFilter, filteredRows } = useFiltering(data, columns)
   const { columnVisibility, toggleColumnVisibility, resetColumnVisibility, visibleColumns } = useColumnPreferences(
     columns,

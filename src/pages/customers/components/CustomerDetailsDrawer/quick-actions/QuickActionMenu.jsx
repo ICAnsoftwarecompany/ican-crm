@@ -74,7 +74,7 @@ export function QuickActionMenu({ icon: Icon, label, accentClassName, alert = fa
       {open && menuPosition && typeof document !== 'undefined' && createPortal(
         <div
           ref={menuRef}
-          className="fixed z-[120] w-52 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1.5 shadow-2xl"
+          className="fixed z-[160000] w-52 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1.5 shadow-2xl"
           style={menuPosition}
         >
           {options.map((option) => {

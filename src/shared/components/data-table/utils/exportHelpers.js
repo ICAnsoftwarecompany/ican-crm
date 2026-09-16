@@ -14,7 +14,7 @@ function formatCellValue(value) {
   }
 
   if (value instanceof Date) {
-    return value.toLocaleDateString('ar-SA')
+    return value.toLocaleDateString()
   }
 
   if (typeof value === 'object') {

@@ -1,0 +1,782 @@
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { cn } from '../../utils/cn'
+import { buildStylesFromFormatRules } from './utils/tableFormatRules'
+import { copyCellToClipboard } from './utils/clipboardHelpers'
+import { buildSplitRowsLayout } from './utils/splitRowsLayout'
+
+const BG_COLORS = ['#FFFFFF', '#FEF3C7', '#DBEAFE', '#DCFCE7', '#FCE7F3', '#F3F4F6', '#E2E8F0']
+const TEXT_COLORS = ['#0F172A', '#1D4ED8', '#047857', '#B45309', '#BE185D', '#374151', '#7C3AED']
+const FONT_SIZES = [12, 13, 14, 16, 18]
+const FONT_FAMILIES = [
+  { label: 'Default', value: 'inherit' },
+  { label: 'Cairo', value: 'Cairo, sans-serif' },
+  { label: 'Tajawal', value: 'Tajawal, sans-serif' },
+  { label: 'Monospace', value: "'Courier New', monospace" },
+]
+
+const noop = () => {}
+
+function getFormatRowKey(row, index) {
+  if (row?.__rowKey !== undefined && row?.__rowKey !== null) return String(row.__rowKey)
+  if (row?.id !== undefined && row?.id !== null) return String(row.id)
+  if (row?._id !== undefined && row?._id !== null) return String(row._id)
+  if (row?.uuid !== undefined && row?.uuid !== null) return String(row.uuid)
+  return `row-${index}`
+}
+
+function isInteractiveElement(element) {
+  return Boolean(
+    element?.closest?.(
+      'button, a, input, textarea, select, label, summary, [role="button"], [data-no-cell-copy="true"]'
+    )
+  )
+}
+
+export function DataTableBody({
+  rows,
+  columns,
+  tableId,
+  pageStart = 0,
+  selectedRowKeys,
+  onToggleRowSelection,
+  tableTypography,
+  tableStyle = {},
+  formatVisibility = 'personal',
+  formatRules = null,
+  bulkRowStyleAction,
+  disableFormatContextMenuWhenSelection = false,
+  onRowClick,
+  onRowDoubleClick,
+  rowClassName,
+  splitRowsEnabled = false,
+  splitRowsConfig = null,
+  splitRowsLayout = null,
+}) {
+  const [contextMenu, setContextMenu] = useState(null)
+  const lastBulkActionIdRef = useRef(null)
+  const [copiedCellKey, setCopiedCellKey] = useState(null)
+  const copyTimeoutRef = useRef(null)
+  const remoteFormatRules = useMemo(() => {
+    const styles = buildStylesFromFormatRules(
+      formatRules?.visibleRules || [],
+      rows,
+      columns,
+      getFormatRowKey
+    )
+
+    return {
+      ...styles,
+      saveFormatRule: formatRules?.saveFormatRule || noop,
+      deleteFormatRule: formatRules?.deleteFormatRule || noop,
+    }
+  }, [columns, formatRules?.deleteFormatRule, formatRules?.saveFormatRule, formatRules?.visibleRules, rows])
+
+  const getStickyCellStyle = (col, backgroundColor) => {
+    if (!col._isPinned) return {}
+
+    return {
+      position: 'sticky',
+      insetInlineStart: `${Number(col._stickyOffset) || 0}px`,
+      zIndex: 10,
+      backgroundColor: backgroundColor || 'var(--surface)',
+      boxShadow: '1px 0 0 var(--border)',
+    }
+  }
+
+  const findRowByKey = (rowKey) => {
+    return rows.find((row, index) => {
+      const currentKey = row.__rowKey || String(row.id || index)
+      return currentKey === rowKey
+    })
+  }
+
+  useEffect(() => {
+    const closeMenu = () => setContextMenu(null)
+    document.addEventListener('click', closeMenu)
+    return () => document.removeEventListener('click', closeMenu)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!bulkRowStyleAction || !selectedRowKeys?.size) return
+    if (lastBulkActionIdRef.current === bulkRowStyleAction.id) return
+
+    lastBulkActionIdRef.current = bulkRowStyleAction.id
+
+    selectedRowKeys.forEach((rowKey) => {
+      const row = findRowByKey(rowKey)
+      if (!row) return
+
+      if (bulkRowStyleAction.clear) {
+        remoteFormatRules.deleteFormatRule({
+          scope: 'row',
+          row,
+        })
+        return
+      }
+
+      const nextStyle = {
+        ...(remoteFormatRules.rowStyles[rowKey] || {}),
+        ...bulkRowStyleAction.patch,
+      }
+      remoteFormatRules.saveFormatRule({
+        scope: 'row',
+        row,
+        style: nextStyle,
+      })
+    })
+  }, [bulkRowStyleAction, selectedRowKeys, remoteFormatRules])
+
+  const handleCellClick = async (event, value, rowKey, colId) => {
+    if (isInteractiveElement(event.target)) return
+
+    event.stopPropagation()
+
+    if (event.detail === 1) {
+      const cellKey = `${rowKey}::${colId}`
+      const success = await copyCellToClipboard(value)
+      if (success) {
+        setCopiedCellKey(cellKey)
+        if (copyTimeoutRef.current) {
+          clearTimeout(copyTimeoutRef.current)
+        }
+        copyTimeoutRef.current = setTimeout(() => {
+          setCopiedCellKey(null)
+        }, 1500)
+      }
+    }
+  }
+
+  const handleRowClickCapture = (event, rowKey, isSelected) => {
+    if (!(event.ctrlKey || event.metaKey)) return
+    if (event.button !== 0) return
+    if (isInteractiveElement(event.target)) return
+
+    event.preventDefault()
+    event.stopPropagation()
+    onToggleRowSelection?.(rowKey, !isSelected)
+  }
+
+  const handleRowDoubleClick = (event, row) => {
+    if (event.ctrlKey || event.metaKey) {
+      event.preventDefault()
+      event.stopPropagation()
+      onRowDoubleClick?.(row, event)
+      return
+    }
+
+    onRowDoubleClick?.(row, event)
+  }
+
+  const getSafeMenuPosition = (x, y) => {
+    if (typeof window === 'undefined') return { x, y }
+
+    const menuWidth = 288
+    const menuHeight = 420
+    const margin = 8
+
+    let safeX = x
+    let safeY = y
+
+    if (safeX + menuWidth > window.innerWidth - margin) {
+      safeX = window.innerWidth - menuWidth - margin
+    }
+    if (safeY + menuHeight > window.innerHeight - margin) {
+      safeY = window.innerHeight - menuHeight - margin
+    }
+
+    safeX = Math.max(margin, safeX)
+    safeY = Math.max(margin, safeY)
+
+    return { x: safeX, y: safeY }
+  }
+
+  const applyRowStyle = (rowKey, patch) => {
+    const nextStyle = {
+      ...(remoteFormatRules.rowStyles[rowKey] || {}),
+      ...patch,
+    }
+    remoteFormatRules.saveFormatRule({
+      scope: 'row',
+      row: findRowByKey(rowKey),
+      style: nextStyle,
+    })
+  }
+
+  const applyCellStyle = (rowKey, colId, patch) => {
+    const key = `${rowKey}::${colId}`
+    const nextStyle = {
+      ...(remoteFormatRules.cellStyles[key] || {}),
+      ...patch,
+    }
+    remoteFormatRules.saveFormatRule({
+      scope: 'cell',
+      row: findRowByKey(rowKey),
+      columnId: colId,
+      style: nextStyle,
+    })
+  }
+
+  const applyColumnStyle = (colId, patch) => {
+    const nextStyle = {
+      ...(remoteFormatRules.columnStyles[colId] || {}),
+      ...patch,
+    }
+    remoteFormatRules.saveFormatRule({
+      scope: 'column',
+      columnId: colId,
+      style: nextStyle,
+    })
+  }
+
+  const applyStyleByScope = (scope, rowKey, colId, patch) => {
+    if (scope === 'cell') applyCellStyle(rowKey, colId, patch)
+    if (scope === 'row') applyRowStyle(rowKey, patch)
+    if (scope === 'column') applyColumnStyle(colId, patch)
+  }
+
+  const clearStylesByScope = (scope, rowKey, colId) => {
+    if (scope === 'cell') {
+      remoteFormatRules.deleteFormatRule({
+        scope: 'cell',
+        row: findRowByKey(rowKey),
+        columnId: colId,
+      })
+    }
+
+    if (scope === 'row') {
+      remoteFormatRules.deleteFormatRule({
+        scope: 'row',
+        row: findRowByKey(rowKey),
+      })
+    }
+
+    if (scope === 'column') {
+      remoteFormatRules.deleteFormatRule({
+        scope: 'column',
+        columnId: colId,
+      })
+    }
+  }
+
+  const splitLayout = useMemo(
+    () => splitRowsLayout || buildSplitRowsLayout(columns, splitRowsConfig),
+    [columns, splitRowsConfig, splitRowsLayout]
+  )
+
+  const shouldUseSplitRows = Boolean(splitRowsEnabled && splitLayout.secondaryColumns.length > 0)
+
+  const renderSelectionCell = (col, rowKey, isSelected, rowStyle, rowSpan = 1) => (
+    <td
+      key={col.id}
+      rowSpan={rowSpan}
+      className={cn('border-e border-[#D7E2E6] px-2 py-3 text-center align-middle', col._isPinned && 'sticky')}
+      style={getStickyCellStyle(col, rowStyle.bgColor || (isSelected ? '#EAF6FF' : 'var(--surface)'))}
+    >
+      <input
+        type="checkbox"
+        checked={Boolean(isSelected)}
+        onChange={(e) => onToggleRowSelection?.(rowKey, e.target.checked)}
+        onClick={(e) => e.stopPropagation()}
+        className="h-4 w-4 rounded border-slate-300 cursor-pointer"
+        title="تحديد الصف"
+      />
+    </td>
+  )
+
+  const renderSplitPlaceholderCell = (slotId, rowKey, slot, isSelected, rowStyle, isSubRow = false) => {
+    const fallbackBg = isSubRow
+      ? (isSelected ? '#F3FAFF' : '#F8FAFC')
+      : (isSelected ? '#EAF6FF' : '#FFFFFF')
+
+    return (
+      <td
+        key={`split-empty-${rowKey}-${slot}-${slotId}`}
+        className={cn(
+          'border-e border-[#D7E2E6] px-3 py-2.5 align-middle',
+          isSubRow ? 'border-t bg-[#F8FAFC]' : 'bg-white'
+        )}
+        style={{
+          backgroundColor: rowStyle.bgColor || fallbackBg,
+        }}
+        aria-hidden="true"
+      />
+    )
+  }
+
+  const renderDataCell = ({
+    row,
+    col,
+    rowKey,
+    serialNumber,
+    isSelected,
+    rowStyle,
+    colSpan = 1,
+    rowSpan = 1,
+    isSubRow = false,
+  }) => {
+    if (col.id === '__select') {
+      return renderSelectionCell(col, rowKey, isSelected, rowStyle, rowSpan)
+    }
+
+    const rawValue = col.render ? col.render(row) : getCellValue(row, col.accessor)
+    const cellKey = `${rowKey}::${col.id}`
+    const cellStyle = remoteFormatRules.cellStyles[cellKey] || {}
+    const colStyle = remoteFormatRules.columnStyles[col.id] || {}
+    const excelLabel = col._excelLabel || ''
+    const hoverHint = `${excelLabel}${serialNumber} - ${col.header}`
+    const resolvedTextColor = cellStyle.textColor || rowStyle.textColor || colStyle.textColor || tableStyle.textColor || undefined
+    const resolvedBgColor = cellStyle.bgColor || rowStyle.bgColor || colStyle.bgColor || tableStyle.bgColor || undefined
+    const resolvedFontSize =
+      cellStyle.fontSize || rowStyle.fontSize || colStyle.fontSize || tableStyle.fontSize || tableTypography?.fontSize || undefined
+    const resolvedFontFamily =
+      cellStyle.fontFamily || rowStyle.fontFamily || colStyle.fontFamily || tableStyle.fontFamily || tableTypography?.fontFamily || undefined
+    const resolvedFontWeight =
+      cellStyle.fontWeight || rowStyle.fontWeight || colStyle.fontWeight || tableStyle.fontWeight || tableTypography?.fontWeight || undefined
+    const canStickCell = col._isPinned && (!shouldUseSplitRows || ['__select', '__serial'].includes(col.id))
+    const stickyBackground = resolvedBgColor || (isSelected ? '#EAF6FF' : 'var(--surface)')
+    const fallbackBackground = isSubRow ? (isSelected ? '#F3FAFF' : '#F8FAFC') : undefined
+    const contentClassName = cn(
+      shouldUseSplitRows
+        ? 'block min-w-0 flex-1 max-w-none cursor-pointer whitespace-normal break-words transition-colors [&>*]:min-w-0 [&>*]:w-full [&>*]:max-w-none'
+        : 'inline-block max-w-full cursor-pointer whitespace-normal break-words transition-colors',
+      copiedCellKey === `${rowKey}::${col.id}` && 'bg-green-100'
+    )
+    const contentNode = (
+      <div
+        className={contentClassName}
+        onClick={(e) => handleCellClick(e, rawValue, rowKey, col.id)}
+      >
+        {rawValue}
+      </div>
+    )
+
+    return (
+      <td
+        key={col.id}
+        colSpan={colSpan}
+        rowSpan={rowSpan}
+        className={cn(
+          'border-e border-[#D7E2E6] px-3 py-2.5 text-sm text-[var(--text)] text-start relative group align-top',
+          canStickCell && 'sticky',
+          resolvedTextColor && 'dt-text-override',
+          shouldUseSplitRows && !['__select', '__serial'].includes(col.id) && 'min-w-0',
+          isSubRow && 'border-t border-[#DDECEF]'
+        )}
+        style={{
+          ...getStickyCellStyle(canStickCell ? col : { ...col, _isPinned: false }, stickyBackground),
+          backgroundColor: resolvedBgColor || (canStickCell ? stickyBackground : fallbackBackground),
+          color: resolvedTextColor,
+          '--dt-text-color': resolvedTextColor,
+          fontSize: resolvedFontSize,
+          fontFamily: resolvedFontFamily,
+          fontWeight: resolvedFontWeight,
+        }}
+        onContextMenu={(event) => {
+          if (disableFormatContextMenuWhenSelection && selectedRowKeys?.size > 0) {
+            event.preventDefault()
+            return
+          }
+
+          event.preventDefault()
+          const safe = getSafeMenuPosition(event.clientX, event.clientY)
+          setContextMenu({
+            x: safe.x,
+            y: safe.y,
+            rowKey,
+            colId: col.id,
+            scope: 'cell',
+          })
+        }}
+      >
+        {shouldUseSplitRows && !['__select', '__serial'].includes(col.id) ? (
+          <div className="flex min-w-0 items-start gap-2">
+            <div className="mt-0.5 max-w-[34%] shrink-0 whitespace-normal break-words rounded-full bg-white/75 px-2 py-0.5 text-[10px] font-black text-[#007A80] ring-1 ring-[#D7EEF0]">
+              {col.header}
+            </div>
+            {contentNode}
+          </div>
+        ) : (
+          contentNode
+        )}
+        <div className="pointer-events-none absolute top-1 end-2 text-[10px] text-[var(--text-muted)] opacity-0 group-hover:opacity-25 transition-opacity duration-200">
+          {hoverHint}
+        </div>
+      </td>
+    )
+  }
+
+  if (!rows || rows.length === 0) {
+    return (
+      <tbody>
+        <tr>
+          <td colSpan={columns.length} className="px-4 py-8 text-center text-[var(--text-muted)]">
+            لا توجد بيانات
+          </td>
+        </tr>
+      </tbody>
+    )
+  }
+
+  return (
+    <>
+      <style>{`
+        .dt-text-override,
+        .dt-text-override * {
+          color: var(--dt-text-color) !important;
+        }
+        .dt-split-record-main > td {
+          border-top: 1px solid #8FE4EA;
+          background-clip: padding-box;
+        }
+        .dt-split-record-main > td[rowspan] {
+          border-bottom: 3px solid #E8F3F5;
+        }
+        .dt-split-record-main > td:first-child {
+          border-inline-start: 1px solid #8FE4EA;
+          border-start-start-radius: 8px;
+          border-end-start-radius: 8px;
+          box-shadow: inset 3px 0 0 #00AEB8;
+        }
+        .dt-split-record-main > td:last-child {
+          border-inline-end: 1px solid #8FE4EA;
+          border-start-end-radius: 8px;
+        }
+        .dt-split-record-sub > td {
+          border-bottom: 3px solid #E8F3F5;
+          background-clip: padding-box;
+        }
+        .dt-split-record-sub > td:last-child {
+          border-inline-end: 1px solid #8FE4EA;
+          border-end-end-radius: 8px;
+        }
+      `}</style>
+      <tbody className="bg-white">
+      {rows.map((row, rowIndex) => {
+          const rowKey = row.__rowKey || String(row.id || rowIndex)
+          const isSelected = selectedRowKeys?.has(rowKey)
+          const serialNumber = pageStart + rowIndex + 1
+          const rowStyle = remoteFormatRules.rowStyles[rowKey] || {}
+
+          if (shouldUseSplitRows) {
+            const sharedRowProps = {
+              onClickCapture: (event) => handleRowClickCapture(event, rowKey, Boolean(isSelected)),
+              onClick: () => onRowClick?.(row),
+              onDoubleClick: (event) => handleRowDoubleClick(event, row),
+            }
+
+            return (
+              <Fragment key={rowKey}>
+                <tr
+                  key={`${rowKey}-main`}
+                  className={cn(
+                    'dt-split-record-main border-b-0 transition-colors hover:bg-[var(--surface-2)]',
+                    isSelected && 'bg-[#EAF6FF]',
+                    (onRowClick || onRowDoubleClick) && 'cursor-pointer',
+                    rowClassName?.(row)
+                  )}
+                  style={{ backgroundColor: rowStyle.bgColor || undefined }}
+                  {...sharedRowProps}
+                >
+                  {splitLayout.fixedColumns.map((col) => renderDataCell({
+                    row,
+                    col,
+                    rowKey,
+                    serialNumber,
+                    isSelected,
+                    rowStyle,
+                    rowSpan: 2,
+                  }))}
+                  {splitLayout.slots.map((slot) => (
+                    slot.primaryColumn
+                      ? renderDataCell({
+                        row,
+                        col: slot.primaryColumn,
+                        rowKey,
+                        serialNumber,
+                        isSelected,
+                        rowStyle,
+                      })
+                      : renderSplitPlaceholderCell(slot.id, rowKey, 'main', isSelected, rowStyle)
+                  ))}
+                </tr>
+                <tr
+                  key={`${rowKey}-sub`}
+                  className={cn(
+                    'dt-split-record-sub transition-colors hover:bg-[#F1FAFB]',
+                    isSelected && 'bg-[#F3FAFF]',
+                    (onRowClick || onRowDoubleClick) && 'cursor-pointer',
+                    rowClassName?.(row)
+                  )}
+                  style={{ backgroundColor: rowStyle.bgColor || undefined }}
+                  {...sharedRowProps}
+                >
+                  {splitLayout.slots.map((slot) => (
+                    slot.secondaryColumn
+                      ? renderDataCell({
+                        row,
+                        col: slot.secondaryColumn,
+                        rowKey,
+                        serialNumber,
+                        isSelected,
+                        rowStyle,
+                        isSubRow: true,
+                      })
+                      : renderSplitPlaceholderCell(slot.id, rowKey, 'sub', isSelected, rowStyle, true)
+                  ))}
+                </tr>
+              </Fragment>
+            )
+          }
+
+          return (
+            <tr
+              key={rowKey}
+              className={cn(
+                'border-b border-[var(--border)] hover:bg-[var(--surface-2)] transition-colors',
+                isSelected && 'bg-[#EAF6FF]',
+                (onRowClick || onRowDoubleClick) && 'cursor-pointer',
+                rowClassName?.(row)
+              )}
+              style={{
+                backgroundColor: rowStyle.bgColor || undefined,
+              }}
+              onClickCapture={(event) => handleRowClickCapture(event, rowKey, Boolean(isSelected))}
+              onClick={() => onRowClick?.(row)}
+              onDoubleClick={(event) => handleRowDoubleClick(event, row)}
+            >
+          {columns.map((col) => {
+            if (col.id === '__select') {
+              return (
+                <td
+                  key={col.id}
+                  className={cn('border-e border-[#D7E2E6] px-2 py-3 text-center', col._isPinned && 'sticky')}
+                  style={getStickyCellStyle(col, rowStyle.bgColor || (isSelected ? '#EAF6FF' : 'var(--surface)'))}
+                >
+                  <input
+                    type="checkbox"
+                    checked={Boolean(isSelected)}
+                    onChange={(e) => onToggleRowSelection?.(rowKey, e.target.checked)}
+                    onClick={(e) => e.stopPropagation()}
+                    className="h-4 w-4 rounded border-slate-300 cursor-pointer"
+                    title="تحديد العميل"
+                  />
+                </td>
+              )
+            }
+
+            const rawValue = col.render ? col.render(row) : getCellValue(row, col.accessor)
+            const cellKey = `${rowKey}::${col.id}`
+            const cellStyle = remoteFormatRules.cellStyles[cellKey] || {}
+            const colStyle = remoteFormatRules.columnStyles[col.id] || {}
+            const excelLabel = col._excelLabel || ''
+            const hoverHint = `${excelLabel}${serialNumber} - ${col.header}`
+            const resolvedTextColor = cellStyle.textColor || rowStyle.textColor || colStyle.textColor || tableStyle.textColor || undefined
+            const resolvedBgColor = cellStyle.bgColor || rowStyle.bgColor || colStyle.bgColor || tableStyle.bgColor || undefined
+            const resolvedFontSize =
+              cellStyle.fontSize || rowStyle.fontSize || colStyle.fontSize || tableStyle.fontSize || tableTypography?.fontSize || undefined
+            const resolvedFontFamily =
+              cellStyle.fontFamily || rowStyle.fontFamily || colStyle.fontFamily || tableStyle.fontFamily || tableTypography?.fontFamily || undefined
+            const resolvedFontWeight =
+              cellStyle.fontWeight || rowStyle.fontWeight || colStyle.fontWeight || tableStyle.fontWeight || tableTypography?.fontWeight || undefined
+
+            const stickyBackground = resolvedBgColor || (isSelected ? '#EAF6FF' : 'var(--surface)')
+
+            return (
+              <td
+                key={col.id}
+                className={cn(
+                  'border-e border-[#D7E2E6] px-3 py-2.5 text-sm text-[var(--text)] text-start relative group',
+                  col._isPinned && 'sticky',
+                  resolvedTextColor && 'dt-text-override'
+                )}
+                style={{
+                  ...getStickyCellStyle(col, stickyBackground),
+                  backgroundColor: resolvedBgColor || (col._isPinned ? stickyBackground : undefined),
+                  color: resolvedTextColor,
+                  '--dt-text-color': resolvedTextColor,
+                  fontSize: resolvedFontSize,
+                  fontFamily: resolvedFontFamily,
+                  fontWeight: resolvedFontWeight,
+                }}
+                onContextMenu={(event) => {
+                  if (disableFormatContextMenuWhenSelection && selectedRowKeys?.size > 0) {
+                    event.preventDefault()
+                    return
+                  }
+
+                  event.preventDefault()
+                  const safe = getSafeMenuPosition(event.clientX, event.clientY)
+                  setContextMenu({
+                    x: safe.x,
+                    y: safe.y,
+                    rowKey,
+                    colId: col.id,
+                    scope: 'cell',
+                  })
+                }}
+              >
+                {col.render ? (
+                  <div
+                    className={cn(
+                      'inline-block max-w-full cursor-pointer whitespace-normal break-words transition-colors',
+                      copiedCellKey === `${rowKey}::${col.id}` && 'bg-green-100'
+                    )}
+                    onClick={(e) => handleCellClick(e, rawValue, rowKey, col.id)}
+                  >
+                    {rawValue}
+                  </div>
+                ) : (
+                  <div
+                    className={cn(
+                      'inline-block max-w-full cursor-pointer whitespace-normal break-words transition-colors',
+                      copiedCellKey === `${rowKey}::${col.id}` && 'bg-green-100'
+                    )}
+                    onClick={(e) => handleCellClick(e, rawValue, rowKey, col.id)}
+                  >
+                    {rawValue}
+                  </div>
+                )}
+                <div className="pointer-events-none absolute top-1 end-2 text-[10px] text-[var(--text-muted)] opacity-0 group-hover:opacity-25 transition-opacity duration-200">
+                  {hoverHint}
+                </div>
+              </td>
+            )
+          })}
+            </tr>
+          )
+      })}
+      </tbody>
+
+      {contextMenu && typeof document !== 'undefined' && createPortal(
+        <div
+          className="fixed z-[100] max-h-[min(520px,calc(100vh-1rem))] w-72 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-xl border border-slate-200 bg-white p-3 shadow-2xl"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="text-xs text-slate-500 font-medium">تخصيص الخلية / الصف / العمود</div>
+
+          <div className="flex gap-1 bg-slate-50 p-1 rounded-lg">
+            {['cell', 'row', 'column'].map((scope) => (
+              <button
+                key={scope}
+                type="button"
+                className={cn(
+                  'flex-1 text-xs px-2 py-1 rounded',
+                  contextMenu.scope === scope ? 'bg-white shadow text-slate-800' : 'text-slate-500 hover:text-slate-700'
+                )}
+                onClick={() => setContextMenu((prev) => ({ ...prev, scope }))}
+              >
+                {scope === 'cell' ? 'خلية' : scope === 'row' ? 'صف' : 'عمود'}
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-1">
+            <div className="text-[11px] text-slate-600">الخلفية</div>
+            <div className="flex flex-wrap gap-1">
+              {BG_COLORS.map((color) => (
+                <button
+                  key={`cell-bg-${color}`}
+                  type="button"
+                  className="w-5 h-5 rounded border border-slate-300"
+                  style={{ backgroundColor: color }}
+                  onClick={() => applyStyleByScope(contextMenu.scope, contextMenu.rowKey, contextMenu.colId, { bgColor: color })}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <div className="text-[11px] text-slate-600">لون الخط</div>
+            <div className="flex flex-wrap gap-1">
+              {TEXT_COLORS.map((color) => (
+                <button
+                  key={`cell-text-${color}`}
+                  type="button"
+                  className="w-5 h-5 rounded border border-slate-300"
+                  style={{ backgroundColor: color }}
+                  onClick={() => applyStyleByScope(contextMenu.scope, contextMenu.rowKey, contextMenu.colId, { textColor: color })}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <div className="text-[11px] text-slate-600">حجم الخط</div>
+            <div className="flex flex-wrap gap-1">
+              {FONT_SIZES.map((size) => (
+                <button
+                  key={`font-size-${size}`}
+                  type="button"
+                  className="px-2 py-1 rounded border border-slate-300 text-[11px]"
+                  onClick={() => applyStyleByScope(contextMenu.scope, contextMenu.rowKey, contextMenu.colId, { fontSize: `${size}px` })}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <div className="text-[11px] text-slate-600">نوع الخط</div>
+            <select
+              className="w-full h-8 rounded border border-slate-300 text-xs px-2"
+              onChange={(e) => applyStyleByScope(contextMenu.scope, contextMenu.rowKey, contextMenu.colId, { fontFamily: e.target.value || undefined })}
+              value=""
+            >
+              <option value="">اختيار...</option>
+              {FONT_FAMILIES.map((font) => (
+                <option key={font.label} value={font.value}>{font.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1">
+            <div className="text-[11px] text-slate-600">وزن الخط</div>
+            <div className="flex flex-wrap gap-1">
+              {[
+                { label: 'N', value: '400' },
+                { label: 'M', value: '500' },
+                { label: 'S', value: '600' },
+                { label: 'B', value: '700' },
+              ].map((weight) => (
+                <button
+                  key={`font-weight-${weight.value}`}
+                  type="button"
+                  className="px-2 py-1 rounded border border-slate-300 text-[11px]"
+                  onClick={() => applyStyleByScope(contextMenu.scope, contextMenu.rowKey, contextMenu.colId, { fontWeight: weight.value })}
+                >
+                  {weight.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="button"
+              className="text-xs text-red-600 hover:text-red-700"
+              onClick={() => clearStylesByScope(contextMenu.scope, contextMenu.rowKey, contextMenu.colId)}
+            >
+              مسح تنسيق هذا النطاق
+            </button>
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
+  )
+}
+
+function getCellValue(row, accessor) {
+  return accessor.split('.').reduce((current, prop) => current?.[prop], row)
+}

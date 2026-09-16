@@ -19,7 +19,7 @@ export function CustomerProposalTemplatesPage() {
   return (
     <div className="space-y-6" dir="rtl">
       <PageToolbar title="قوالب عروض الأسعار" description="القوالب هي نقطة البداية للـ Proposal، والـ Builder يحولها لتجربة تحرير مرئية.">
-        <Link to="/customers/proposals">
+        <Link to="/LeadsCenter/proposals">
           <Button variant="outline">
             <ArrowRight size={16} />
             العروض

@@ -1,23 +1,29 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import {
   CalendarDays,
   CalendarPlus,
+  BadgeInfo,
   Check,
   CheckSquare,
   ChevronDown,
   Clock3,
   ExternalLink,
   FileText,
-  Home,
+  Heart,
   Mail,
   MoreHorizontal,
   Paperclip,
   Pencil,
+  PhoneCall,
+  Sparkles,
   Tag,
   UserCheck,
   UsersRound,
+  Video,
   X,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -42,21 +48,26 @@ import { CalendarTab } from './tabs/CalendarTab'
 import { EmailsTab } from './tabs/EmailsTab'
 import { FilesTab } from './tabs/FilesTab'
 import { HomeTab } from './tabs/HomeTab'
+import { InterestsTab } from './tabs/InterestsTab'
 import { NotesTab } from './tabs/NotesTab'
 import { TasksTab } from './tabs/TasksTab'
 import { TimelineTab } from './tabs/TimeLineTap/TimelineTab'
+import { CallsActionTab, MeetingsActionTab } from '../../../../features/call-meetings'
 
-const DRAWER_TABS_ORDER_KEY = 'customer-details-drawer-tabs-order'
+const DRAWER_TABS_ORDER_KEY = 'customer-details-drawer-tabs-order:v4'
 const DRAWER_TABS_LONG_PRESS_MS = 280
 
 const DRAWER_TABS = [
-  { id: 'home', label: 'Home', icon: Home },
+  { id: 'home', label: 'بيانات العميل', icon: BadgeInfo, fixed: true, iconOnly: true },
   { id: 'timeline', label: 'Timeline', icon: Clock3 },
-  { id: 'tasks', label: 'Tasks', icon: CheckSquare },
+  { id: 'interests', label: 'الاهتمامات', icon: Heart },
   { id: 'notes', label: 'Notes', icon: FileText },
-  { id: 'files', label: 'Files', icon: Paperclip },
-  { id: 'emails', label: 'Emails', icon: Mail },
+  { id: 'tasks', label: 'Tasks', icon: CheckSquare },
+  { id: 'calls', label: 'Calls', icon: PhoneCall },
+  { id: 'meetings', label: 'Meetings', icon: Video },
   { id: 'calendar', label: 'Calendar', icon: CalendarDays },
+  { id: 'files', label: 'Files', icon: Paperclip },
+  { id: 'emails', label: 'Chats', icon: Mail },
 ]
 
 const PAGE_TABS = DRAWER_TABS.filter((tab) => tab.id !== 'home')
@@ -102,7 +113,7 @@ function getDetailsLayoutMode(width, mode) {
 }
 
 function getDefaultDrawerTabOrder() {
-  return DRAWER_TABS.map((tab) => tab.id)
+  return DRAWER_TABS.filter((tab) => !tab.fixed).map((tab) => tab.id)
 }
 
 function getStoredDrawerTabOrder() {
@@ -112,7 +123,7 @@ function getStoredDrawerTabOrder() {
     const parsed = JSON.parse(window.localStorage.getItem(DRAWER_TABS_ORDER_KEY) || '[]')
     if (!Array.isArray(parsed)) return getDefaultDrawerTabOrder()
 
-    const knownIds = new Set(DRAWER_TABS.map((tab) => tab.id))
+    const knownIds = new Set(DRAWER_TABS.filter((tab) => !tab.fixed).map((tab) => tab.id))
     const storedIds = parsed.filter((id) => knownIds.has(id))
     const missingIds = getDefaultDrawerTabOrder().filter((id) => !storedIds.includes(id))
 
@@ -125,6 +136,28 @@ function getStoredDrawerTabOrder() {
 function saveDrawerTabOrder(order) {
   if (typeof window === 'undefined') return
   window.localStorage.setItem(DRAWER_TABS_ORDER_KEY, JSON.stringify(order))
+}
+
+function getStoredCustomerTabKey(customerId) {
+  return `customer-details-drawer-active-tab:${customerId}`
+}
+
+function getStoredCustomerTab(customerId, fallbackTab = 'timeline') {
+  if (typeof window === 'undefined' || !customerId) return fallbackTab
+
+  try {
+    const stored = window.localStorage.getItem(getStoredCustomerTabKey(customerId))
+    if (!stored) return fallbackTab
+
+    return DRAWER_TABS.some((tab) => tab.id === stored) ? stored : fallbackTab
+  } catch {
+    return fallbackTab
+  }
+}
+
+function saveCustomerTab(customerId, tabId) {
+  if (typeof window === 'undefined' || !customerId || !tabId) return
+  window.localStorage.setItem(getStoredCustomerTabKey(customerId), tabId)
 }
 
 function moveItem(items, sourceId, targetId) {
@@ -188,6 +221,14 @@ function getLeadId(customer) {
   return customer?.lead?.id ?? customer?.lead_id ?? customer?.id
 }
 
+const FRESH_LEAD_TYPE = 'fresh lead'
+
+function isFreshLeadCustomer(customer = {}) {
+  return String(customer?.lead_type || customer?.lead?.lead_type || '')
+    .trim()
+    .toLowerCase() === FRESH_LEAD_TYPE
+}
+
 function getCurrentTagId(customer, currentTag) {
   return currentTag?.id ?? customer?.lead?.tag_id ?? customer?.tag_id ?? ''
 }
@@ -198,16 +239,33 @@ function getTagLabel(tag) {
 
 function getLinkedByName(customer) {
   if (typeof customer?.linked_by === 'object') return customer.linked_by?.name
-  return customer?.linked_by
+  if (typeof customer?.lead?.linked_by === 'object') return customer.lead.linked_by?.name
+  if (typeof customer?.agent === 'object') return customer.agent?.name
+  return customer?.linked_by || customer?.lead?.linked_by
 }
 
 function getLinkedByTeamName(customer) {
   return (
     customer?.linked_by?.team?.name ??
     customer?.linked_by?.team_name ??
+    customer?.lead?.linked_by?.team?.name ??
+    customer?.lead?.linked_by?.team_name ??
     customer?.agent?.team?.name ??
     customer?.team?.name ??
     null
+  )
+}
+
+function getLinkedAt(customer) {
+  return (
+    customer?.link_date ||
+    customer?.linked_at ||
+    customer?.linkedAt ||
+    customer?.lead?.link_date ||
+    customer?.lead?.linked_at ||
+    customer?.lead?.linkedAt ||
+    customer?.updated_at ||
+    customer?.updatedAt
   )
 }
 
@@ -228,7 +286,7 @@ function CustomerHeader({ customer, currentStatus, currentTag, statuses, isLoadi
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <div className="flex min-w-0 flex-wrap items-start justify-between gap-2">
             <h3 className="min-w-0 max-w-full truncate text-base font-black text-[var(--text)]">
               {fieldValue(customer.name || customer.email || customer.phone, 'عميل بدون اسم')}
             </h3>
@@ -289,20 +347,13 @@ function CustomerHeader({ customer, currentStatus, currentTag, statuses, isLoadi
               </span>
             )}
           </div>
-
-          <CustomerStatusChanger
-            customer={customer}
-            statuses={statuses}
-            currentStatus={currentStatus}
-            onChanged={onStatusChanged}
-          />
         </div>
       </div>
     </div>
   )
 }
 
-function CustomerTagChanger({ customer, currentTag, tags = [], onChanged }) {
+function CustomerTagChanger({ customer, currentTag, tags = [], onChanged, iconOnly = false }) {
   const mutations = useLeadMutations()
   const [editing, setEditing] = useState(false)
   const [selectedTagId, setSelectedTagId] = useState('')
@@ -343,6 +394,83 @@ function CustomerTagChanger({ customer, currentTag, tags = [], onChanged }) {
     } catch (error) {
       toast.error(extractMessage(error, 'تعذر تغيير تاج العميل'))
     }
+  }
+
+  const handleQuickSelect = async (tag) => {
+    if (!leadId || !tag || String(tag.id) === String(currentTagId)) {
+      setEditing(false)
+      return
+    }
+
+    try {
+      await mutations.updateTag.mutateAsync({
+        ids: [leadId],
+        tag_id: Number(tag.id),
+      })
+
+      toast.success('تم تغيير تاج العميل')
+      setEditing(false)
+      onChanged?.({
+        customer,
+        actionType: 'tag',
+        newTag: tag,
+        oldTag: currentTag,
+      })
+    } catch (error) {
+      toast.error(extractMessage(error, 'تعذر تغيير تاج العميل'))
+    }
+  }
+
+  if (iconOnly) {
+    return (
+      <div className="relative inline-flex">
+        <button
+          type="button"
+          onClick={() => setEditing((value) => !value)}
+          disabled={!leadId || availableTags.length === 0 || mutations.updateTag.isPending}
+          className="inline-flex h-8 max-w-40 shrink-0 items-center justify-center gap-1 rounded-lg bg-transparent px-1 text-[#007A80] transition-colors hover:bg-[#E8F9FA] disabled:cursor-not-allowed disabled:text-[#94A3B8]"
+          title={`تغيير تاج العميل: ${tagLabel || 'بدون تاج'}`}
+          aria-label={`تغيير تاج العميل: ${tagLabel || 'بدون تاج'}`}
+        >
+          <Tag size={18} />
+          <span className="min-w-0 truncate text-xs font-black text-[var(--text)]">
+            {tagLabel || 'بدون تاج'}
+          </span>
+        </button>
+
+        {editing && (
+          <div className="absolute end-0 top-9 z-[80] w-52 max-w-[calc(100vw-2rem)] rounded-xl border border-[#BEEFF2] bg-white p-2 shadow-2xl">
+            <div className="mb-1 px-2 py-1 text-[11px] font-black text-[var(--text-muted)]">
+              اختر تاج العميل
+            </div>
+            <div className="max-h-56 space-y-1 overflow-y-auto">
+              {availableTags.map((tag) => {
+                const selected = String(tag.id) === String(currentTagId)
+                return (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    onClick={() => handleQuickSelect(tag)}
+                    disabled={mutations.updateTag.isPending || selected}
+                    className={cn(
+                      'flex w-full min-w-0 items-center justify-between gap-2 rounded-lg px-2 py-2 text-start text-xs font-bold transition-colors',
+                      selected
+                        ? 'bg-[#E8F9FA] text-[#007A80]'
+                        : 'text-[var(--text)] hover:bg-[#F8FEFF]',
+                      mutations.updateTag.isPending && 'cursor-wait opacity-70'
+                    )}
+                    title={`اختيار تاج: ${getTagLabel(tag)}`}
+                  >
+                    <span className="min-w-0 truncate">{getTagLabel(tag)}</span>
+                    {selected ? <Check size={14} className="shrink-0" /> : null}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    )
   }
 
   if (editing) {
@@ -406,7 +534,7 @@ function CustomerTagChanger({ customer, currentTag, tags = [], onChanged }) {
   )
 }
 
-function CustomerHeaderModern({
+function CustomerHeaderModernLegacy({
   customer,
   currentStatus,
   currentTag,
@@ -418,6 +546,7 @@ function CustomerHeaderModern({
   showOpenPageButton = false,
   detailsPageId,
 }) {
+  const { t } = useTranslation()
   const source = customer.source || customer.lead?.source
   const linkedByName = getLinkedByName(customer)
   const linkedByTeamName = getLinkedByTeamName(customer)
@@ -425,6 +554,12 @@ function CustomerHeaderModern({
   const statusColor = currentStatus?.color || '#64748B'
   const customerName = fieldValue(customer.name || customer.email || customer.phone, 'عميل بدون اسم')
   const createdAt = customer.created_at || customer.createdAt
+  const statusLabel = currentStatus?.status || currentStatus?.name
+  const tagLabel = getTagLabel(currentTag)
+  const createdAtLabel = createdAt ? formatDateTime12(createdAt) : ''
+  const linkDateLabel = linkDate ? formatDateTime12(linkDate) : ''
+  const freshLead = isFreshLeadCustomer(customer)
+  const freshLeadLabel = t('customers.freshLead')
 
   return (
     <div className="relative min-w-0 overflow-hidden rounded-2xl border border-[#BEEFF2] bg-white shadow-sm">
@@ -437,6 +572,15 @@ function CustomerHeaderModern({
             <h3 className="min-w-0 truncate text-base font-black text-[var(--text)]">
               {customerName}
             </h3>
+            {freshLead ? (
+              <span
+                className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-2 py-1 text-[11px] font-black text-[#166534]"
+                title={freshLeadLabel}
+              >
+                <Sparkles size={12} />
+                {freshLeadLabel}
+              </span>
+            ) : null}
 
             <CustomerTagChanger
               customer={customer}
@@ -449,6 +593,18 @@ function CustomerHeaderModern({
                 Loading...
               </span>
             )}
+            <span
+              className="ms-auto inline-flex min-w-0 shrink-0"
+              title={`تاج العميل: ${tagLabel || 'بدون تاج'}`}
+              aria-label={`تاج العميل: ${tagLabel || 'بدون تاج'}`}
+            >
+              <CustomerTagChanger
+                customer={customer}
+                currentTag={currentTag}
+                tags={tags}
+                onChanged={onTagChanged}
+              />
+            </span>
           </div>
 
           {createdAt && (
@@ -524,9 +680,319 @@ function CustomerHeaderModern({
   )
 }
 
+function CustomerHeaderModernSplit({
+  customer,
+  currentStatus,
+  currentTag,
+  tags,
+  statuses,
+  isLoadingDetails,
+  onStatusChanged,
+  onTagChanged,
+  showOpenPageButton = false,
+  detailsPageId,
+}) {
+  const { t } = useTranslation()
+  const source = customer.source || customer.lead?.source || customer.linked_type || customer.lead?.linked_type
+  const linkedByName = getLinkedByName(customer)
+  const linkedByTeamName = getLinkedByTeamName(customer)
+  const linkDate = getLinkedAt(customer)
+  const statusColor = currentStatus?.color || '#64748B'
+  const customerName = fieldValue(customer.name || customer.email || customer.phone, 'عميل بدون اسم')
+  const createdAt = customer.created_at || customer.createdAt
+  const statusLabel = currentStatus?.status || currentStatus?.name
+  const tagLabel = getTagLabel(currentTag)
+  const createdAtLabel = createdAt ? formatDateTime12(createdAt) : ''
+  const linkDateLabel = linkDate ? formatDateTime12(linkDate) : ''
+  const freshLead = isFreshLeadCustomer(customer)
+  const freshLeadLabel = t('customers.freshLead')
+
+  return (
+    <div className="relative min-w-0 overflow-hidden rounded-2xl border border-[#BEEFF2] bg-white shadow-sm">
+      <div className="pointer-events-none absolute inset-y-0 start-0 w-24 bg-[#F1FCFD]" />
+
+      <div className="relative grid min-w-0 grid-cols-2 gap-3 p-3">
+        <section className="min-w-0 rounded-xl border border-[#E5F7F8] bg-white/80 p-3">
+          <div className="flex min-w-0 items-start gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#BEEFF2] bg-[#E8F9FA] text-base font-black text-[#007A80] shadow-sm">
+              {getInitial(customer)}
+            </div>
+
+            <div className="min-w-0 flex-1 space-y-2">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                <h3 className="min-w-0 truncate text-base font-black text-[var(--text)]">
+                  {customerName}
+                </h3>
+                <CustomerSourceBadge source={source} iconOnly />
+                {freshLead ? (
+                  <span
+                    className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-2 py-1 text-[11px] font-black text-[#166534]"
+                    title={freshLeadLabel}
+                  >
+                    <Sparkles size={12} />
+                    {freshLeadLabel}
+                  </span>
+                ) : null}
+                {isLoadingDetails && (
+                  <span className="rounded-full bg-[#E8F9FA] px-2 py-0.5 text-[11px] font-semibold text-[#007A80]">
+                    Loading...
+                  </span>
+                )}
+              </div>
+
+              <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+                {currentStatus ? (
+                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-[#E5F7F8] bg-[#F8FEFF] px-2 py-1 text-[11px] font-bold text-[var(--text)]">
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: statusColor }} />
+                    <span className="min-w-0 max-w-32 truncate">{currentStatus.status || currentStatus.name}</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex rounded-full border border-[#E5F7F8] bg-[#F8FEFF] px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">
+                    بدون حالة
+                  </span>
+                )}
+                <CustomerTagChanger
+                  customer={customer}
+                  currentTag={currentTag}
+                  tags={tags}
+                  onChanged={onTagChanged}
+                />
+              </div>
+
+              {createdAt && (
+                <div className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-[#F8FEFF] px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">
+                  <CalendarPlus size={12} className="shrink-0 text-[#007A80]" />
+                  <span className="truncate">{formatDateTime12(createdAt)}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <CustomerStatusChanger
+            customer={customer}
+            statuses={statuses}
+            currentStatus={currentStatus}
+            onChanged={onStatusChanged}
+          />
+        </section>
+
+        <section className="min-w-0 rounded-xl border border-[#E5F7F8] bg-[#F8FEFF] p-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <CustomerSourceBadge source={source} />
+
+            {linkedByName ? (
+              <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-[#E5F7F8] bg-white px-2 py-1 text-[11px] font-bold text-[var(--text)]">
+                <UserCheck size={13} className="shrink-0 text-[#007A80]" />
+                <span className="min-w-0 max-w-32 truncate">{linkedByName}</span>
+              </span>
+            ) : (
+              <span className="inline-flex rounded-full border border-[#E5F7F8] bg-white px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">
+                غير مربوط بمستخدم
+              </span>
+            )}
+
+            {linkedByTeamName && (
+              <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-[#E5F7F8] bg-white px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">
+                <UsersRound size={13} className="shrink-0 text-[#007A80]" />
+                <span className="min-w-0 max-w-32 truncate">{linkedByTeamName}</span>
+              </span>
+            )}
+          </div>
+
+          {linkDate && (
+            <div className="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full bg-white px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">
+              <CalendarDays size={13} className="shrink-0 text-[#007A80]" />
+              <span className="truncate">ربط: {formatDateTime12(linkDate)}</span>
+            </div>
+          )}
+
+          {showOpenPageButton && detailsPageId && (
+            <Link
+              to={`/lead/${detailsPageId}`}
+              className="mt-2 hidden h-8 w-fit items-center gap-1 rounded-lg border border-[#BEEFF2] bg-white px-2 text-[11px] font-black text-[#007A80] shadow-sm transition-colors hover:bg-[#E8F9FA]"
+              title="فتح صفحة العميل"
+            >
+              <ExternalLink size={13} />
+              فتح الصفحة
+            </Link>
+          )}
+        </section>
+      </div>
+    </div>
+  )
+}
+
+function CustomerHeaderModern({
+  customer,
+  currentStatus,
+  currentTag,
+  tags,
+  statuses,
+  isLoadingDetails,
+  onStatusChanged,
+  onTagChanged,
+}) {
+  const { t } = useTranslation()
+  const source = customer.source || customer.lead?.source || customer.linked_type || customer.lead?.linked_type
+  const linkedByName = getLinkedByName(customer)
+  const linkedByTeamName = getLinkedByTeamName(customer)
+  const linkDate = getLinkedAt(customer)
+  const statusColor = currentStatus?.color || '#64748B'
+  const customerName = fieldValue(customer.name || customer.email || customer.phone, 'عميل بدون اسم')
+  const createdAt = customer.created_at || customer.createdAt
+  const statusLabel = currentStatus?.status || currentStatus?.name
+  const tagLabel = getTagLabel(currentTag)
+  const createdAtLabel = createdAt ? formatDateTime12(createdAt) : ''
+  const linkDateLabel = linkDate ? formatDateTime12(linkDate) : ''
+  const freshLead = isFreshLeadCustomer(customer)
+  const freshLeadLabel = t('customers.freshLead')
+
+  return (
+    <div className="relative min-w-0 overflow-visible rounded-2xl border border-[#BEEFF2] bg-white p-3 shadow-sm">
+      <div className="pointer-events-none absolute inset-y-0 start-0 w-24 bg-[#F1FCFD]" />
+
+      <div className="relative flex min-w-0 items-start gap-3">
+        <div
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#BEEFF2] bg-[#E8F9FA] text-base font-black text-[#007A80] shadow-sm"
+          title={`اختصار اسم العميل: ${getInitial(customer)}`}
+          aria-label={`اختصار اسم العميل: ${getInitial(customer)}`}
+        >
+          {getInitial(customer)}
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 flex-wrap items-start justify-between gap-2">
+            <h3
+              className="min-w-0 max-w-full truncate text-base font-black text-[var(--text)]"
+              title={`اسم العميل: ${customerName}`}
+            >
+              {customerName}
+            </h3>
+            <CustomerSourceBadge source={source} iconOnly title={source ? `مصدر العميل: ${source}` : undefined} />
+            {freshLead ? (
+              <span
+                className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-2 py-1 text-[11px] font-black text-[#166534]"
+                title={`نوع العميل: ${freshLeadLabel}`}
+                aria-label={`نوع العميل: ${freshLeadLabel}`}
+              >
+                <Sparkles size={12} />
+                {freshLeadLabel}
+              </span>
+            ) : null}
+            {isLoadingDetails && (
+              <span className="rounded-full bg-[#E8F9FA] px-2 py-0.5 text-[11px] font-semibold text-[#007A80]">
+                Loading...
+              </span>
+            )}
+            <span
+              className="ms-auto inline-flex min-w-0 shrink-0"
+              title={`تاج العميل: ${tagLabel || 'بدون تاج'}`}
+              aria-label={`تاج العميل: ${tagLabel || 'بدون تاج'}`}
+            >
+              <CustomerTagChanger
+                customer={customer}
+                currentTag={currentTag}
+                tags={tags}
+                onChanged={onTagChanged}
+                iconOnly
+              />
+            </span>
+          </div>
+
+          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-1.5">
+            {currentStatus ? (
+              <span
+                className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-[#E5F7F8] bg-[#F8FEFF] px-2 py-1 text-[11px] font-bold text-[var(--text)]"
+                title={`حالة العميل الحالية: ${statusLabel}`}
+                aria-label={`حالة العميل الحالية: ${statusLabel}`}
+              >
+                <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: statusColor }} />
+                <span className="min-w-0 max-w-36 truncate">{statusLabel}</span>
+              </span>
+            ) : (
+              <span
+                className="inline-flex rounded-full border border-[#E5F7F8] bg-[#F8FEFF] px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]"
+                title="حالة العميل: لا توجد حالة محددة"
+                aria-label="حالة العميل: لا توجد حالة محددة"
+              >
+                بدون حالة
+              </span>
+            )}
+            <span
+              className="hidden"
+              title={`تاج العميل: ${tagLabel || 'بدون تاج'}`}
+              aria-label={`تاج العميل: ${tagLabel || 'بدون تاج'}`}
+            >
+              <CustomerTagChanger
+                customer={customer}
+                currentTag={currentTag}
+                tags={tags}
+                onChanged={onTagChanged}
+              />
+            </span>
+            <CustomerSourceBadge source={source} title={source ? `مصدر العميل: ${source}` : undefined} />
+            {linkedByName ? (
+              <span
+                className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-[#E5F7F8] bg-white px-2 py-1 text-[11px] font-bold text-[var(--text)]"
+                title={`المستخدم المرتبط بالعميل: ${linkedByName}`}
+                aria-label={`المستخدم المرتبط بالعميل: ${linkedByName}`}
+              >
+                <UserCheck size={13} className="shrink-0 text-[#007A80]" />
+                <span className="min-w-0 max-w-36 truncate">{linkedByName}</span>
+              </span>
+            ) : (
+              <span
+                className="inline-flex rounded-full border border-[#E5F7F8] bg-white px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]"
+                title="المستخدم المرتبط بالعميل: غير مربوط بمستخدم"
+                aria-label="المستخدم المرتبط بالعميل: غير مربوط بمستخدم"
+              >
+                غير مربوط بمستخدم
+              </span>
+            )}
+            {linkedByTeamName && (
+              <span
+                className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-[#E5F7F8] bg-white px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]"
+                title={`فريق المستخدم المرتبط: ${linkedByTeamName}`}
+                aria-label={`فريق المستخدم المرتبط: ${linkedByTeamName}`}
+              >
+                <UsersRound size={13} className="shrink-0 text-[#007A80]" />
+                <span className="min-w-0 max-w-32 truncate">{linkedByTeamName}</span>
+              </span>
+            )}
+          </div>
+
+          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-1.5">
+            {createdAt && (
+              <span
+                className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-[#F8FEFF] px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]"
+                title={`تاريخ إضافة العميل: ${createdAtLabel}`}
+                aria-label={`تاريخ إضافة العميل: ${createdAtLabel}`}
+              >
+                <CalendarPlus size={12} className="shrink-0 text-[#007A80]" />
+                <span className="truncate">إضافة: {createdAtLabel}</span>
+              </span>
+            )}
+            {linkDate && (
+              <span
+                className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-[#F8FEFF] px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]"
+                title={`تاريخ ربط العميل: ${linkDateLabel}`}
+                aria-label={`تاريخ ربط العميل: ${linkDateLabel}`}
+              >
+                <CalendarDays size={13} className="shrink-0 text-[#007A80]" />
+                <span className="truncate">ربط: {linkDateLabel}</span>
+              </span>
+            )}
+          </div>
+
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function TabButton({ tab, active, dragging, onClick, onPointerDown, onPointerUp, onPointerCancel, onPointerEnter, onPointerLeave, onClickCapture }) {
   const Icon = tab.icon
-  const hint = `${tab.label} - اضغط مطولًا واسحب يمين أو يسار لتغيير الترتيب`
+  const hint = tab.fixed ? tab.label : `${tab.label} - اضغط مطولًا واسحب يمين أو يسار لتغيير الترتيب`
 
   return (
     <button
@@ -541,44 +1007,68 @@ function TabButton({ tab, active, dragging, onClick, onPointerDown, onPointerUp,
       title={hint}
       aria-label={hint}
       className={cn(
-        'inline-flex h-9 min-w-0 select-none items-center justify-center gap-1 rounded-lg border px-2 text-xs font-semibold transition-colors sm:text-sm',
+        'inline-flex h-9 min-w-0 shrink-0 select-none items-center justify-center gap-1 rounded-lg border px-2 text-xs font-semibold transition-colors sm:text-sm',
+        tab.iconOnly && 'w-9 px-0',
         active
           ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80] shadow-sm'
           : 'border-transparent text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]',
-        dragging && 'scale-105 opacity-80 ring-2 ring-[#00C2CB] ring-offset-1'
+        dragging && !tab.fixed && 'scale-105 opacity-80 ring-2 ring-[#00C2CB] ring-offset-1'
       )}
     >
       <Icon size={16} className="shrink-0" />
-      <span className="min-w-0 truncate">{tab.label}</span>
+      {!tab.iconOnly && <span className="min-w-0 truncate">{tab.label}</span>}
     </button>
   )
 }
 
+function getMoreTabsMenuPosition(anchor) {
+  if (!anchor || typeof window === 'undefined') return { top: 8, left: 8, width: 256 }
+
+  const rect = anchor.getBoundingClientRect()
+  const width = 256
+  const left = Math.max(8, Math.min(window.innerWidth - width - 8, rect.right - width))
+  const top = Math.max(8, Math.min(window.innerHeight - 328, rect.bottom + 8))
+
+  return { top, left, width }
+}
+
 function MoreTabsMenu({ activeTab, tabs, onChange }) {
   const [open, setOpen] = useState(false)
+  const [menuPosition, setMenuPosition] = useState({ top: 8, left: 8, width: 256 })
+  const buttonWrapRef = useRef(null)
   const menuRef = useRef(null)
   const activeMoreTab = tabs.find((tab) => tab.id === activeTab)
 
   useEffect(() => {
     if (!open) return undefined
 
+    const syncPosition = () => setMenuPosition(getMoreTabsMenuPosition(buttonWrapRef.current))
     const closeOnOutsidePointerDown = (event) => {
+      if (buttonWrapRef.current?.contains(event.target)) return
       if (menuRef.current?.contains(event.target)) return
       setOpen(false)
     }
 
+    syncPosition()
     document.addEventListener('pointerdown', closeOnOutsidePointerDown, true)
+    window.addEventListener('resize', syncPosition)
+    window.addEventListener('scroll', syncPosition, true)
 
     return () => {
       document.removeEventListener('pointerdown', closeOnOutsidePointerDown, true)
+      window.removeEventListener('resize', syncPosition)
+      window.removeEventListener('scroll', syncPosition, true)
     }
   }, [open])
 
   return (
-    <div ref={menuRef} className="relative min-w-0">
+    <div ref={buttonWrapRef} className="relative min-w-[92px] shrink-0">
       <button
         type="button"
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => {
+          setMenuPosition(getMoreTabsMenuPosition(buttonWrapRef.current))
+          setOpen((value) => !value)
+        }}
         className={cn(
           'inline-flex h-9 w-full min-w-0 items-center justify-center gap-1 rounded-lg border px-2 text-xs font-semibold transition-colors sm:text-sm',
           activeMoreTab
@@ -591,8 +1081,16 @@ function MoreTabsMenu({ activeTab, tabs, onChange }) {
         <ChevronDown size={14} className="shrink-0" />
       </button>
 
-      {open && (
-        <div className="absolute end-0 top-11 z-[70] w-64 max-w-[calc(100vw-2rem)] rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-2xl">
+      {open && typeof document !== 'undefined' ? createPortal(
+        <div
+          ref={menuRef}
+          className="fixed z-[160000] max-h-80 overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-2xl"
+          style={{
+            top: `${menuPosition.top}px`,
+            left: `${menuPosition.left}px`,
+            width: `${menuPosition.width}px`,
+          }}
+        >
           {tabs.map((tab) => {
             const Icon = tab.icon
             return (
@@ -615,8 +1113,9 @@ function MoreTabsMenu({ activeTab, tabs, onChange }) {
               </button>
             )
           })}
-        </div>
-      )}
+        </div>,
+        document.body
+      ) : null}
     </div>
   )
 }
@@ -636,16 +1135,18 @@ function DrawerTabs({
   const [draggingTabId, setDraggingTabId] = useState(null)
   const [recentlyDragged, setRecentlyDragged] = useState(false)
   const [reorderMode, setReorderMode] = useState(false)
-  const tabById = new Map(tabs.map((tab) => [tab.id, tab]))
+  const fixedTabs = tabs.filter((tab) => tab.fixed)
+  const sortableTabs = tabs.filter((tab) => !tab.fixed)
+  const tabById = new Map(sortableTabs.map((tab) => [tab.id, tab]))
   const orderedTabs = [
+    ...fixedTabs,
     ...tabOrder.map((id) => tabById.get(id)).filter(Boolean),
-    ...tabs.filter((tab) => !tabOrder.includes(tab.id)),
+    ...sortableTabs.filter((tab) => !tabOrder.includes(tab.id)),
   ]
   const visibleTabsCount = getDrawerVisibleTabsCount(containerWidth, orderedTabs.length)
   const visibleTabs = orderedTabs.slice(0, visibleTabsCount)
   const moreTabs = orderedTabs.slice(visibleTabsCount)
   const displayedTabs = reorderMode ? orderedTabs : visibleTabs
-  const columnCount = Math.max(1, displayedTabs.length + (!reorderMode && moreTabs.length ? 1 : 0))
 
   useEffect(() => {
     return () => {
@@ -674,6 +1175,7 @@ function DrawerTabs({
   }
 
   const startLongPress = (tabId) => {
+    if (fixedTabs.some((tab) => tab.id === tabId)) return
     clearLongPressTimer()
     longPressTimerRef.current = window.setTimeout(() => {
       setReorderMode(true)
@@ -696,6 +1198,7 @@ function DrawerTabs({
 
   const handleEnterTab = (targetId) => {
     if (!draggingTabId || draggingTabId === targetId) return
+    if (fixedTabs.some((tab) => tab.id === targetId)) return
     onTabOrderChange((currentOrder) => moveItem(currentOrder, draggingTabId, targetId))
   }
 
@@ -709,14 +1212,10 @@ function DrawerTabs({
       )}
     >
       <div className={cn(
-        'min-w-0 rounded-xl bg-white/70 p-1',
-        reorderMode
-          ? 'overflow-x-auto'
-          : 'grid gap-1 overflow-visible'
+        'scrollbar-quick-actions flex min-w-0 items-center gap-1 overflow-x-auto rounded-xl bg-white/70 p-1'
       )}
-        style={!reorderMode ? { gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` } : undefined}
       >
-        <div className={cn(reorderMode ? 'flex min-w-max items-center gap-1' : 'contents')}>
+        <div className="flex min-w-max items-center gap-1">
         {displayedTabs.map((tab) => (
           <TabButton
             key={tab.id}
@@ -753,7 +1252,6 @@ function ActiveTabContent({
   timelineActionRequest,
   onActionChanged,
   layoutMode,
-  containerWidth,
 }) {
   if (activeTab === 'timeline') {
     return (
@@ -761,14 +1259,41 @@ function ActiveTabContent({
         customer={customer}
         statuses={statuses}
         currentStatus={currentStatus}
-        actionRequest={timelineActionRequest}
         onActionChanged={onActionChanged}
         layoutMode={layoutMode}
-        containerWidth={containerWidth}
       />
     )
   }
+  if (activeTab === 'calls') {
+    return (
+      <div className="min-w-0 py-4">
+        <div className={`rounded-xl border border-[#E5F7F8] bg-white/80 shadow-sm ${layoutMode === 'wide' ? 'p-4' : 'p-2'}`}>
+          <CallsActionTab
+            customer={customer}
+            onChanged={onActionChanged}
+            actionRequest={timelineActionRequest}
+            layoutMode={layoutMode}
+          />
+        </div>
+      </div>
+    )
+  }
+  if (activeTab === 'meetings') {
+    return (
+      <div className="min-w-0 py-4">
+        <div className={`rounded-xl border border-[#E5F7F8] bg-white/80 shadow-sm ${layoutMode === 'wide' ? 'p-4' : 'p-2'}`}>
+          <MeetingsActionTab
+            customer={customer}
+            onChanged={onActionChanged}
+            actionRequest={timelineActionRequest}
+            layoutMode={layoutMode}
+          />
+        </div>
+      </div>
+    )
+  }
   if (activeTab === 'tasks') return <TasksTab customer={customer} layoutMode={layoutMode} />
+  if (activeTab === 'interests') return <InterestsTab customer={customer} layoutMode={layoutMode} />
   if (activeTab === 'notes') return <NotesTab customer={customer} layoutMode={layoutMode} />
   if (activeTab === 'files') return <FilesTab customer={customer} layoutMode={layoutMode} />
   if (activeTab === 'emails') return <EmailsTab customer={customer} layoutMode={layoutMode} />
@@ -782,9 +1307,11 @@ export function CustomerDetailsContent({
   onStatusChanged,
   showOpenPageButton = false,
   mode = 'drawer',
+  initialTab = 'timeline',
 }) {
   const contentRef = useRef(null)
-  const [activeTab, setActiveTab] = useState('home')
+  const requestedCustomerKey = customer?.id || customer?.lead_id || customer?.lead?.id
+  const [activeTab, setActiveTab] = useState(() => getStoredCustomerTab(requestedCustomerKey, initialTab || 'timeline'))
   const [timelineActionRequest, setTimelineActionRequest] = useState(null)
   const [openFloatingChats, setOpenFloatingChats] = useState([])
   const [drawerTabOrder, setDrawerTabOrder] = useState(getStoredDrawerTabOrder)
@@ -815,7 +1342,9 @@ export function CustomerDetailsContent({
     [contentWidth, mode]
   )
   const openTimelineAction = (actionId, actionOptions = {}) => {
-    setActiveTab('timeline')
+    const targetTab = actionId === 'call' ? 'calls' : actionId === 'meeting' ? 'meetings' : 'timeline'
+    setActiveTab(targetTab)
+    saveCustomerTab(requestedCustomerKey, targetTab)
     setTimelineActionRequest({ actionId, ...actionOptions, requestedAt: Date.now() })
   }
   const focusFloatingChat = (channel) => {
@@ -857,9 +1386,28 @@ export function CustomerDetailsContent({
   }, [drawerTabOrder])
 
   useEffect(() => {
+    if (!requestedCustomerKey) return
+
+    const storedTab = getStoredCustomerTab(requestedCustomerKey, initialTab || 'timeline')
+    setActiveTab((currentTab) => {
+      if (currentTab && currentTab !== initialTab && currentTab !== storedTab) {
+        return currentTab
+      }
+      return storedTab
+    })
+    setTimelineActionRequest(null)
+  }, [initialTab, requestedCustomerKey])
+
+  useEffect(() => {
     if (mode !== 'page' || activeTab !== 'home') return
     setActiveTab('timeline')
-  }, [activeTab, mode])
+    saveCustomerTab(requestedCustomerKey, 'timeline')
+  }, [activeTab, mode, requestedCustomerKey])
+
+  useEffect(() => {
+    if (!requestedCustomerKey) return
+    saveCustomerTab(requestedCustomerKey, activeTab)
+  }, [activeTab, requestedCustomerKey])
 
   if (!detailedCustomer) {
     return (
@@ -922,13 +1470,19 @@ export function CustomerDetailsContent({
               showOpenPageButton={false}
               detailsPageId={detailsPageId}
             />
-            <CustomerQuickActions
-              customer={detailedCustomer}
-              currentStatus={currentStatus}
-              onTimelineAction={openTimelineAction}
-              onOpenChat={openFloatingChat}
-              onFollowUpAdded={refreshCustomerDetails}
-            />
+            <div className="mt-3 flex min-w-0 flex-wrap items-start gap-2">
+              <CustomerQuickActions
+                customer={detailedCustomer}
+                currentStatus={currentStatus}
+                statuses={leadStatuses}
+                onTimelineAction={openTimelineAction}
+                onOpenChat={openFloatingChat}
+                onFollowUpAdded={refreshCustomerDetails}
+                onStatusChanged={refreshCustomerDetails}
+                onInterestChanged={refreshCustomerDetails}
+                className="mt-0 min-w-0 flex-1"
+              />
+            </div>
             <section className="min-w-0 rounded-2xl border border-[#BEEFF2] bg-white p-4 shadow-sm">
               <HomeTab customer={detailedCustomer} layoutMode="compact" />
             </section>
@@ -979,13 +1533,19 @@ export function CustomerDetailsContent({
         showOpenPageButton={showOpenPageButton}
         detailsPageId={detailsPageId}
       />
-      <CustomerQuickActions
-        customer={detailedCustomer}
-        currentStatus={currentStatus}
-        onTimelineAction={openTimelineAction}
-        onOpenChat={openFloatingChat}
-        onFollowUpAdded={refreshCustomerDetails}
-      />
+      <div className="mt-3 flex min-w-0 flex-wrap items-start gap-2">
+        <CustomerQuickActions
+          customer={detailedCustomer}
+          currentStatus={currentStatus}
+          statuses={leadStatuses}
+          onTimelineAction={openTimelineAction}
+          onOpenChat={openFloatingChat}
+          onFollowUpAdded={refreshCustomerDetails}
+          onStatusChanged={refreshCustomerDetails}
+          onInterestChanged={refreshCustomerDetails}
+          className="mt-0 min-w-0 flex-1"
+        />
+      </div>
       <DrawerTabs
         activeTab={activeTab}
         onChange={setActiveTab}
@@ -1008,7 +1568,9 @@ export function CustomerDetailsContent({
   )
 }
 
-export function CustomerDetailsDrawer({ customer, open, onClose, onStatusChanged }) {
+export function CustomerDetailsDrawer({ customer, open, onClose, onStatusChanged, initialTab = 'timeline' }) {
+  const detailsPageId = customer?.id || getLeadId(customer)
+
   return (
     <AppDrawer
       open={open}
@@ -1017,18 +1579,32 @@ export function CustomerDetailsDrawer({ customer, open, onClose, onStatusChanged
       description={undefined}
       size="lg"
       className="w-full border-s border-[#BEEFF2] shadow-2xl"
+      containerClassName="z-[110000]"
       closeOnBackdrop={false}
       avoidRightSidebar
-      pushPage
-      pushPageMinWidth={1024}
+      offsetCssVariable="--customer-details-drawer-offset"
+      pushPage={false}
+      portal
       topOffset="calc(var(--layout-header-height, 48px) - 1px)"
+      headerActions={detailsPageId ? (
+        <Link
+          to={`/lead/${detailsPageId}`}
+          className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] px-2.5 text-xs font-black text-[#007A80] shadow-sm transition-colors hover:bg-[#E8F9FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#BEEFF2]"
+          title="فتح صفحة العميل"
+          aria-label="فتح صفحة العميل"
+        >
+          <ExternalLink size={14} />
+          <span className="hidden sm:inline">فتح الصفحة</span>
+        </Link>
+      ) : null}
     >
       <CustomerDetailsContent
         customer={customer}
         enabled={open}
         onStatusChanged={onStatusChanged}
-        showOpenPageButton
+        showOpenPageButton={false}
         mode="drawer"
+        initialTab={initialTab}
       />
     </AppDrawer>
   )

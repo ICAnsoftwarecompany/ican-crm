@@ -43,8 +43,14 @@ httpClient.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error.response?.status === 401) {
-      useAuthStore.getState().logout()
-      window.location.href = '/login'
+      const authState = useAuthStore.getState()
+      const isAlreadyRefreshing = authState.sessionRefreshNeeded
+      const shouldSkipSessionRefresh = error.config?.skipSessionRefresh
+
+      if (!isAlreadyRefreshing && !shouldSkipSessionRefresh) {
+        authState.setSessionRefreshNeeded(true)
+        window.dispatchEvent(new CustomEvent('ican:session-expired'))
+      }
     }
 
     return Promise.reject(error)

@@ -246,6 +246,7 @@ export function DataTable({
   showToolbar = true,
   showFooter = true,
   initialSort = null,
+  sortFirstDirection = 'asc',
   enableSorting = true,
   enableFiltering = true,
   enablePagination = true,
@@ -258,6 +259,7 @@ export function DataTable({
   onExport = null,
   onFilterChange = null,
   selectionContextActions = null,
+  rowContextActions = null,
   serialColumnRender = null,
 }) {
   const dir = useDirection()
@@ -266,6 +268,16 @@ export function DataTable({
   const rightSplitTableRef = useRef(null)
   const leftSplitTableRef = useRef(null)
   const loadMoreTriggerRef = useRef(null)
+  const horizontalDragRef = useRef({
+    active: false,
+    pointerId: null,
+    scrollElement: null,
+    startX: 0,
+    scrollLeft: 0,
+    timerId: null,
+    suppressClick: false,
+    suppressClickTimerId: null,
+  })
   const lastScrollYRef = useRef(0)
   const autoContentWidthsRef = useRef({})
   const [containerWidth, setContainerWidth] = useState(0)
@@ -486,6 +498,7 @@ export function DataTable({
     columns: processedColumns,
     tableId: effectiveTableId,
     initialSort,
+    sortFirstDirection,
     enableSorting,
     enableFiltering,
     enablePagination: isCursorMode ? false : enablePagination,
@@ -1144,6 +1157,120 @@ export function DataTable({
     setSelectionContextMenu(position)
   }
 
+  const clearHorizontalDragTimer = useCallback(() => {
+    const state = horizontalDragRef.current
+    if (state.timerId) {
+      window.clearTimeout(state.timerId)
+      state.timerId = null
+    }
+  }, [])
+
+  const resetHorizontalDrag = useCallback(() => {
+    const state = horizontalDragRef.current
+    const wasActive = state.active
+    clearHorizontalDragTimer()
+    if (state.scrollElement) {
+      state.scrollElement.style.cursor = ''
+      state.scrollElement.style.userSelect = ''
+      state.scrollElement.removeAttribute('data-drag-scrolling')
+    }
+    state.active = false
+    state.pointerId = null
+    state.scrollElement = null
+    state.startX = 0
+    state.scrollLeft = 0
+    if (wasActive) {
+      state.suppressClick = true
+      if (state.suppressClickTimerId) window.clearTimeout(state.suppressClickTimerId)
+      state.suppressClickTimerId = window.setTimeout(() => {
+        state.suppressClick = false
+        state.suppressClickTimerId = null
+      }, 120)
+    }
+  }, [clearHorizontalDragTimer])
+
+  const shouldIgnoreHorizontalDrag = useCallback((target) => {
+    return Boolean(target?.closest?.(
+      'button, input, select, textarea, a, [role="button"], [data-no-drag-scroll="true"], [data-resize-handle="true"]'
+    ))
+  }, [])
+
+  const handleHorizontalDragPointerDown = useCallback((event) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+    if (shouldIgnoreHorizontalDrag(event.target)) return
+
+    const scrollElement = event.currentTarget
+    if (!scrollElement || scrollElement.scrollWidth <= scrollElement.clientWidth + 2) return
+
+    clearHorizontalDragTimer()
+    const state = horizontalDragRef.current
+    state.active = false
+    state.pointerId = event.pointerId
+    state.scrollElement = scrollElement
+    state.startX = event.clientX
+    state.scrollLeft = scrollElement.scrollLeft
+    state.timerId = window.setTimeout(() => {
+      state.active = true
+      state.timerId = null
+      scrollElement.style.cursor = 'grabbing'
+      scrollElement.style.userSelect = 'none'
+      scrollElement.setAttribute('data-drag-scrolling', 'true')
+      scrollElement.setPointerCapture?.(event.pointerId)
+    }, 220)
+  }, [clearHorizontalDragTimer, shouldIgnoreHorizontalDrag])
+
+  const handleHorizontalDragPointerMove = useCallback((event) => {
+    const state = horizontalDragRef.current
+    if (state.pointerId !== event.pointerId || !state.scrollElement) return
+
+    const distance = event.clientX - state.startX
+    if (!state.active) {
+      if (Math.abs(distance) > 8) resetHorizontalDrag()
+      return
+    }
+
+    event.preventDefault()
+    state.scrollElement.scrollLeft = state.scrollLeft - distance
+  }, [resetHorizontalDrag])
+
+  const handleHorizontalDragPointerUp = useCallback((event) => {
+    const state = horizontalDragRef.current
+    if (state.pointerId === event.pointerId) {
+      state.scrollElement?.releasePointerCapture?.(event.pointerId)
+      resetHorizontalDrag()
+    }
+  }, [resetHorizontalDrag])
+
+  const handleHorizontalDragClickCapture = useCallback((event) => {
+    const state = horizontalDragRef.current
+    if (!state.suppressClick) return
+
+    event.preventDefault()
+    event.stopPropagation()
+    state.suppressClick = false
+    if (state.suppressClickTimerId) {
+      window.clearTimeout(state.suppressClickTimerId)
+      state.suppressClickTimerId = null
+    }
+  }, [])
+
+  const horizontalDragHandlers = {
+    onPointerDown: handleHorizontalDragPointerDown,
+    onPointerMove: handleHorizontalDragPointerMove,
+    onPointerUp: handleHorizontalDragPointerUp,
+    onPointerCancel: handleHorizontalDragPointerUp,
+    onPointerLeave: handleHorizontalDragPointerUp,
+    onClickCapture: handleHorizontalDragClickCapture,
+  }
+
+  useEffect(() => {
+    return () => {
+      const state = horizontalDragRef.current
+      if (state.timerId) window.clearTimeout(state.timerId)
+      if (state.suppressClickTimerId) window.clearTimeout(state.suppressClickTimerId)
+    }
+  }, [])
+
   const runSelectionContextAction = async (action) => {
     if (action.disabled) return
 
@@ -1452,6 +1579,7 @@ export function DataTable({
           ref={tableContainerRef}
           className="overflow-x-auto overscroll-x-contain rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-2"
           onContextMenu={openSelectionContextMenu}
+          {...horizontalDragHandlers}
         >
           <div style={{ zoom: (Number(tableZoom) || 100) / 100 }}>
             <div className="grid min-w-[960px] grid-cols-2 gap-2">
@@ -1459,7 +1587,7 @@ export function DataTable({
                 <div className="border-b border-[var(--border)] bg-[#E8F9FA] px-3 py-2 text-xs font-black text-[#007A80]">
                   جدول اليمين
                 </div>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto" {...horizontalDragHandlers}>
                   <table
                     ref={(node) => {
                       tableRef.current = node
@@ -1530,6 +1658,7 @@ export function DataTable({
                       onRowClick={onRowClick}
                       onRowDoubleClick={onRowDoubleClick}
                       rowClassName={rowClassName}
+                      rowContextActions={rowContextActions}
                     />
                   </table>
                 </div>
@@ -1539,7 +1668,7 @@ export function DataTable({
                 <div className="border-b border-[var(--border)] bg-white px-3 py-2 text-xs font-black text-[var(--text)]">
                   جدول اليسار
                 </div>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto" {...horizontalDragHandlers}>
                   <table
                     ref={leftSplitTableRef}
                     className="table-fixed border-collapse"
@@ -1607,6 +1736,7 @@ export function DataTable({
                       onRowClick={onRowClick}
                       onRowDoubleClick={onRowDoubleClick}
                       rowClassName={rowClassName}
+                      rowContextActions={rowContextActions}
                     />
                   </table>
                 </div>
@@ -1620,6 +1750,7 @@ export function DataTable({
             ref={tableContainerRef}
             className="overflow-x-auto overscroll-x-contain rounded-lg border border-[var(--border)]"
             onContextMenu={openSelectionContextMenu}
+            {...horizontalDragHandlers}
           >
             <div style={{ zoom: (Number(tableZoom) || 100) / 100 }}>
               <table
@@ -1689,6 +1820,7 @@ export function DataTable({
                   onRowClick={onRowClick}
                   onRowDoubleClick={onRowDoubleClick}
                   rowClassName={rowClassName}
+                  rowContextActions={rowContextActions}
                   splitRowsEnabled={shouldRenderSplitRows}
                   splitRowsConfig={splitRowsConfig}
                   splitRowsLayout={splitRowsLayout}

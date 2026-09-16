@@ -3,10 +3,11 @@ export const ROUTES = {
   DASHBOARD: '/',
   LEADS: '/leads',
   LEAD_DETAIL: '/lead/:id',
-  CUSTOMERS: '/customers',
+  CUSTOMERS: '/LeadsCenter',
   CONVERSATIONS: '/conversations',
   CAMPAIGNS: '/campaigns',
   TASKS: '/tasks',
+  TEAM_CHAT: '/team-chat',
   TEAMS: '/teams',
   SETTINGS: '/settings',
 }

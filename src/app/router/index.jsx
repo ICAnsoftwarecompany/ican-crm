@@ -18,10 +18,12 @@ import { CustomerImportExportPage } from '../../pages/customers/pages/CustomerIm
 import { DeletedCustomersPage } from '../../pages/customers/pages/TrashCustomer/DeletedCustomersPage'
 import { CustomersSettingsPage } from '../../pages/customers/pages/CustomersSettingsPage'
 import { CustomerStatusBoardPage } from '../../pages/customers/pages/statusBoard/CustomerStatusBoardPage'
-import { CustomerLeadDetailsPage } from '../../pages/customers/pages/CustomerLeadDetailsPage'
+import { CustomerActivitiesPage, MeetingDetailPage } from '../../pages/customers/pages/activities'
+import { CustomerLeadDetailsPage } from '../../pages/customers/pages/lead-details'
 import { CustomerProposalsPage } from '../../pages/customers/pages/proposals/CustomerProposalsPage'
 import { CustomerProposalBuilderPage } from '../../pages/customers/pages/proposals/CustomerProposalBuilderPage'
 import { CustomerProposalTemplatesPage } from '../../pages/customers/pages/proposals/CustomerProposalTemplatesPage'
+import { ActivitiesPage } from '../../features/activities'
 import { ConversationsPage } from '../../pages/conversations/ConversationsPage'
 import { CampaignsPage } from '../../pages/campaigns/CampaignsPage'
 import { TasksPage } from '../../pages/tasks/TasksPage'
@@ -35,6 +37,7 @@ import { UsersPage } from '../../pages/users/UsersPage'
 import { SettingsPage } from '../../pages/settings/SettingsPage'
 import { TemplatesPage } from '../../pages/templates/TemplatesPage'
 import { DataTableDemo } from '../../pages/playground/DataTableDemo'
+import { InternalChatPage } from '../../pages/chat/InternalChatPage'
 
 function NotFoundPage() {
   return (
@@ -43,14 +46,12 @@ function NotFoundPage() {
         404
       </div>
       <h1 className="text-2xl font-black text-[var(--text)]">الصفحة غير موجودة</h1>
-      <p className="mt-2 text-sm font-semibold text-[var(--text-muted)]">
-        الرابط الذي تحاول فتحه غير متاح أو تم تغييره.
-      </p>
+      <p className="mt-2 text-sm font-semibold text-[var(--text-muted)]">الرابط الذي تحاول فتحه غير متاح أو تم تغييره.</p>
       <Link
-        to="/customers"
+        to="/LeadsCenter"
         className="mt-5 inline-flex items-center rounded-xl bg-[#00C2CB] px-4 py-2 text-sm font-black text-white shadow-sm transition-colors hover:bg-[#007A80]"
       >
-        الرجوع إلى العملاء
+        الرجوع إلى مركز العملاء المحتملين
       </Link>
     </div>
   )
@@ -72,7 +73,7 @@ export const router = createBrowserRouter([
       { index: true, element: <DashboardPage /> },
       { path: 'leads', element: <LeadsPage /> },
       {
-        path: 'customers',
+        path: 'LeadsCenter',
         element: <CustomersLayout />,
         children: [
           { index: true, element: <CustomersPage /> },
@@ -88,6 +89,8 @@ export const router = createBrowserRouter([
           { path: 'trash', element: <DeletedCustomersPage /> },
           { path: 'settings', element: <CustomersSettingsPage /> },
           { path: 'status-board', element: <CustomerStatusBoardPage /> },
+          { path: 'activities', element: <CustomerActivitiesPage /> },
+          { path: 'activities/meeting/:meetingId', element: <MeetingDetailPage /> },
           { path: 'proposals', element: <CustomerProposalsPage /> },
           { path: 'proposals/templates', element: <CustomerProposalTemplatesPage /> },
           { path: 'proposals/:proposalId/builder', element: <CustomerProposalBuilderPage /> },
@@ -95,9 +98,14 @@ export const router = createBrowserRouter([
       },
       { path: 'lead/:customerId', element: <CustomerLeadDetailsPage /> },
       { path: 'leads/:customerId', element: <CustomerLeadDetailsPage /> },
+      { path: 'activities', element: <ActivitiesPage /> },
+      { path: 'activities/calls', element: <ActivitiesPage defaultType="call" /> },
+      { path: 'activities/meetings', element: <ActivitiesPage defaultType="meeting" /> },
+      { path: 'activities/calendar', element: <ActivitiesPage defaultView="calendar" /> },
       { path: 'conversations', element: <ConversationsPage /> },
       { path: 'campaigns', element: <CampaignsPage /> },
       { path: 'tasks', element: <TasksPage /> },
+      { path: 'team-chat', element: <InternalChatPage /> },
       {
         path: 'products',
         element: <ProductsLayout />,

@@ -7,7 +7,7 @@ export function formatDateTime(value) {
   if (!value) return '-'
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return fieldValue(value)
-  return date.toLocaleString('ar-EG')
+  return date.toLocaleString()
 }
 
 export function formatDateTime12(value) {
@@ -15,7 +15,7 @@ export function formatDateTime12(value) {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return fieldValue(value)
 
-  return date.toLocaleString('ar-EG', {
+  return date.toLocaleString(undefined, {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',

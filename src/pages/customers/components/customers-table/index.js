@@ -1,5 +1,7 @@
 export { CustomerMarketingSourceCell } from './CustomerMarketingSourceCell'
 export { CustomerProductsCell } from './CustomerProductsCell'
+export { CustomerProductsDialog } from './CustomerProductsDialog'
 export { CustomerPersonCell } from './CustomerPersonCell'
 export { CustomerLeadActivitiesCell } from './CustomerLeadActivitiesCell'
 export { enrichCustomerMarketingRow } from './customerMarketingUtils'
+export * from './CustomerTableHovers'

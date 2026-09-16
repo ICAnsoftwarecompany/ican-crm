@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Search, Plus, MoreHorizontal, Command, PanelLeft } from 'lucide-react'
+import { Search, Plus, MoreHorizontal, Command, PanelLeft, Users } from 'lucide-react'
 import { usePageHeaderStore } from '../../../store/pageHeaderStore'
 import { useAuthStore } from '../../../store/authStore'
 import { Avatar } from '../ui/Avatar'
@@ -10,7 +10,9 @@ import { MessengerLogoIcon, MessengerNavbarButton } from '../../../features/conv
 import { GmailNavbarButton } from '../../../features/conversations/components/GmailNavbarButton'
 import { WhatsappNavbarButton } from '../../../features/conversations/components/WhatsappNavbarButton'
 import { TasksNavbarButton } from '../../../features/tasks/components/TasksNavbarButton'
+import { InternalChatNavbarButton } from '../../../features/internal-chat'
 import { NotificationCenterButton } from '../../../features/notifications'
+import { LiveMeetingIndicator } from '../../../features/call-meetings'
 
 const PAGE_CHANNEL_ICONS = [
   {
@@ -30,6 +32,10 @@ export function Header({
   onToggleWhatsappSidebar,
   tasksSidebarOpen = false,
   onToggleTasksSidebar,
+  internalChatSidebarOpen = false,
+  onToggleInternalChatSidebar,
+  activeUsersSidebarOpen = false,
+  onToggleActiveUsersSidebar,
 }) {
   const { t } = useTranslation()
   const location = useLocation()
@@ -53,7 +59,7 @@ export function Header({
         paddingInlineStart: collapsed
           ? 'calc(var(--sidebar-collapsed) + 16px)'
           : 'calc(var(--sidebar-width) + 16px)',
-        paddingInlineEnd: messengerSidebarOpen || gmailSidebarOpen || whatsappSidebarOpen || tasksSidebarOpen
+        paddingInlineEnd: messengerSidebarOpen || gmailSidebarOpen || whatsappSidebarOpen || tasksSidebarOpen || internalChatSidebarOpen
           ? 'calc(var(--messenger-sidebar-width) + 16px)'
           : '16px',
       }}
@@ -81,6 +87,8 @@ export function Header({
 
         <NetworkStatusIndicator />
 
+        <LiveMeetingIndicator />
+
         <NotificationCenterButton />
 
         <MessengerNavbarButton
@@ -102,6 +110,27 @@ export function Header({
           active={tasksSidebarOpen}
           onClick={onToggleTasksSidebar}
         />
+
+        <InternalChatNavbarButton
+          active={internalChatSidebarOpen}
+          onClick={onToggleInternalChatSidebar}
+        />
+
+        <button
+          type="button"
+          onClick={onToggleActiveUsersSidebar}
+          className={[
+            'inline-flex h-8 items-center gap-1.5 rounded-lg border px-2 text-xs font-black transition-colors',
+            activeUsersSidebarOpen
+              ? 'border-[#7FDDE1] bg-[#F3FDFF] text-[#007A80]'
+              : 'border-[#E5E7EB] bg-white text-[#374151] hover:bg-[#F9FAFB]',
+          ].join(' ')}
+          aria-label="Active users"
+          title="المستخدمون النشطون"
+        >
+          <Users size={14} />
+          <span className="hidden md:inline">Active</span>
+        </button>
 
         <IconButton onClick={() => {}} aria-label={t('actions.search')}>
           <Search size={16} />

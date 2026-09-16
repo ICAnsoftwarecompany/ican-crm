@@ -2,11 +2,9 @@ import { useTranslation } from 'react-i18next'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { ArchiveRestore, X, Trash2 } from 'lucide-react'
+import { ArchiveRestore, Trash2 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { DataTable } from '../../shared/components/data-table'
-import { Button } from '../../shared/components/ui/Button'
-import { Input } from '../../shared/components/ui/Input'
 import { useLocalStorage } from '../../shared/components/data-table/hooks/useLocalStorage'
 import { NewCustomerDialog } from '../../features/customers/components/NewCustomerDialog'
 import { useCustomerMutations, useCustomers, useDeletedCustomers } from '../../features/customers/hooks/useCustomers'
@@ -24,10 +22,13 @@ import { getMessengerConversationId } from '../../features/conversations/utils/m
 import { useGmailConversations } from '../../features/conversations/hooks/useGmailConversations'
 import { getGmailConversationId } from '../../features/conversations/utils/gmailConversations'
 import { useLeadLogs } from '../../features/leads/hooks/useLeads'
-import { leadsApi } from '../../features/leads/api/leadsApi'
 import { definitionsApi } from '../../features/definitions/api/definitionsApi'
 import { requestOpenMessengerSidebar } from '../../features/conversations/constants/messengerSidebarEvents'
 import { extractLeadStatuses } from './utils/customerStatus'
+import { FollowUpNoteDialog } from './components/follow-up-note'
+import { MeetingDataDrawer, ScheduleActivityDialog } from '../../features/call-meetings'
+import { buildAfterMeetingReportUrl, buildScheduleStatusPayload } from '../../features/call-meetings/utils/scheduleUiUtils'
+import { useMeetingMutations } from '../../features/meetings/hooks/useMeetings'
 
 const ACTIVITY_RANGE_OPTIONS = [
   { value: 1, label: 'اليوم' },
@@ -119,6 +120,8 @@ function getTodayActivitiesByType(rows = [], type = 'meeting', nowTimestamp = Da
 
       list.push({
         id: `${normalizedType}-${customerId}-${activity?.id || index}-${activity?.start_at || ''}`,
+        activityId: resolveActivityId(activity),
+        type: normalizeActivityType(activity?.type) || normalizedType,
         customerName,
         title: activity?.title || activity?.description || '-',
         startAt: activity?.start_at,
@@ -174,6 +177,8 @@ function getActivitiesByTypeInRange(rows = [], type = 'meeting', nowTimestamp = 
 
       list.push({
         id: `${normalizedType}-${customerId}-${activity?.id || index}-${activity?.start_at || ''}`,
+        activityId: resolveActivityId(activity),
+        type: normalizeActivityType(activity?.type) || normalizedType,
         customerName,
         title: activity?.title || activity?.description || '-',
         startAt: activity?.start_at,
@@ -208,15 +213,25 @@ function formatBackendDateShort(value) {
 }
 
 function getActivityStatusLabel(status = '') {
-  if (status === 'scheduled') return 'Scheduled'
-  if (status === 'in_progress') return 'In Progress'
-  if (status === 'completed') return 'Completed'
-  if (status === 'cancelled') return 'Cancelled'
+  if (status === 'scheduled') return 'مجدول'
+  if (status === 'in_progress') return 'قيد التنفيذ'
+  if (status === 'completed') return 'مكتمل'
+  if (status === 'cancelled') return 'ملغي'
   return status || '-'
 }
 
 function normalizeText(value) {
   return String(value || '').trim().toLowerCase()
+}
+
+const FRESH_LEAD_TYPE = 'fresh lead'
+
+function getCustomerLeadType(customer = {}) {
+  return normalizeText(customer?.lead_type ?? customer?.lead?.lead_type)
+}
+
+function isFreshLeadCustomer(customer = {}) {
+  return getCustomerLeadType(customer) === FRESH_LEAD_TYPE
 }
 
 function normalizePhone(value) {
@@ -369,28 +384,6 @@ function buildLatestLeadNotesMap(logsPayload = {}) {
   return map
 }
 
-function formatDateTimeForApi(value) {
-  if (!value) return ''
-  return String(value).replace('T', ' ').slice(0, 16) + ':00'
-}
-
-function formatDateTimeLocalInput(value = new Date()) {
-  const date = value instanceof Date ? value : new Date(value)
-  if (Number.isNaN(date.getTime())) return ''
-
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  const hours = String(date.getHours()).padStart(2, '0')
-  const minutes = String(date.getMinutes()).padStart(2, '0')
-
-  return `${year}-${month}-${day}T${hours}:${minutes}`
-}
-
-function getStatusLabel(status) {
-  return status?.status || status?.name || status?.title || ''
-}
-
 function buildCustomerAttributeColumns(rows = []) {
   const keys = []
   const seen = new Set()
@@ -452,6 +445,17 @@ function isSameCustomerRow(first, second) {
 
 function normalizeActivityType(value = '') {
   return String(value || '').trim().toLowerCase()
+}
+
+function resolveActivityId(activity) {
+  const candidate = [
+    activity?.id,
+    activity?.meeting_id,
+    activity?.schedule_id,
+    activity?.activity_id,
+  ].find((value) => value !== null && value !== undefined && value !== '')
+
+  return candidate ?? null
 }
 
 function normalizePriority(value = '') {
@@ -557,30 +561,54 @@ function getPriorityRowClass(priority = '', urgent = false) {
 
 function getUpcomingActivityAlertClass(row, nowTimestamp) {
   const now = nowTimestamp
+  const lead = row?.lead || {}
+  const meetings = Array.isArray(lead?.meetings) ? lead.meetings : []
+
   const candidates = [
-    { type: 'meeting', data: resolveActivityByType(row, 'meeting'), defaultWindowMs: 60 * 60 * 1000 },
-    { type: 'call', data: resolveActivityByType(row, 'call'), defaultWindowMs: 30 * 60 * 1000 },
+    {
+      type: 'meeting',
+      defaultWindowMs: 60 * 60 * 1000,
+      data: meetings.filter((item) => normalizeActivityType(item?.type) === 'meeting'),
+      fallback: resolveActivityByType(row, 'meeting'),
+    },
+    {
+      type: 'call',
+      defaultWindowMs: 30 * 60 * 1000,
+      data: meetings.filter((item) => normalizeActivityType(item?.type) === 'call'),
+      fallback: resolveActivityByType(row, 'call'),
+    },
   ]
 
   const activeAlerts = candidates.flatMap((entry) => {
-    const activity = entry.data
-    if (!activity) return []
+    const sourceList = entry.data.length ? entry.data : (entry.fallback ? [entry.fallback] : [])
 
-    const status = normalizeStatus(activity?.status)
-    if (status !== 'scheduled') return []
+    return sourceList.flatMap((activity) => {
+      if (!activity) return []
 
-    const startAt = parseBackendLocalTimestamp(activity?.start_at)
-    if (Number.isNaN(startAt)) return []
+      const status = normalizeStatus(activity?.status)
+      const startAt = parseBackendLocalTimestamp(activity?.start_at)
+      const endAt = parseBackendLocalTimestamp(activity?.end_at)
 
-    const alertWindowMs = getReminderDurationMs(activity) || entry.defaultWindowMs
-    const alertStart = startAt - alertWindowMs
-    const isBeforeStartInWindow = now >= alertStart && now < startAt
-    if (!isBeforeStartInWindow) return []
+      // Keep row red when the activity exceeded its time.
+      const isOverdueScheduled = status === 'scheduled' && !Number.isNaN(startAt) && now >= startAt
+      const isOverdueInProgress = status === 'in_progress' && !Number.isNaN(endAt) && now >= endAt
+      if (isOverdueScheduled || isOverdueInProgress) {
+        return [{ priority: 'urgent', rank: 10, startAt: Number.isNaN(startAt) ? now : startAt }]
+      }
 
-    const priority = normalizePriority(activity?.priority)
-    const rank = priority === 'urgent' ? 4 : priority === 'high' ? 3 : priority === 'medium' ? 2 : priority === 'low' ? 1 : 0
+      if (status !== 'scheduled') return []
+      if (Number.isNaN(startAt)) return []
 
-    return [{ priority, rank, startAt }]
+      const alertWindowMs = getReminderDurationMs(activity) || entry.defaultWindowMs
+      const alertStart = startAt - alertWindowMs
+      const isBeforeStartInWindow = now >= alertStart && now < startAt
+      if (!isBeforeStartInWindow) return []
+
+      const priority = normalizePriority(activity?.priority)
+      const rank = priority === 'urgent' ? 4 : priority === 'high' ? 3 : priority === 'medium' ? 2 : priority === 'low' ? 1 : 0
+
+      return [{ priority, rank, startAt }]
+    })
   })
 
   if (!activeAlerts.length) return ''
@@ -589,6 +617,10 @@ function getUpcomingActivityAlertClass(row, nowTimestamp) {
     if (second.rank !== first.rank) return second.rank - first.rank
     return first.startAt - second.startAt
   })
+
+  if (activeAlerts[0].rank >= 10) {
+    return 'bg-[#FEE2E2] hover:!bg-[#FECACA]'
+  }
 
   return getPriorityRowClass(activeAlerts[0].priority, true)
 }
@@ -600,23 +632,25 @@ export function CustomersPage({ defaultShowTrash = false }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedCustomer, setSelectedCustomer] = useState(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+  const [detailsInitialTab, setDetailsInitialTab] = useState('timeline')
   const [isTableSettingsOpen, setIsTableSettingsOpen] = useState(false)
   const [selectedLeadStatusId, setSelectedLeadStatusId] = useLocalStorage('customers-active-lead-status-tab', null)
+  const [selectedLeadTypeTab, setSelectedLeadTypeTab] = useLocalStorage('customers-active-lead-type-tab', null)
   const [leadStatusTabs, setLeadStatusTabs] = useState([])
   const [flashRowKeys, setFlashRowKeys] = useState({})
+  const [freshLeadHasAlert, setFreshLeadHasAlert] = useState(false)
+  const [freshLeadMinutePulse, setFreshLeadMinutePulse] = useState(false)
   const [nowTimestamp, setNowTimestamp] = useState(Date.now())
   const [activeActivityDrawerType, setActiveActivityDrawerType] = useState(null)
+  const [activeActivityStatusFilter, setActiveActivityStatusFilter] = useState('all')
+  const [selectedActivityItem, setSelectedActivityItem] = useState(null)
   const [activityRangeDays, setActivityRangeDays] = useLocalStorage('customers-activity-drawer-range-days', 1)
   const [leadNoteDialogRow, setLeadNoteDialogRow] = useState(null)
-  const [leadNoteForm, setLeadNoteForm] = useState({
-    description: '',
-    note: '',
-    activity_at: formatDateTimeLocalInput(),
-  })
-  const [isSavingLeadNote, setIsSavingLeadNote] = useState(false)
+  const [scheduleDialog, setScheduleDialog] = useState(null)
   const customersQuery = useCustomers()
   const deletedQuery = useDeletedCustomers(showTrash)
   const mutations = useCustomerMutations()
+  const meetingMutations = useMeetingMutations()
   const messengerConversationsQuery = useMessengerConversations({ per_page: 100 })
   const gmailConversationsQuery = useGmailConversations({ per_page: 100 }, { enabled: !showTrash })
   const leadLogsQuery = useLeadLogs(undefined, {
@@ -630,6 +664,9 @@ export function CustomersPage({ defaultShowTrash = false }) {
     enabled: !showTrash,
     staleTime: 1000 * 60,
   })
+  const previousFreshLeadCountRef = useRef(null)
+  const freshLeadAlertTimeoutRef = useRef(null)
+  const freshLeadMinutePulseTimeoutRef = useRef(null)
   const previousUnreadByConversationRef = useRef(new Map())
   const flashTimeoutsRef = useRef(new Map())
 
@@ -657,7 +694,15 @@ export function CustomersPage({ defaultShowTrash = false }) {
       .map((row) => attachCustomerAttributeColumns(row, attributeColumns)),
     [attributeColumns, sourceRows]
   )
-  const filteredRows = filterCustomersByStatusId(normalizedRows, selectedLeadStatusId)
+  const freshLeadRows = useMemo(
+    () => normalizedRows.filter(isFreshLeadCustomer),
+    [normalizedRows]
+  )
+  const freshLeadActive = selectedLeadTypeTab === FRESH_LEAD_TYPE
+  const baseFilteredRows = freshLeadActive ? freshLeadRows : normalizedRows
+  const filteredRows = freshLeadActive
+    ? baseFilteredRows
+    : filterCustomersByStatusId(baseFilteredRows, selectedLeadStatusId)
   const activityRangeValue = Math.max(1, Number(activityRangeDays) || 1)
   const todayMeetings = useMemo(
     () => getActivitiesByTypeInRange(filteredRows, 'meeting', nowTimestamp, activityRangeValue),
@@ -671,6 +716,65 @@ export function CustomersPage({ defaultShowTrash = false }) {
   const error = showTrash ? deletedQuery.error : customersQuery.error
   const refetch = () => (showTrash ? deletedQuery.refetch() : customersQuery.refetch())
 
+  useEffect(() => {
+    if (showTrash || isLoading) return undefined
+
+    const currentCount = freshLeadRows.length
+    const previousCount = previousFreshLeadCountRef.current
+
+    if (previousCount === null) {
+      previousFreshLeadCountRef.current = currentCount
+      return undefined
+    }
+
+    if (currentCount > previousCount) {
+      setFreshLeadHasAlert(true)
+
+      if (freshLeadAlertTimeoutRef.current) {
+        window.clearTimeout(freshLeadAlertTimeoutRef.current)
+      }
+
+      freshLeadAlertTimeoutRef.current = window.setTimeout(() => {
+        setFreshLeadHasAlert(false)
+        freshLeadAlertTimeoutRef.current = null
+      }, 8000)
+    }
+
+    previousFreshLeadCountRef.current = currentCount
+    return undefined
+  }, [freshLeadRows.length, isLoading, showTrash])
+
+  useEffect(() => {
+    if (showTrash || isLoading || freshLeadRows.length === 0) {
+      setFreshLeadMinutePulse(false)
+      return undefined
+    }
+
+    const triggerPulse = () => {
+      setFreshLeadMinutePulse(true)
+
+      if (freshLeadMinutePulseTimeoutRef.current) {
+        window.clearTimeout(freshLeadMinutePulseTimeoutRef.current)
+      }
+
+      freshLeadMinutePulseTimeoutRef.current = window.setTimeout(() => {
+        setFreshLeadMinutePulse(false)
+        freshLeadMinutePulseTimeoutRef.current = null
+      }, 4200)
+    }
+
+    triggerPulse()
+    const intervalId = window.setInterval(triggerPulse, 60000)
+
+    return () => {
+      window.clearInterval(intervalId)
+      if (freshLeadMinutePulseTimeoutRef.current) {
+        window.clearTimeout(freshLeadMinutePulseTimeoutRef.current)
+        freshLeadMinutePulseTimeoutRef.current = null
+      }
+    }
+  }, [freshLeadRows.length, isLoading, showTrash])
+
   const messengerLookup = useMemo(() => buildMessengerLookup(messengerConversationsQuery.data || []), [messengerConversationsQuery.data])
   const gmailLookup = useMemo(() => buildGmailLookup(gmailConversationsQuery.data || []), [gmailConversationsQuery.data])
   const latestLeadNotes = useMemo(
@@ -681,21 +785,6 @@ export function CustomersPage({ defaultShowTrash = false }) {
     () => new Map((leadStatusesQuery.data || []).map((status) => [String(status?.id ?? ''), status])),
     [leadStatusesQuery.data]
   )
-
-  const getRowCurrentStatusTitle = useCallback((row) => {
-    const lead = row?.lead || {}
-    const statusId = lead?.status_type_id ?? row?.status_type_id ?? lead?.status?.id ?? row?.status?.id
-    const status = lead?.status || row?.status || statusById.get(String(statusId ?? ''))
-
-    return (
-      getStatusLabel(status) ||
-      lead?.status_title ||
-      lead?.status_name ||
-      row?.status_title ||
-      row?.status_name ||
-      'ملاحظة على العميل'
-    )
-  }, [statusById])
 
   const resolveMessengerChannel = useCallback((customer) => {
     const lead = customer?.lead || {}
@@ -746,61 +835,63 @@ export function CustomersPage({ defaultShowTrash = false }) {
 
   const handleOpenLeadNoteDialog = useCallback((row) => {
     setLeadNoteDialogRow(row)
-    setLeadNoteForm({
-      description: '',
-      note: '',
-      activity_at: formatDateTimeLocalInput(new Date()),
-    })
   }, [])
 
   const handleCloseLeadNoteDialog = useCallback(() => {
-    if (isSavingLeadNote) return
     setLeadNoteDialogRow(null)
-  }, [isSavingLeadNote])
+  }, [])
 
-  const handleSaveLeadNote = useCallback(async (event) => {
-    event.preventDefault()
+  const handleLeadNoteSaved = useCallback(async () => {
+    setLeadNoteDialogRow(null)
+    await Promise.allSettled([leadLogsQuery.refetch(), refetch()])
+  }, [leadLogsQuery, refetch])
 
-    if (!leadNoteDialogRow) return
+  const handleOpenScheduledActivityDialog = useCallback((row, type) => {
+    setScheduleDialog({ row, type })
+  }, [])
 
-    const lead = leadNoteDialogRow?.lead || {}
-    const leadId = lead?.id || leadNoteDialogRow?.lead_id || lead?.lead_id || leadNoteDialogRow?.customer?.lead_id
-    const description = String(leadNoteForm.description || '').trim()
-    const note = String(leadNoteForm.note || '').trim()
-    const text = description || note
+  const handleCloseScheduledActivityDialog = useCallback(() => {
+    setScheduleDialog(null)
+  }, [])
 
-    if (!leadId) {
-      toast.error('لا يوجد رقم Lead لهذا العميل')
-      return
-    }
+  const handleScheduledActivityCreated = useCallback(async () => {
+    setScheduleDialog(null)
+    await refetch()
+  }, [refetch])
 
-    if (!text) {
-      toast.error('اكتب الملاحظة أولا')
-      return
-    }
-
-    const payload = {
-      lead_id: leadId,
-      action: 'create_activity',
-      type: 'note-to-lead',
-      title: getRowCurrentStatusTitle(leadNoteDialogRow),
-      description: text,
-      note: note || text,
-      activity_at: formatDateTimeForApi(leadNoteForm.activity_at || formatDateTimeLocalInput(new Date())),
-    }
+  const handleChangeScheduledActivityStatus = useCallback(async (status, activity) => {
+    const meetingId = activity?.id
+    if (!meetingId || !status) return
 
     try {
-      setIsSavingLeadNote(true)
-      await leadsApi.saveAction(payload)
-      toast.success('تمت إضافة الملاحظة')
-      setLeadNoteDialogRow(null)
-      await Promise.allSettled([leadLogsQuery.refetch(), refetch()])
+      await meetingMutations.changeStatus.mutateAsync({
+        meetingId,
+        payload: buildScheduleStatusPayload(status),
+      })
+
+      if (status === 'in_progress') {
+        toast.success('تم بدء النشاط بنجاح')
+      } else if (status === 'cancelled') {
+        toast.success('تم إلغاء النشاط بنجاح')
+      } else if (status === 'completed') {
+        toast.success('تم إنهاء النشاط بنجاح')
+      } else {
+        toast.success('تم تحديث حالة النشاط')
+      }
+
+      if (status === 'completed') {
+        const afterReportUrl = buildAfterMeetingReportUrl(activity)
+        if (afterReportUrl) {
+          navigate(afterReportUrl)
+          return
+        }
+      }
+
+      await refetch()
     } catch (error) {
-      toast.error(error?.response?.data?.message || error?.message || 'تعذر إضافة الملاحظة')
-    } finally {
-      setIsSavingLeadNote(false)
+      toast.error(error?.response?.data?.message || error?.message || 'تعذر تحديث حالة النشاط')
     }
-  }, [getRowCurrentStatusTitle, leadLogsQuery, leadNoteDialogRow, leadNoteForm.activity_at, leadNoteForm.description, leadNoteForm.note, refetch])
+  }, [meetingMutations.changeStatus, navigate, refetch])
 
   useEffect(() => {
     if (showTrash) return undefined
@@ -861,6 +952,16 @@ export function CustomersPage({ defaultShowTrash = false }) {
   }, [messengerConversationsQuery.data, resolveMessengerChannel, showTrash, sourceRows])
 
   useEffect(() => () => {
+    if (freshLeadAlertTimeoutRef.current) {
+      window.clearTimeout(freshLeadAlertTimeoutRef.current)
+      freshLeadAlertTimeoutRef.current = null
+    }
+
+    if (freshLeadMinutePulseTimeoutRef.current) {
+      window.clearTimeout(freshLeadMinutePulseTimeoutRef.current)
+      freshLeadMinutePulseTimeoutRef.current = null
+    }
+
     flashTimeoutsRef.current.forEach((timeoutId) => {
       window.clearTimeout(timeoutId)
     })
@@ -871,7 +972,10 @@ export function CustomersPage({ defaultShowTrash = false }) {
     if (showTrash) return ''
 
     const classes = []
-    if (isDetailsOpen && isSameCustomerRow(row, selectedCustomer)) {
+    if (
+      (isDetailsOpen && isSameCustomerRow(row, selectedCustomer))
+      || (scheduleDialog?.row && isSameCustomerRow(row, scheduleDialog.row))
+    ) {
       classes.push('customers-active-drawer-row')
     }
 
@@ -880,22 +984,38 @@ export function CustomersPage({ defaultShowTrash = false }) {
 
     const rowKey = getCustomerRowKey(row)
     if (flashRowKeys[rowKey]) classes.push('bg-[#FFF5F5] hover:!bg-[#FFECEC]')
+    if (freshLeadMinutePulse && isFreshLeadCustomer(row)) classes.push('customers-fresh-lead-minute-alert')
 
     if (!scheduleAlertClass && !flashRowKeys[rowKey] && classes.includes('customers-active-drawer-row')) {
       classes.push('bg-[#E8F9FA] hover:!bg-[#DDF6F8]')
     }
 
     return classes.join(' ')
-  }, [flashRowKeys, isDetailsOpen, nowTimestamp, selectedCustomer, showTrash])
+  }, [flashRowKeys, freshLeadMinutePulse, isDetailsOpen, nowTimestamp, scheduleDialog, selectedCustomer, showTrash])
 
-  const activeActivityList = activeActivityDrawerType === 'meeting' ? todayMeetings : todayCalls
+  const activeActivityList = (activeActivityDrawerType === 'meeting' ? todayMeetings : todayCalls)
+    .filter((item) => {
+      if (activeActivityStatusFilter === 'all') return true
+      return String(item?.status || '').trim().toLowerCase() === activeActivityStatusFilter
+    })
+
+  const activityStatusOptions = [
+    { value: 'all', label: 'كل الحالات' },
+    { value: 'scheduled', label: 'مجدول' },
+    { value: 'in_progress', label: 'قيد التنفيذ' },
+    { value: 'completed', label: 'مكتمل' },
+    { value: 'cancelled', label: 'ملغي' },
+  ]
 
   const handleToggleActivityDrawer = useCallback((type) => {
+    setSelectedActivityItem(null)
+    setActiveActivityStatusFilter('all')
     setActiveActivityDrawerType((current) => (current === type ? null : type))
   }, [])
 
-  const openCustomerDetails = (customer) => {
+  const openCustomerDetails = (customer, options = {}) => {
     setSelectedCustomer(customer)
+    setDetailsInitialTab(options.initialTab || 'timeline')
     setIsDetailsOpen(true)
   }
 
@@ -914,6 +1034,22 @@ export function CustomersPage({ defaultShowTrash = false }) {
 
     openCustomerDetails(customer)
   }
+
+  const handleLeadStatusTabChange = useCallback((status) => {
+    setSelectedLeadTypeTab(null)
+    setSelectedLeadStatusId(status?.id ?? null)
+  }, [setSelectedLeadStatusId, setSelectedLeadTypeTab])
+
+  const handleFreshLeadTabClick = useCallback(() => {
+    setSelectedLeadTypeTab((current) => (current === FRESH_LEAD_TYPE ? null : FRESH_LEAD_TYPE))
+    setSelectedLeadStatusId(null)
+    setFreshLeadHasAlert(false)
+
+    if (freshLeadAlertTimeoutRef.current) {
+      window.clearTimeout(freshLeadAlertTimeoutRef.current)
+      freshLeadAlertTimeoutRef.current = null
+    }
+  }, [setSelectedLeadStatusId, setSelectedLeadTypeTab])
 
   const handlePageDoubleClick = (event) => {
     if (!isDetailsOpen || event.button !== 0) return
@@ -947,6 +1083,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
       const nextIndex = (currentIndex + direction + tabs.length) % tabs.length
       const nextStatus = tabs[nextIndex]
 
+      setSelectedLeadTypeTab(null)
       setSelectedLeadStatusId(nextStatus?.id ?? null)
     }
 
@@ -955,7 +1092,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
     return () => {
       document.removeEventListener('keydown', handleStatusTabsShortcut)
     }
-  }, [leadStatusTabs, selectedLeadStatusId, setSelectedLeadStatusId, showTrash])
+  }, [leadStatusTabs, selectedLeadStatusId, setSelectedLeadStatusId, setSelectedLeadTypeTab, showTrash])
 
   const handleCustomerStatusChanged = ({ customer, newStatus, actionType, activityType, activityTitle }) => {
     const customerName = customer?.name || customer?.email || customer?.phone || 'العميل'
@@ -1098,6 +1235,52 @@ export function CustomersPage({ defaultShowTrash = false }) {
     ]
   }
 
+  const getRowContextActions = useCallback(({ row }) => {
+    if (!row || showTrash) return []
+
+    const customerName = row?.lead?.name || row?.name || row?.email || row?.phone || `#${row?.id || row?.customer_id || ''}`
+
+    return [
+      {
+        id: 'customers-page-table-customization',
+        label: 'تخصيص الجدول',
+        section: 'اعدادات إضافية',
+        tab: 'format',
+        onClick: () => setIsTableSettingsOpen(true),
+      },
+      {
+        id: 'customers-row-add-meeting',
+        label: 'اضافة موعد اجتماع',
+        section: 'إجراءات العميل',
+        tab: 'actions',
+        onClick: () => handleOpenScheduledActivityDialog(row, 'meeting'),
+      },
+      {
+        id: 'customers-row-add-call',
+        label: 'اضافة موعد مكالمة',
+        section: 'إجراءات العميل',
+        tab: 'actions',
+        onClick: () => handleOpenScheduledActivityDialog(row, 'call'),
+      },
+      {
+        id: 'customers-row-add-follow-up',
+        label: 'اضافة متابعة علي العميل',
+        section: 'إجراءات العميل',
+        tab: 'actions',
+        onClick: () => handleOpenLeadNoteDialog(row),
+      },
+      {
+        id: 'customers-row-toggle-selection',
+        label: `تحديد العميل: ${customerName}`,
+        section: 'إجراءات العميل',
+        tab: 'actions',
+        onClick: (_targetRow, context) => {
+          context?.toggleSelection?.()
+        },
+      },
+    ]
+  }, [handleOpenLeadNoteDialog, handleOpenScheduledActivityDialog, setIsTableSettingsOpen, showTrash])
+
   const { columns, serialColumnRender } = useCustomersTableColumns({
     t,
     showTrash,
@@ -1110,6 +1293,9 @@ export function CustomersPage({ defaultShowTrash = false }) {
     onOpenGmail: handleOpenGmailFromChannel,
     onOpenDetails: openCustomerDetails,
     onAddLeadNote: handleOpenLeadNoteDialog,
+    onAddScheduledActivity: handleOpenScheduledActivityDialog,
+    onChangeScheduledActivityStatus: handleChangeScheduledActivityStatus,
+    customerRows: normalizedRows,
     onDelete: handleDelete,
     onRestore: handleRestore,
     onForceDelete: handleForceDelete,
@@ -1128,18 +1314,32 @@ export function CustomersPage({ defaultShowTrash = false }) {
             inset 0 -1px 0 #67DCE2,
             inset 4px 0 0 #00AEB8;
         }
+
+        @keyframes customers-fresh-lead-minute-pulse {
+          0%, 100% {
+            background-color: inherit;
+            box-shadow: inset 0 0 0 rgba(34, 197, 94, 0);
+          }
+          25%, 65% {
+            background-color: #F0FDF4;
+            box-shadow: inset 0 0 0 9999px rgba(34, 197, 94, 0.08), inset 0 0 0 1px #86EFAC;
+          }
+        }
+
+        .customers-fresh-lead-minute-alert > td {
+          animation: customers-fresh-lead-minute-pulse 4.2s ease-in-out both;
+        }
+
+        .customers-fresh-lead-minute-alert > td:first-child {
+          box-shadow: inset 4px 0 0 #22C55E;
+        }
       `}</style>
       <CustomersPageHeader
-        title={showTrash ? 'العملاء المحذوفون' : t('customers.title')}
-        description={
-          showTrash
-            ? 'مراجعة العملاء المحذوفين واسترجاع السجلات عند الحاجة.'
-            : 'إدارة بيانات العملاء، المتابعة، التصنيف والإجراءات الجماعية.'
-        }
+        title={showTrash ? 'السجلات المحذوفة' : t('customers.title')}
         onAdd={!showTrash ? () => setIsDialogOpen(true) : undefined}
-        onImport={!showTrash ? () => navigate('/customers/import-export') : undefined}
-        onExport={() => navigate('/customers/import-export')}
-        onTrash={() => navigate(showTrash ? '/customers' : '/customers/trash')}
+        onImport={!showTrash ? () => navigate('/LeadsCenter/import-export') : undefined}
+        onExport={() => navigate('/LeadsCenter/import-export')}
+        onTrash={() => navigate(showTrash ? '/LeadsCenter' : '/LeadsCenter/trash')}
         trashActive={showTrash}
         onTableSettings={() => setIsTableSettingsOpen(true)}
       />
@@ -1169,16 +1369,20 @@ export function CustomersPage({ defaultShowTrash = false }) {
       {!showTrash && (
         <LeadStatusTabs
           selectedStatusId={selectedLeadStatusId}
-          onStatusChange={(status) => setSelectedLeadStatusId(status?.id ?? null)}
+          onStatusChange={handleLeadStatusTabChange}
           onStatusesChange={setLeadStatusTabs}
           customers={sourceRows}
+          freshLeadCount={freshLeadRows.length}
+          freshLeadActive={freshLeadActive}
+          freshLeadHasAlert={freshLeadHasAlert}
+          onFreshLeadClick={handleFreshLeadTabClick}
           activeActivityDrawerType={activeActivityDrawerType}
           onToggleActivityDrawer={handleToggleActivityDrawer}
           meetingsTodayCount={todayMeetings.length}
           callsTodayCount={todayCalls.length}
           onOpenMultiView={() => {
             const query = selectedLeadStatusId ? `?statuses=${selectedLeadStatusId}` : ''
-            navigate(`/customers/status-board${query}`)
+            navigate(`/LeadsCenter/status-board${query}`)
           }}
         />
       )}
@@ -1198,6 +1402,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
             onRowDoubleClick={handleRowDoubleClick}
             rowClassName={getRowClassName}
             selectionContextActions={getSelectionContextActions}
+            rowContextActions={getRowContextActions}
             serialColumnRender={serialColumnRender}
             toolbarActions={!showTrash ? ({ selectedRows, selectedCount, clearSelection }) => (
               <CustomersBulkActions
@@ -1211,7 +1416,9 @@ export function CustomersPage({ defaultShowTrash = false }) {
             emptyMessage={
               showTrash
                 ? 'لا توجد عناصر في سلة المحذوفات'
-                : true
+                : freshLeadActive
+                  ? t('customers.noFreshLeads')
+                  : true
                   ? t('customers.noCustomers')
                   : 'اختر حالة العميل أولًا لعرض العملاء'
             }
@@ -1269,14 +1476,41 @@ export function CustomersPage({ defaultShowTrash = false }) {
               </div>
             </div>
 
+            <div className="border-b border-[#E8EEF0] px-2 py-2">
+              <div className="flex flex-wrap gap-1.5">
+                {activityStatusOptions.map((option) => {
+                  const isSelected = activeActivityStatusFilter === option.value
+
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setActiveActivityStatusFilter(option.value)}
+                      className={`rounded-full border px-2.5 py-1 text-[10px] font-black transition-colors ${
+                        isSelected
+                          ? activeActivityDrawerType === 'meeting'
+                            ? 'border-[#BEEFF2] bg-[#E8F9FA] text-[#007A80]'
+                            : 'border-[#F8C3C3] bg-[#FFF1F2] text-[#B91C1C]'
+                          : 'border-[#E2E8F0] bg-white text-[#475569] hover:bg-[#F8FAFC]'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
             <div className="space-y-2 p-2 xl:h-[calc(100%-98px)] xl:overflow-y-auto">
               {activeActivityList.length ? activeActivityList.map((item) => (
-                <div
+                <button
                   key={item.id}
-                  className={`rounded-lg border px-2.5 py-2 ${
+                  type="button"
+                  onClick={() => setSelectedActivityItem(item)}
+                  className={`block w-full rounded-lg border px-2.5 py-2 text-left transition-colors ${
                     activeActivityDrawerType === 'meeting'
-                      ? 'border-[#D7EEF0] bg-[#F8FEFF]'
-                      : 'border-[#FADADA] bg-[#FFF8F8]'
+                      ? 'border-[#D7EEF0] bg-[#F8FEFF] hover:bg-[#F0FEFF]'
+                      : 'border-[#FADADA] bg-[#FFF8F8] hover:bg-[#FFF2F2]'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -1296,7 +1530,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
                       </span>
                     ) : null}
                   </div>
-                </div>
+                </button>
               )) : (
                 <div className="rounded-lg border border-dashed border-[#D7EEF0] px-2 py-3 text-center text-xs font-semibold text-[var(--text-muted)]">
                   {activeActivityDrawerType === 'meeting'
@@ -1316,11 +1550,26 @@ export function CustomersPage({ defaultShowTrash = false }) {
         isLoading={mutations.create.isPending}
       />
 
+      {selectedActivityItem ? (
+        <MeetingDataDrawer
+          open={Boolean(selectedActivityItem)}
+          onClose={() => setSelectedActivityItem(null)}
+          meetingId={selectedActivityItem?.activityId}
+          schedule={{
+            id: selectedActivityItem?.activityId,
+            type: selectedActivityItem?.type || activeActivityDrawerType,
+            status: selectedActivityItem?.status,
+          }}
+          allowComplete
+        />
+      ) : null}
+
       <CustomerDetailsDrawer
         customer={selectedCustomer}
         open={isDetailsOpen}
         onClose={() => setIsDetailsOpen(false)}
         onStatusChanged={handleCustomerStatusChanged}
+        initialTab={detailsInitialTab}
       />
 
       <TableSettingsDrawer
@@ -1328,103 +1577,24 @@ export function CustomersPage({ defaultShowTrash = false }) {
         onClose={() => setIsTableSettingsOpen(false)}
       />
 
-      {leadNoteDialogRow && (
-        <div className="fixed inset-0 z-[180] flex items-center justify-center p-4" dir="rtl">
-          <button
-            type="button"
-            aria-label="إغلاق نافذة إضافة الملاحظة"
-            className="absolute inset-0 cursor-default bg-slate-950/30 backdrop-blur-[2px]"
-            onClick={handleCloseLeadNoteDialog}
-          />
+      <FollowUpNoteDialog
+        open={Boolean(leadNoteDialogRow)}
+        customer={leadNoteDialogRow}
+        statuses={leadStatusesQuery.data || []}
+        currentStatus={leadNoteDialogRow ? statusById.get(String(leadNoteDialogRow?.lead?.status_type_id ?? leadNoteDialogRow?.status_type_id)) : null}
+        onClose={handleCloseLeadNoteDialog}
+        onSaved={handleLeadNoteSaved}
+      />
 
-          <form
-            onSubmit={handleSaveLeadNote}
-            className="relative z-10 w-[min(560px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-[#BFEFF2] bg-white shadow-2xl"
-          >
-            <div className="flex items-start justify-between gap-3 border-b border-[#E5F6F7] bg-[#F7FEFF] px-5 py-4">
-              <div className="min-w-0">
-                <p className="text-xs font-bold text-[#008C95]">إضافة ملاحظة</p>
-                <h3 className="mt-1 truncate text-lg font-black text-[#102A43]">
-                  {leadNoteDialogRow?.lead?.name || leadNoteDialogRow?.name || 'العميل'}
-                </h3>
-                <p className="mt-1 text-xs font-semibold text-[#64748B]">
-                  عنوان الملاحظة: {getRowCurrentStatusTitle(leadNoteDialogRow)}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleCloseLeadNoteDialog}
-                disabled={isSavingLeadNote}
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#D7EEF0] bg-white text-[#64748B] transition-colors hover:bg-[#ECFEFF] hover:text-[#008C95] disabled:cursor-not-allowed disabled:opacity-60"
-                aria-label="إغلاق"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <div className="space-y-4 px-5 py-4">
-              <Input
-                label="وقت النشاط"
-                type="datetime-local"
-                value={leadNoteForm.activity_at}
-                onChange={(event) => {
-                  setLeadNoteForm((current) => ({
-                    ...current,
-                    activity_at: event.target.value,
-                  }))
-                }}
-              />
-
-              <label className="flex flex-col gap-1.5">
-                <span className="text-sm font-medium font-arabic text-[var(--text)]">وصف الملاحظة</span>
-                <textarea
-                  value={leadNoteForm.description}
-                  onChange={(event) => {
-                    setLeadNoteForm((current) => ({
-                      ...current,
-                      description: event.target.value,
-                    }))
-                  }}
-                  rows={4}
-                  placeholder="اكتب تفاصيل الملاحظة التي ستظهر في آخر ملاحظة على العميل"
-                  className="min-h-28 w-full resize-y rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-arabic text-[var(--text)] outline-none transition-colors placeholder:text-[var(--text-light)] focus:border-transparent focus:ring-2 focus:ring-[#00C2CB]"
-                />
-              </label>
-
-              <label className="flex flex-col gap-1.5">
-                <span className="text-sm font-medium font-arabic text-[var(--text)]">ملاحظة داخلية</span>
-                <textarea
-                  value={leadNoteForm.note}
-                  onChange={(event) => {
-                    setLeadNoteForm((current) => ({
-                      ...current,
-                      note: event.target.value,
-                    }))
-                  }}
-                  rows={3}
-                  placeholder="اختياري، وإذا تركتها فارغة سيتم استخدام وصف الملاحظة"
-                  className="min-h-20 w-full resize-y rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-arabic text-[var(--text)] outline-none transition-colors placeholder:text-[var(--text-light)] focus:border-transparent focus:ring-2 focus:ring-[#00C2CB]"
-                />
-              </label>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-end gap-2 border-t border-[#E5F6F7] bg-[#FBFEFF] px-5 py-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCloseLeadNoteDialog}
-                disabled={isSavingLeadNote}
-              >
-                إلغاء
-              </Button>
-              <Button type="submit" variant="accent" loading={isSavingLeadNote}>
-                حفظ الملاحظة
-              </Button>
-            </div>
-          </form>
-        </div>
-      )}
+      <ScheduleActivityDialog
+        type={scheduleDialog?.type}
+        isOpen={Boolean(scheduleDialog?.type)}
+        onClose={handleCloseScheduledActivityDialog}
+        customer={scheduleDialog?.row}
+        relatedType="customer"
+        presentation="drawer"
+        onCreated={handleScheduledActivityCreated}
+      />
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '../../utils/cn'
 
@@ -27,6 +28,11 @@ export function AppDrawer({
   minWidth = 300,
   maxWidth = 900,
   topOffset = 0,
+  containerClassName,
+  portal = false,
+  headerActions,
+  inlineEndOffset,
+  offsetCssVariable,
 }) {
   const panelRef = useRef(null)
   const defaultWidth = sizes[size] || sizes.md
@@ -118,6 +124,18 @@ export function AppDrawer({
     }
   }, [drawerWidth, open, pushPage, pushPageMinWidth, pushPageOffset, size])
 
+  useEffect(() => {
+    if (!offsetCssVariable) return undefined
+
+    if (open) {
+      document.documentElement.style.setProperty(offsetCssVariable, `${Math.round(drawerWidth)}px`)
+    }
+
+    return () => {
+      document.documentElement.style.setProperty(offsetCssVariable, '0px')
+    }
+  }, [drawerWidth, offsetCssVariable, open])
+
   const handleResizeStart = (event) => {
     if (!resizable) return
 
@@ -151,17 +169,18 @@ export function AppDrawer({
 
   const drawerId = `drawer-${title?.replace(/\s+/g, '-')}`
   const descriptionId = description ? `${drawerId}-description` : undefined
-  const rightSidebarOffset = avoidRightSidebar ? 'var(--layout-right-sidebar-offset, 0px)' : '0px'
+  const rightSidebarOffset = inlineEndOffset || (avoidRightSidebar ? 'var(--layout-right-sidebar-offset, 0px)' : '0px')
   const resolvedTopOffset = typeof topOffset === 'number'
     ? `${Math.max(topOffset, 0)}px`
     : (String(topOffset || '0px').trim() || '0px')
   const containerInlineSize = closeOnBackdrop ? 'auto' : `${Math.round(drawerWidth) + 8}px`
 
-  return (
+  const drawerNode = (
     <div
       className={cn(
         'fixed bg-transparent z-50',
-        closeOnBackdrop ? 'start-0' : ''
+        closeOnBackdrop ? 'start-0' : '',
+        containerClassName
       )}
       style={{
         top: resolvedTopOffset,
@@ -217,6 +236,11 @@ export function AppDrawer({
           <span className="ms-2 hidden shrink-0 rounded-md border border-[var(--border)] bg-[var(--surface-2)] px-2 py-1 text-[11px] font-semibold text-[var(--text-muted)] sm:inline">
             Esc
           </span>
+          {headerActions ? (
+            <div className="ms-2 flex shrink-0 items-center gap-1">
+              {headerActions}
+            </div>
+          ) : null}
           <button
             onClick={onClose}
             title="Close - Esc"
@@ -237,4 +261,10 @@ export function AppDrawer({
       </div>
     </div>
   )
+
+  if (portal && typeof document !== 'undefined') {
+    return createPortal(drawerNode, document.body)
+  }
+
+  return drawerNode
 }

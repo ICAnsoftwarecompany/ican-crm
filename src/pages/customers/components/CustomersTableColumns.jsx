@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { PanelRightOpen, Plus } from 'lucide-react'
 
@@ -15,6 +15,12 @@ import {
   CustomerPersonCell,
   CustomerProductsCell,
 } from './customers-table'
+import {
+  CustomerLeadNoteHoverDetails,
+  CustomerNotePreviewHover,
+  CustomerScheduledActivityHoverDetails,
+  CustomerTableHoverCard,
+} from './customers-table/CustomerTableHovers'
 
 function collectObjects(value, matcher) {
   if (!value) return []
@@ -54,7 +60,7 @@ function formatDateTime(value) {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return value
 
-  return date.toLocaleString('ar-EG', {
+  return date.toLocaleString(undefined, {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -103,6 +109,27 @@ function getLead(row) {
   return row?.lead || {}
 }
 
+const FRESH_LEAD_TYPE = 'fresh lead'
+
+function isFreshLeadRow(row) {
+  return String(row?.__leadType || row?.lead_type || getLead(row).lead_type || '')
+    .trim()
+    .toLowerCase() === FRESH_LEAD_TYPE
+}
+
+function FreshLeadBadge({ label, compact = false }) {
+  return (
+    <span
+      className={`inline-flex shrink-0 items-center rounded-full border border-[#BBF7D0] bg-[#F0FDF4] font-black leading-none text-[#166534] ${
+        compact ? 'max-w-20 px-1.5 py-0.5 text-[9px]' : 'px-2 py-0.5 text-[10px]'
+      }`}
+      title={label}
+    >
+      <span className="truncate">{label}</span>
+    </span>
+  )
+}
+
 function getCustomerNoteActivity(row) {
   const lead = getLead(row)
   const activities = [
@@ -137,21 +164,6 @@ function CustomerNotePreview({
   label = 'ملاحظة',
   tone = 'slate',
 }) {
-  const [visible, setVisible] = useState(false)
-  const timerRef = useRef(null)
-
-  const showDelayed = () => {
-    window.clearTimeout(timerRef.current)
-    timerRef.current = window.setTimeout(() => setVisible(true), 500)
-  }
-
-  const hide = () => {
-    window.clearTimeout(timerRef.current)
-    setVisible(false)
-  }
-
-  useEffect(() => () => window.clearTimeout(timerRef.current), [])
-
   if (!note) return null
 
   const toneClasses = tone === 'teal'
@@ -159,36 +171,17 @@ function CustomerNotePreview({
     : 'border-[#E2E8F0] bg-[#F8FAFC] text-[#64748B]'
 
   return (
-    <div
-      className="relative"
-      onMouseEnter={showDelayed}
-      onMouseLeave={hide}
-      onFocus={showDelayed}
-      onBlur={hide}
+    <CustomerTableHoverCard
+      content={<CustomerNotePreviewHover note={note} activityAt={activityAt} title={title} userName={userName} />}
+      width={360}
+      estimatedHeight={180}
+      wrapperClassName="relative"
     >
       <div className={`line-clamp-2 break-words rounded-md border px-2 py-1 text-[11px] font-semibold leading-5 ${toneClasses}`}>
         <span className="me-1 font-black">{label}:</span>
         <span>{note}</span>
       </div>
-      {visible ? (
-        <div className="absolute start-0 top-full z-[140] mt-1 w-[min(360px,80vw)] rounded-xl border border-[#D8E7EA] bg-white px-3 py-2 text-xs font-bold text-[#334155] shadow-2xl">
-          <div className="whitespace-pre-wrap break-words leading-6">{note}</div>
-          <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-[#EEF4F5] pt-2 text-[11px] text-[#64748B]">
-            {title ? (
-              <span className="rounded-full bg-[#F8FAFC] px-2 py-0.5">{title}</span>
-            ) : null}
-            {activityAt ? (
-              <span className="rounded-full bg-[#E8F9FA] px-2 py-0.5 text-[#007A80]">
-                {formatDateTime(activityAt)}
-              </span>
-            ) : null}
-            {userName ? (
-              <span className="rounded-full bg-[#F8FAFC] px-2 py-0.5">{userName}</span>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
-    </div>
+    </CustomerTableHoverCard>
   )
 }
 
@@ -199,35 +192,61 @@ function getLatestLeadNote(row, latestLeadNotes) {
 }
 
 function DelayedFullTextHover({ text = '', children }) {
-  const [visible, setVisible] = useState(false)
-  const timerRef = useRef(null)
-
-  const showDelayed = () => {
-    window.clearTimeout(timerRef.current)
-    timerRef.current = window.setTimeout(() => setVisible(true), 500)
-  }
-
-  const hide = () => {
-    window.clearTimeout(timerRef.current)
-    setVisible(false)
-  }
-
-  useEffect(() => () => window.clearTimeout(timerRef.current), [])
-
   return (
-    <div
-      className="relative"
-      onMouseEnter={showDelayed}
-      onMouseLeave={hide}
-      onFocus={showDelayed}
-      onBlur={hide}
+    <CustomerTableHoverCard
+      content={text}
+      width={420}
+      estimatedHeight={260}
+      wrapperClassName="relative"
+      cardClassName="font-bold leading-6 text-[#334155]"
     >
       {children}
-      {visible && text ? (
-        <div className="absolute start-0 top-full z-[120] mt-1 max-h-64 w-[min(420px,80vw)] overflow-y-auto rounded-xl border border-[#D8E7EA] bg-white p-3 text-xs font-bold leading-6 text-[#334155] shadow-2xl">
-          {text}
-        </div>
+    </CustomerTableHoverCard>
+  )
+}
+
+function LeadNoteHoverDetails({ activity }) {
+  const data = activity?.data && typeof activity.data === 'object' ? activity.data : null
+  const rows = [
+    { label: 'الملاحظة', value: activity?.note || activity?.data?.note || activity?.description },
+    { label: 'العنوان', value: activity?.title },
+    { label: 'النوع', value: activity?.type },
+    { label: 'التاريخ', value: formatDateTime(activity?.activity_at) },
+    { label: 'تاريخ الإنشاء', value: formatDateTime(activity?.created_at) },
+    { label: 'آخر تحديث', value: formatDateTime(activity?.updated_at) },
+    { label: 'المستخدم', value: activity?.user?.name || activity?.user?.username },
+    { label: 'بريد المستخدم', value: activity?.user?.email },
+    { label: 'User ID', value: activity?.user_id || activity?.user?.id },
+    { label: 'Log ID', value: activity?.user_lead_log_id || activity?.id },
+  ].filter((item) => item.value && item.value !== '-')
+
+  return (
+    <div className="space-y-3">
+      <div className="text-sm font-black text-[#007A80]">بيانات المتابعة</div>
+      <div className="grid gap-1.5 sm:grid-cols-2">
+        {rows.map((item) => (
+          <div key={item.label} className="min-w-0 rounded-lg border border-[#E2E8F0] bg-white px-2 py-1.5">
+            <div className="text-[10px] font-black text-[#64748B]">{item.label}</div>
+            <div className="mt-0.5 whitespace-pre-wrap break-words text-xs font-bold text-[var(--text)]">
+              {item.value}
+            </div>
+          </div>
+        ))}
+      </div>
+      {data ? (
+        <details className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-2">
+          <summary className="cursor-pointer text-[11px] font-black text-[#007A80]">بيانات إضافية</summary>
+          <pre className="mt-2 max-h-36 overflow-auto whitespace-pre-wrap break-words text-[11px] leading-5 text-[#334155]">
+            {JSON.stringify(data, null, 2)}
+          </pre>
+        </details>
       ) : null}
+      <details className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-2">
+        <summary className="cursor-pointer text-[11px] font-black text-[#007A80]">كل بيانات المتابعة</summary>
+        <pre className="mt-2 max-h-44 overflow-auto whitespace-pre-wrap break-words text-[11px] leading-5 text-[#334155]">
+          {JSON.stringify(activity, null, 2)}
+        </pre>
+      </details>
     </div>
   )
 }
@@ -253,7 +272,7 @@ function LatestLeadNoteCell({ row, latestLeadNotes, onAddLeadNote }) {
 
   if (!activity) {
     return (
-      <div className="flex min-w-[220px] items-center gap-2">
+      <div className="flex w-full min-w-0 items-center gap-2">
         {addButton}
         <span className="text-xs font-semibold text-[var(--text-muted)]">-</span>
       </div>
@@ -266,26 +285,30 @@ function LatestLeadNoteCell({ row, latestLeadNotes, onAddLeadNote }) {
   const userName = renderNullable(activity?.user?.name)
 
   return (
-    <div className="min-w-[260px] max-w-full space-y-1.5">
+    <div className="w-full min-w-0 max-w-full space-y-1.5">
       <div className="flex items-start gap-2">
         {addButton}
         <div className="min-w-0 flex-1">
-          <DelayedFullTextHover text={note}>
+          <CustomerTableHoverCard
+            content={<CustomerLeadNoteHoverDetails activity={activity} />}
+            width={480}
+            estimatedHeight={340}
+          >
             <div className="line-clamp-2 break-words rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-2.5 py-1.5 text-xs font-bold leading-5 text-[var(--text)]">
               {note}
             </div>
-          </DelayedFullTextHover>
+          </CustomerTableHoverCard>
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-[#64748B]">
         <span className="inline-flex max-w-full items-center rounded-full border border-[#E2E8F0] bg-white px-2 py-0.5">
-          <span className="max-w-32 truncate">{title}</span>
+          <span className="min-w-0 break-words">{title}</span>
         </span>
         <span className="inline-flex items-center rounded-full border border-[#BEEFF2] bg-[#E8F9FA] px-2 py-0.5 text-[#007A80]">
           {activityAt}
         </span>
         <span className="inline-flex max-w-full items-center rounded-full border border-[#E2E8F0] bg-white px-2 py-0.5">
-          <span className="max-w-24 truncate">{userName}</span>
+          <span className="min-w-0 break-words">{userName}</span>
         </span>
       </div>
     </div>
@@ -384,6 +407,18 @@ function formatBackendDateTime(value) {
   const text = String(value).trim()
   if (!text) return '-'
 
+  const parsedTime = parseBackendLocalTimestamp(text)
+  if (!Number.isNaN(parsedTime)) {
+    return new Date(parsedTime).toLocaleString(undefined, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    })
+  }
+
   const normalized = text
     .replace('T', ' ')
     .replace(/(\.\d+)?(Z|[+-]\d{2}:?\d{2})$/, '')
@@ -426,6 +461,63 @@ function resolveActivityByType(row, expectedType) {
   return candidates.find((activity) => normalizeActivityType(activity?.type) === type) || null
 }
 
+function getActivitiesByType(row, expectedType) {
+  const lead = getLead(row)
+  const type = normalizeActivityType(expectedType)
+  const meetings = Array.isArray(lead?.meetings) ? lead.meetings : []
+
+  const fromMeetings = meetings
+    .filter((activity) => normalizeActivityType(activity?.type) === type)
+    .sort((first, second) => {
+      const firstTime = parseBackendLocalTimestamp(first?.start_at)
+      const secondTime = parseBackendLocalTimestamp(second?.start_at)
+      return (Number.isNaN(secondTime) ? 0 : secondTime) - (Number.isNaN(firstTime) ? 0 : firstTime)
+    })
+
+  if (fromMeetings.length) return fromMeetings
+
+  const fallback = resolveActivityByType(row, type)
+  return fallback ? [fallback] : []
+}
+
+function resolveScheduledActivityByType(row, expectedType, nowTimestamp) {
+  const scheduled = getActivitiesByType(row, expectedType)
+    .filter((activity) => String(activity?.status || '').trim().toLowerCase() === 'scheduled')
+
+  if (!scheduled.length) return null
+
+  const upcoming = scheduled
+    .filter((activity) => {
+      const time = parseBackendLocalTimestamp(activity?.start_at)
+      return !Number.isNaN(time) && time >= nowTimestamp
+    })
+    .sort((first, second) => parseBackendLocalTimestamp(first?.start_at) - parseBackendLocalTimestamp(second?.start_at))
+
+  if (upcoming.length) return upcoming[0]
+
+  return scheduled
+    .sort((first, second) => parseBackendLocalTimestamp(second?.start_at) - parseBackendLocalTimestamp(first?.start_at))[0]
+}
+
+function resolveInProgressActivityByType(row, expectedType, nowTimestamp) {
+  const inProgress = getActivitiesByType(row, expectedType)
+    .filter((activity) => String(activity?.status || '').trim().toLowerCase() === 'in_progress')
+
+  if (!inProgress.length) return null
+
+  const overdue = inProgress
+    .filter((activity) => {
+      const endAt = parseBackendLocalTimestamp(activity?.end_at)
+      return !Number.isNaN(endAt) && endAt <= nowTimestamp
+    })
+    .sort((first, second) => parseBackendLocalTimestamp(first?.end_at) - parseBackendLocalTimestamp(second?.end_at))
+
+  if (overdue.length) return overdue[0]
+
+  return inProgress
+    .sort((first, second) => parseBackendLocalTimestamp(first?.start_at) - parseBackendLocalTimestamp(second?.start_at))[0]
+}
+
 function renderActivityDetails(activity, { includeTypeMode = false } = {}) {
   if (!activity) {
     return <span className="text-xs font-semibold text-[var(--text-muted)]">-</span>
@@ -437,9 +529,9 @@ function renderActivityDetails(activity, { includeTypeMode = false } = {}) {
   const typeLabel = includeTypeMode ? normalizeActivityType(activity?.type) : ''
 
   return (
-    <div className="min-w-[220px] space-y-1.5">
+    <div className="w-full min-w-0 space-y-1.5">
       <div className="text-xs font-black text-[var(--text)]">{formatBackendDateTime(activity?.start_at)}</div>
-      <div className="truncate text-[11px] font-semibold text-[var(--text-muted)]" title={detailText || '-'}>
+      <div className="break-words text-[11px] font-semibold text-[var(--text-muted)]" title={detailText || '-'}>
         {detailText || '-'}
       </div>
       <div className="flex flex-wrap items-center gap-1.5">
@@ -468,15 +560,371 @@ function renderActivityMainInfo(activity, remainingLabel, isReminderAlert = fals
 
   const detailText = [activity?.title, activity?.description].filter(Boolean).join(' - ')
   return (
-    <div className="min-w-[200px] space-y-1">
+    <div className="w-full min-w-0 space-y-1">
       <div className="text-xs font-black text-[var(--text)]">{formatBackendDateTime(activity?.start_at)}</div>
       {remainingLabel ? (
         <div className={`text-[10px] font-black ${isReminderAlert ? 'text-[#B91C1C]' : 'text-[#64748B]'}`}>
           {remainingLabel}
         </div>
       ) : null}
-      <div className="truncate text-[11px] font-semibold text-[var(--text-muted)]" title={detailText || '-'}>
+      <div className="break-words text-[11px] font-semibold text-[var(--text-muted)]" title={detailText || '-'}>
         {detailText || '-'}
+      </div>
+    </div>
+  )
+}
+
+function getActivityNoteText(activity) {
+  return (
+    activity?.note ||
+    activity?.notes ||
+    activity?.data?.note ||
+    activity?.description ||
+    activity?.title ||
+    '-'
+  )
+}
+
+function getActivityReportsCount(activity) {
+  const value = activity?.reports_count
+  if (value === null || value === undefined || value === '') return null
+
+  const count = Number(value)
+  if (Number.isFinite(count)) return count
+
+  const raw = String(value).trim()
+  return raw ? raw : null
+}
+
+function ScheduledActivityHover({ activity, remainingLabel, includeMode = false }) {
+  const statusMeta = getActivityStatusMeta(activity?.status)
+  const priorityMeta = getActivityPriorityMeta(activity?.priority)
+  const details = [
+    { label: 'العنوان', value: activity?.title },
+    { label: 'الحالة', value: statusMeta.label, className: statusMeta.className },
+    { label: 'الأولوية', value: priorityMeta.label, className: priorityMeta.className },
+    { label: 'النوع', value: normalizeActivityType(activity?.type) },
+    includeMode ? { label: 'طريقة التواصل', value: activity?.mode } : null,
+    { label: 'البداية', value: formatBackendDateTime(activity?.start_at) },
+    { label: 'النهاية', value: formatBackendDateTime(activity?.end_at) },
+    { label: 'التذكير', value: remainingLabel },
+    { label: 'قبل التذكير', value: activity?.reminder_before ? `${activity.reminder_before} ${activity?.reminder_unit || ''}` : '' },
+    { label: 'تم الإنشاء', value: formatBackendDateTime(activity?.created_at) },
+    { label: 'آخر تحديث', value: formatBackendDateTime(activity?.updated_at) },
+  ].filter((item) => item?.value && item.value !== '-')
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <div className="text-[11px] font-black text-[#007A80]">الملاحظة</div>
+        <div className="mt-1 whitespace-pre-wrap break-words rounded-lg bg-[#F8FEFF] px-2 py-1.5 text-xs font-bold text-[#334155]">
+          {getActivityNoteText(activity)}
+        </div>
+      </div>
+      <div className="grid gap-1.5 sm:grid-cols-2">
+        {details.map((detail) => (
+          <div key={detail.label} className="min-w-0 rounded-lg border border-[#E2E8F0] bg-white px-2 py-1.5">
+            <div className="text-[10px] font-black text-[#64748B]">{detail.label}</div>
+            {detail.className ? (
+              <span className={`mt-1 inline-flex max-w-full items-center rounded-full border px-2 py-0.5 text-[10px] font-black ${detail.className}`}>
+                <span className="min-w-0 break-words">{detail.value}</span>
+              </span>
+            ) : (
+              <div className="mt-0.5 break-words text-xs font-bold text-[var(--text)]">{detail.value}</div>
+            )}
+          </div>
+        ))}
+      </div>
+      {activity?.data && typeof activity.data === 'object' ? (
+        <details className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-2">
+          <summary className="cursor-pointer text-[11px] font-black text-[#007A80]">بيانات إضافية</summary>
+          <pre className="mt-2 max-h-36 overflow-auto whitespace-pre-wrap break-words text-[11px] leading-5 text-[#334155]">
+            {JSON.stringify(activity.data, null, 2)}
+          </pre>
+        </details>
+      ) : null}
+    </div>
+  )
+}
+
+function DelayedActivityHover({ content, children }) {
+  const [visible, setVisible] = useState(false)
+  const [position, setPosition] = useState(null)
+  const anchorRef = useRef(null)
+  const timerRef = useRef(null)
+
+  const updatePosition = () => {
+    const rect = anchorRef.current?.getBoundingClientRect()
+    if (!rect || typeof window === 'undefined') return
+
+    const width = Math.min(480, window.innerWidth - 16)
+    const left = Math.max(8, Math.min(rect.left, window.innerWidth - width - 8))
+    const bottomTop = rect.bottom + 6
+    const top = bottomTop > window.innerHeight - 340
+      ? Math.max(8, rect.top - 340 - 6)
+      : bottomTop
+
+    setPosition({ top, left, width })
+  }
+
+  const showDelayed = () => {
+    window.clearTimeout(timerRef.current)
+    timerRef.current = window.setTimeout(() => {
+      updatePosition()
+      setVisible(true)
+    }, 500)
+  }
+
+  const hide = () => {
+    window.clearTimeout(timerRef.current)
+    setVisible(false)
+  }
+
+  useEffect(() => {
+    if (!visible) return undefined
+
+    window.addEventListener('scroll', updatePosition, true)
+    window.addEventListener('resize', updatePosition)
+
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true)
+      window.removeEventListener('resize', updatePosition)
+    }
+  }, [visible])
+
+  useEffect(() => () => window.clearTimeout(timerRef.current), [])
+
+  return (
+    <div
+      ref={anchorRef}
+      className="min-w-0"
+      onMouseEnter={showDelayed}
+      onMouseLeave={hide}
+      onFocus={showDelayed}
+      onBlur={hide}
+    >
+      {children}
+      {visible && position && content ? createPortal(
+        <div
+          className="fixed z-[160000] max-h-[min(420px,calc(100vh-1rem))] overflow-y-auto rounded-xl border border-[#D8E7EA] bg-white p-3 text-xs shadow-2xl"
+          style={{ top: position.top, left: position.left, width: position.width }}
+          onMouseEnter={() => window.clearTimeout(timerRef.current)}
+          onMouseLeave={hide}
+        >
+          {content}
+        </div>,
+        document.body
+      ) : null}
+    </div>
+  )
+}
+
+function renderScheduledActivitySummary(activity, nowTimestamp, { includeMode = false, onChangeScheduledActivityStatus } = {}) {
+  if (!activity) {
+    return <span className="text-xs font-semibold text-[var(--text-muted)]">-</span>
+  }
+
+  const remainingLabel = getScheduledRemainingLabel(activity, nowTimestamp)
+  const isReminderAlert = isActivityInReminderWindow(activity, nowTimestamp)
+  const noteText = getActivityNoteText(activity)
+  const reportsCount = getActivityReportsCount(activity)
+  const actualStartLabel = activity?.actual_start_at ? formatBackendDateTime(activity.actual_start_at) : ''
+  const actualElapsedLabel = getActualElapsedLabel(activity, nowTimestamp)
+
+  return (
+    <CustomerTableHoverCard
+      content={(
+        <CustomerScheduledActivityHoverDetails
+          activity={
+            activity
+              ? {
+                  ...activity,
+                  _onChangeStatus: onChangeScheduledActivityStatus,
+                }
+              : activity
+          }
+          remainingLabel={remainingLabel}
+          includeMode={includeMode}
+        />
+      )}
+      width={480}
+      estimatedHeight={340}
+    >
+      <div className="w-full min-w-0 space-y-1 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-2 py-1.5">
+        <div className="break-words text-xs font-black text-[var(--text)]">
+          {formatBackendDateTime(activity?.start_at)}
+        </div>
+        {actualStartLabel ? (
+          <div className="break-words text-[10px] font-black text-[#007A80]">
+            البداية الفعلية: {actualStartLabel}
+          </div>
+        ) : null}
+        {actualElapsedLabel ? (
+          <div className="break-words text-[10px] font-black text-[#0F766E]">
+            {actualElapsedLabel}
+          </div>
+        ) : null}
+        {remainingLabel ? (
+          <div className={`break-words text-[10px] font-black ${isReminderAlert ? 'text-[#B91C1C]' : 'text-[#64748B]'}`}>
+            {remainingLabel}
+          </div>
+        ) : null}
+        {reportsCount !== null && normalizeActivityType(activity?.type) === 'meeting' ? (
+          <div className="break-words text-[10px] font-black text-[#0369A1]">
+            عدد التقارير: {reportsCount}
+          </div>
+        ) : null}
+        <div className="break-words text-[11px] font-semibold text-[var(--text-muted)]" title={noteText}>
+          {noteText}
+        </div>
+      </div>
+    </CustomerTableHoverCard>
+  )
+}
+
+function renderInlineStatusActions(activity, nowTimestamp, onChangeScheduledActivityStatus) {
+  if (!activity || typeof onChangeScheduledActivityStatus !== 'function') return null
+
+  const status = String(activity?.status || '').trim().toLowerCase()
+  const reminderStarted = isActivityInReminderWindow(activity, nowTimestamp)
+
+  if (status === 'in_progress') {
+    return (
+      <div className="mt-1 flex flex-wrap items-center gap-1.5">
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation()
+            onChangeScheduledActivityStatus('completed', activity)
+          }}
+          className="inline-flex h-7 items-center rounded-lg border border-[#BBF7D0] bg-[#F0FDF4] px-2 text-[10px] font-black text-[#166534]"
+        >
+          إنهاء
+        </button>
+      </div>
+    )
+  }
+
+  if (status === 'scheduled' && reminderStarted) {
+    return (
+      <div className="mt-1 flex flex-wrap items-center gap-1.5">
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation()
+            onChangeScheduledActivityStatus('in_progress', activity)
+          }}
+          className="inline-flex h-7 items-center rounded-lg border border-[#BFDBFE] bg-[#EFF6FF] px-2 text-[10px] font-black text-[#1D4ED8]"
+        >
+          بدء
+        </button>
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation()
+            onChangeScheduledActivityStatus('cancelled', activity)
+          }}
+          className="inline-flex h-7 items-center rounded-lg border border-[#FECACA] bg-[#FEF2F2] px-2 text-[10px] font-black text-[#991B1B]"
+        >
+          إلغاء
+        </button>
+      </div>
+    )
+  }
+
+  return null
+}
+
+function ScheduledActivityAddButton({ row, type, onAddScheduledActivity }) {
+  const label = type === 'meeting' ? 'إضافة ميتنج' : 'إضافة مكالمة'
+
+  return (
+    <button
+      type="button"
+      onClick={(event) => {
+        event.stopPropagation()
+        onAddScheduledActivity?.(row, type)
+      }}
+      className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#BEEFF2] bg-white text-[#007A80] transition hover:bg-[#E8F9FA]"
+      title={label}
+      aria-label={label}
+      data-no-cell-copy="true"
+    >
+      <Plus size={14} />
+    </button>
+  )
+}
+
+function renderScheduledActivityCell(row, type, nowTimestamp, { includeMode = false, onAddScheduledActivity, onChangeScheduledActivityStatus } = {}) {
+  const activity = resolveScheduledActivityByType(row, type, nowTimestamp)
+  const inProgressActivity = resolveInProgressActivityByType(row, type, nowTimestamp)
+  const activities = getActivitiesByType(row, type)
+
+  const statusChips = [
+    {
+      key: 'completed',
+      label: 'Completed',
+      className: 'border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]',
+      items: activities.filter((item) => String(item?.status || '').trim().toLowerCase() === 'completed'),
+    },
+    {
+      key: 'cancelled',
+      label: 'Cancelled',
+      className: 'border-[#FECACA] bg-[#FEF2F2] text-[#991B1B]',
+      items: activities.filter((item) => String(item?.status || '').trim().toLowerCase() === 'cancelled'),
+    },
+    {
+      key: 'in_progress',
+      label: 'In Progress',
+      className: 'border-[#FDE68A] bg-[#FFFBEB] text-[#92400E]',
+      items: activities.filter((item) => String(item?.status || '').trim().toLowerCase() === 'in_progress'),
+    },
+  ]
+
+  return (
+    <div className="flex w-full min-w-0 items-start gap-2">
+      <ScheduledActivityAddButton row={row} type={type} onAddScheduledActivity={onAddScheduledActivity} />
+      <div className="min-w-0 flex-1 space-y-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {statusChips.map((chip) => (
+            <CustomerTableHoverCard
+              key={chip.key}
+              width={420}
+              estimatedHeight={300}
+              content={(
+                <div className="space-y-2">
+                  <div className="text-xs font-black text-[#0F172A]">
+                    {type === 'meeting' ? 'الاجتماعات' : 'المكالمات'} - {chip.label}
+                  </div>
+                  {chip.items.length ? (
+                    chip.items.map((item) => (
+                      <div key={item?.id || `${item?.start_at || ''}-${item?.title || ''}`} className="rounded-lg border border-[#E2E8F0] bg-white p-2">
+                        <div className="text-xs font-black text-[#0F172A]">{item?.title || item?.description || '-'}</div>
+                        <div className="mt-1 text-[11px] font-semibold text-[#64748B]">{formatBackendDateTime(item?.start_at)}</div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="rounded-lg border border-dashed border-[#E2E8F0] bg-[#F8FAFC] p-2 text-[11px] font-semibold text-[#64748B]">
+                      لا يوجد عناصر بهذه الحالة.
+                    </div>
+                  )}
+                </div>
+              )}
+            >
+              <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-black ${chip.className}`}>
+                <span>{chip.items.length}</span>
+              </span>
+            </CustomerTableHoverCard>
+          ))}
+        </div>
+        {renderScheduledActivitySummary(activity, nowTimestamp, { includeMode, onChangeScheduledActivityStatus })}
+        {renderInlineStatusActions(activity, nowTimestamp, onChangeScheduledActivityStatus)}
+        {inProgressActivity ? (
+          <>
+            {renderScheduledActivitySummary(inProgressActivity, nowTimestamp, { includeMode, onChangeScheduledActivityStatus })}
+            {renderInlineStatusActions(inProgressActivity, nowTimestamp, onChangeScheduledActivityStatus)}
+          </>
+        ) : null}
       </div>
     </div>
   )
@@ -506,33 +954,94 @@ function getReminderDurationMs(activity) {
   return unitDuration ? before * unitDuration : null
 }
 
+function formatCountdownDuration(diffMs) {
+  const totalSeconds = Math.max(0, Math.floor(diffMs / 1000))
+  const days = Math.floor(totalSeconds / 86400)
+  const hours = Math.floor((totalSeconds % 86400) / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
+  const parts = []
+
+  if (days) parts.push(`${days} يوم`)
+  if (days || hours) parts.push(`${hours} ساعة`)
+  if (days || hours || minutes) parts.push(`${minutes} دقيقة`)
+  parts.push(`${seconds} ثانية`)
+
+  return `متبقي ${parts.join(' و ')}`
+}
+
+function formatOverdueHours(diffMs) {
+  const hours = Math.max(1, Math.floor(diffMs / (1000 * 60 * 60)))
+  return `متأخر منذ ${hours} ساعة`
+}
+
+function formatElapsedDuration(diffMs) {
+  const totalSeconds = Math.max(0, Math.floor(diffMs / 1000))
+  const days = Math.floor(totalSeconds / 86400)
+  const hours = Math.floor((totalSeconds % 86400) / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const parts = []
+
+  if (days) parts.push(`${days} يوم`)
+  if (hours) parts.push(`${hours} ساعة`)
+  if (minutes) parts.push(`${minutes} دقيقة`)
+  if (!parts.length) parts.push('أقل من دقيقة')
+
+  return parts.slice(0, 2).join(' و ')
+}
+
 function getScheduledRemainingLabel(activity, nowTimestamp) {
   const status = String(activity?.status || '').trim().toLowerCase()
   if (status !== 'scheduled' && status !== 'in_progress') return ''
 
+  if (status === 'in_progress') {
+    const statusChangedAt = parseBackendLocalTimestamp(activity?.actual_start_at)
+    const changedAt = Number.isNaN(statusChangedAt)
+      ? parseTimestamp(activity?.actual_start_at)
+      : statusChangedAt
+
+    if (!Number.isNaN(changedAt) && nowTimestamp >= changedAt) {
+      if (normalizeActivityType(activity?.type) === 'meeting') {
+        return ''
+      }
+      return `قيد التنفيذ منذ ${formatElapsedDuration(nowTimestamp - changedAt)}`
+    }
+  }
+
   const startAt = parseBackendLocalTimestamp(activity?.start_at)
-  if (Number.isNaN(startAt)) return ''
+  const endAt = parseBackendLocalTimestamp(activity?.end_at)
+  if (Number.isNaN(startAt) && Number.isNaN(endAt)) return ''
 
-  const diffMs = startAt - nowTimestamp
-  if (diffMs <= 0) return status === 'in_progress' ? 'النشاط قيد التنفيذ الآن' : 'موعد النشاط الآن أو متأخر'
-
-  const totalHours = Math.ceil(diffMs / (60 * 60 * 1000))
-  const days = Math.floor(totalHours / 24)
-  const hours = totalHours % 24
-
-  if (days > 0 && hours > 0) {
-    return `متبقي ${days} يوم و ${hours} ساعة`
+  if (status === 'in_progress' && !Number.isNaN(endAt)) {
+    const diffEndMs = endAt - nowTimestamp
+    if (diffEndMs <= 0) return formatOverdueHours(Math.abs(diffEndMs))
   }
 
-  if (days > 0) {
-    return `متبقي ${days} يوم`
+  if (!Number.isNaN(startAt)) {
+    const diffMs = startAt - nowTimestamp
+    if (diffMs <= 0) {
+      if (status === 'scheduled') return formatOverdueHours(Math.abs(diffMs))
+      return 'النشاط قيد التنفيذ الآن'
+    }
+
+    return formatCountdownDuration(diffMs)
   }
 
-  if (hours > 0) {
-    return `متبقي ${hours} ساعة`
-  }
+  return ''
+}
 
-  return 'متبقي أقل من ساعة'
+function getActualElapsedLabel(activity, nowTimestamp) {
+  const status = String(activity?.status || '').trim().toLowerCase()
+  if (status !== 'in_progress' || !activity?.actual_start_at) return ''
+
+  const actualStartAt = parseBackendLocalTimestamp(activity.actual_start_at)
+  const startedAt = Number.isNaN(actualStartAt)
+    ? parseTimestamp(activity.actual_start_at)
+    : actualStartAt
+
+  if (Number.isNaN(startedAt) || nowTimestamp < startedAt) return ''
+
+  return `الوقت المنقضي: ${formatElapsedDuration(nowTimestamp - startedAt)}`
 }
 
 function isActivityInReminderWindow(activity, nowTimestamp) {
@@ -562,7 +1071,7 @@ function renderActivityWithRemaining(activity, nowTimestamp, { includeMode = fal
   const priorityMeta = getActivityPriorityMeta(activity?.priority)
 
   return (
-    <div className="min-w-[200px] space-y-1">
+    <div className="w-full min-w-0 space-y-1">
       {renderActivityMainInfo(activity, remainingLabel, isReminderAlert)}
       <div className="flex flex-wrap items-center gap-1.5">
         <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-black ${statusMeta.className}`}>
@@ -627,7 +1136,7 @@ function renderAttributes(row) {
   }
 
   return (
-    <div className="flex min-w-[220px] flex-wrap gap-1.5">
+    <div className="flex w-full min-w-0 flex-wrap gap-1.5">
       {attributes.map((attribute) => (
         <span
           key={attribute.id || `${attribute.key}-${attribute.value}`}
@@ -636,7 +1145,7 @@ function renderAttributes(row) {
         >
           <span className="shrink-0 text-[#007A80]">{renderNullable(attribute.key)}</span>
           <span className="text-[var(--text-muted)]">:</span>
-          <span className="min-w-0 max-w-28 truncate">{renderNullable(attribute.value)}</span>
+          <span className="min-w-0 break-words">{renderNullable(attribute.value)}</span>
         </span>
       ))}
     </div>
@@ -644,6 +1153,8 @@ function renderAttributes(row) {
 }
 
 export function useCustomersTableColumns(options = {}) {
+  const translate = typeof options.t === 'function' ? options.t : null
+  const freshLeadLabel = translate ? translate('customers.freshLead') : 'Fresh lead'
   const resolveMessengerChannel = options.resolveMessengerChannel
   const resolveGmailChannel = options.resolveGmailChannel
   const onOpenMessenger = options.onOpenMessenger
@@ -651,13 +1162,16 @@ export function useCustomersTableColumns(options = {}) {
   const onOpenDetails = options.onOpenDetails
   const latestLeadNotes = options.latestLeadNotes
   const onAddLeadNote = options.onAddLeadNote
+  const onAddScheduledActivity = options.onAddScheduledActivity
+  const onChangeScheduledActivityStatus = options.onChangeScheduledActivityStatus
+  const customerRows = Array.isArray(options.customerRows) ? options.customerRows : []
   const attributeColumns = Array.isArray(options.attributeColumns) ? options.attributeColumns : []
   const [nowTimestamp, setNowTimestamp] = useState(Date.now())
 
   useEffect(() => {
     const timer = window.setInterval(() => {
       setNowTimestamp(Date.now())
-    }, 60000)
+    }, 1000)
 
     return () => {
       window.clearInterval(timer)
@@ -689,9 +1203,12 @@ export function useCustomersTableColumns(options = {}) {
   const renderCustomerSerialColumn = useCallback((row) => (
     <div className="flex min-w-0 items-center gap-2">
       <span className="shrink-0 font-semibold text-[var(--text)]">{row.__serial ?? '-'}</span>
-      <CustomerSourceBadge source={row.source || row.lead?.source} iconOnly />
+      <span className="flex min-w-0 flex-col items-center gap-1">
+        <CustomerSourceBadge source={row.source || row.lead?.source} iconOnly />
+        {isFreshLeadRow(row) ? <FreshLeadBadge label={freshLeadLabel} compact /> : null}
+      </span>
     </div>
-  ), [])
+  ), [freshLeadLabel])
 
   const columns = [
     {
@@ -730,7 +1247,7 @@ export function useCustomersTableColumns(options = {}) {
           : renderNullable(latestLeadNote?.note || latestLeadNote?.data?.note || latestLeadNote?.description)
 
         return (
-          <div className="min-w-[160px] max-w-full space-y-1">
+          <div className="w-full min-w-0 max-w-full space-y-1">
             <div className="flex min-w-0 items-center gap-2">
               <button
                 type="button"
@@ -745,7 +1262,10 @@ export function useCustomersTableColumns(options = {}) {
               >
                 <PanelRightOpen size={14} />
               </button>
-              <div className="min-w-0 break-words font-bold text-[var(--text)]">{leadName}</div>
+              <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+                <span className="min-w-0 break-words font-bold text-[var(--text)]">{leadName}</span>
+                {isFreshLeadRow(row) ? <FreshLeadBadge label={freshLeadLabel} /> : null}
+              </div>
             </div>
             {note ? (
               <CustomerNotePreview
@@ -784,7 +1304,7 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'latest_lead_note',
-      header: 'آخر ملاحظة على العميل',
+      header: 'آخر متابعة على العميل',
       accessor: '__latestLeadNote',
       searchable: false,
       sortable: false,
@@ -943,7 +1463,11 @@ export function useCustomersTableColumns(options = {}) {
       ],
       visible: true,
       width: 'w-72',
-      render: (row) => renderActivityWithRemaining(resolveActivityByType(row, 'meeting'), nowTimestamp, { includeMode: true }),
+      render: (row) => renderScheduledActivityCell(row, 'meeting', nowTimestamp, {
+        includeMode: true,
+        onAddScheduledActivity,
+        onChangeScheduledActivityStatus,
+      }),
     },
     {
       id: 'call',
@@ -962,7 +1486,10 @@ export function useCustomersTableColumns(options = {}) {
       ],
       visible: true,
       width: 'w-72',
-      render: (row) => renderActivityWithRemaining(resolveActivityByType(row, 'call'), nowTimestamp),
+      render: (row) => renderScheduledActivityCell(row, 'call', nowTimestamp, {
+        onAddScheduledActivity,
+        onChangeScheduledActivityStatus,
+      }),
     },
     {
       id: 'lead_source',
@@ -998,7 +1525,7 @@ export function useCustomersTableColumns(options = {}) {
       filterType: 'text',
       visible: true,
       width: 'w-96',
-      render: (row) => <CustomerProductsCell row={row} />,
+      render: (row) => <CustomerProductsCell row={row} customerRows={customerRows} />,
     },
     {
       id: 'is_deal',
@@ -1042,7 +1569,7 @@ export function useCustomersTableColumns(options = {}) {
       filterType: 'text',
       visible: true,
       width: 'w-48',
-      render: (row) => <CustomerPersonCell row={row} field="linked_by" />,
+      render: (row) => <CustomerPersonCell row={row} field="linked_by" userById={userById} />,
     },
     {
       id: 'status_type_id',
@@ -1071,7 +1598,7 @@ export function useCustomersTableColumns(options = {}) {
               className="h-2.5 w-2.5 shrink-0 rounded-full"
               style={{ backgroundColor: status?.color || '#94A3B8' }}
             />
-            <span className="min-w-0 max-w-28 truncate">{label}</span>
+            <span className="min-w-0 break-words">{label}</span>
           </span>
         )
       },
@@ -1110,7 +1637,7 @@ export function useCustomersTableColumns(options = {}) {
       filterType: 'text',
       visible: true,
       width: 'w-48',
-      render: (row) => <CustomerPersonCell row={row} field="agent" />,
+      render: (row) => <CustomerPersonCell row={row} field="agent" userById={userById} />,
     },
     {
       id: 'assigned_at',
@@ -1145,7 +1672,7 @@ export function useCustomersTableColumns(options = {}) {
       filterable: false,
       visible: true,
       width: 'w-96',
-      render: (row) => <CustomerLeadActivitiesCell row={row} />,
+      render: (row) => <CustomerLeadActivitiesCell row={row} userById={userById} />,
     },
     {
       id: 'tag_id',
@@ -1168,7 +1695,7 @@ export function useCustomersTableColumns(options = {}) {
 
         return label ? (
           <span className="inline-flex min-w-0 items-center rounded-full border border-[#BEEFF2] bg-[#E8F9FA] px-2 py-1 text-xs font-bold text-[#007A80]">
-            <span className="min-w-0 max-w-24 truncate">{label}</span>
+            <span className="min-w-0 break-words">{label}</span>
           </span>
         ) : renderNullable(lead.tag_id)
       },

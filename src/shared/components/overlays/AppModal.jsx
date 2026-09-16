@@ -17,6 +17,8 @@ export function AppModal({
   footer,
   size = 'md',
   className,
+  contentClassName,
+  closeOnBackdrop = true,
 }) {
   useEffect(() => {
     if (!isOpen) return
@@ -42,7 +44,7 @@ export function AppModal({
   return (
     <div
       className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center p-2 sm:items-center sm:p-4"
-      onClick={onClose}
+      onClick={closeOnBackdrop ? onClose : undefined}
       role="presentation"
     >
       <div
@@ -85,7 +87,7 @@ export function AppModal({
           </button>
         </div>
 
-        <div className="min-w-0 p-4">
+        <div className={cn('min-w-0 p-4', contentClassName)}>
           {children}
         </div>
 

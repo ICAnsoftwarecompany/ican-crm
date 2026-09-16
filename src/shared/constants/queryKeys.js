@@ -72,6 +72,19 @@ export const QUERY_KEYS = {
     inactive: ['campaigns', 'inactive'],
     detail: (id) => ['campaigns', 'detail', id],
   },
+  messegeCampaigns: {
+    all: ['messege-campaigns'],
+    list: (filters) => ['messege-campaigns', 'list', filters],
+    detail: (id) => ['messege-campaigns', 'detail', id],
+    scheduled: (filters) => ['messege-campaigns', 'scheduled', filters],
+    my: (filters) => ['messege-campaigns', 'my', filters],
+    myScheduled: (filters) => ['messege-campaigns', 'my', 'scheduled', filters],
+  },
+  whatsappTemplateImages: {
+    all: ['whatsapp-template-images'],
+    list: (filters) => ['whatsapp-template-images', 'list', filters],
+    byTemplate: (templateId) => ['whatsapp-template-images', 'template', templateId],
+  },
   metaIntegrations: {
     all: ['meta-integrations'],
     facebookPages: (tenant, filters) => ['meta-integrations', 'facebook', 'pages', tenant, filters],

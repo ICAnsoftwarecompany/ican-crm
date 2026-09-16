@@ -136,4 +136,27 @@ body {
     background: rgba(0, 122, 128, 0.45);
     border-color: rgba(248, 254, 255, 0.78);
   }
+
+  .scrollbar-quick-actions {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 122, 128, 0.22) transparent;
+  }
+
+  .scrollbar-quick-actions::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .scrollbar-quick-actions::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-quick-actions::-webkit-scrollbar-thumb {
+    background: rgba(0, 122, 128, 0.24);
+    border-radius: 999px;
+  }
+
+  .scrollbar-quick-actions:hover::-webkit-scrollbar-thumb,
+  .scrollbar-quick-actions:focus-within::-webkit-scrollbar-thumb {
+    background: rgba(0, 122, 128, 0.45);
+  }
 }

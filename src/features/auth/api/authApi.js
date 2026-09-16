@@ -10,6 +10,13 @@ export const authApi = {
     return res.data
   },
 
+  refreshSession: async () => {
+    const res = await httpClient.post('/api/tenant/auth/refresh', undefined, {
+      skipSessionRefresh: true,
+    })
+    return res.data
+  },
+
   logout: async () => {
     const res = await httpClient.get('/api/tenant/auth/logout')
     return res.data

@@ -5,7 +5,7 @@ import { ProposalBuilder } from './components/ProposalBuilder'
 export function CustomerProposalBuilderPage() {
   const { proposalId } = useParams()
 
-  if (!proposalId) return <Navigate to="/customers/proposals" replace />
+  if (!proposalId) return <Navigate to="/LeadsCenter/proposals" replace />
 
   return <ProposalBuilder proposalId={proposalId} />
 }

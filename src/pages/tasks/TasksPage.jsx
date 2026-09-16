@@ -1,12 +1,15 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { CalendarDays, KanbanSquare, ListTodo, Plus, Search, Table2 } from 'lucide-react'
+import { ListTodo, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { TaskBoard } from '../../features/tasks/components/board/TaskBoard'
 import { TaskCalendarView } from '../../features/tasks/components/TaskCalendarView'
 import { TaskDrawer } from '../../features/tasks/components/TaskDrawer'
 import { TaskFormDialog } from '../../features/tasks/components/TaskFormDialog'
-import { TaskKanbanView } from '../../features/tasks/components/TaskKanbanView'
+import { TasksWorkspace } from '../../features/tasks/components/workspace/TasksWorkspace'
+import { TasksWorkspaceHeader } from '../../features/tasks/components/workspace/TasksWorkspaceHeader'
+import { TasksWorkspaceSidebar } from '../../features/tasks/components/workspace/TasksWorkspaceSidebar'
 import { useTaskMutations, useTasks } from '../../features/tasks/hooks/useTasks'
 import {
   getTaskDateTime,
@@ -74,40 +77,6 @@ function TaskCard({ task }) {
   )
 }
 
-function ViewSwitcher({ value, onChange }) {
-  const options = [
-    { id: 'list', label: 'List', icon: Table2 },
-    { id: 'board', label: 'Board', icon: KanbanSquare },
-    { id: 'calendar', label: 'Calendar', icon: CalendarDays },
-  ]
-
-  return (
-    <div className="inline-flex rounded-lg border border-[#D7EEF0] bg-white p-1">
-      {options.map((option) => {
-        const Icon = option.icon
-        const active = value === option.id
-
-        return (
-          <button
-            key={option.id}
-            type="button"
-            onClick={() => onChange(option.id)}
-            className={[
-              'inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs font-black transition-colors',
-              active
-                ? 'bg-[#E8F9FA] text-[#007A80]'
-                : 'text-[#64748B] hover:bg-[#F8FEFF]',
-            ].join(' ')}
-          >
-            <Icon size={13} />
-            {option.label}
-          </button>
-        )
-      })}
-    </div>
-  )
-}
-
 export function TasksPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [isCreateOpen, setIsCreateOpen] = useState(false)
@@ -117,6 +86,8 @@ export function TasksPage() {
   const [activeQuickFilter, setActiveQuickFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')
+  const [activeBoardId, setActiveBoardId] = useState('main')
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   const view = searchParams.get('view') || 'list'
   const taskIdParam = searchParams.get('taskId') || ''
@@ -258,100 +229,162 @@ export function TasksPage() {
     || null
   ), [mergedTasks, taskIdParam, visibleTasks])
 
+  const boardItems = [
+    { id: 'main', name: 'Main Board', count: visibleTasks.length, accent: 'bg-[#E8F9FA] text-[#007A80]' },
+    { id: 'sales', name: 'Sales Team', count: Math.max(0, Math.ceil(visibleTasks.length / 2)), accent: 'bg-[#EEF2FF] text-[#4F46E5]' },
+    { id: 'followups', name: 'Follow-ups', count: Math.max(0, Math.ceil(visibleTasks.length / 3)), accent: 'bg-[#FFF7ED] text-[#C2410C]' },
+  ]
+
+  const filterContent = (
+    <>
+      <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6">
+        <SummaryCard title="كل المهام" value={metrics.total} active={activeQuickFilter === 'all'} onClick={() => setActiveQuickFilter('all')} />
+        <SummaryCard title="اليوم" value={metrics.today} active={activeQuickFilter === 'today'} onClick={() => setActiveQuickFilter('today')} />
+        <SummaryCard title="متأخرة" value={metrics.overdue} active={activeQuickFilter === 'overdue'} onClick={() => setActiveQuickFilter('overdue')} />
+        <SummaryCard title="قيد التنفيذ" value={metrics.inProgress} active={activeQuickFilter === 'in_progress'} onClick={() => setActiveQuickFilter('in_progress')} />
+        <SummaryCard title="مكتملة" value={metrics.completed} active={activeQuickFilter === 'completed'} onClick={() => setActiveQuickFilter('completed')} />
+        <SummaryCard title="عاجلة" value={metrics.urgent} active={activeQuickFilter === 'urgent'} onClick={() => setActiveQuickFilter('urgent')} />
+      </div>
+
+      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <label className="grid gap-1 text-[11px] font-bold text-[#64748B]">
+          فلتر الحالة
+          <select
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+            className="h-9 rounded-lg border border-[#D7EEF0] bg-white px-2 text-xs font-semibold"
+          >
+            <option value="all">كل الحالات</option>
+            {statusOptions.map((status) => (
+              <option key={status} value={status}>{getTaskStatusMeta(status).label}</option>
+            ))}
+          </select>
+        </label>
+
+        <label className="grid gap-1 text-[11px] font-bold text-[#64748B]">
+          فلتر النوع
+          <select
+            value={typeFilter}
+            onChange={(event) => setTypeFilter(event.target.value)}
+            className="h-9 rounded-lg border border-[#D7EEF0] bg-white px-2 text-xs font-semibold"
+          >
+            <option value="all">كل الأنواع</option>
+            {typeOptions.map((type) => (
+              <option key={type} value={type}>{getTaskTypeMeta(type).label}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+    </>
+  )
+
   return (
-    <div className="space-y-4">
-      <section className="rounded-2xl border border-[#D7EEF0] bg-[#F8FEFF] p-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-lg font-black text-[#0F172A]">إدارة المهام</h1>
-            <p className="text-xs font-semibold text-[#64748B]">متابعة مهام الفريق، المواعيد، الأولويات، والتنبيهات.</p>
-          </div>
-          <label className="relative w-full max-w-xs">
-            <Search size={14} className="pointer-events-none absolute start-2.5 top-2.5 text-[#94A3B8]" />
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="بحث بالعنوان أو الوصف"
-              className="h-9 w-full rounded-lg border border-[#D7EEF0] bg-white ps-8 pe-3 text-xs font-semibold text-[#0F172A] outline-none focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]"
+    <>
+      <TasksWorkspace
+        sidebar={(
+          <TasksWorkspaceSidebar
+            boards={boardItems}
+            activeSmartView={activeQuickFilter}
+            activeBoardId={activeBoardId}
+            onSmartViewChange={setActiveQuickFilter}
+            onBoardChange={setActiveBoardId}
+            onAddBoard={() => setIsCreateOpen(true)}
+            onToggleCollapse={() => setSidebarCollapsed((value) => !value)}
+            collapsed={sidebarCollapsed}
+            metrics={metrics}
+          />
+        )}
+        header={(
+          <TasksWorkspaceHeader
+            search={search}
+            onSearchChange={setSearch}
+            view={view}
+            onViewChange={setView}
+            onCreateTask={() => {
+              setCreateInitialValues(null)
+              setIsCreateOpen(true)
+            }}
+            showFilters={view !== 'board'}
+            filtersContent={view !== 'board' ? filterContent : null}
+          />
+        )}
+        sidebarCollapsed={sidebarCollapsed}
+      >
+        <section className="space-y-2">
+          {tasksQuery.isLoading && (
+            <div className="rounded-xl border border-[#D7EEF0] bg-white p-4 text-sm font-semibold text-[#64748B]">جاري تحميل المهام...</div>
+          )}
+
+          {!tasksQuery.isLoading && !visibleTasks.length && (
+            <div className="rounded-xl border border-dashed border-[#D7EEF0] bg-white p-4 text-sm font-semibold text-[#64748B]">
+              لا توجد مهام مطابقة للفلاتر الحالية.
+            </div>
+          )}
+
+          {!tasksQuery.isLoading && view === 'list' && visibleTasks.map((task) => (
+            <button key={task.id || `${task.title}-${task.due_date || ''}`} type="button" className="w-full text-start" onClick={() => openTask(task.id)}>
+              <TaskCard task={task} />
+            </button>
+          ))}
+
+          {!tasksQuery.isLoading && view === 'board' && (
+            <TaskBoard
+              boardId={activeBoardId}
+              tasks={visibleTasks}
+              onOpenTask={openTask}
+              onQuickComplete={(task) => {
+                if (!task?.id) return
+                handleStatusChange(task.id, 'completed')
+              }}
+              onCreateTask={(listId, titleValue, board) => {
+                if (!titleValue || !titleValue.trim()) return
+
+                const payload = {
+                  title: titleValue.trim(),
+                  description: '',
+                  type: 'follow_up',
+                  priority: 'medium',
+                  status: 'pending',
+                  visibility: 'shared',
+                  taskable_type: 'App\\Models\\Lead',
+                  taskable_id: '',
+                  due_date: '',
+                  due_time: '',
+                  users: [],
+                  teams: [],
+                  attachments: [],
+                  board_id: board || activeBoardId,
+                  board_list_id: listId,
+                }
+
+                mutations.create.mutateAsync(payload).then(() => {
+                  toast.success('تم إنشاء المهمة')
+                  tasksQuery.refetch()
+                }).catch((error) => {
+                  toast.error(extractMessage(error, 'تعذر إنشاء المهمة'))
+                })
+              }}
+              onDeleteTask={(task) => {
+                if (!task?.id) return
+                mutations.remove.mutateAsync(task.id).then(() => {
+                  toast.success('تم حذف المهمة')
+                  tasksQuery.refetch()
+                }).catch((error) => {
+                  toast.error(extractMessage(error, 'تعذر حذف المهمة'))
+                })
+              }}
             />
-          </label>
+          )}
 
-          <ViewSwitcher value={view} onChange={setView} />
-        </div>
-
-        <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6">
-          <SummaryCard title="كل المهام" value={metrics.total} active={activeQuickFilter === 'all'} onClick={() => setActiveQuickFilter('all')} />
-          <SummaryCard title="اليوم" value={metrics.today} active={activeQuickFilter === 'today'} onClick={() => setActiveQuickFilter('today')} />
-          <SummaryCard title="متأخرة" value={metrics.overdue} active={activeQuickFilter === 'overdue'} onClick={() => setActiveQuickFilter('overdue')} />
-          <SummaryCard title="قيد التنفيذ" value={metrics.inProgress} active={activeQuickFilter === 'in_progress'} onClick={() => setActiveQuickFilter('in_progress')} />
-          <SummaryCard title="مكتملة" value={metrics.completed} active={activeQuickFilter === 'completed'} onClick={() => setActiveQuickFilter('completed')} />
-          <SummaryCard title="عاجلة" value={metrics.urgent} active={activeQuickFilter === 'urgent'} onClick={() => setActiveQuickFilter('urgent')} />
-        </div>
-
-        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-          <label className="grid gap-1 text-[11px] font-bold text-[#64748B]">
-            فلتر الحالة
-            <select
-              value={statusFilter}
-              onChange={(event) => setStatusFilter(event.target.value)}
-              className="h-9 rounded-lg border border-[#D7EEF0] bg-white px-2 text-xs font-semibold"
-            >
-              <option value="all">كل الحالات</option>
-              {statusOptions.map((status) => (
-                <option key={status} value={status}>{getTaskStatusMeta(status).label}</option>
-              ))}
-            </select>
-          </label>
-
-          <label className="grid gap-1 text-[11px] font-bold text-[#64748B]">
-            فلتر النوع
-            <select
-              value={typeFilter}
-              onChange={(event) => setTypeFilter(event.target.value)}
-              className="h-9 rounded-lg border border-[#D7EEF0] bg-white px-2 text-xs font-semibold"
-            >
-              <option value="all">كل الأنواع</option>
-              {typeOptions.map((type) => (
-                <option key={type} value={type}>{getTaskTypeMeta(type).label}</option>
-              ))}
-            </select>
-          </label>
-        </div>
-      </section>
-
-      <section className="space-y-2">
-        {tasksQuery.isLoading && (
-          <div className="rounded-xl border border-[#D7EEF0] bg-white p-4 text-sm font-semibold text-[#64748B]">جاري تحميل المهام...</div>
-        )}
-
-        {!tasksQuery.isLoading && !visibleTasks.length && (
-          <div className="rounded-xl border border-dashed border-[#D7EEF0] bg-white p-4 text-sm font-semibold text-[#64748B]">
-            لا توجد مهام مطابقة للفلاتر الحالية.
-          </div>
-        )}
-
-        {!tasksQuery.isLoading && view === 'list' && visibleTasks.map((task) => (
-          <button key={task.id || `${task.title}-${task.due_date || ''}`} type="button" className="w-full text-start" onClick={() => openTask(task.id)}>
-            <TaskCard task={task} />
-          </button>
-        ))}
-
-        {!tasksQuery.isLoading && view === 'board' && (
-          <TaskKanbanView
-            tasks={visibleTasks}
-            onOpenTask={openTask}
-            onStatusChange={handleStatusChange}
-          />
-        )}
-
-        {!tasksQuery.isLoading && view === 'calendar' && (
-          <TaskCalendarView
-            tasks={visibleTasks}
-            onOpenTask={openTask}
-            onCreateAt={handleCreateFromCalendar}
-          />
-        )}
-      </section>
+          {!tasksQuery.isLoading && view === 'calendar' && (
+            <TaskCalendarView
+              tasks={visibleTasks}
+              onOpenTask={openTask}
+              onCreateAt={handleCreateFromCalendar}
+            />
+          )}
+        </section>
+      </TasksWorkspace>
 
       <TaskFormDialog
         open={isCreateOpen}
@@ -377,6 +410,6 @@ export function TasksPage() {
           tasksQuery.refetch()
         }}
       />
-    </div>
+    </>
   )
 }

@@ -36,6 +36,14 @@ function getLogNote(log) {
   return log.notes || log.note || log.description
 }
 
+function isStatusLog(log) {
+  const action = String(log?.action || log?.type || '').toLowerCase()
+  return (
+    action.includes('status') ||
+    Boolean(log?.old_status_id || log?.new_status_id || log?.old_status_title || log?.new_status_title)
+  )
+}
+
 function LogActivity({ activity }) {
   return (
     <div className="rounded-lg border border-[#E5F7F8] bg-[#F8FEFF] p-2">
@@ -87,7 +95,7 @@ function StatusChangeLine({ log }) {
 
 export function StatusActionTab({ customer, logs = [], isLoading, error, layoutMode = 'compact' }) {
   const fallbackLogs = getFallbackLeadLogs(customer)
-  const resolvedLogs = logs.length ? logs : fallbackLogs
+  const resolvedLogs = (logs.length ? logs : fallbackLogs).filter(isStatusLog)
 
   if (isLoading) {
     return (

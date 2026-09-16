@@ -4,7 +4,7 @@
 
 ## الملخص
 
-تم تحويل قسم العملاء إلى قسم داخلي منظم داخل التطبيق، له Layout خاص وSidebar فرعي يظهر فقط داخل مسارات `/customers`.
+تم تحويل قسم العملاء إلى قسم داخلي منظم داخل التطبيق، له Layout خاص وSidebar فرعي يظهر فقط داخل مسارات `/LeadsCenter`.
 
 تم الحفاظ على:
 
@@ -19,7 +19,7 @@
 1. إنشاء `CustomersLayout` كـ layout داخلي لقسم العملاء.
 2. إنشاء `CustomersSidebar` كقائمة فرعية لقسم العملاء.
 3. إنشاء `CustomersMobileSidebar` للموبايل والتابلت.
-4. تحويل `/customers` إلى Nested Routes.
+4. تحويل `/LeadsCenter` إلى Nested Routes.
 5. إضافة صفحات فرعية لكل عناصر القائمة.
 6. إضافة صفحة جديدة داخل جزء التنظيم باسم `الإعداد والتخصيص`.
 7. تحسين صفحة جميع العملاء بإضافة Header وStats Cards.
@@ -46,24 +46,24 @@
 
 ## المسارات النهائية
 
-- `/customers`
-- `/customers/new`
-- `/customers/follow-up`
-- `/customers/inactive`
-- `/customers/segments`
-- `/customers/assignments`
-- `/customers/duplicates`
-- `/customers/customization`
-- `/customers/import-export`
-- `/customers/trash`
-- `/customers/settings`
+- `/LeadsCenter`
+- `/LeadsCenter/new`
+- `/LeadsCenter/follow-up`
+- `/LeadsCenter/inactive`
+- `/LeadsCenter/segments`
+- `/LeadsCenter/assignments`
+- `/LeadsCenter/duplicates`
+- `/LeadsCenter/customization`
+- `/LeadsCenter/import-export`
+- `/LeadsCenter/trash`
+- `/LeadsCenter/settings`
 
 ## صفحة الإعداد والتخصيص
 
 تمت إضافة صفحة جديدة:
 
 - الاسم في الـ sidebar: `الإعداد والتخصيص`
-- المسار: `/customers/customization`
+- المسار: `/LeadsCenter/customization`
 - القسم: `التنظيم`
 - الأيقونة: `SlidersHorizontal`
 - الملف: `src/pages/customers/pages/customization/CustomerCustomizationPage.jsx`

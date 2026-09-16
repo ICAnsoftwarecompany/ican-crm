@@ -120,7 +120,7 @@ export function ProposalWizard({ open, onClose }) {
 
     toast.success('تم إنشاء العرض وتجهيز أول نسخة')
     onClose()
-    navigate(`/customers/proposals/${createdProposalId}/builder`)
+    navigate(`/LeadsCenter/proposals/${createdProposalId}/builder`)
   }
 
   const footer = (

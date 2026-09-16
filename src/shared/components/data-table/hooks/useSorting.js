@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { DEFAULT_SORT_DIRECTION } from '../constants'
 
-export function useSorting(initialSort = null) {
-  const [sorting, setSorting] = useState(initialSort || { column: null, direction: DEFAULT_SORT_DIRECTION })
+export function useSorting(initialSort = null, firstSortDirection = DEFAULT_SORT_DIRECTION) {
+  const resolvedFirstSortDirection = firstSortDirection === 'desc' ? 'desc' : 'asc'
+  const [sorting, setSorting] = useState(initialSort || { column: null, direction: resolvedFirstSortDirection })
 
   const setSortColumn = (columnId) => {
     setSorting((prev) => {
@@ -13,12 +14,12 @@ export function useSorting(initialSort = null) {
           direction: prev.direction === 'asc' ? 'desc' : 'asc',
         }
       }
-      return { column: columnId, direction: DEFAULT_SORT_DIRECTION }
+      return { column: columnId, direction: resolvedFirstSortDirection }
     })
   }
 
   const clearSort = () => {
-    setSorting({ column: null, direction: DEFAULT_SORT_DIRECTION })
+    setSorting({ column: null, direction: resolvedFirstSortDirection })
   }
 
   const sortRows = (rows, columns) => {

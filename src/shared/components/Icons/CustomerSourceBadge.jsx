@@ -24,17 +24,18 @@ function getSourceMeta(source) {
   }
 }
 
-export function CustomerSourceBadge({ source, iconOnly = false }) {
+export function CustomerSourceBadge({ source, iconOnly = false, title }) {
   if (!source) return null
 
   const meta = getSourceMeta(source)
+  const tooltip = title || source
 
   if (iconOnly) {
     return (
       <span
         className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[11px] font-bold ${meta.className}`}
-        title={source}
-        aria-label={source}
+        title={tooltip}
+        aria-label={tooltip}
       >
         {meta.icon}
       </span>
@@ -42,7 +43,11 @@ export function CustomerSourceBadge({ source, iconOnly = false }) {
   }
 
   return (
-    <span className={`inline-flex min-w-0 items-center gap-1.5 rounded-full border px-2 py-1 text-[11px] font-bold ${meta.className}`}>
+    <span
+      className={`inline-flex min-w-0 items-center gap-1.5 rounded-full border px-2 py-1 text-[11px] font-bold ${meta.className}`}
+      title={tooltip}
+      aria-label={tooltip}
+    >
       {meta.icon}
       <span className="min-w-0 max-w-32 truncate">{source}</span>
     </span>

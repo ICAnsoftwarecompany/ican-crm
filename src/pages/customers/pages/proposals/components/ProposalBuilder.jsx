@@ -213,7 +213,7 @@ export function ProposalBuilder({ proposalId }) {
         proposal={proposal}
         currentVersion={currentVersion}
         saveState={saveState}
-        onBack={() => navigate('/customers/proposals')}
+        onBack={() => navigate('/LeadsCenter/proposals')}
         onPreview={() => setIsPreviewOpen(true)}
         onCreateVersion={handleCreateVersion}
         onSaveNow={() => saveVersion().then(() => toast.success('تم الحفظ'))}

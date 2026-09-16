@@ -41,7 +41,7 @@ export function CustomerProposalsPage() {
   return (
     <div className="space-y-6" dir="rtl">
       <PageToolbar title="عروض الأسعار" description="إدارة العروض وفتح الـ Visual Builder لإنشاء Proposal احترافي بدون التعامل مع JSON.">
-        <Link to="/customers/proposals/templates">
+        <Link to="/LeadsCenter/proposals/templates">
           <Button variant="outline">
             <FileSignature size={16} />
             القوالب
@@ -126,10 +126,10 @@ export function CustomerProposalsPage() {
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" onClick={() => navigate(`/customers/proposals/${proposal.id}/builder`)} aria-label="فتح Builder">
+                <Button variant="ghost" size="icon" onClick={() => navigate(`/LeadsCenter/proposals/${proposal.id}/builder`)} aria-label="فتح Builder">
                   <Edit3 size={16} />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => navigate(`/customers/proposals/${proposal.id}/builder?preview=1`)} aria-label="معاينة">
+                <Button variant="ghost" size="icon" onClick={() => navigate(`/LeadsCenter/proposals/${proposal.id}/builder?preview=1`)} aria-label="معاينة">
                   <Eye size={16} />
                 </Button>
                 <Button variant="ghost" size="icon" className="text-[#EF4444]" onClick={() => handleDelete(proposal)} aria-label="حذف">

@@ -49,11 +49,13 @@ export function DataTableBody({
   onRowClick,
   onRowDoubleClick,
   rowClassName,
+  rowContextActions = null,
   splitRowsEnabled = false,
   splitRowsConfig = null,
   splitRowsLayout = null,
 }) {
   const [contextMenu, setContextMenu] = useState(null)
+  const [rowContextMenu, setRowContextMenu] = useState(null)
   const lastBulkActionIdRef = useRef(null)
   const [copiedCellKey, setCopiedCellKey] = useState(null)
   const copyTimeoutRef = useRef(null)
@@ -92,7 +94,10 @@ export function DataTableBody({
   }
 
   useEffect(() => {
-    const closeMenu = () => setContextMenu(null)
+    const closeMenu = () => {
+      setContextMenu(null)
+      setRowContextMenu(null)
+    }
     document.addEventListener('click', closeMenu)
     return () => document.removeEventListener('click', closeMenu)
   }, [])
@@ -197,6 +202,77 @@ export function DataTableBody({
     safeY = Math.max(margin, safeY)
 
     return { x: safeX, y: safeY }
+  }
+
+  const getSafeRowMenuPosition = (x, y) => {
+    if (typeof window === 'undefined') return { x, y }
+
+    const menuWidth = 280
+    const menuHeight = 300
+    const margin = 8
+
+    return {
+      x: Math.max(margin, Math.min(x, window.innerWidth - menuWidth - margin)),
+      y: Math.max(margin, Math.min(y, window.innerHeight - menuHeight - margin)),
+    }
+  }
+
+  const resolveRowContextActions = (row, rowKey) => {
+    if (!rowContextActions) return []
+
+    const actions = typeof rowContextActions === 'function'
+      ? rowContextActions({ row, rowKey })
+      : rowContextActions
+
+    return Array.isArray(actions) ? actions.filter(Boolean) : []
+  }
+
+  const openRowContextMenu = (event, row, rowKey, colId) => {
+    const actions = resolveRowContextActions(row, rowKey)
+    if (!actions.length) return false
+
+    const actionsTabItems = actions.filter((action) => (action.tab || 'actions') === 'actions')
+    const formatTabItems = actions.filter((action) => action.tab === 'format')
+
+    event.preventDefault()
+    event.stopPropagation()
+    const safe = getSafeRowMenuPosition(event.clientX, event.clientY)
+    setContextMenu(null)
+    setRowContextMenu({
+      x: safe.x,
+      y: safe.y,
+      row,
+      rowKey,
+      colId,
+      actions: actionsTabItems,
+      formatActions: formatTabItems,
+      activeTab: actionsTabItems.length ? 'actions' : 'format',
+      formatScope: 'cell',
+    })
+
+    return true
+  }
+
+  const runRowContextAction = async (action) => {
+    if (action?.disabled) return
+
+    const rowKey = rowContextMenu?.rowKey
+    const isSelected = Boolean(rowKey && selectedRowKeys?.has(rowKey))
+    const rowHelpers = {
+      rowKey,
+      isSelected,
+      toggleSelection: (checked) => {
+        if (!rowKey) return
+        if (typeof checked === 'boolean') {
+          onToggleRowSelection?.(rowKey, checked)
+          return
+        }
+        onToggleRowSelection?.(rowKey, !isSelected)
+      },
+    }
+
+    await action?.onClick?.(rowContextMenu?.row, rowHelpers)
+    setRowContextMenu(null)
   }
 
   const applyRowStyle = (rowKey, patch) => {
@@ -345,9 +421,10 @@ export function DataTableBody({
     const stickyBackground = resolvedBgColor || (isSelected ? '#EAF6FF' : 'var(--surface)')
     const fallbackBackground = isSubRow ? (isSelected ? '#F3FAFF' : '#F8FAFC') : undefined
     const contentClassName = cn(
+      'dt-cell-content',
       shouldUseSplitRows
         ? 'block min-w-0 flex-1 max-w-none cursor-pointer whitespace-normal break-words transition-colors [&>*]:min-w-0 [&>*]:w-full [&>*]:max-w-none'
-        : 'inline-block max-w-full cursor-pointer whitespace-normal break-words transition-colors',
+        : 'block w-full min-w-0 max-w-full cursor-pointer whitespace-normal break-words transition-colors',
       copiedCellKey === `${rowKey}::${col.id}` && 'bg-green-100'
     )
     const contentNode = (
@@ -381,6 +458,10 @@ export function DataTableBody({
           fontWeight: resolvedFontWeight,
         }}
         onContextMenu={(event) => {
+          if (openRowContextMenu(event, row, rowKey, col.id)) {
+            return
+          }
+
           if (disableFormatContextMenuWhenSelection && selectedRowKeys?.size > 0) {
             event.preventDefault()
             return
@@ -432,6 +513,20 @@ export function DataTableBody({
         .dt-text-override,
         .dt-text-override * {
           color: var(--dt-text-color) !important;
+        }
+        .dt-cell-content,
+        .dt-cell-content * {
+          max-width: 100%;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+        }
+        .dt-cell-content [class*="min-w-["] {
+          min-width: 0 !important;
+        }
+        .dt-cell-content [class*="truncate"] {
+          overflow: visible !important;
+          text-overflow: clip !important;
+          white-space: normal !important;
         }
         .dt-split-record-main > td {
           border-top: 1px solid #8FE4EA;
@@ -608,6 +703,10 @@ export function DataTableBody({
                   fontWeight: resolvedFontWeight,
                 }}
                 onContextMenu={(event) => {
+                  if (openRowContextMenu(event, row, rowKey, col.id)) {
+                    return
+                  }
+
                   if (disableFormatContextMenuWhenSelection && selectedRowKeys?.size > 0) {
                     event.preventDefault()
                     return
@@ -627,7 +726,7 @@ export function DataTableBody({
                 {col.render ? (
                   <div
                     className={cn(
-                      'inline-block max-w-full cursor-pointer whitespace-normal break-words transition-colors',
+                      'dt-cell-content block w-full min-w-0 max-w-full cursor-pointer whitespace-normal break-words transition-colors',
                       copiedCellKey === `${rowKey}::${col.id}` && 'bg-green-100'
                     )}
                     onClick={(e) => handleCellClick(e, rawValue, rowKey, col.id)}
@@ -637,7 +736,7 @@ export function DataTableBody({
                 ) : (
                   <div
                     className={cn(
-                      'inline-block max-w-full cursor-pointer whitespace-normal break-words transition-colors',
+                      'dt-cell-content block w-full min-w-0 max-w-full cursor-pointer whitespace-normal break-words transition-colors',
                       copiedCellKey === `${rowKey}::${col.id}` && 'bg-green-100'
                     )}
                     onClick={(e) => handleCellClick(e, rawValue, rowKey, col.id)}
@@ -770,6 +869,225 @@ export function DataTableBody({
               مسح تنسيق هذا النطاق
             </button>
           </div>
+        </div>,
+        document.body
+      )}
+
+      {rowContextMenu && typeof document !== 'undefined' && createPortal(
+        <div
+          className="fixed z-[110] max-h-[min(520px,calc(100vh-1rem))] w-72 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-xl border border-slate-200 bg-white p-2 shadow-2xl"
+          style={{ left: rowContextMenu.x, top: rowContextMenu.y }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="mb-2 flex gap-1 rounded-lg bg-slate-50 p-1">
+            <button
+              type="button"
+              className={cn(
+                'flex-1 rounded-md px-2 py-1.5 text-xs font-black transition-colors',
+                rowContextMenu.activeTab === 'actions'
+                  ? 'bg-white text-slate-800 shadow'
+                  : 'text-slate-500 hover:text-slate-700'
+              )}
+              onClick={() => setRowContextMenu((prev) => ({ ...prev, activeTab: 'actions' }))}
+            >
+              الإجراءات
+            </button>
+            <button
+              type="button"
+              className={cn(
+                'flex-1 rounded-md px-2 py-1.5 text-xs font-black transition-colors',
+                rowContextMenu.activeTab === 'format'
+                  ? 'bg-white text-slate-800 shadow'
+                  : 'text-slate-500 hover:text-slate-700'
+              )}
+              onClick={() => setRowContextMenu((prev) => ({ ...prev, activeTab: 'format' }))}
+            >
+              التنسيق
+            </button>
+          </div>
+
+          {rowContextMenu.activeTab === 'actions' ? (
+            rowContextMenu.actions.length ? rowContextMenu.actions.map((action, index) => {
+              const sectionLabel = String(action.section || '').trim()
+              const prevSectionLabel = String(rowContextMenu.actions[index - 1]?.section || '').trim()
+              const nextSectionLabel = String(rowContextMenu.actions[index + 1]?.section || '').trim()
+              const showSectionHeader = sectionLabel && sectionLabel !== prevSectionLabel
+              const showDivider = index < rowContextMenu.actions.length - 1 && sectionLabel !== nextSectionLabel
+
+              return (
+                <Fragment key={action.id || `${action.label}-${index}`}>
+                  {showSectionHeader ? (
+                    <div className="mt-1 px-1 py-1 text-[11px] font-black text-slate-500">{sectionLabel}</div>
+                  ) : null}
+
+                  <button
+                    type="button"
+                    disabled={Boolean(action.disabled)}
+                    className={cn(
+                      'w-full rounded-lg px-3 py-2 text-start text-sm transition-colors',
+                      action.variant === 'danger'
+                        ? 'text-red-600 hover:bg-red-50 disabled:text-red-300'
+                        : 'text-slate-700 hover:bg-slate-50 disabled:text-slate-300'
+                    )}
+                    onClick={() => runRowContextAction(action)}
+                  >
+                    {action.label}
+                  </button>
+
+                  {showDivider ? <div className="my-1 border-t border-slate-100" /> : null}
+                </Fragment>
+              )
+            }) : (
+              <div className="rounded-lg border border-dashed border-slate-200 px-3 py-4 text-center text-xs font-semibold text-slate-500">
+                لا توجد إجراءات متاحة لهذا الصف
+              </div>
+            )
+          ) : (
+            <>
+              {rowContextMenu.formatActions.map((action, index) => {
+                const sectionLabel = String(action.section || '').trim()
+                const prevSectionLabel = String(rowContextMenu.formatActions[index - 1]?.section || '').trim()
+                const nextSectionLabel = String(rowContextMenu.formatActions[index + 1]?.section || '').trim()
+                const showSectionHeader = sectionLabel && sectionLabel !== prevSectionLabel
+                const showDivider = index < rowContextMenu.formatActions.length - 1 && sectionLabel !== nextSectionLabel
+
+                return (
+                  <Fragment key={action.id || `${action.label}-${index}`}>
+                    {showSectionHeader ? (
+                      <div className="mt-1 px-1 py-1 text-[11px] font-black text-slate-500">{sectionLabel}</div>
+                    ) : null}
+
+                    <button
+                      type="button"
+                      disabled={Boolean(action.disabled)}
+                      className={cn(
+                        'w-full rounded-lg px-3 py-2 text-start text-sm transition-colors',
+                        action.variant === 'danger'
+                          ? 'text-red-600 hover:bg-red-50 disabled:text-red-300'
+                          : 'text-slate-700 hover:bg-slate-50 disabled:text-slate-300'
+                      )}
+                      onClick={() => runRowContextAction(action)}
+                    >
+                      {action.label}
+                    </button>
+
+                    {showDivider ? <div className="my-1 border-t border-slate-100" /> : null}
+                  </Fragment>
+                )
+              })}
+
+              {rowContextMenu.formatActions.length ? <div className="my-1 border-t border-slate-100" /> : null}
+
+              <div className="text-xs text-slate-500 font-medium">تخصيص الخلية / الصف / العمود</div>
+
+              <div className="flex gap-1 bg-slate-50 p-1 rounded-lg">
+                {['cell', 'row', 'column'].map((scope) => (
+                  <button
+                    key={`row-format-${scope}`}
+                    type="button"
+                    className={cn(
+                      'flex-1 text-xs px-2 py-1 rounded',
+                      rowContextMenu.formatScope === scope ? 'bg-white shadow text-slate-800' : 'text-slate-500 hover:text-slate-700'
+                    )}
+                    onClick={() => setRowContextMenu((prev) => ({ ...prev, formatScope: scope }))}
+                  >
+                    {scope === 'cell' ? 'خلية' : scope === 'row' ? 'صف' : 'عمود'}
+                  </button>
+                ))}
+              </div>
+
+              <div className="space-y-1">
+                <div className="text-[11px] text-slate-600">الخلفية</div>
+                <div className="flex flex-wrap gap-1">
+                  {BG_COLORS.map((color) => (
+                    <button
+                      key={`row-context-bg-${color}`}
+                      type="button"
+                      className="w-5 h-5 rounded border border-slate-300"
+                      style={{ backgroundColor: color }}
+                      onClick={() => applyStyleByScope(rowContextMenu.formatScope, rowContextMenu.rowKey, rowContextMenu.colId, { bgColor: color })}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="text-[11px] text-slate-600">لون الخط</div>
+                <div className="flex flex-wrap gap-1">
+                  {TEXT_COLORS.map((color) => (
+                    <button
+                      key={`row-context-text-${color}`}
+                      type="button"
+                      className="w-5 h-5 rounded border border-slate-300"
+                      style={{ backgroundColor: color }}
+                      onClick={() => applyStyleByScope(rowContextMenu.formatScope, rowContextMenu.rowKey, rowContextMenu.colId, { textColor: color })}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="text-[11px] text-slate-600">حجم الخط</div>
+                <div className="flex flex-wrap gap-1">
+                  {FONT_SIZES.map((size) => (
+                    <button
+                      key={`row-context-font-size-${size}`}
+                      type="button"
+                      className="px-2 py-1 rounded border border-slate-300 text-[11px]"
+                      onClick={() => applyStyleByScope(rowContextMenu.formatScope, rowContextMenu.rowKey, rowContextMenu.colId, { fontSize: `${size}px` })}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="text-[11px] text-slate-600">نوع الخط</div>
+                <select
+                  className="w-full h-8 rounded border border-slate-300 text-xs px-2"
+                  onChange={(e) => applyStyleByScope(rowContextMenu.formatScope, rowContextMenu.rowKey, rowContextMenu.colId, { fontFamily: e.target.value || undefined })}
+                  value=""
+                >
+                  <option value="">اختيار...</option>
+                  {FONT_FAMILIES.map((font) => (
+                    <option key={`row-context-font-${font.label}`} value={font.value}>{font.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <div className="text-[11px] text-slate-600">وزن الخط</div>
+                <div className="flex flex-wrap gap-1">
+                  {[
+                    { label: 'N', value: '400' },
+                    { label: 'M', value: '500' },
+                    { label: 'S', value: '600' },
+                    { label: 'B', value: '700' },
+                  ].map((weight) => (
+                    <button
+                      key={`row-context-font-weight-${weight.value}`}
+                      type="button"
+                      className="px-2 py-1 rounded border border-slate-300 text-[11px]"
+                      onClick={() => applyStyleByScope(rowContextMenu.formatScope, rowContextMenu.rowKey, rowContextMenu.colId, { fontWeight: weight.value })}
+                    >
+                      {weight.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  className="text-xs text-red-600 hover:text-red-700"
+                  onClick={() => clearStylesByScope(rowContextMenu.formatScope, rowContextMenu.rowKey, rowContextMenu.colId)}
+                >
+                  مسح تنسيق هذا النطاق
+                </button>
+              </div>
+            </>
+          )}
         </div>,
         document.body
       )}

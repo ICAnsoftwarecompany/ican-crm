@@ -3,13 +3,14 @@ import { RefreshCw } from 'lucide-react'
 
 import { useLeadMutations } from '../../../../features/leads/hooks/useLeads'
 import { Button } from '../../../../shared/components/ui/Button'
+import { cn } from '../../../../shared/utils/cn'
 import { formatDateTimeForApi } from './customerDetailsUtils'
 
 function getLeadId(customer) {
   return customer?.lead_id || customer?.lead?.id
 }
 
-export function CustomerStatusChanger({ customer, statuses = [], currentStatus, onChanged }) {
+export function CustomerStatusChanger({ customer, statuses = [], currentStatus, onChanged, compact = false, className }) {
   const [selectedStatusId, setSelectedStatusId] = useState('')
   const mutations = useLeadMutations()
   const leadId = getLeadId(customer)
@@ -47,7 +48,13 @@ export function CustomerStatusChanger({ customer, statuses = [], currentStatus, 
   if (!leadId || statuses.length === 0) return null
 
   return (
-    <div className="mt-3 grid gap-2 rounded-xl border border-[#E5F7F8] bg-white/80 p-2 sm:grid-cols-[1fr_auto]">
+    <div
+      className={cn(
+        'grid gap-2 rounded-xl border border-[#E5F7F8] bg-white/80 p-2 sm:grid-cols-[1fr_auto]',
+        compact ? 'min-w-[260px]' : 'mt-3',
+        className
+      )}
+    >
       <select
         value={selectedStatusId}
         onChange={(event) => setSelectedStatusId(event.target.value)}

@@ -10,7 +10,7 @@
 
 المسار داخل التطبيق:
 
-`/customers/proposals`
+`/LeadsCenter/proposals`
 
 تم ربطها من:
 

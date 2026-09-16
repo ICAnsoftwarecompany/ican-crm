@@ -148,7 +148,7 @@ export function DataTableHeader({
             )}
             style={getStickyHeaderStyle(col)}
             draggable={canMoveColumn}
-            onDoubleClick={() => col.sortable && onSort?.(col.id)}
+            onClick={() => col.sortable && onSort?.(col.id)}
             onDragStart={(event) => {
               if (!canMoveColumn) return
               setDraggedColumnId(col.id)
@@ -178,7 +178,7 @@ export function DataTableHeader({
               setDraggedColumnId(null)
               setDragOverColumnId(null)
             }}
-            title={canMoveColumn ? 'اسحب لتغيير ترتيب العمود، ودبل كليك للفرز' : undefined}
+            title={canMoveColumn ? 'اسحب لتغيير ترتيب العمود، واضغط للفرز' : undefined}
           >
             <div className="flex min-w-0 items-center justify-between gap-2">
               {/* Header label + sort indicator */}

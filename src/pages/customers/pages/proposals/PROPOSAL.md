@@ -10,11 +10,11 @@
 - حفظ محتوى العرض داخل Proposal Version بصيغة منظمة قابلة للتوسع.
 
 ## User Flow
-1. المستخدم يفتح `/customers/proposals`.
+1. المستخدم يفتح `/LeadsCenter/proposals`.
 2. يضغط `عرض جديد`.
 3. يختار العميل، القالب، المسؤول، العملة، وتاريخ الانتهاء.
 4. النظام ينشئ Proposal ثم ينشئ أول Version بمحتوى بصري جاهز.
-5. المستخدم ينتقل إلى `/customers/proposals/:proposalId/builder`.
+5. المستخدم ينتقل إلى `/LeadsCenter/proposals/:proposalId/builder`.
 6. المستخدم يضيف أقسام وبلوكات ويعدل الخصائص من الواجهة.
 7. التغييرات تحفظ تلقائيا في نسخة العرض الحالية.
 
@@ -37,9 +37,9 @@
 - لوحات خصائص، أسعار، ونسخ.
 
 ## Routes
-- `/customers/proposals`: قائمة العروض.
-- `/customers/proposals/templates`: القوالب.
-- `/customers/proposals/:proposalId/builder`: محرر العرض المرئي.
+- `/LeadsCenter/proposals`: قائمة العروض.
+- `/LeadsCenter/proposals/templates`: القوالب.
+- `/LeadsCenter/proposals/:proposalId/builder`: محرر العرض المرئي.
 
 ## Folder Structure
 ```txt

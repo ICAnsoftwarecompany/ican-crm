@@ -40,6 +40,12 @@ function getProductFromLink(link) {
   return link?.products || link?.product || null
 }
 
+function firstText(...values) {
+  return values
+    .map((value) => safeText(value).trim())
+    .find(Boolean) || ''
+}
+
 function normalizeLinkedProduct(link, sourceKind) {
   const product = getProductFromLink(link)
 
@@ -90,15 +96,21 @@ export function getCustomerMarketingSource(row) {
   const lead = getLead(row)
 
   if (lead?.form) {
+    const formName = firstText(lead.form.name, lead.form.title, lead.form.form_name, lead.form.lead_form_name)
+    const campaignName = firstText(lead.form.campaign?.name, lead.form.campaign_name, lead.form.campaign_title)
+
     return {
       kind: 'form',
       label: 'Form',
-      title: lead.form.name || 'Facebook Lead Form',
+      title: formName || 'Facebook Lead Form',
       description: lead.form.description || '',
       code: lead.form.code || '',
       externalId: lead.form.external_id || '',
       platform: lead.form.platform || '',
       status: lead.form.status || '',
+      campaignName,
+      adName: firstText(lead.form.ad?.name, lead.form.ad_name, lead.form.ads_name),
+      formName,
       startDate: '',
       endDate: '',
       budget: '',
@@ -110,15 +122,21 @@ export function getCustomerMarketingSource(row) {
   }
 
   if (lead?.ad) {
+    const adName = firstText(lead.ad.name, lead.ad.title, lead.ad.ad_name, lead.ad.ads_name)
+    const campaignName = firstText(lead.ad.campaign?.name, lead.ad.campaign_name, lead.ad.campaign_title)
+
     return {
       kind: 'ad',
       label: 'Ad',
-      title: lead.ad.name || 'Ad',
+      title: adName || 'Ad',
       description: lead.ad.description || '',
       code: lead.ad.code || '',
       externalId: lead.ad.external_id || '',
       platform: lead.ad.platform || '',
       status: lead.ad.status || '',
+      campaignName,
+      adName,
+      formName: firstText(lead.ad.form?.name, lead.ad.form_name, lead.ad.lead_form_name),
       startDate: lead.ad.start_date || '',
       endDate: lead.ad.end_date || '',
       budget: lead.ad.budget || '',
@@ -130,15 +148,20 @@ export function getCustomerMarketingSource(row) {
   }
 
   if (lead?.campaign) {
+    const campaignName = firstText(lead.campaign.name, lead.campaign.title, lead.campaign.campaign_name)
+
     return {
       kind: 'campaign',
       label: 'Campaign',
-      title: lead.campaign.name || 'Campaign',
+      title: campaignName || 'Campaign',
       description: lead.campaign.description || '',
       code: lead.campaign.code || '',
       externalId: lead.campaign.external_id || '',
       platform: lead.campaign.platform || '',
       status: lead.campaign.status || '',
+      campaignName,
+      adName: firstText(lead.campaign.ad?.name, lead.campaign.ad_name, lead.campaign.ads_name),
+      formName: firstText(lead.campaign.form?.name, lead.campaign.form_name, lead.campaign.lead_form_name),
       startDate: lead.campaign.start_date || '',
       endDate: lead.campaign.end_date || '',
       budget: lead.campaign.budget || '',
@@ -153,12 +176,16 @@ export function getCustomerMarketingSource(row) {
   return {
     kind: 'manual',
     label: 'Manual',
-    title: lead?.source || row?.source || row?.linked_type || 'Manual',
+    title: firstText(lead?.source, row?.source, row?.linked_type) || 'Manual',
     description: '',
     code: '',
     externalId: '',
     platform: lead?.source || row?.source || '',
     status: '',
+    campaignName: '',
+    adName: '',
+    formName: '',
+    manualName: firstText(lead?.source, row?.source, lead?.linked_type, row?.linked_type) || 'Manual',
     startDate: '',
     endDate: '',
     budget: '',
@@ -190,12 +217,19 @@ export function getCustomerPerson(row, key) {
   return {
     id: person.id || '',
     name: person.name || person.username || person.email || '',
+    username: person.username || '',
     role: person.role || '',
     type: person.type || '',
     active: person.active,
+    phone: person.phone || '',
+    priority: person.priority,
+    managerId: person.manager_id || '',
     teamId: person.team_id || '',
     teamName: person.team?.name || person.team_name || '',
     email: person.email || '',
+    createdAt: person.created_at || '',
+    updatedAt: person.updated_at || '',
+    raw: person,
   }
 }
 
@@ -206,15 +240,34 @@ export function getCustomerLeadActivities(row) {
     ...(Array.isArray(lead?.lead_activities) ? lead.lead_activities : []),
   ]
 
-  const seen = new Set()
-  return activities
+  const getActivityScore = (activity) => {
+    if (!activity || typeof activity !== 'object') return 0
+
+    const nested = Array.isArray(activity.activities) ? activity.activities : []
+    const hasTopUserName = Boolean(activity?.user?.name || activity?.user?.username)
+    const hasNestedUserName = nested.some((item) => Boolean(item?.user?.name || item?.user?.username))
+    const hasNestedItems = nested.length > 0
+    const hasDescription = Boolean(activity?.description || nested.some((item) => item?.description))
+    const hasData = Boolean(activity?.data) || nested.some((item) => item?.data)
+
+    return [hasTopUserName, hasNestedUserName, hasNestedItems, hasDescription, hasData]
+      .reduce((score, flag) => score + (flag ? 1 : 0), 0)
+  }
+
+  const dedupedByKey = activities
     .filter((activity) => activity && typeof activity === 'object')
-    .filter((activity) => {
+    .reduce((map, activity) => {
       const key = String(activity.id || `${activity.type || ''}-${activity.created_at || activity.activity_at || ''}-${activity.title || ''}`)
-      if (seen.has(key)) return false
-      seen.add(key)
-      return true
-    })
+      const existing = map.get(key)
+
+      if (!existing || getActivityScore(activity) > getActivityScore(existing)) {
+        map.set(key, activity)
+      }
+
+      return map
+    }, new Map())
+
+  return Array.from(dedupedByKey.values())
     .sort((first, second) => {
       const firstTime = new Date(first.activity_at || first.created_at || 0).getTime()
       const secondTime = new Date(second.activity_at || second.created_at || 0).getTime()
@@ -248,14 +301,26 @@ export function buildCustomerMarketingSearchText(row) {
     source.status,
     source.budget,
     source.targetAudience,
+    source.campaignName,
+    source.adName,
+    source.formName,
+    source.manualName,
     linkedBy?.name,
+    linkedBy?.username,
+    linkedBy?.email,
+    linkedBy?.phone,
     linkedBy?.role,
     linkedBy?.type,
     linkedBy?.teamId,
+    linkedBy?.teamName,
     agent?.name,
+    agent?.username,
+    agent?.email,
+    agent?.phone,
     agent?.role,
     agent?.type,
     agent?.teamId,
+    agent?.teamName,
     ...leadActivities.flatMap((activity) => [
       activity.type,
       activity.title,
@@ -304,7 +369,25 @@ export function enrichCustomerMarketingRow(row) {
     __customerCode: row?.code || lead?.code || '',
     __linkedType: row?.linked_type || lead?.linked_type || '',
     __leadType: row?.lead_type || lead?.lead_type || '',
-    __linkedByText: [linkedBy?.name, linkedBy?.role, linkedBy?.type, linkedBy?.teamId].filter(Boolean).join(' '),
-    __agentText: [agent?.name, agent?.role, agent?.type, agent?.teamId].filter(Boolean).join(' '),
+    __linkedByText: [
+      linkedBy?.name,
+      linkedBy?.username,
+      linkedBy?.email,
+      linkedBy?.phone,
+      linkedBy?.role,
+      linkedBy?.type,
+      linkedBy?.teamId,
+      linkedBy?.teamName,
+    ].filter(Boolean).join(' '),
+    __agentText: [
+      agent?.name,
+      agent?.username,
+      agent?.email,
+      agent?.phone,
+      agent?.role,
+      agent?.type,
+      agent?.teamId,
+      agent?.teamName,
+    ].filter(Boolean).join(' '),
   }
 }

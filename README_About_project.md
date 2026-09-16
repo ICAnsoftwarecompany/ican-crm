@@ -104,7 +104,7 @@ test0002.3s-export.com
 - `/login`
 - `/`
 - `/leads`
-- `/customers`
+- `/LeadsCenter`
 - `/conversations`
 - `/campaigns`
 - `/tasks`
@@ -115,24 +115,24 @@ test0002.3s-export.com
 - `/settings`
 - `/playground/datatable`
 
-صفحات العملاء الداخلية:
+صفحات مركز العملاء المحتملين الداخلية:
 
-- `/customers`
-- `/customers/new`
-- `/customers/follow-up`
-- `/customers/inactive`
-- `/customers/segments`
-- `/customers/assignments`
-- `/customers/teams`
-- `/customers/duplicates`
-- `/customers/customization`
-- `/customers/import-export`
-- `/customers/trash`
-- `/customers/settings`
-- `/customers/status-board`
-- `/customers/proposals`
-- `/customers/proposals/templates`
-- `/customers/proposals/:proposalId/builder`
+- `/LeadsCenter`
+- `/LeadsCenter/new`
+- `/LeadsCenter/follow-up`
+- `/LeadsCenter/inactive`
+- `/LeadsCenter/segments`
+- `/LeadsCenter/assignments`
+- `/LeadsCenter/teams`
+- `/LeadsCenter/duplicates`
+- `/LeadsCenter/customization`
+- `/LeadsCenter/import-export`
+- `/LeadsCenter/trash`
+- `/LeadsCenter/settings`
+- `/LeadsCenter/status-board`
+- `/LeadsCenter/proposals`
+- `/LeadsCenter/proposals/templates`
+- `/LeadsCenter/proposals/:proposalId/builder`
 
 صفحات المنتجات:
 
@@ -896,4 +896,3 @@ Hooks:
 - `src/pages/customers/pages/proposals/PROPOSAL_ARCHITECTURE_AR.md`
 
 هذه الملفات تحتوي تفاصيل أعمق عن DataTable و Proposal Builder.
-

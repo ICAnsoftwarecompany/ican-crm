@@ -8,14 +8,12 @@ const TABS = [
   {
     id: 'statuses',
     label: 'حالات العملاء',
-    description: 'إعداد مراحل وتصنيفات حالة العميل.',
     icon: CheckCircle2,
     component: CustomerStatusesTab,
   },
   {
     id: 'tags',
     label: 'تاج العملاء',
-    description: 'إدارة الوسوم التي تظهر على العملاء.',
     icon: Tags,
     component: CustomerTagsTab,
   },
@@ -70,10 +68,6 @@ export function CustomerCustomizationPage() {
           })}
         </div>
 
-        <div className="border-b border-[var(--border)] px-4 py-3">
-          <h2 className="text-sm font-bold text-[var(--text)]">{activeTabConfig.label}</h2>
-          <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">{activeTabConfig.description}</p>
-        </div>
 
         <div className="p-4" role="tabpanel">
           <ActiveTabComponent />

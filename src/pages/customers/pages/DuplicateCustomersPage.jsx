@@ -4,8 +4,8 @@ import { CustomerPlaceholderPage } from './CustomerPlaceholderPage'
 export function DuplicateCustomersPage() {
   return (
     <CustomerPlaceholderPage
-      title="العملاء المكررون"
-      description="اكتشاف السجلات المتشابهة ومراجعة دمج العملاء المكررين."
+      title="السجلات المكررة"
+      description="اكتشاف السجلات المتشابهة ومراجعة الدمج داخل مركز العملاء المحتملين."
       icon={Copy}
     />
   )

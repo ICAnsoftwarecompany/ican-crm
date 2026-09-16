@@ -1,6 +1,7 @@
 import {
   ArrowLeftRight,
   BellRing,
+  CalendarClock,
   Columns3,
   Copy,
   FileSignature,
@@ -15,42 +16,45 @@ import {
   UsersRound,
 } from 'lucide-react'
 
+export const LEADS_CENTER_ROUTE = '/LeadsCenter'
+
 export const customerNavigationGroups = [
   {
-    id: 'customers',
-    label: 'العملاء',
+    id: 'leads-center',
+    label: 'مركز العملاء المحتملين',
     items: [
-      { to: '/customers', label: 'جميع العملاء', icon: Users, end: true },
-      { to: '/customers/new', label: 'العملاء الجدد', icon: UserPlus },
-      { to: '/customers/follow-up', label: 'يحتاجون متابعة', icon: BellRing },
-      { to: '/customers/inactive', label: 'العملاء غير النشطين', icon: UserRoundX },
+      { to: LEADS_CENTER_ROUTE, label: 'كل العملاء المحتملين', icon: Users, end: true },
+      { to: `${LEADS_CENTER_ROUTE}/new`, label: 'العملاء المحتملون الجدد', icon: UserPlus },
+      { to: `${LEADS_CENTER_ROUTE}/follow-up`, label: 'يحتاجون متابعة', icon: BellRing },
+      { to: `${LEADS_CENTER_ROUTE}/inactive`, label: 'غير النشطين', icon: UserRoundX },
     ],
   },
   {
     id: 'organization',
     label: 'التنظيم',
     items: [
-      { to: '/customers/segments', label: 'التصنيفات والوسوم', icon: Tags },
-      { to: '/customers/assignments', label: 'توزيع العملاء', icon: UserCheck },
-      { to: '/customers/teams', label: 'فرق السيلز', icon: UsersRound },
-      { to: '/customers/duplicates', label: 'العملاء المكررون', icon: Copy },
-      { to: '/customers/customization', label: 'الإعداد والتخصيص', icon: SlidersHorizontal },
+      { to: `${LEADS_CENTER_ROUTE}/segments`, label: 'التصنيفات والوسوم', icon: Tags },
+      { to: `${LEADS_CENTER_ROUTE}/assignments`, label: 'توزيع العملاء المحتملين', icon: UserCheck },
+      { to: `${LEADS_CENTER_ROUTE}/teams`, label: 'فرق السيلز', icon: UsersRound },
+      { to: `${LEADS_CENTER_ROUTE}/duplicates`, label: 'السجلات المكررة', icon: Copy },
+      { to: `${LEADS_CENTER_ROUTE}/customization`, label: 'الإعداد والتخصيص', icon: SlidersHorizontal },
     ],
   },
   {
     id: 'tools',
     label: 'الأدوات',
     items: [
-      { to: '/customers/status-board', label: 'العرض المتعدد للحالات', icon: Columns3 },
-      { to: '/customers/proposals', label: 'منشئ عروض الأسعار', icon: FileSignature },
-      { to: '/customers/import-export', label: 'الاستيراد والتصدير', icon: ArrowLeftRight },
-      { to: '/customers/trash', label: 'العملاء المحذوفون', icon: Trash2 },
+      { to: `${LEADS_CENTER_ROUTE}/status-board`, label: 'العرض المتعدد للحالات', icon: Columns3 },
+      { to: `${LEADS_CENTER_ROUTE}/activities`, label: 'الأنشطة والمواعيد', icon: CalendarClock },
+      { to: `${LEADS_CENTER_ROUTE}/proposals`, label: 'منشئ عروض الأسعار', icon: FileSignature },
+      { to: `${LEADS_CENTER_ROUTE}/import-export`, label: 'الاستيراد والتصدير', icon: ArrowLeftRight },
+      { to: `${LEADS_CENTER_ROUTE}/trash`, label: 'السجلات المحذوفة', icon: Trash2 },
     ],
   },
 ]
 
 export const customerSettingsItem = {
-  to: '/customers/settings',
-  label: 'إعدادات العملاء',
+  to: `${LEADS_CENTER_ROUTE}/settings`,
+  label: 'إعدادات مركز العملاء المحتملين',
   icon: Settings,
 }

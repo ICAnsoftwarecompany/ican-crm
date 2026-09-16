@@ -6,28 +6,8 @@ import { definitionsApi } from '../../../../features/definitions/api/definitions
 import { QUERY_KEYS } from '../../../../shared/constants/queryKeys'
 import { extractMessage } from '../../../../shared/utils/apiResponse'
 import { Button } from '../../../../shared/components/ui/Button'
-import { FormDialog } from '../../../../shared/components/overlays/FormDialog'
-import { Input } from '../../../../shared/components/ui/Input'
-import { Select } from '../../../../shared/components/ui/Select'
 import { Spinner } from '../../../../shared/components/ui/Spinner'
-
-const DEFAULT_FORM = {
-  status: '',
-  type: 'customer',
-  active: '1',
-  color: '#3B82F6',
-}
-
-const STATUS_TYPE_OPTIONS = [
-  { value: 'customer', label: 'customer' },
-  { value: 'lead', label: 'lead' },
-  { value: 'deal', label: 'deal' },
-]
-
-const ACTIVE_OPTIONS = [
-  { value: '1', label: 'نشط' },
-  { value: '0', label: 'غير نشط' },
-]
+import { StatusDefinitionDialog } from './StatusDefinitionDialog'
 
 function flattenStatuses(response) {
   const data = response?.data
@@ -45,32 +25,46 @@ function flattenStatuses(response) {
   })
 }
 
-function toFormState(status) {
-  if (!status) return DEFAULT_FORM
-
-  return {
-    status: status.status || '',
-    type: status.type || 'customer',
-    active: String(status.active ?? 1),
-    color: status.color || '#3B82F6',
-  }
+function isEnabled(value) {
+  return Number(value) === 1
 }
 
-function buildPayload(form) {
-  return {
-    status: form.status.trim(),
-    type: form.type,
-    active: form.active,
-    color: form.color || '',
+function getLeadStatuses(statuses = []) {
+  return statuses
+    .filter((status) => String(status?.type || '').toLowerCase() === 'lead')
+    .sort((first, second) => Number(first?.priority || 0) - Number(second?.priority || 0))
+}
+
+function getStageKindLabel(status) {
+  if (isEnabled(status?.is_deal)) return 'حالة التعاقد/الشراء'
+  if (isEnabled(status?.is_lost)) return 'حالة الخسارة'
+  if (isEnabled(status?.is_retarget)) return 'حالة إعادة الاستهداف'
+  return 'حالة عادية'
+}
+
+function getEnabledMeta(status) {
+  const entries = []
+
+  if (isEnabled(status?.is_deal)) {
+    entries.push('حالة التعاقد/الشراء')
   }
+  if (isEnabled(status?.is_lost)) {
+    entries.push('حالة الخسارة')
+  }
+  if (isEnabled(status?.is_retarget)) {
+    entries.push('حالة إعادة الاستهداف')
+  }
+  if (isEnabled(status?.has_resone)) {
+    entries.push('إجبار وجود سبب')
+  }
+
+  return entries
 }
 
 export function CustomerStatusesTab() {
   const queryClient = useQueryClient()
   const [dialogMode, setDialogMode] = useState(null)
   const [selectedStatus, setSelectedStatus] = useState(null)
-  const [form, setForm] = useState(DEFAULT_FORM)
-  const [formError, setFormError] = useState('')
 
   const statusesQuery = useQuery({
     queryKey: QUERY_KEYS.statuses.list,
@@ -107,48 +101,24 @@ export function CustomerStatusesTab() {
   })
 
   const statuses = statusesQuery.data || []
-  const groupedStatuses = useMemo(() => {
-    return statuses.reduce((groups, status) => {
-      const type = status.type || 'customer'
-      groups[type] = groups[type] || []
-      groups[type].push(status)
-      return groups
-    }, {})
-  }, [statuses])
+  const leadStatuses = useMemo(() => getLeadStatuses(statuses), [statuses])
 
   const openCreateDialog = () => {
     setDialogMode('create')
     setSelectedStatus(null)
-    setForm(DEFAULT_FORM)
-    setFormError('')
   }
 
   const openEditDialog = (status) => {
     setDialogMode('edit')
     setSelectedStatus(status)
-    setForm(toFormState(status))
-    setFormError('')
   }
 
   const closeDialog = () => {
     setDialogMode(null)
     setSelectedStatus(null)
-    setForm(DEFAULT_FORM)
-    setFormError('')
   }
 
-  const updateForm = (key, value) => {
-    setForm((current) => ({ ...current, [key]: value }))
-    setFormError('')
-  }
-
-  const handleSubmit = () => {
-    const payload = buildPayload(form)
-    if (!payload.status) {
-      setFormError('اسم الحالة مطلوب')
-      return
-    }
-
+  const handleSubmit = (payload) => {
     if (dialogMode === 'edit' && selectedStatus?.id) {
       updateStatusMutation.mutate({ id: selectedStatus.id, payload })
       return
@@ -158,16 +128,14 @@ export function CustomerStatusesTab() {
   }
 
   const isSaving = createStatusMutation.isPending || updateStatusMutation.isPending
-  const dialogTitle = dialogMode === 'edit' ? 'تعديل حالة' : 'إضافة حالة'
-  const submitText = dialogMode === 'edit' ? 'حفظ التعديل' : 'إضافة'
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-base font-bold text-[var(--text)]">حالات العملاء</h2>
+          <h2 className="text-base font-bold text-[var(--text)]">تعريف حالات Lead</h2>
           <p className="mt-1 text-sm leading-6 text-[var(--text-muted)]">
-            إدارة حالات العملاء والليد والصفقات من نفس تعريفات النظام.
+            الحالات هنا تعمل دائمًا كـ lead و active=1، وترتب كتسليم مراحل حسب الأولوية.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -182,7 +150,7 @@ export function CustomerStatusesTab() {
           </Button>
           <Button variant="primary" className="gap-2" onClick={openCreateDialog}>
             <Plus size={16} />
-            إضافة حالة
+            تعريف حالة
           </Button>
         </div>
       </div>
@@ -199,115 +167,86 @@ export function CustomerStatusesTab() {
         </div>
       )}
 
-      {!statusesQuery.isLoading && !statusesQuery.isError && statuses.length === 0 && (
+      {!statusesQuery.isLoading && !statusesQuery.isError && leadStatuses.length === 0 && (
         <div className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface)] p-6 text-center text-sm text-[var(--text-muted)]">
-          لا توجد حالات مسجلة بعد.
+          لا توجد حالات Lead مسجلة بعد.
         </div>
       )}
 
-      {!statusesQuery.isLoading && !statusesQuery.isError && statuses.length > 0 && (
-        <div className="space-y-4">
-          {Object.entries(groupedStatuses).map(([type, items]) => (
-            <section key={type} className="space-y-2">
-              <h3 className="text-sm font-bold text-[var(--text-muted)]">{type}</h3>
-              <div className="grid gap-3">
-                {items.map((status) => (
-                  <article
-                    key={status.id}
-                    className="flex flex-col gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4 sm:flex-row sm:items-center sm:justify-between"
-                  >
+      {!statusesQuery.isLoading && !statusesQuery.isError && leadStatuses.length > 0 && (
+        <section className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3">
+          <div className="mb-3 text-sm font-bold text-[var(--text-muted)]">تسلسل مراحل الـ Lead حسب الترتيب</div>
+          <div className="flex flex-wrap items-stretch gap-2">
+            {leadStatuses.map((status, index) => {
+              const enabledMeta = getEnabledMeta(status)
+              const stageKindLabel = getStageKindLabel(status)
+
+              return (
+                <div key={status.id} className="flex items-center gap-2">
+                  <article className="min-w-[240px] max-w-[300px] rounded-lg border border-[var(--border)] bg-white p-3 shadow-sm">
                     <div className="flex min-w-0 items-start gap-3">
                       <span
-                        className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white"
+                        className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/20"
                         style={{ backgroundColor: status.color || '#64748B' }}
+                        title="لون الحالة"
                       >
-                        <CheckCircle2 size={18} />
+                        <CheckCircle2 size={18} className="text-white" />
                       </span>
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h4 className="font-bold text-[var(--text)]">{status.status}</h4>
-                          <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-xs text-[var(--text-muted)]">
-                            {status.active ? 'نشط' : 'غير نشط'}
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <h4 className="truncate text-sm font-black text-[var(--text)]">{status.status}</h4>
+                          <span className="rounded-full bg-[#EEF6FF] px-2 py-0.5 text-xs font-bold text-[#1D4ED8]">
+                            ترتيب {status.priority ?? '-'}
                           </span>
                         </div>
-                        <p className="mt-1 text-sm text-[var(--text-muted)]">
-                          اللون: {status.color || 'بدون لون'} · النوع: {status.type}
-                        </p>
+
+                        <div className="mt-1 text-xs font-semibold text-[#334155]">{stageKindLabel}</div>
+
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {enabledMeta.map((meta) => (
+                            <span
+                              key={meta}
+                              className="rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-2 py-0.5 text-[11px] font-semibold text-[#166534]"
+                            >
+                              {meta}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => openEditDialog(status)}
-                      className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-[var(--border)] px-3 text-sm text-[var(--text)] hover:bg-[var(--surface-2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00C2CB]"
-                    >
-                      <Edit3 size={15} />
-                      تعديل
-                    </button>
+
+                    <div className="mt-3 flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => openEditDialog(status)}
+                        className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-[var(--border)] px-2.5 text-xs font-semibold text-[var(--text)] hover:bg-[var(--surface-2)]"
+                      >
+                        <Edit3 size={14} />
+                        تعديل
+                      </button>
+                    </div>
                   </article>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
+
+                  {index < leadStatuses.length - 1 ? (
+                    <span className="text-lg font-black text-[#94A3B8]">→</span>
+                  ) : null}
+                </div>
+              )
+            })}
+          </div>
+        </section>
       )}
 
-      <FormDialog
+      <StatusDefinitionDialog
         open={Boolean(dialogMode)}
-        onClose={closeDialog}
-        title={dialogTitle}
-        description="اكتب بيانات الحالة كما سيتم إرسالها إلى API التعريفات."
-        onSubmit={handleSubmit}
-        submitText={submitText}
+        mode={dialogMode}
+        selectedStatus={selectedStatus}
+        statuses={statuses}
         loading={isSaving}
-        submitDisabled={!form.status.trim()}
-      >
-        <Input
-          label="اسم الحالة"
-          value={form.status}
-          onChange={(event) => updateForm('status', event.target.value)}
-          error={formError}
-          placeholder="مثال: deal_status2"
-        />
-
-        <Select
-          label="النوع"
-          value={form.type}
-          onChange={(value) => updateForm('type', value)}
-          options={STATUS_TYPE_OPTIONS}
-          placeholder="اختر النوع"
-        />
-
-        <Select
-          label="الحالة"
-          value={form.active}
-          onChange={(value) => updateForm('active', value)}
-          options={ACTIVE_OPTIONS}
-          placeholder="اختر الحالة"
-        />
-
-        <div className="grid gap-2">
-          <Input
-            label="اللون"
-            type="text"
-            value={form.color}
-            onChange={(event) => updateForm('color', event.target.value)}
-            placeholder="#F54927"
-            endIcon={
-              <span
-                className="h-4 w-4 rounded-full border border-[var(--border)]"
-                style={{ backgroundColor: form.color || '#FFFFFF' }}
-              />
-            }
-          />
-          <input
-            type="color"
-            value={form.color || '#3B82F6'}
-            onChange={(event) => updateForm('color', event.target.value)}
-            className="h-9 w-20 cursor-pointer rounded border border-[var(--border)] bg-[var(--surface)] p-1"
-            aria-label="اختيار لون الحالة"
-          />
-        </div>
-      </FormDialog>
+        onClose={closeDialog}
+        onSubmit={handleSubmit}
+      />
     </div>
   )
 }
