@@ -18,6 +18,7 @@ export function useMessegeCampaignInfo(campaignId, params) {
   })
 }
 
+
 export function useScheduledMessegeCampaigns(filters) {
   return useQuery({
     queryKey: QUERY_KEYS.messegeCampaigns.scheduled(filters),
