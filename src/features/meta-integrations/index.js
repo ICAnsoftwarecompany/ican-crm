@@ -17,3 +17,5 @@ export {
   useWhatsappConversationMessages,
   useWhatsappTemplates,
 } from './hooks/useMetaIntegrations'
+
+export { useFacebookIntegrations } from './hooks/useFacebookIntegrations'

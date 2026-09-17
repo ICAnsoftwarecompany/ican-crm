@@ -3,12 +3,25 @@
     "name": "ICAN CRM"
   },
   "nav": {
+    "sections": {
+      "overview": "Overview",
+      "sales": "Sales",
+      "growth": "Growth",
+      "customerService": "Customer Service",
+      "workspace": "Workspace",
+      "insights": "Insights",
+      "administration": "Administration"
+    },
     "dashboard": "Dashboard",
     "leads": "Leads",
     "customers": "Leads Center",
+    "activities": "Activities",
+    "proposals": "Proposals",
     "conversations": "Conversations",
     "campaigns": "Campaigns",
     "opportunities": "Opportunities",
+    "opportunityCenter": "Opportunity Center",
+    "leadGeneration": "Lead Generation",
     "tasks": "Tasks",
     "teamChat": "Team Chat",
     "products": "Products & Services",

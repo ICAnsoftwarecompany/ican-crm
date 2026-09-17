@@ -1,48 +1,108 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  LayoutDashboard,
-  Users,
-  UserCheck,
-  MessageSquare,
-   MessagesSquare,
-  Megaphone,
-  Package,
-  CheckSquare,
-  UserCog,
-  UsersRound,
-  Settings,
-  Moon,
-  Sun,
-  LogOut,
-  Sparkles,
-  ChevronDown,
-  LayoutTemplate,
-  Target,
-} from 'lucide-react'
+import { ChevronDown, LogOut, Moon, Sparkles, Sun } from 'lucide-react'
 import { cn } from '../../utils/cn'
 import { useAuthStore } from '../../../store/authStore'
 import { useThemeStore } from '../../../store/themeStore'
+import { useLocalStorage } from '../data-table/hooks/useLocalStorage'
+import { useNavigation } from '../../../app/navigation/useNavigation'
 import { Avatar } from '../ui/Avatar'
 
-const NAV_ITEMS = [
-  { to: '/',               icon: LayoutDashboard, labelKey: 'nav.dashboard',     end: true },
-  { to: '/leads',          icon: Users,           labelKey: 'nav.leads' },
-  { to: '/LeadsCenter',    icon: UserCheck,       labelKey: 'nav.customers' },
-  { to: '/conversations',  icon: MessageSquare,   labelKey: 'nav.conversations' },
-  { to: '/campaigns',      icon: Megaphone,       labelKey: 'nav.campaigns' },
-  { to: '/opportunities',  icon: Target,          labelKey: 'nav.opportunities' },
-  { to: '/tasks',          icon: CheckSquare,     labelKey: 'nav.tasks' },
-   { to: '/team-chat',      icon: MessagesSquare,  labelKey: 'nav.teamChat' },
-  { to: '/products',       icon: Package,         labelKey: 'nav.products' },
-  { to: '/teams',          icon: UsersRound,      labelKey: 'nav.teams' },
-  { to: '/users',          icon: UserCog,         labelKey: 'nav.users' },
-  { to: '/templates',      icon: LayoutTemplate,  labelKey: 'nav.templates' },
-  { to: '/settings',       icon: Settings,        labelKey: 'nav.settings' },
-]
+function SidebarNavItem({ item, isActive, collapsed, t }) {
+  const Icon = item.icon
 
-// exported so Header.jsx can reuse the same list to resolve the page title/icon
-export { NAV_ITEMS }
+  return (
+    <NavLink
+      to={item.path}
+      end={item.end}
+      title={collapsed ? t(item.labelKey) : undefined}
+      className={cn(
+        'flex items-center gap-2.5 px-2 py-1.5 rounded-md transition-colors duration-150',
+        'text-sm font-arabic',
+        collapsed && 'justify-center',
+        isActive
+          ? 'bg-[#ECECEA] font-medium text-[#111827]'
+          : 'text-[#6B7280] hover:bg-[#F0F0EF] hover:text-[#111827]'
+      )}
+      aria-current={isActive ? 'page' : undefined}
+    >
+      <Icon size={16} className="shrink-0" />
+      {!collapsed && <span className="truncate">{t(item.labelKey)}</span>}
+    </NavLink>
+  )
+}
+
+function SidebarSection({ section, collapsed, activeItemId, activeSectionId, expanded, onToggle, t }) {
+  const isSingleAndBare = section.hideLabel
+
+  if (collapsed) {
+    return (
+      <div className="space-y-0.5">
+        {section.items.map((item) => (
+          <SidebarNavItem
+            key={item.id}
+            item={item}
+            collapsed
+            isActive={item.id === activeItemId}
+            t={t}
+          />
+        ))}
+      </div>
+    )
+  }
+
+  if (isSingleAndBare) {
+    return (
+      <div className="space-y-0.5">
+        {section.items.map((item) => (
+          <SidebarNavItem
+            key={item.id}
+            item={item}
+            collapsed={false}
+            isActive={item.id === activeItemId}
+            t={t}
+          />
+        ))}
+      </div>
+    )
+  }
+
+  const isExpanded = expanded || section.id === activeSectionId
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => onToggle(section.id)}
+        className="flex w-full items-center justify-between px-2 py-1 rounded-md text-[#9CA3AF] hover:text-[#6B7280] transition-colors"
+        aria-expanded={isExpanded}
+        aria-controls={`sidebar-section-${section.id}`}
+      >
+        <span className="text-xs font-medium font-arabic uppercase tracking-wide">
+          {t(section.labelKey)}
+        </span>
+        <ChevronDown
+          size={13}
+          className={cn('transition-transform duration-150', isExpanded ? 'rotate-0' : '-rotate-90')}
+        />
+      </button>
+
+      {isExpanded && (
+        <div id={`sidebar-section-${section.id}`} className="mt-0.5 space-y-0.5">
+          {section.items.map((item) => (
+            <SidebarNavItem
+              key={item.id}
+              item={item}
+              collapsed={false}
+              isActive={item.id === activeItemId}
+              t={t}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export function Sidebar({ collapsed }) {
   const { t, i18n } = useTranslation()
@@ -50,6 +110,8 @@ export function Sidebar({ collapsed }) {
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)
   const { isDark, toggleTheme } = useThemeStore()
+  const { sections, activeItem, activeSectionId } = useNavigation()
+  const [collapsedSections, setCollapsedSections] = useLocalStorage('main-sidebar-collapsed-sections', {})
 
   const toggleLanguage = () => {
     const next = i18n.language === 'ar' ? 'en' : 'ar'
@@ -61,6 +123,10 @@ export function Sidebar({ collapsed }) {
   const handleLogout = () => {
     logout()
     navigate('/login')
+  }
+
+  const handleToggleSection = (sectionId) => {
+    setCollapsedSections((current) => ({ ...current, [sectionId]: !current[sectionId] }))
   }
 
   return (
@@ -85,30 +151,18 @@ export function Sidebar({ collapsed }) {
       </button>
 
       {/* App nav */}
-      <nav className="flex-1 py-2 space-y-0.5 overflow-y-auto scrollbar-thin px-3">
-        {!collapsed && (
-          <p className="px-2 pb-1 text-xs font-medium text-[#9CA3AF] font-arabic">
-            {t('nav.workspace', 'Workspace')}
-          </p>
-        )}
-        {NAV_ITEMS.map(({ to, icon: Icon, labelKey, end }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={end}
-            className={({ isActive }) =>
-              cn(
-                'flex items-center gap-2.5 px-2 py-1.5 rounded-md transition-colors duration-150',
-                'text-sm font-arabic',
-                isActive
-                  ? 'bg-[#ECECEA] font-medium text-[#111827]'
-                  : 'text-[#6B7280] hover:bg-[#F0F0EF] hover:text-[#111827]'
-              )
-            }
-          >
-            <Icon size={16} className="shrink-0" />
-            {!collapsed && <span>{t(labelKey)}</span>}
-          </NavLink>
+      <nav aria-label={t('nav.workspace', 'Workspace')} className="flex-1 py-2 space-y-3 overflow-y-auto scrollbar-thin px-3">
+        {sections.map((section) => (
+          <SidebarSection
+            key={section.id}
+            section={section}
+            collapsed={collapsed}
+            activeItemId={activeItem?.id}
+            activeSectionId={activeSectionId}
+            expanded={!collapsedSections[section.id]}
+            onToggle={handleToggleSection}
+            t={t}
+          />
         ))}
       </nav>
 

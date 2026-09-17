@@ -4,7 +4,7 @@ import { Search, Plus, MoreHorizontal, Command, PanelLeft, Users } from 'lucide-
 import { usePageHeaderStore } from '../../../store/pageHeaderStore'
 import { useAuthStore } from '../../../store/authStore'
 import { Avatar } from '../ui/Avatar'
-import { NAV_ITEMS } from './Sidebar'
+import { useNavigation } from '../../../app/navigation/useNavigation'
 import { NetworkStatusIndicator } from './NetworkStatusIndicator'
 import { MessengerLogoIcon, MessengerNavbarButton } from '../../../features/conversations/components/MessengerNavbarButton'
 import { GmailNavbarButton } from '../../../features/conversations/components/GmailNavbarButton'
@@ -41,14 +41,14 @@ export function Header({
   const location = useLocation()
   const user = useAuthStore((s) => s.user)
   const { title: customTitle, icon: customIcon, actions } = usePageHeaderStore()
+  const { activeItem } = useNavigation()
 
-  // Fall back to the matching nav item so every page gets a title/icon for
-  // free; a page can still override both via usePageHeader().
-  const current = NAV_ITEMS.find((item) =>
-    item.end ? location.pathname === item.to : location.pathname.startsWith(item.to)
-  )
-  const title = customTitle || (current ? t(current.labelKey) : '')
-  const Icon = customIcon || current?.icon
+  // Fall back to the resolved navigation item so every page gets a
+  // title/icon for free; a page can still override both via usePageHeader().
+  // Both Header and Sidebar read from the same navigation.config — see
+  // src/app/navigation/ — so there is no Header -> Sidebar dependency.
+  const title = customTitle || (activeItem ? t(activeItem.labelKey) : '')
+  const Icon = customIcon || activeItem?.icon
   const ChannelIcon = customIcon ? null : PAGE_CHANNEL_ICONS.find((item) => item.match(location.pathname))?.icon
 
   return (

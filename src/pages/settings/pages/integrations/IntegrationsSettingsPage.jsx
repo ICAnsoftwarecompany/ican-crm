@@ -16,7 +16,7 @@ export function IntegrationsSettingsPage() {
 
   return (
     <div>
-      <PageToolbar title="التكاملات" description="ربط النظام مع ميتا وباقي القنوات الخارجية." />
+      <PageToolbar title="التكاملات"/>
 
       <div className="mb-4 flex flex-wrap gap-2">
         {INTEGRATIONS_TABS.map(([key, label, Icon]) => (

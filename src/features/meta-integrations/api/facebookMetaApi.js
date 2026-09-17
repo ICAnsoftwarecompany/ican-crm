@@ -11,6 +11,11 @@ export const facebookMetaApi = {
     return res.data
   },
 
+  getIntegrations: async (params) => {
+    const res = await httpClient.get('/api/tenant/facebook/get/intgrations', { params })
+    return res.data
+  },
+
   refreshToken: async (tenant, params) => {
     const res = await httpClient.get(`/api/facebook/refresh-token/${tenant}`, { params })
     return res.data

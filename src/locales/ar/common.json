@@ -3,12 +3,25 @@
     "name": "ICAN CRM"
   },
   "nav": {
+    "sections": {
+      "overview": "نظرة عامة",
+      "sales": "المبيعات",
+      "growth": "النمو",
+      "customerService": "خدمة العملاء",
+      "workspace": "مساحة العمل",
+      "insights": "التقارير",
+      "administration": "الإدارة"
+    },
     "dashboard": "لوحة التحكم",
     "leads": "العملاء المحتملون",
     "customers": "مركز العملاء المحتملين",
+    "activities": "الأنشطة",
+    "proposals": "عروض الأسعار",
     "conversations": "المحادثات",
     "campaigns": "الحملات",
     "opportunities": "الفرص البيعية",
+    "opportunityCenter": "مركز الفرص",
+    "leadGeneration": "توليد العملاء المحتملين",
     "tasks": "المهام",
     "teamChat": "الشات الداخلي",
     "products": "المنتجات والخدمات",
