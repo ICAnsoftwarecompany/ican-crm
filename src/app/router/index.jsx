@@ -26,6 +26,8 @@ import { CustomerProposalTemplatesPage } from '../../pages/customers/pages/propo
 import { ActivitiesPage } from '../../features/activities'
 import { ConversationsPage } from '../../pages/conversations/ConversationsPage'
 import { CampaignsPage } from '../../pages/campaigns/CampaignsPage'
+import { OpportunityCenterPage } from '../../pages/opportunities/OpportunityCenterPage'
+import { FacebookCallbackPage } from '../../pages/integrations/FacebookCallbackPage'
 import { TasksPage } from '../../pages/tasks/TasksPage'
 import { ProductsLayout } from '../../pages/products/layout/ProductsLayout'
 import { ProductsPage } from '../../pages/products/ProductsPage/ProductsPage'
@@ -34,7 +36,10 @@ import { ServicesPage } from '../../pages/products/ServicesPage/ServicesPage'
 import { ServiceCategoriesPage } from '../../pages/products/ServicesPage/ServiceCategoriesPage'
 import { TeamsPage } from '../../pages/teams/TeamsPage'
 import { UsersPage } from '../../pages/users/UsersPage'
-import { SettingsPage } from '../../pages/settings/SettingsPage'
+import { SettingsLayout } from '../../pages/settings/layout/SettingsLayout'
+import { DefinitionsSettingsPage } from '../../pages/settings/pages/definitions/DefinitionsSettingsPage'
+import { UsersSettingsPage } from '../../pages/settings/pages/users/UsersSettingsPage'
+import { IntegrationsSettingsPage } from '../../pages/settings/pages/integrations/IntegrationsSettingsPage'
 import { TemplatesPage } from '../../pages/templates/TemplatesPage'
 import { DataTableDemo } from '../../pages/playground/DataTableDemo'
 import { InternalChatPage } from '../../pages/chat/InternalChatPage'
@@ -104,6 +109,7 @@ export const router = createBrowserRouter([
       { path: 'activities/calendar', element: <ActivitiesPage defaultView="calendar" /> },
       { path: 'conversations', element: <ConversationsPage /> },
       { path: 'campaigns', element: <CampaignsPage /> },
+      { path: 'opportunities', element: <OpportunityCenterPage /> },
       { path: 'tasks', element: <TasksPage /> },
       { path: 'team-chat', element: <InternalChatPage /> },
       {
@@ -119,7 +125,17 @@ export const router = createBrowserRouter([
       { path: 'teams', element: <TeamsPage /> },
       { path: 'users', element: <UsersPage /> },
       { path: 'templates', element: <TemplatesPage /> },
-      { path: 'settings', element: <SettingsPage /> },
+      {
+        path: 'settings',
+        element: <SettingsLayout />,
+        children: [
+          { index: true, element: <DefinitionsSettingsPage /> },
+          { path: 'definitions', element: <DefinitionsSettingsPage /> },
+          { path: 'users', element: <UsersSettingsPage /> },
+          { path: 'integrations', element: <IntegrationsSettingsPage /> },
+        ],
+      },
+      { path: 'integrations/facebook/callback', element: <FacebookCallbackPage /> },
       { path: 'playground/datatable', element: <DataTableDemo /> },
       { path: '*', element: <NotFoundPage /> },
     ],

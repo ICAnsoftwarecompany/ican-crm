@@ -2,7 +2,7 @@ import httpClient from '../../../services/httpClient'
 
 export const facebookMetaApi = {
   connect: async (tenant, params) => {
-    const res = await httpClient.get(`/api/facebook/connect/${tenant}`, { params })
+    const res = await httpClient.get(`/api/tenant/channel/facebook/connect-link`, { params })
     return res.data
   },
 

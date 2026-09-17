@@ -8,6 +8,7 @@
     "customers": "Leads Center",
     "conversations": "Conversations",
     "campaigns": "Campaigns",
+    "opportunities": "Opportunities",
     "tasks": "Tasks",
     "teamChat": "Team Chat",
     "products": "Products & Services",
@@ -110,5 +111,26 @@
     "today": "Today",
     "thisWeek": "This Week",
     "thisMonth": "This Month"
+  },
+  "opportunities": {
+    "title": "Opportunity Center",
+    "description": "Discover potential cross-sell, upsell and renewal opportunities and track them in one place.",
+    "overview": "Overview",
+    "inbox": "Opportunity Inbox",
+    "table": "All Opportunities",
+    "noOpportunities": "No opportunities yet",
+    "potentialRevenue": "Total Potential Revenue",
+    "sourceDistribution": "Source Distribution",
+    "topOpportunities": "Top Opportunities",
+    "why": "Why This Opportunity?",
+    "signals": "Signals",
+    "activityTimeline": "Activity Timeline",
+    "scoreBreakdown": "Score Breakdown",
+    "aiConfidence": "AI Confidence",
+    "dismiss": "Dismiss",
+    "watch": "Watch",
+    "qualify": "Qualify",
+    "activate": "Activate",
+    "assign": "Assign"
   }
 }

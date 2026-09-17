@@ -8,6 +8,7 @@
     "customers": "مركز العملاء المحتملين",
     "conversations": "المحادثات",
     "campaigns": "الحملات",
+    "opportunities": "الفرص البيعية",
     "tasks": "المهام",
     "teamChat": "الشات الداخلي",
     "products": "المنتجات والخدمات",
@@ -110,5 +111,26 @@
     "today": "اليوم",
     "thisWeek": "هذا الأسبوع",
     "thisMonth": "هذا الشهر"
+  },
+  "opportunities": {
+    "title": "مركز الفرص البيعية",
+    "description": "اكتشف فرص البيع التكميلي والترقية والتجديد المحتملة، وتابعها من مكان واحد.",
+    "overview": "نظرة عامة",
+    "inbox": "صندوق الفرص",
+    "table": "كل الفرص",
+    "noOpportunities": "لا توجد فرص بيعية بعد",
+    "potentialRevenue": "القيمة المحتملة الإجمالية",
+    "sourceDistribution": "توزيع المصادر",
+    "topOpportunities": "أعلى الفرص إمكانية",
+    "why": "لماذا هذه الفرصة؟",
+    "signals": "الإشارات",
+    "activityTimeline": "سجل النشاط",
+    "scoreBreakdown": "تفاصيل الـ Score",
+    "aiConfidence": "AI Confidence",
+    "dismiss": "رفض",
+    "watch": "مراقبة",
+    "qualify": "تأهيل",
+    "activate": "تفعيل",
+    "assign": "إسناد"
   }
 }

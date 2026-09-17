@@ -123,4 +123,9 @@ export const QUERY_KEYS = {
     myLeads: ['dashboard', 'my-leads'],
     myTeams: ['dashboard', 'my-teams'],
   },
+  opportunities: {
+    all: ['opportunities'],
+    list: (filters) => ['opportunities', 'list', filters],
+    detail: (id) => ['opportunities', 'detail', id],
+  },
 }

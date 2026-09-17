@@ -18,6 +18,7 @@ import {
   Sparkles,
   ChevronDown,
   LayoutTemplate,
+  Target,
 } from 'lucide-react'
 import { cn } from '../../utils/cn'
 import { useAuthStore } from '../../../store/authStore'
@@ -30,6 +31,7 @@ const NAV_ITEMS = [
   { to: '/LeadsCenter',    icon: UserCheck,       labelKey: 'nav.customers' },
   { to: '/conversations',  icon: MessageSquare,   labelKey: 'nav.conversations' },
   { to: '/campaigns',      icon: Megaphone,       labelKey: 'nav.campaigns' },
+  { to: '/opportunities',  icon: Target,          labelKey: 'nav.opportunities' },
   { to: '/tasks',          icon: CheckSquare,     labelKey: 'nav.tasks' },
    { to: '/team-chat',      icon: MessagesSquare,  labelKey: 'nav.teamChat' },
   { to: '/products',       icon: Package,         labelKey: 'nav.products' },
