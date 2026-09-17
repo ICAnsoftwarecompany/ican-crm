@@ -38,6 +38,7 @@ import {
   CalendarClock,
   FileSignature,
   Megaphone,
+  Send,
   Target,
   MessageSquare,
   CheckSquare,
@@ -110,10 +111,11 @@ export const navigationConfig = [
     ],
   },
 
-  // Growth: demand generation and opportunity discovery. Lead Generation has
-  // no implemented page yet (features/MessegeCampaign only exposes an API
-  // today) so it is intentionally left out of the rendered sidebar — see the
-  // "Current vs Future" section of SIDEBAR_ARCHITECTURE.md.
+  // Growth: demand generation and opportunity discovery. "Campaigns" here is
+  // the pre-existing Meta/Facebook Ads feature (features/campaigns +
+  // pages/campaigns/CampaignsPage.jsx) — unrelated to Outreach Campaigns
+  // below despite the shared word. See "Outreach Campaigns vs Campaigns" in
+  // OUTREACH_CAMPAIGNS_ARCHITECTURE_AR.md before touching either.
   {
     id: 'growth',
     type: 'section',
@@ -125,6 +127,14 @@ export const navigationConfig = [
         labelKey: 'nav.campaigns',
         icon: Megaphone,
         path: '/campaigns',
+      },
+      {
+        id: 'outreach-campaigns',
+        labelKey: 'nav.outreachCampaigns',
+        icon: Send,
+        path: '/outreach-campaigns',
+        activePatterns: ['/outreach-campaigns', '/outreach-campaigns/*'],
+        permission: 'outreachCampaigns.view',
       },
       {
         id: 'opportunity-center',

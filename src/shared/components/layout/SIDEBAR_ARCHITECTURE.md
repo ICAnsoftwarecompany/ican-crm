@@ -109,7 +109,6 @@ This is the established pattern in this codebase already (predates this refactor
 | `customer_service` | Customer Service (Service Inbox, Tickets, Cases, SLA, Knowledge Base) | **Planned.** No routes exist. Do not add a section until real pages ship. |
 | `insights` | Insights (Reports, Analytics) | **Planned.** No routes exist. |
 | `automation` | Automation (Workflows, Rules, Triggers, Logs) | **Planned.** May become its own top-level module once workflows exist — see `navigation.config.js`'s `module` field, which already supports this without a Sidebar rewrite. |
-| — | Lead Generation (inside Growth) | **Planned.** `features/MessegeCampaign/` already has an API layer but no page/route yet. Do not add it to the sidebar until a page exists. |
 | — | Opportunities (qualified pipeline entity, inside Sales) | **Planned.** Distinct from the existing Opportunity Center — see "Opportunity Center vs Opportunities" below. |
 
 ## Navigation Configuration Schema
@@ -257,7 +256,7 @@ If all of the above check out, add one entry to `navigationConfig` in `navigatio
 
 - It's a filter/status/view of an existing entity ("My Tasks", "Overdue Leads", "Completed Campaigns") → put it inside the destination page instead.
 - It's a record detail or a workflow step ("Proposal Builder", "Lead Detail") → drawer, dedicated sub-page, or dialog, not a new sidebar entry.
-- The page doesn't exist yet ("Lead Generation", "Tickets", "Reports") → document it as Future in this file; do not add a fake link.
+- The page doesn't exist yet ("Tickets", "Reports") → document it as Future in this file; do not add a fake link.
 - It's a one-off admin screen naturally reached from Settings → put it inside Settings' own internal tabs (see "Settings Strategy").
 
 ## New Feature Decision Tree
@@ -359,7 +358,7 @@ The schema (`NavigationItem.badge = { type: 'count', source: string }`) is docum
 ## Naming Conventions
 
 - Entity names (data): **Customers, Leads, Opportunities, Tickets** (future).
-- Workflow/workspace names (process): **Opportunity Center, Lead Generation** (future), **Service Inbox** (future).
+- Workflow/workspace names (process): **Opportunity Center, Outreach Campaigns**, **Service Inbox** (future).
 - Keep sidebar labels short and scannable — "Leads" not "Lead Management System". Arabic labels follow the same rule (already true of every existing label in this codebase).
 
 ## Opportunity Center vs Opportunities (do not merge)
@@ -368,6 +367,15 @@ This distinction is important enough to call out on its own:
 
 - **Opportunity Center** (`/opportunities`, under **Growth**) is what's implemented today: AI/system-rule/segment/campaign/manual-detected sales signals, reviewed and acted on via Dismiss / Watch / Qualify / Activate. See `src/features/opportunities/OPPORTUNITY_CENTER.md` for the full domain model. This is workflow/discovery terminology — it belongs in Growth, not Sales.
 - **Opportunities** (a plain qualified-pipeline entity, would live under **Sales**) is **not implemented**. There is no `/opportunities`-adjacent "regular pipeline" page today; "Qualify"/"Activate" inside Opportunity Center change an opportunity's *status* in place rather than moving it into a separate pipeline entity/page. If a dedicated qualified-pipeline page is ever built, give it its own route and its own Sales sidebar item — never repoint the existing Opportunity Center item to it, and never rename Opportunity Center to plain "Opportunities".
+
+## Outreach Campaigns vs Campaigns (do not merge)
+
+Another same-word collision, introduced when Outreach Campaigns shipped:
+
+- **Campaigns** (`/campaigns`, under **Growth**) is the pre-existing Meta/Facebook **Ads** campaigns feature (`src/features/campaigns/`, `src/pages/campaigns/CampaignsPage.jsx`) — creating/managing ad campaigns, ad sets, ads, and lead forms against Meta's ad platform. Nothing to do with messaging your own CRM contacts.
+- **Outreach Campaigns** (`/outreach-campaigns`, under **Growth**) is the messaging feature this section documents: sending WhatsApp/Gmail/Messenger campaigns to existing leads/customers. Backed by `src/features/MessegeCampaign/` (kept as-is; note the folder name is a pre-existing typo, not a mistake to silently rename) via the `src/features/outreach-campaigns/` domain layer. See `src/features/outreach-campaigns/docs/OUTREACH_CAMPAIGNS_ARCHITECTURE_AR.md` for the full domain model.
+
+Never repoint one route/nav item to the other's page, and never collapse them into a single "Campaigns" concept — they have different backends, different data models, and different audiences (ad platform vs. CRM contacts).
 
 ## Settings Strategy
 
