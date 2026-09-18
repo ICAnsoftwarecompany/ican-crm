@@ -29,6 +29,7 @@ import { CampaignsPage } from '../../pages/campaigns/CampaignsPage'
 import { OutreachCampaignsPage } from '../../pages/outreach-campaigns/OutreachCampaignsPage'
 import { OutreachCampaignDetailsPage } from '../../pages/outreach-campaigns/OutreachCampaignDetailsPage'
 import { OpportunityCenterPage } from '../../pages/opportunities/OpportunityCenterPage'
+import { AutomationCenterPage } from '../../pages/automation/AutomationCenterPage'
 import { FacebookCallbackPage } from '../../pages/integrations/FacebookCallbackPage'
 import { TasksPage } from '../../pages/tasks/TasksPage'
 import { ProductsLayout } from '../../pages/products/layout/ProductsLayout'
@@ -114,6 +115,7 @@ export const router = createBrowserRouter([
       { path: 'outreach-campaigns', element: <OutreachCampaignsPage /> },
       { path: 'outreach-campaigns/:campaignId', element: <OutreachCampaignDetailsPage /> },
       { path: 'opportunities', element: <OpportunityCenterPage /> },
+      { path: 'automation', element: <AutomationCenterPage /> },
       { path: 'tasks', element: <TasksPage /> },
       { path: 'team-chat', element: <InternalChatPage /> },
       {

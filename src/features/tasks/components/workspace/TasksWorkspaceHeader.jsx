@@ -40,6 +40,7 @@ export function TasksWorkspaceHeader({
   onCreateTask,
   showFilters,
   filtersContent,
+  extraActions,
 }) {
   return (
     <div className="rounded-2xl border border-[#D7EEF0] bg-[#F8FEFF] p-4 shadow-sm">
@@ -75,6 +76,7 @@ export function TasksWorkspaceHeader({
           </button>
 
           <ViewSwitcher value={view} onChange={onViewChange} />
+          {extraActions}
         </div>
       </div>
 

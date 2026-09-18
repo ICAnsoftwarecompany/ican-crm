@@ -108,7 +108,7 @@ This is the established pattern in this codebase already (predates this refactor
 |---|---|---|
 | `customer_service` | Customer Service (Service Inbox, Tickets, Cases, SLA, Knowledge Base) | **Planned.** No routes exist. Do not add a section until real pages ship. |
 | `insights` | Insights (Reports, Analytics) | **Planned.** No routes exist. |
-| `automation` | Automation (Workflows, Rules, Triggers, Logs) | **Planned.** May become its own top-level module once workflows exist — see `navigation.config.js`'s `module` field, which already supports this without a Sidebar rewrite. |
+| `automation` | Automation Center (`/automation`) | **Implemented** (Workflow Engine — see `src/features/workflow-engine/docs/WORKFLOW_ENGINE_ARCHITECTURE_AR.md`). Local-only persistence today (no backend workflow API yet); the Sidebar item itself required no code changes beyond one `navigationConfig` entry, exactly as this doc's "How to Add a New Module" guide predicted. |
 | — | Opportunities (qualified pipeline entity, inside Sales) | **Planned.** Distinct from the existing Opportunity Center — see "Opportunity Center vs Opportunities" below. |
 
 ## Navigation Configuration Schema

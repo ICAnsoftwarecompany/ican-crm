@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { ListTodo, Plus } from 'lucide-react'
 import { toast } from 'sonner'
+import { WorkflowLauncher } from '../../features/workflow-engine'
 
 import { TaskBoard } from '../../features/tasks/components/board/TaskBoard'
 import { TaskCalendarView } from '../../features/tasks/components/TaskCalendarView'
@@ -78,6 +80,7 @@ function TaskCard({ task }) {
 }
 
 export function TasksPage() {
+  const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [createInitialValues, setCreateInitialValues] = useState(null)
@@ -306,6 +309,11 @@ export function TasksPage() {
             }}
             showFilters={view !== 'board'}
             filtersContent={view !== 'board' ? filterContent : null}
+            extraActions={(
+              <WorkflowLauncher context={{ module: 'tasks', entity: 'task' }} variant="outline" size="sm">
+                {t('workflow.builder.createAutomation')}
+              </WorkflowLauncher>
+            )}
           />
         )}
         sidebarCollapsed={sidebarCollapsed}

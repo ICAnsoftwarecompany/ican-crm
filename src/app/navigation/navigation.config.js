@@ -48,6 +48,7 @@ import {
   UserCog,
   LayoutTemplate,
   Settings,
+  Workflow,
 } from 'lucide-react'
 
 /** @type {NavigationSection[]} */
@@ -189,6 +190,28 @@ export const navigationConfig = [
 
   // Insights (Reports/Analytics) is planned architecture only — no section
   // emitted until real pages exist.
+
+  // Automation: the central, module-agnostic Workflow Engine's own
+  // workspace (workflow list, templates, executions/logs). This is
+  // reserved as `module: 'automation'` in the Future Modules table below —
+  // now implemented. Individual modules also embed the same builder
+  // in-context (e.g. Outreach Campaigns' Sequence/Automation tab) rather
+  // than duplicating it; this section is only the cross-module home.
+  {
+    id: 'automation',
+    type: 'section',
+    labelKey: 'nav.sections.automation',
+    hideLabel: true,
+    module: 'automation',
+    items: [
+      {
+        id: 'automation-center',
+        labelKey: 'nav.automation',
+        icon: Workflow,
+        path: '/automation',
+      },
+    ],
+  },
 
   // Administration: operational-but-not-daily-work destinations, kept below
   // Sales/Growth/Workspace per "operational items first". Integrations is

@@ -8,6 +8,7 @@ import { PageToolbar } from '../../shared/components/data/PageToolbar'
 import { ResourceState } from '../../shared/components/data/ResourceState'
 import { useAssignmentRules, useLeadLogs, useLeadMutations } from '../../features/leads/hooks/useLeads'
 import { displayValue, extractMessage } from '../../shared/utils/apiResponse'
+import { WorkflowLauncher } from '../../features/workflow-engine'
 
 const initialAction = {
   lead_id: '',
@@ -74,7 +75,9 @@ export function LeadsPage() {
 
   return (
     <div>
-      <PageToolbar title={t('leads.title')} description="متابعة إجراءات العملاء المحتملين وقواعد التوزيع." />
+      <PageToolbar title={t('leads.title')} description="متابعة إجراءات العملاء المحتملين وقواعد التوزيع.">
+        <WorkflowLauncher context={{ module: 'leads', entity: 'lead' }}>{t('workflow.builder.createAutomation')}</WorkflowLauncher>
+      </PageToolbar>
       {(message || errorMessage) && (
         <div className={`mb-4 rounded-lg p-3 text-sm ${errorMessage ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'}`}>
           {errorMessage || message}

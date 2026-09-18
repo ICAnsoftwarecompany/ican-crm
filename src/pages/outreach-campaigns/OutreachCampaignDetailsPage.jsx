@@ -17,6 +17,7 @@ import { CampaignDetailsAudience } from './components/CampaignDetailsAudience'
 import { CampaignDetailsContent } from './components/CampaignDetailsContent'
 import { CampaignDetailsActivity } from './components/CampaignDetailsActivity'
 import { CampaignDetailsPerformance } from './components/CampaignDetailsPerformance'
+import { CampaignAutomationTab } from './components/CampaignAutomationTab'
 import { CampaignWizardModal } from './components/wizard/CampaignWizardModal'
 
 export function OutreachCampaignDetailsPage() {
@@ -101,6 +102,7 @@ export function OutreachCampaignDetailsPage() {
                 { id: 'content', label: t('outreachCampaigns.details.tabs.content'), content: <CampaignDetailsContent campaign={campaign} /> },
                 { id: 'activity', label: t('outreachCampaigns.details.tabs.activity'), content: <CampaignDetailsActivity /> },
                 { id: 'performance', label: t('outreachCampaigns.details.tabs.performance'), content: <CampaignDetailsPerformance campaign={campaign} /> },
+                { id: 'automation', label: t('outreachCampaigns.details.tabs.automation'), content: <CampaignAutomationTab campaign={campaign} /> },
               ]}
             />
 
