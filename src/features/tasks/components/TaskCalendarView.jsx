@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
 
 import {
@@ -7,6 +8,7 @@ import {
   getTaskTitle,
   getTaskTypeMeta,
 } from '../utils/taskMeta'
+import { formatDate as formatDateWithLocale, formatTime as formatTimeWithLocale } from '../../../shared/utils/dateTime'
 
 function startOfDay(date) {
   const d = new Date(date)
@@ -28,9 +30,9 @@ function isSameDay(a, b) {
   )
 }
 
-function formatHeaderDate(date, mode) {
+function formatHeaderDate(date, mode, language) {
   if (mode === 'day') {
-    return date.toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+    return formatDateWithLocale(date, language, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
   }
 
   if (mode === 'week') {
@@ -38,10 +40,10 @@ function formatHeaderDate(date, mode) {
     start.setDate(start.getDate() - start.getDay())
     const end = new Date(start)
     end.setDate(start.getDate() + 6)
-    return `${start.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' })} - ${end.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short', year: 'numeric' })}`
+    return `${formatDateWithLocale(start, language, { day: 'numeric', month: 'short' })} - ${formatDateWithLocale(end, language, { day: 'numeric', month: 'short', year: 'numeric' })}`
   }
 
-  return date.toLocaleDateString('ar-EG', { month: 'long', year: 'numeric' })
+  return formatDateWithLocale(date, language, { month: 'long', year: 'numeric' })
 }
 
 function inRange(date, from, to) {
@@ -49,6 +51,7 @@ function inRange(date, from, to) {
 }
 
 export function TaskCalendarView({ tasks = [], onOpenTask, onCreateAt }) {
+  const { t, i18n } = useTranslation()
   const [mode, setMode] = useState('month')
   const [focusDate, setFocusDate] = useState(new Date())
 
@@ -110,13 +113,13 @@ export function TaskCalendarView({ tasks = [], onOpenTask, onCreateAt }) {
         <div className="flex items-center gap-2">
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#E8F9FA] text-[#007A80]"><CalendarDays size={16} /></span>
           <div>
-            <h3 className="text-sm font-black text-[#0F172A]">تقويم المهام</h3>
-            <p className="text-xs font-semibold text-[#64748B]">{formatHeaderDate(focusDate, mode)}</p>
+            <h3 className="text-sm font-black text-[#0F172A]">{t('tasks.calendar.title')}</h3>
+            <p className="text-xs font-semibold text-[#64748B]">{formatHeaderDate(focusDate, mode, i18n.language)}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-1">
-          <button type="button" onClick={() => setFocusDate(new Date())} className="h-8 rounded-lg border border-[#D7EEF0] bg-white px-2 text-xs font-black text-[#007A80]">Today</button>
+          <button type="button" onClick={() => setFocusDate(new Date())} className="h-8 rounded-lg border border-[#D7EEF0] bg-white px-2 text-xs font-black text-[#007A80]">{t('tasks.calendar.todayButton')}</button>
           <button type="button" onClick={() => moveRange(-1)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#D7EEF0] bg-white text-[#007A80]"><ChevronRight size={14} /></button>
           <button type="button" onClick={() => moveRange(1)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#D7EEF0] bg-white text-[#007A80]"><ChevronLeft size={14} /></button>
         </div>
@@ -133,7 +136,7 @@ export function TaskCalendarView({ tasks = [], onOpenTask, onCreateAt }) {
               mode === item ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]' : 'border-[#D7EEF0] bg-white text-[#64748B]',
             ].join(' ')}
           >
-            {item === 'month' ? 'Month' : item === 'week' ? 'Week' : 'Day'}
+            {item === 'month' ? t('tasks.calendar.month') : item === 'week' ? t('tasks.calendar.week') : t('tasks.calendar.day')}
           </button>
         ))}
       </div>
@@ -143,23 +146,23 @@ export function TaskCalendarView({ tasks = [], onOpenTask, onCreateAt }) {
           <section key={group.date.toISOString()} className="rounded-xl border border-[#E5EEF0] bg-[#F8FEFF] p-2">
             <div className="mb-2 flex items-center justify-between">
               <h4 className="text-xs font-black text-[#0F172A]">
-                {group.date.toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long' })}
+                {formatDateWithLocale(group.date, i18n.language, { weekday: 'long', day: 'numeric', month: 'long' })}
               </h4>
               <button
                 type="button"
                 onClick={() => onCreateAt?.(group.date)}
                 className="rounded-lg border border-[#D7EEF0] bg-white px-2 py-1 text-[10px] font-black text-[#007A80]"
               >
-                إضافة مهمة هنا
+                {t('tasks.calendar.addTaskHere')}
               </button>
             </div>
 
             <div className="space-y-1.5">
               {group.items.map(({ task, date }) => {
-                const typeMeta = getTaskTypeMeta(task?.type)
-                const priorityMeta = getTaskPriorityMeta(task?.priority)
+                const typeMeta = getTaskTypeMeta(task?.type, t)
+                const priorityMeta = getTaskPriorityMeta(task?.priority, t)
                 const TypeIcon = typeMeta.icon
-                const time = date.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', hour12: true })
+                const time = formatTimeWithLocale(date, i18n.language, { hour: '2-digit', minute: '2-digit', hour12: true })
 
                 return (
                   <button
@@ -170,7 +173,7 @@ export function TaskCalendarView({ tasks = [], onOpenTask, onCreateAt }) {
                   >
                     <span className="flex min-w-0 items-center gap-1.5">
                       <TypeIcon size={13} className="text-[#007A80]" />
-                      <span className="truncate text-xs font-black text-[#0F172A]">{getTaskTitle(task)}</span>
+                      <span className="truncate text-xs font-black text-[#0F172A]">{getTaskTitle(task, t)}</span>
                     </span>
                     <span className="flex items-center gap-1">
                       <span className="text-[10px] font-bold text-[#64748B]">{time}</span>
@@ -183,7 +186,7 @@ export function TaskCalendarView({ tasks = [], onOpenTask, onCreateAt }) {
           </section>
         )) : (
           <div className="rounded-xl border border-dashed border-[#D7EEF0] bg-[#F8FEFF] p-3 text-center text-xs font-semibold text-[#64748B]">
-            لا توجد مهام في النطاق الزمني الحالي.
+            {t('tasks.calendar.noTasksInRange')}
           </div>
         )}
       </div>

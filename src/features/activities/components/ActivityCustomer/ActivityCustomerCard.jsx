@@ -1,6 +1,8 @@
 import { ExternalLink, Mail, Phone, UserRound } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function ActivityCustomerCard({ activity, onOpenRelated }) {
+  const { t } = useTranslation()
   const related = activity?.relatedEntity || {}
 
   return (
@@ -18,7 +20,7 @@ export function ActivityCustomerCard({ activity, onOpenRelated }) {
             type="button"
             onClick={() => onOpenRelated?.(activity)}
             className="rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] p-2 text-[#007A80] hover:bg-[#E8F9FA]"
-            title="فتح العميل"
+            title={t('activities.table.openCustomerTitle')}
           >
             <ExternalLink size={15} />
           </button>

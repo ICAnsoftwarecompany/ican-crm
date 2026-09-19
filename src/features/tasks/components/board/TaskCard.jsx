@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { AlertTriangle, CheckCircle2, Clock3, MessageSquareText, Paperclip } from 'lucide-react'
 
 import {
@@ -10,7 +11,7 @@ import {
 } from '../../utils/taskMeta'
 import { TaskCardMenu } from './TaskCardMenu'
 
-function getAssigneeNames(task) {
+function getAssigneeNames(task, t) {
   const users = Array.isArray(task?.users) ? task.users : []
   const names = users
     .map((user) => user?.name || user?.username || user?.email)
@@ -18,25 +19,26 @@ function getAssigneeNames(task) {
 
   if (names.length) return names.slice(0, 2)
   if (task?.assigned_to?.name) return [task.assigned_to.name]
-  return ['Unassigned']
+  return [t('tasks.fallback.unassigned')]
 }
 
-function getRelatedEntity(task) {
+function getRelatedEntity(task, t) {
   if (task?.customer?.name) return task.customer.name
   if (task?.lead?.name) return task.lead.name
   if (task?.project?.name) return task.project.name
-  return task?.taskable_type || 'CRM entity'
+  return task?.taskable_type || t('tasks.board.crmEntityFallback')
 }
 
 export function TaskCard({ task, onOpenTask, onQuickComplete, onEdit, onDelete }) {
-  const typeMeta = getTaskTypeMeta(task?.type)
-  const priorityMeta = getTaskPriorityMeta(task?.priority)
-  const statusMeta = getTaskStatusMeta(task?.status)
+  const { t, i18n } = useTranslation()
+  const typeMeta = getTaskTypeMeta(task?.type, t)
+  const priorityMeta = getTaskPriorityMeta(task?.priority, t)
+  const statusMeta = getTaskStatusMeta(task?.status, t)
   const overdue = isTaskOverdue(task)
-  const dueLabel = formatTaskDateLabel(task)
+  const dueLabel = formatTaskDateLabel(task, i18n.language, t)
   const TypeIcon = typeMeta.icon
-  const assignees = getAssigneeNames(task)
-  const relatedEntity = getRelatedEntity(task)
+  const assignees = getAssigneeNames(task, t)
+  const relatedEntity = getRelatedEntity(task, t)
 
   return (
     <article
@@ -51,8 +53,8 @@ export function TaskCard({ task, onOpenTask, onQuickComplete, onEdit, onDelete }
             onQuickComplete?.(task)
           }}
           className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[#CBD5E1] bg-white text-[#007A80] transition-colors hover:border-[#00C2CB]"
-          aria-label="Mark task complete"
-          title="Mark complete"
+          aria-label={t('tasks.board.markCompleteAriaLabel')}
+          title={t('tasks.board.markCompleteTitle')}
         >
           <CheckCircle2 size={10} className="opacity-0 hover:opacity-100" />
         </button>
@@ -63,7 +65,7 @@ export function TaskCard({ task, onOpenTask, onQuickComplete, onEdit, onDelete }
             <span className={`rounded-full border px-1.5 py-0.5 text-[9px] font-black ${priorityMeta.className}`}>{priorityMeta.label}</span>
           </div>
 
-          <h4 className="mt-1 line-clamp-2 text-[12px] font-black leading-5 text-[#0F172A]">{getTaskTitle(task)}</h4>
+          <h4 className="mt-1 line-clamp-2 text-[12px] font-black leading-5 text-[#0F172A]">{getTaskTitle(task, t)}</h4>
         </div>
 
         <TaskCardMenu onOpen={() => onOpenTask?.(task?.id)} onEdit={onEdit} onQuickComplete={() => onQuickComplete?.(task)} onDelete={onDelete} />
@@ -80,7 +82,7 @@ export function TaskCard({ task, onOpenTask, onQuickComplete, onEdit, onDelete }
           {overdue && (
             <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-1.5 py-0.5 text-[9px] font-black text-red-600">
               <AlertTriangle size={9} />
-              Overdue
+              {t('activities.derivedStates.overdue')}
             </span>
           )}
         </div>

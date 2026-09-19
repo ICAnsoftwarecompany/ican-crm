@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 function InfoLine({ label, value }) {
   return (
     <div className="flex min-w-0 items-start justify-between gap-3 border-b border-[var(--border)] py-2 last:border-0">
@@ -8,24 +10,25 @@ function InfoLine({ label, value }) {
 }
 
 export function ActivityPreparationTab({ activity }) {
+  const { t } = useTranslation()
   const related = activity.relatedEntity || {}
 
   return (
     <div className="space-y-3">
       <section className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3">
-        <h4 className="mb-2 text-sm font-black text-[var(--text)]">بيانات العميل قبل التواصل</h4>
-        <InfoLine label="الاسم" value={related.name} />
-        <InfoLine label="الشركة" value={related.company} />
-        <InfoLine label="الحالة" value={related.status} />
-        <InfoLine label="المصدر" value={related.source} />
-        <InfoLine label="الهاتف" value={related.phone || activity.phone} />
-        <InfoLine label="البريد" value={related.email} />
+        <h4 className="mb-2 text-sm font-black text-[var(--text)]">{t('activities.drawer.customerBeforeContactTitle')}</h4>
+        <InfoLine label={t('customers.name')} value={related.name} />
+        <InfoLine label={t('activities.table.customerCompany')} value={related.company} />
+        <InfoLine label={t('activities.table.status')} value={related.status} />
+        <InfoLine label={t('activities.meetingDrawer.fields.source')} value={related.source} />
+        <InfoLine label={t('customers.phone')} value={related.phone || activity.phone} />
+        <InfoLine label={t('activities.table.customerEmail')} value={related.email} />
       </section>
 
       <section className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3">
-        <h4 className="mb-2 text-sm font-black text-[var(--text)]">ملاحظات التحضير</h4>
+        <h4 className="mb-2 text-sm font-black text-[var(--text)]">{t('activities.drawer.preparationNotesTitle')}</h4>
         <p className="whitespace-normal break-words text-sm font-semibold text-[var(--text-muted)]">
-          يتم تجميع هذه البيانات من علاقة النشاط بالـ Lead/Customer. يمكن توسيع هذا التاب لاحقا لعرض آخر مهمة، آخر proposal، وآخر محادثة عند توفرها من الـ API.
+          {t('activities.drawer.preparationHint')}
         </p>
       </section>
     </div>

@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { PanelLeft } from 'lucide-react'
 import { ProductsSidebar } from './ProductsSidebar'
 import { ProductsMobileSidebar } from './ProductsMobileSidebar'
 import { useLocalStorage } from '../../../shared/components/data-table/hooks/useLocalStorage'
 
 export function ProductsLayout() {
+  const { t } = useTranslation()
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [productsSidebarCollapsed, setProductsSidebarCollapsed] = useLocalStorage(
     'products-sidebar-collapsed',
@@ -33,7 +35,7 @@ export function ProductsLayout() {
             aria-controls="products-mobile-sidebar"
           >
             <PanelLeft size={16} />
-            قائمة المنتجات
+            {t('products.sidebar.ariaLabel')}
           </button>
         </div>
 

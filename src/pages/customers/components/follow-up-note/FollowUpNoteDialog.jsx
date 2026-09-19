@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import { CalendarClock, CheckCircle2, ChevronDown, GripHorizontal, X } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -14,14 +15,16 @@ import { FollowUpInterestedProductSection } from './FollowUpInterestedProductSec
 
 const DRAG_LONG_PRESS_MS = 260
 
-const RESULT_OPTIONS = [
-  { value: '', label: 'بدون نتيجة' },
-  { value: 'no_answer', label: 'لم يتم الرد' },
-  { value: 'answered', label: 'تم الرد' },
-  { value: 'interested', label: 'مهتم' },
-  { value: 'not_interested', label: 'غير مهتم' },
-  { value: 'follow_up', label: 'متابعة لاحقة' },
-]
+function getResultOptions(t) {
+  return [
+    { value: '', label: t('customers.followUp.results.none') },
+    { value: 'no_answer', label: t('customers.followUp.results.noAnswer') },
+    { value: 'answered', label: t('customers.followUp.results.answered') },
+    { value: 'interested', label: t('customers.followUp.results.interested') },
+    { value: 'not_interested', label: t('customers.followUp.results.notInterested') },
+    { value: 'follow_up', label: t('customers.followUp.results.followUpLater') },
+  ]
+}
 
 function getLead(customer) {
   return customer?.lead || {}
@@ -36,9 +39,9 @@ function getLeadId(customer) {
   return looksLikeCustomerRecord ? '' : customer?.id
 }
 
-function getCustomerName(customer) {
+function getCustomerName(customer, t) {
   const lead = getLead(customer)
-  return customer?.name || lead?.name || customer?.email || lead?.email || customer?.phone || lead?.phone || 'العميل'
+  return customer?.name || lead?.name || customer?.email || lead?.email || customer?.phone || lead?.phone || t('customers.table.theCustomer')
 }
 
 function getAssignedUserId(customer) {
@@ -75,9 +78,9 @@ function resolveCurrentStatus(customer, statuses = [], currentStatus) {
   return getLead(customer)?.status || customer?.status || null
 }
 
-function getFallbackTitle(customer, statuses, currentStatus) {
+function getFallbackTitle(customer, statuses, currentStatus, t) {
   const status = resolveCurrentStatus(customer, statuses, currentStatus)
-  return getStatusLabel(status) || 'متابعة على العميل'
+  return getStatusLabel(status) || t('customers.followUp.defaultTitle')
 }
 
 function formatDateTimeForApi(value) {
@@ -163,6 +166,7 @@ export function FollowUpNoteDialog({
   onClose,
   onSaved,
 }) {
+  const { t } = useTranslation()
   const mutations = useLeadMutations()
   const meetingMutations = useMeetingMutations()
   const productsQuery = useProducts()
@@ -205,7 +209,7 @@ export function FollowUpNoteDialog({
   })
 
   const leadId = getLeadId(customer)
-  const customerName = getCustomerName(customer)
+  const customerName = getCustomerName(customer, t)
   const resolvedCurrentStatus = useMemo(
     () => resolveCurrentStatus(customer, statuses, currentStatus),
     [currentStatus, customer, statuses]
@@ -344,7 +348,7 @@ export function FollowUpNoteDialog({
     if (!open) return
 
     setForm({
-      title: getFallbackTitle(customer, statuses, currentStatus),
+      title: getFallbackTitle(customer, statuses, currentStatus, t),
       description: '',
       note: '',
       duration: '',
@@ -373,7 +377,7 @@ export function FollowUpNoteDialog({
       interest_level: 'high',
       interest_note: '',
     })
-  }, [currentStatus, customer, open, statuses])
+  }, [currentStatus, customer, open, statuses, t])
 
   useEffect(() => {
     if (!open) return undefined
@@ -409,31 +413,31 @@ export function FollowUpNoteDialog({
 
     const description = String(form.description || '').trim()
     const note = String(form.note || '').trim()
-    const title = String(form.title || '').trim() || oldStatusTitle || 'متابعة على العميل'
+    const title = String(form.title || '').trim() || oldStatusTitle || t('customers.followUp.defaultTitle')
     const text = description || note
 
     if (!leadId) {
-      toast.error('لا يوجد رقم Lead لهذا العميل')
+      toast.error(t('customers.followUp.errors.noLeadId'))
       return
     }
 
     if (!text) {
-      toast.error('اكتب الملاحظة أولا')
+      toast.error(t('customers.followUp.errors.writeNoteFirst'))
       return
     }
 
     if (form.shouldChangeStatus && !selectedStatus) {
-      toast.error('اختر الحالة الجديدة أولا')
+      toast.error(t('customers.followUp.errors.chooseNewStatusFirst'))
       return
     }
 
     if (form.schedule_enabled && form.schedule_type !== 'none' && (!form.schedule_start_at || !form.schedule_end_at)) {
-      toast.error('اختر بداية ونهاية الموعد المرتبط')
+      toast.error(t('customers.followUp.errors.chooseScheduleRange'))
       return
     }
 
     if (form.interest_enabled && !form.interest_product_id) {
-      toast.error('اختر المنتج المهتم به العميل أولا')
+      toast.error(t('customers.followUp.errors.chooseInterestedProductFirst'))
       return
     }
 
@@ -473,9 +477,12 @@ export function FollowUpNoteDialog({
       if (form.schedule_enabled && form.schedule_type !== 'none') {
         const savedActivityId = getSavedActivityId(savedActionResult)
         const baseScheduleTitle = String(form.schedule_title || form.title || '').trim()
+        const scheduleFollowUpLabel = form.schedule_type === 'call'
+          ? t('customers.followUp.scheduleCallFollowUp')
+          : t('customers.followUp.scheduleMeetingFollowUp')
         const effectiveScheduleTitle = baseScheduleTitle
           ? `${baseScheduleTitle}${savedActivityId ? ` (${savedActivityId})` : ''}`
-          : `${form.schedule_type === 'call' ? 'مكالمة' : 'اجتماع'} متابعة${savedActivityId ? ` (${savedActivityId})` : ''}`
+          : `${scheduleFollowUpLabel}${savedActivityId ? ` (${savedActivityId})` : ''}`
 
         await meetingMutations.create.mutateAsync({
           title: effectiveScheduleTitle,
@@ -503,11 +510,11 @@ export function FollowUpNoteDialog({
         })
       }
 
-      toast.success(form.shouldChangeStatus ? 'تمت إضافة الملاحظة وتغيير الحالة' : 'تمت إضافة الملاحظة')
+      toast.success(form.shouldChangeStatus ? t('customers.followUp.toasts.noteAndStatusAdded') : t('customers.followUp.toasts.noteAdded'))
       onSaved?.({ payload, customer, savedActivityId: getSavedActivityId(savedActionResult) })
       onClose?.()
     } catch (error) {
-      toast.error(error?.response?.data?.message || error?.message || 'تعذر إضافة الملاحظة')
+      toast.error(error?.response?.data?.message || error?.message || t('customers.followUp.toasts.noteAddFailed'))
     }
   }
 
@@ -516,9 +523,8 @@ export function FollowUpNoteDialog({
       <div
         role="dialog"
         aria-modal="false"
-        aria-label="إضافة متابعة"
+        aria-label={t('customers.followUp.addFollowUp')}
         className="pointer-events-auto fixed max-h-[calc(100vh-24px)] overflow-hidden rounded-2xl border border-[#BEEFF2] bg-white shadow-2xl"
-        dir="rtl"
         style={{
           left: 0,
           top: 0,
@@ -532,11 +538,11 @@ export function FollowUpNoteDialog({
             'flex cursor-grab touch-none select-none items-center justify-between gap-3 border-b border-[#E5F7F8] bg-[#F8FEFF] px-4 py-3 active:cursor-grabbing',
             isDragging && 'bg-[#E8F9FA]'
           )}
-          title="اضغط مطولا واسحب لتحريك النافذة"
+          title={t('customers.followUp.pressHoldToMove')}
           onPointerDown={handleHeaderPointerDown}
         >
           <div className="min-w-0">
-            <h3 className="truncate text-base font-black text-[#111827]">إضافة متابعة</h3>
+            <h3 className="truncate text-base font-black text-[#111827]">{t('customers.followUp.addFollowUp')}</h3>
             <p className="mt-0.5 truncate text-xs font-bold text-[#64748B]">{customerName}</p>
           </div>
 
@@ -548,7 +554,7 @@ export function FollowUpNoteDialog({
               onPointerDown={(event) => event.stopPropagation()}
               disabled={mutations.saveAction.isPending}
               className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#D8E7EA] bg-white text-[#64748B] transition hover:bg-[#F8FAFC] disabled:opacity-60"
-              aria-label="إغلاق"
+              aria-label={t('customers.table.activityTimeline.close')}
             >
               <X size={17} />
             </button>
@@ -564,50 +570,50 @@ export function FollowUpNoteDialog({
             <div className="min-h-0 space-y-4 overflow-y-auto pe-1">
               <Input
                 type="text"
-                label="الحالة الخاصة بالمتابعة"
+                label={t('customers.followUp.statusFieldLabel')}
                 value={form.title}
                 onChange={(event) => updateForm('title', event.target.value)}
-                placeholder={oldStatusTitle || 'متابعة على العميل'}
+                placeholder={oldStatusTitle || t('customers.followUp.defaultTitle')}
               />
 
               <label className="block">
-                <span className="mb-1.5 block text-sm font-black text-[#111827]">نص الملاحظة</span>
+                <span className="mb-1.5 block text-sm font-black text-[#111827]">{t('customers.followUp.noteTextLabel')}</span>
                 <textarea
                   value={form.description}
                   onChange={(event) => updateForm('description', event.target.value)}
                   rows={5}
                   className="min-h-32 w-full resize-y rounded-xl border border-[#D8E7EA] bg-[#FBFEFF] px-3 py-2 text-sm font-bold text-[#111827] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]"
-                  placeholder="اكتب تفاصيل المتابعة مع العميل..."
+                  placeholder={t('customers.followUp.notePlaceholder')}
                   autoFocus
                 />
               </label>
 
               <Input
                 type="text"
-                label="ملاحظة مختصرة"
+                label={t('customers.followUp.shortNoteLabel')}
                 value={form.note}
                 onChange={(event) => updateForm('note', event.target.value)}
-                placeholder="اختياري"
+                placeholder={t('customers.followUp.optionalPlaceholder')}
               />
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <Input
                   type="number"
                   min="0"
-                  label="مدة المتابعة بالدقائق"
+                  label={t('customers.followUp.durationLabel')}
                   value={form.duration}
                   onChange={(event) => updateForm('duration', event.target.value)}
                   placeholder="15"
                 />
 
                 <label className="grid gap-1.5">
-                  <span className="text-sm font-medium font-arabic text-[var(--text)]">نتيجة المتابعة</span>
+                  <span className="text-sm font-medium font-arabic text-[var(--text)]">{t('customers.followUp.resultLabel')}</span>
                   <select
                     value={form.result}
                     onChange={(event) => updateForm('result', event.target.value)}
                     className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-arabic text-[var(--text)] outline-none transition-colors focus:border-transparent focus:ring-2 focus:ring-[#00C2CB]"
                   >
-                    {RESULT_OPTIONS.map((option) => (
+                    {getResultOptions(t).map((option) => (
                       <option key={option.value || 'empty'} value={option.value}>{option.label}</option>
                     ))}
                   </select>
@@ -616,7 +622,7 @@ export function FollowUpNoteDialog({
 
               <Input
                 type="datetime-local"
-                label="وقت المتابعة"
+                label={t('customers.followUp.activityTimeLabel')}
                 value={form.activity_at}
                 onChange={(event) => updateForm('activity_at', event.target.value)}
                 startIcon={<CalendarClock size={16} />}
@@ -625,9 +631,9 @@ export function FollowUpNoteDialog({
               <div className="rounded-xl border border-[#D7EEF0] bg-[#F8FEFF] p-3">
                 <label className="flex cursor-pointer items-center justify-between gap-3">
                   <span className="min-w-0">
-                    <span className="block text-sm font-black text-[#111827]">تريد تغيير الحالة؟</span>
+                    <span className="block text-sm font-black text-[#111827]">{t('customers.followUp.changeStatusQuestion')}</span>
                     <span className="mt-0.5 block text-xs font-bold text-[#64748B]">
-                      عند الاختيار سيتم إرسال بيانات الحالة الجديدة مع الملاحظة.
+                      {t('customers.followUp.changeStatusHint')}
                     </span>
                   </span>
                   <input
@@ -648,18 +654,18 @@ export function FollowUpNoteDialog({
                 {form.shouldChangeStatus ? (
                   <div className="mt-3 grid gap-2">
                     <label className="grid gap-1.5">
-                      <span className="text-sm font-medium font-arabic text-[var(--text)]">الحالة الجديدة</span>
+                      <span className="text-sm font-medium font-arabic text-[var(--text)]">{t('customers.followUp.newStatusLabel')}</span>
                       <div className="relative">
                         <select
                           value={form.new_status_id}
                           onChange={(event) => updateForm('new_status_id', event.target.value)}
                           className="h-10 w-full appearance-none rounded-lg border border-[var(--border)] bg-white px-3 pe-9 text-sm font-arabic text-[var(--text)] outline-none transition-colors focus:border-transparent focus:ring-2 focus:ring-[#00C2CB]"
                         >
-                          <option value="">اختر الحالة</option>
+                          <option value="">{t('customers.followUp.chooseStatusPlaceholder')}</option>
                           {statuses.map((status) => (
                             <option key={status.id} value={status.id}>
                               {isStatusNoteRequired(status)
-                                ? `${getStatusLabel(status)} (ملاحظة إجبارية)`
+                                ? `${getStatusLabel(status)}${t('customers.followUp.noteRequiredSuffix')}`
                                 : getStatusLabel(status)}
                             </option>
                           ))}
@@ -670,13 +676,13 @@ export function FollowUpNoteDialog({
 
                     <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-[#64748B]">
                       <span className="rounded-full bg-white px-2 py-1 ring-1 ring-[#D7EEF0]">
-                        الحالة الحالية: {oldStatusTitle || '-'}
+                        {t('customers.followUp.currentStatusLabel', { status: oldStatusTitle || '-' })}
                       </span>
                       {selectedStatus ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-[#ECFDF3] px-2 py-1 text-[#166534] ring-1 ring-[#BBF7D0]">
                           <CheckCircle2 size={13} />
-                          سيتم التغيير إلى: {getStatusLabel(selectedStatus)}
-                          {isStatusNoteRequired(selectedStatus) ? ' (ملاحظة إجبارية)' : ''}
+                          {t('customers.followUp.willChangeTo', { status: getStatusLabel(selectedStatus) })}
+                          {isStatusNoteRequired(selectedStatus) ? t('customers.followUp.noteRequiredSuffix') : ''}
                         </span>
                       ) : null}
                     </div>
@@ -703,7 +709,7 @@ export function FollowUpNoteDialog({
               onClick={onClose}
               disabled={mutations.saveAction.isPending || meetingMutations.create.isPending}
             >
-              إلغاء
+              {t('customers.table.cancel')}
             </Button>
             <Button
               type="submit"
@@ -711,7 +717,7 @@ export function FollowUpNoteDialog({
               loading={mutations.saveAction.isPending || meetingMutations.create.isPending}
               disabled={!canSubmit}
             >
-              حفظ المتابعة
+              {t('customers.followUp.saveFollowUp')}
             </Button>
           </div>
         </form>
@@ -722,8 +728,8 @@ export function FollowUpNoteDialog({
             'absolute bottom-2 right-2 h-4 w-4 rounded-sm border border-[#BEEFF2] bg-[#F8FEFF] text-transparent',
             isResizing ? 'cursor-nwse-resize bg-[#E8F9FA]' : 'cursor-nwse-resize'
           )}
-          title="تغيير عرض وارتفاع النافذة"
-          aria-label="تغيير عرض وارتفاع النافذة"
+          title={t('customers.table.activityTimeline.resizeWindow')}
+          aria-label={t('customers.table.activityTimeline.resizeWindow')}
           onPointerDown={handleResizePointerDown}
         />
       </div>

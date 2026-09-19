@@ -1,4 +1,5 @@
 import { Plus, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '../../../shared/components/ui/Button'
 import { Input } from '../../../shared/components/ui/Input'
 
@@ -51,6 +52,7 @@ export function createEmptyAdditionalRow(name = '') {
 }
 
 export function AdditionalDataFields({ rows, onChange, suggestions = [] }) {
+  const { t } = useTranslation()
   const updateRow = (id, key, value) => {
     onChange(rows.map((row) => (row.id === id ? { ...row, [key]: value } : row)))
   }
@@ -71,7 +73,7 @@ export function AdditionalDataFields({ rows, onChange, suggestions = [] }) {
       {availableSuggestions.length > 0 && (
         <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
           <div className="mb-2 text-xs font-semibold text-[var(--text-muted)]">
-            خانات موجودة في الفئة
+            {t('products.additionalFields.existingInCategory')}
           </div>
           <div className="flex flex-wrap gap-2">
             {availableSuggestions.map((name) => (
@@ -92,17 +94,17 @@ export function AdditionalDataFields({ rows, onChange, suggestions = [] }) {
         {rows.map((row) => (
           <div key={row.id} className="grid grid-cols-[1fr_1fr_auto] items-end gap-2">
             <Input
-              label="اسم الخانة"
+              label={t('products.additionalFields.fieldNameLabel')}
               value={row.name}
               onChange={(event) => updateRow(row.id, 'name', event.target.value)}
-              placeholder="مثال: color"
+              placeholder={t('products.additionalFields.fieldNamePlaceholder')}
               dir="ltr"
             />
             <Input
-              label="القيمة"
+              label={t('products.additionalFields.valueLabel')}
               value={row.value}
               onChange={(event) => updateRow(row.id, 'value', event.target.value)}
-              placeholder="القيمة"
+              placeholder={t('products.additionalFields.valueLabel')}
             />
             <Button type="button" variant="outline" onClick={() => removeRow(row.id)}>
               <Trash2 size={16} />
@@ -113,7 +115,7 @@ export function AdditionalDataFields({ rows, onChange, suggestions = [] }) {
 
       <Button type="button" variant="outline" onClick={() => addRow()}>
         <Plus size={16} />
-        إضافة خانة
+        {t('products.additionalFields.addField')}
       </Button>
     </div>
   )

@@ -161,7 +161,7 @@ function CustomerNotePreview({
   activityAt = '',
   title = '',
   userName = '',
-  label = 'ملاحظة',
+  label = 'Note',
   tone = 'slate',
 }) {
   if (!note) return null
@@ -251,9 +251,10 @@ function LeadNoteHoverDetails({ activity }) {
   )
 }
 
-function LatestLeadNoteCell({ row, latestLeadNotes, onAddLeadNote }) {
+function LatestLeadNoteCell({ row, latestLeadNotes, onAddLeadNote, t }) {
   const activity = getLatestLeadNote(row, latestLeadNotes)
   const lead = getLead(row)
+  const targetName = lead?.name || (t ? t('customers.table.theCustomer') : 'the customer')
 
   const addButton = (
     <button
@@ -263,8 +264,8 @@ function LatestLeadNoteCell({ row, latestLeadNotes, onAddLeadNote }) {
         onAddLeadNote?.(row)
       }}
       className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#BEEFF2] bg-white text-[#007A80] transition hover:bg-[#E8F9FA]"
-      title={`إضافة ملاحظة على ${lead?.name || 'العميل'}`}
-      aria-label={`إضافة ملاحظة على ${lead?.name || 'العميل'}`}
+      title={t ? t('customers.table.addNoteFor', { name: targetName }) : `Add a note for ${targetName}`}
+      aria-label={t ? t('customers.table.addNoteFor', { name: targetName }) : `Add a note for ${targetName}`}
     >
       <Plus size={14} />
     </button>
@@ -401,7 +402,7 @@ function getActivityPriorityMeta(priorityValue = '') {
   return { label: renderNullable(priorityValue), className: 'border-[#E2E8F0] bg-white text-[#475569]' }
 }
 
-function formatBackendDateTime(value) {
+function formatBackendDateTime(value, t) {
   if (!value) return '-'
 
   const text = String(value).trim()
@@ -428,7 +429,7 @@ function formatBackendDateTime(value) {
     const [, datePart, hourPart, minutePart] = dateTimeMatch
     const hour24 = Number(hourPart)
     const hour12 = hour24 % 12 || 12
-    const period = hour24 >= 12 ? 'م' : 'ص'
+    const period = hour24 >= 12 ? (t ? t('common.pm') : 'PM') : (t ? t('common.am') : 'AM')
 
     return `${datePart} ${hour12}:${minutePart} ${period}`
   }
@@ -719,17 +720,17 @@ function DelayedActivityHover({ content, children }) {
   )
 }
 
-function renderScheduledActivitySummary(activity, nowTimestamp, { includeMode = false, onChangeScheduledActivityStatus } = {}) {
+function renderScheduledActivitySummary(activity, nowTimestamp, { includeMode = false, onChangeScheduledActivityStatus, t } = {}) {
   if (!activity) {
     return <span className="text-xs font-semibold text-[var(--text-muted)]">-</span>
   }
 
-  const remainingLabel = getScheduledRemainingLabel(activity, nowTimestamp)
+  const remainingLabel = getScheduledRemainingLabel(activity, nowTimestamp, t)
   const isReminderAlert = isActivityInReminderWindow(activity, nowTimestamp)
   const noteText = getActivityNoteText(activity)
   const reportsCount = getActivityReportsCount(activity)
-  const actualStartLabel = activity?.actual_start_at ? formatBackendDateTime(activity.actual_start_at) : ''
-  const actualElapsedLabel = getActualElapsedLabel(activity, nowTimestamp)
+  const actualStartLabel = activity?.actual_start_at ? formatBackendDateTime(activity.actual_start_at, t) : ''
+  const actualElapsedLabel = getActualElapsedLabel(activity, nowTimestamp, t)
 
   return (
     <CustomerTableHoverCard
@@ -752,11 +753,11 @@ function renderScheduledActivitySummary(activity, nowTimestamp, { includeMode = 
     >
       <div className="w-full min-w-0 space-y-1 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-2 py-1.5">
         <div className="break-words text-xs font-black text-[var(--text)]">
-          {formatBackendDateTime(activity?.start_at)}
+          {formatBackendDateTime(activity?.start_at, t)}
         </div>
         {actualStartLabel ? (
           <div className="break-words text-[10px] font-black text-[#007A80]">
-            البداية الفعلية: {actualStartLabel}
+            {t ? t('customers.table.hover.actualStart') : 'Actual start'}: {actualStartLabel}
           </div>
         ) : null}
         {actualElapsedLabel ? (
@@ -771,7 +772,7 @@ function renderScheduledActivitySummary(activity, nowTimestamp, { includeMode = 
         ) : null}
         {reportsCount !== null && normalizeActivityType(activity?.type) === 'meeting' ? (
           <div className="break-words text-[10px] font-black text-[#0369A1]">
-            عدد التقارير: {reportsCount}
+            {t ? t('customers.table.hover.reportsCount') : 'Reports count'}: {reportsCount}
           </div>
         ) : null}
         <div className="break-words text-[11px] font-semibold text-[var(--text-muted)]" title={noteText}>
@@ -782,7 +783,7 @@ function renderScheduledActivitySummary(activity, nowTimestamp, { includeMode = 
   )
 }
 
-function renderInlineStatusActions(activity, nowTimestamp, onChangeScheduledActivityStatus) {
+function renderInlineStatusActions(activity, nowTimestamp, onChangeScheduledActivityStatus, t) {
   if (!activity || typeof onChangeScheduledActivityStatus !== 'function') return null
 
   const status = String(activity?.status || '').trim().toLowerCase()
@@ -799,7 +800,7 @@ function renderInlineStatusActions(activity, nowTimestamp, onChangeScheduledActi
           }}
           className="inline-flex h-7 items-center rounded-lg border border-[#BBF7D0] bg-[#F0FDF4] px-2 text-[10px] font-black text-[#166534]"
         >
-          إنهاء
+          {t ? t('customers.table.finish') : 'Finish'}
         </button>
       </div>
     )
@@ -816,7 +817,7 @@ function renderInlineStatusActions(activity, nowTimestamp, onChangeScheduledActi
           }}
           className="inline-flex h-7 items-center rounded-lg border border-[#BFDBFE] bg-[#EFF6FF] px-2 text-[10px] font-black text-[#1D4ED8]"
         >
-          بدء
+          {t ? t('customers.table.start') : 'Start'}
         </button>
         <button
           type="button"
@@ -826,7 +827,7 @@ function renderInlineStatusActions(activity, nowTimestamp, onChangeScheduledActi
           }}
           className="inline-flex h-7 items-center rounded-lg border border-[#FECACA] bg-[#FEF2F2] px-2 text-[10px] font-black text-[#991B1B]"
         >
-          إلغاء
+          {t ? t('customers.table.cancel') : 'Cancel'}
         </button>
       </div>
     )
@@ -835,8 +836,10 @@ function renderInlineStatusActions(activity, nowTimestamp, onChangeScheduledActi
   return null
 }
 
-function ScheduledActivityAddButton({ row, type, onAddScheduledActivity }) {
-  const label = type === 'meeting' ? 'إضافة ميتنج' : 'إضافة مكالمة'
+function ScheduledActivityAddButton({ row, type, onAddScheduledActivity, t }) {
+  const label = type === 'meeting'
+    ? (t ? t('customers.table.addMeeting') : 'Add meeting')
+    : (t ? t('customers.table.addCall') : 'Add call')
 
   return (
     <button
@@ -855,7 +858,7 @@ function ScheduledActivityAddButton({ row, type, onAddScheduledActivity }) {
   )
 }
 
-function renderScheduledActivityCell(row, type, nowTimestamp, { includeMode = false, onAddScheduledActivity, onChangeScheduledActivityStatus } = {}) {
+function renderScheduledActivityCell(row, type, nowTimestamp, { includeMode = false, onAddScheduledActivity, onChangeScheduledActivityStatus, t } = {}) {
   const activity = resolveScheduledActivityByType(row, type, nowTimestamp)
   const inProgressActivity = resolveInProgressActivityByType(row, type, nowTimestamp)
   const activities = getActivitiesByType(row, type)
@@ -863,27 +866,31 @@ function renderScheduledActivityCell(row, type, nowTimestamp, { includeMode = fa
   const statusChips = [
     {
       key: 'completed',
-      label: 'Completed',
+      label: t ? t('activities.status.completed') : 'Completed',
       className: 'border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]',
       items: activities.filter((item) => String(item?.status || '').trim().toLowerCase() === 'completed'),
     },
     {
       key: 'cancelled',
-      label: 'Cancelled',
+      label: t ? t('activities.status.cancelled') : 'Cancelled',
       className: 'border-[#FECACA] bg-[#FEF2F2] text-[#991B1B]',
       items: activities.filter((item) => String(item?.status || '').trim().toLowerCase() === 'cancelled'),
     },
     {
       key: 'in_progress',
-      label: 'In Progress',
+      label: t ? t('activities.status.in_progress') : 'In Progress',
       className: 'border-[#FDE68A] bg-[#FFFBEB] text-[#92400E]',
       items: activities.filter((item) => String(item?.status || '').trim().toLowerCase() === 'in_progress'),
     },
   ]
 
+  const groupLabel = type === 'meeting'
+    ? (t ? t('customers.table.meetingsGroupLabel') : 'Meetings')
+    : (t ? t('customers.table.callsGroupLabel') : 'Calls')
+
   return (
     <div className="flex w-full min-w-0 items-start gap-2">
-      <ScheduledActivityAddButton row={row} type={type} onAddScheduledActivity={onAddScheduledActivity} />
+      <ScheduledActivityAddButton row={row} type={type} onAddScheduledActivity={onAddScheduledActivity} t={t} />
       <div className="min-w-0 flex-1 space-y-1.5">
         <div className="flex flex-wrap items-center gap-1.5">
           {statusChips.map((chip) => (
@@ -894,18 +901,18 @@ function renderScheduledActivityCell(row, type, nowTimestamp, { includeMode = fa
               content={(
                 <div className="space-y-2">
                   <div className="text-xs font-black text-[#0F172A]">
-                    {type === 'meeting' ? 'الاجتماعات' : 'المكالمات'} - {chip.label}
+                    {groupLabel} - {chip.label}
                   </div>
                   {chip.items.length ? (
                     chip.items.map((item) => (
                       <div key={item?.id || `${item?.start_at || ''}-${item?.title || ''}`} className="rounded-lg border border-[#E2E8F0] bg-white p-2">
                         <div className="text-xs font-black text-[#0F172A]">{item?.title || item?.description || '-'}</div>
-                        <div className="mt-1 text-[11px] font-semibold text-[#64748B]">{formatBackendDateTime(item?.start_at)}</div>
+                        <div className="mt-1 text-[11px] font-semibold text-[#64748B]">{formatBackendDateTime(item?.start_at, t)}</div>
                       </div>
                     ))
                   ) : (
                     <div className="rounded-lg border border-dashed border-[#E2E8F0] bg-[#F8FAFC] p-2 text-[11px] font-semibold text-[#64748B]">
-                      لا يوجد عناصر بهذه الحالة.
+                      {t ? t('customers.table.noItemsForStatus') : 'No items with this status.'}
                     </div>
                   )}
                 </div>
@@ -917,12 +924,12 @@ function renderScheduledActivityCell(row, type, nowTimestamp, { includeMode = fa
             </CustomerTableHoverCard>
           ))}
         </div>
-        {renderScheduledActivitySummary(activity, nowTimestamp, { includeMode, onChangeScheduledActivityStatus })}
-        {renderInlineStatusActions(activity, nowTimestamp, onChangeScheduledActivityStatus)}
+        {renderScheduledActivitySummary(activity, nowTimestamp, { includeMode, onChangeScheduledActivityStatus, t })}
+        {renderInlineStatusActions(activity, nowTimestamp, onChangeScheduledActivityStatus, t)}
         {inProgressActivity ? (
           <>
-            {renderScheduledActivitySummary(inProgressActivity, nowTimestamp, { includeMode, onChangeScheduledActivityStatus })}
-            {renderInlineStatusActions(inProgressActivity, nowTimestamp, onChangeScheduledActivityStatus)}
+            {renderScheduledActivitySummary(inProgressActivity, nowTimestamp, { includeMode, onChangeScheduledActivityStatus, t })}
+            {renderInlineStatusActions(inProgressActivity, nowTimestamp, onChangeScheduledActivityStatus, t)}
           </>
         ) : null}
       </div>
@@ -954,7 +961,7 @@ function getReminderDurationMs(activity) {
   return unitDuration ? before * unitDuration : null
 }
 
-function formatCountdownDuration(diffMs) {
+function formatCountdownDuration(diffMs, t) {
   const totalSeconds = Math.max(0, Math.floor(diffMs / 1000))
   const days = Math.floor(totalSeconds / 86400)
   const hours = Math.floor((totalSeconds % 86400) / 3600)
@@ -962,35 +969,40 @@ function formatCountdownDuration(diffMs) {
   const seconds = totalSeconds % 60
   const parts = []
 
-  if (days) parts.push(`${days} يوم`)
-  if (days || hours) parts.push(`${hours} ساعة`)
-  if (days || hours || minutes) parts.push(`${minutes} دقيقة`)
-  parts.push(`${seconds} ثانية`)
+  const tr = (key, count) => (t ? t(key, { count }) : `${count}`)
 
-  return `متبقي ${parts.join(' و ')}`
+  if (days) parts.push(tr('activities.duration.day', days))
+  if (days || hours) parts.push(tr('activities.duration.hour', hours))
+  if (days || hours || minutes) parts.push(tr('activities.duration.minute', minutes))
+  parts.push(tr('activities.duration.second', seconds))
+
+  const joined = parts.join(t ? t('activities.duration.and') : ' and ')
+  return t ? t('activities.duration.remaining', { value: joined }) : `Remaining ${joined}`
 }
 
-function formatOverdueHours(diffMs) {
+function formatOverdueHours(diffMs, t) {
   const hours = Math.max(1, Math.floor(diffMs / (1000 * 60 * 60)))
-  return `متأخر منذ ${hours} ساعة`
+  return t ? t('activities.duration.overdueSince', { hours }) : `Overdue by ${hours}h`
 }
 
-function formatElapsedDuration(diffMs) {
+function formatElapsedDuration(diffMs, t) {
   const totalSeconds = Math.max(0, Math.floor(diffMs / 1000))
   const days = Math.floor(totalSeconds / 86400)
   const hours = Math.floor((totalSeconds % 86400) / 3600)
   const minutes = Math.floor((totalSeconds % 3600) / 60)
   const parts = []
 
-  if (days) parts.push(`${days} يوم`)
-  if (hours) parts.push(`${hours} ساعة`)
-  if (minutes) parts.push(`${minutes} دقيقة`)
-  if (!parts.length) parts.push('أقل من دقيقة')
+  const tr = (key, count) => (t ? t(key, { count }) : `${count}`)
 
-  return parts.slice(0, 2).join(' و ')
+  if (days) parts.push(tr('activities.duration.day', days))
+  if (hours) parts.push(tr('activities.duration.hour', hours))
+  if (minutes) parts.push(tr('activities.duration.minute', minutes))
+  if (!parts.length) parts.push(t ? t('activities.duration.lessThanMinute') : 'Less than a minute')
+
+  return parts.slice(0, 2).join(t ? t('activities.duration.and') : ' and ')
 }
 
-function getScheduledRemainingLabel(activity, nowTimestamp) {
+function getScheduledRemainingLabel(activity, nowTimestamp, t) {
   const status = String(activity?.status || '').trim().toLowerCase()
   if (status !== 'scheduled' && status !== 'in_progress') return ''
 
@@ -1004,7 +1016,8 @@ function getScheduledRemainingLabel(activity, nowTimestamp) {
       if (normalizeActivityType(activity?.type) === 'meeting') {
         return ''
       }
-      return `قيد التنفيذ منذ ${formatElapsedDuration(nowTimestamp - changedAt)}`
+      const elapsed = formatElapsedDuration(nowTimestamp - changedAt, t)
+      return t ? t('activities.duration.inProgressSince', { value: elapsed }) : `In progress for ${elapsed}`
     }
   }
 
@@ -1014,23 +1027,23 @@ function getScheduledRemainingLabel(activity, nowTimestamp) {
 
   if (status === 'in_progress' && !Number.isNaN(endAt)) {
     const diffEndMs = endAt - nowTimestamp
-    if (diffEndMs <= 0) return formatOverdueHours(Math.abs(diffEndMs))
+    if (diffEndMs <= 0) return formatOverdueHours(Math.abs(diffEndMs), t)
   }
 
   if (!Number.isNaN(startAt)) {
     const diffMs = startAt - nowTimestamp
     if (diffMs <= 0) {
-      if (status === 'scheduled') return formatOverdueHours(Math.abs(diffMs))
-      return 'النشاط قيد التنفيذ الآن'
+      if (status === 'scheduled') return formatOverdueHours(Math.abs(diffMs), t)
+      return t ? t('activities.duration.inProgressNow') : 'Activity in progress now'
     }
 
-    return formatCountdownDuration(diffMs)
+    return formatCountdownDuration(diffMs, t)
   }
 
   return ''
 }
 
-function getActualElapsedLabel(activity, nowTimestamp) {
+function getActualElapsedLabel(activity, nowTimestamp, t) {
   const status = String(activity?.status || '').trim().toLowerCase()
   if (status !== 'in_progress' || !activity?.actual_start_at) return ''
 
@@ -1041,7 +1054,8 @@ function getActualElapsedLabel(activity, nowTimestamp) {
 
   if (Number.isNaN(startedAt) || nowTimestamp < startedAt) return ''
 
-  return `الوقت المنقضي: ${formatElapsedDuration(nowTimestamp - startedAt)}`
+  const elapsed = formatElapsedDuration(nowTimestamp - startedAt, t)
+  return t ? t('activities.duration.elapsedTime', { value: elapsed }) : `Elapsed time: ${elapsed}`
 }
 
 function isActivityInReminderWindow(activity, nowTimestamp) {
@@ -1213,7 +1227,7 @@ export function useCustomersTableColumns(options = {}) {
   const columns = [
     {
       id: 'lead_id',
-      header: 'Lead ID',
+      header: translate ? translate('customers.table.leadId') : 'Lead ID',
       accessor: 'lead.id',
       searchable: true,
       sortable: true,
@@ -1225,7 +1239,7 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'lead_name',
-      header: 'اسم العميل',
+      header: translate ? translate('customers.table.customerName') : 'Customer Name',
       accessor: 'lead.name',
       searchable: true,
       sortable: true,
@@ -1235,6 +1249,7 @@ export function useCustomersTableColumns(options = {}) {
       width: 'w-36',
       render: (row) => {
         const leadName = renderNullable(getLead(row).name)
+        const detailsTarget = leadName === '-' ? (translate ? translate('customers.table.theCustomer') : 'the customer') : leadName
         const noteActivity = getCustomerNoteActivity(row)
         const note = getCustomerNoteText(row)
         const latestLeadNote = getLatestLeadNote(row, latestLeadNotes)
@@ -1256,8 +1271,8 @@ export function useCustomersTableColumns(options = {}) {
                   onOpenDetails?.(row)
                 }}
                 className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#BEEFF2] bg-white text-[#007A80] shadow-sm transition hover:border-[#00C2CB] hover:bg-[#E8F9FA]"
-                title={`فتح تفاصيل ${leadName === '-' ? 'العميل' : leadName}`}
-                aria-label={`فتح تفاصيل ${leadName === '-' ? 'العميل' : leadName}`}
+                title={translate ? translate('customers.table.openDetailsFor', { name: detailsTarget }) : `Open ${detailsTarget} details`}
+                aria-label={translate ? translate('customers.table.openDetailsFor', { name: detailsTarget }) : `Open ${detailsTarget} details`}
                 data-no-cell-copy="true"
               >
                 <PanelRightOpen size={14} />
@@ -1273,7 +1288,7 @@ export function useCustomersTableColumns(options = {}) {
                 activityAt={noteActivity?.activity_at || noteActivity?.created_at}
                 title={noteActivity?.title || 'Customer note added'}
                 userName={getUserLabel(noteActivity?.user)}
-                label="نوت"
+                label={translate ? translate('customers.table.notePreviewNote') : 'Note'}
               />
             ) : null}
             {latestLeadNoteText ? (
@@ -1282,7 +1297,7 @@ export function useCustomersTableColumns(options = {}) {
                 activityAt={latestLeadNote?.activity_at || latestLeadNote?.created_at}
                 title={latestLeadNote?.title}
                 userName={getUserLabel(latestLeadNote?.user)}
-                label="آخر متابعة"
+                label={translate ? translate('customers.table.notePreviewLastFollowUp') : 'Last Follow-up'}
                 tone="teal"
               />
             ) : null}
@@ -1292,7 +1307,7 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'lead_email',
-      header: 'البريد الإلكتروني',
+      header: translate ? translate('customers.email') : 'Email',
       accessor: 'lead.email',
       searchable: true,
       sortable: true,
@@ -1304,7 +1319,7 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'latest_lead_note',
-      header: 'آخر متابعة على العميل',
+      header: translate ? translate('customers.table.latestFollowUp') : 'Latest Follow-up',
       accessor: '__latestLeadNote',
       searchable: false,
       sortable: false,
@@ -1316,12 +1331,13 @@ export function useCustomersTableColumns(options = {}) {
           row={row}
           latestLeadNotes={latestLeadNotes}
           onAddLeadNote={onAddLeadNote}
+          t={translate}
         />
       ),
     },
     {
       id: 'lead_phone',
-      header: 'الهاتف',
+      header: translate ? translate('customers.phone') : 'Phone',
       accessor: 'lead.phone',
       searchable: true,
       sortable: false,
@@ -1333,7 +1349,7 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'company',
-      header: 'الشركة',
+      header: translate ? translate('customers.table.company') : 'Company',
       accessor: '__customerCompany',
       searchable: true,
       sortable: true,
@@ -1345,7 +1361,7 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'customer_code',
-      header: 'كود العميل',
+      header: translate ? translate('customers.table.customerCode') : 'Customer Code',
       accessor: '__customerCode',
       searchable: true,
       sortable: true,
@@ -1357,7 +1373,7 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'lead_type',
-      header: 'نوع الليد',
+      header: translate ? translate('customers.table.leadType') : 'Lead Type',
       accessor: '__leadType',
       searchable: true,
       sortable: true,
@@ -1369,7 +1385,7 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'linked_channels',
-      header: 'القنوات المربوطة',
+      header: translate ? translate('customers.table.linkedChannels') : 'Linked Channels',
       accessor: 'has_messenger',
       searchable: false,
       sortable: false,
@@ -1406,8 +1422,8 @@ export function useCustomersTableColumns(options = {}) {
                 email: lead?.email || row?.email || '',
               })}
               className="relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#D7E8EB] bg-white text-[#0A7CFF] transition hover:border-[#9EDCFF] hover:bg-[#EEF7FF]"
-              title="فتح محادثة ماسنجر"
-              aria-label="فتح محادثة ماسنجر"
+              title={translate ? translate('customers.table.openMessengerChat') : 'Open Messenger conversation'}
+              aria-label={translate ? translate('customers.table.openMessengerChat') : 'Open Messenger conversation'}
             >
               <MessengerLogoIcon size={18} />
               {unreadCount > 0 && (
@@ -1430,8 +1446,8 @@ export function useCustomersTableColumns(options = {}) {
                   email: lead?.email || row?.email || '',
                 })}
                 className="relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#F4C7C3] bg-white text-[#D93025] transition hover:border-[#D93025] hover:bg-[#FCE8E6]"
-                title="فتح محادثة Gmail"
-                aria-label="فتح محادثة Gmail"
+                title={translate ? translate('customers.table.openGmailChat') : 'Open Gmail conversation'}
+                aria-label={translate ? translate('customers.table.openGmailChat') : 'Open Gmail conversation'}
               >
                 <GmailLogoIcon size={18} />
                 {gmailUnreadCount > 0 && (
@@ -1448,7 +1464,7 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'meeting',
-      header: 'الميتنج',
+      header: translate ? translate('customers.table.meeting') : 'Meeting',
       accessor: '__meetingFilterStatus',
       sortAccessor: '__meetingSortAt',
       searchable: false,
@@ -1456,10 +1472,10 @@ export function useCustomersTableColumns(options = {}) {
       filterable: true,
       filterType: 'select',
       filterOptions: [
-        { label: 'Scheduled', value: 'scheduled' },
-        { label: 'In Progress', value: 'in_progress' },
-        { label: 'Completed', value: 'completed' },
-        { label: 'Cancelled', value: 'cancelled' },
+        { label: translate ? translate('activities.status.scheduled') : 'Scheduled', value: 'scheduled' },
+        { label: translate ? translate('activities.status.in_progress') : 'In Progress', value: 'in_progress' },
+        { label: translate ? translate('activities.status.completed') : 'Completed', value: 'completed' },
+        { label: translate ? translate('activities.status.cancelled') : 'Cancelled', value: 'cancelled' },
       ],
       visible: true,
       width: 'w-72',
@@ -1467,11 +1483,12 @@ export function useCustomersTableColumns(options = {}) {
         includeMode: true,
         onAddScheduledActivity,
         onChangeScheduledActivityStatus,
+        t: translate,
       }),
     },
     {
       id: 'call',
-      header: 'المكالمة',
+      header: translate ? translate('customers.table.call') : 'Call',
       accessor: '__callFilterStatus',
       sortAccessor: '__callSortAt',
       searchable: false,
@@ -1479,21 +1496,22 @@ export function useCustomersTableColumns(options = {}) {
       filterable: true,
       filterType: 'select',
       filterOptions: [
-        { label: 'Scheduled', value: 'scheduled' },
-        { label: 'In Progress', value: 'in_progress' },
-        { label: 'Completed', value: 'completed' },
-        { label: 'Cancelled', value: 'cancelled' },
+        { label: translate ? translate('activities.status.scheduled') : 'Scheduled', value: 'scheduled' },
+        { label: translate ? translate('activities.status.in_progress') : 'In Progress', value: 'in_progress' },
+        { label: translate ? translate('activities.status.completed') : 'Completed', value: 'completed' },
+        { label: translate ? translate('activities.status.cancelled') : 'Cancelled', value: 'cancelled' },
       ],
       visible: true,
       width: 'w-72',
       render: (row) => renderScheduledActivityCell(row, 'call', nowTimestamp, {
         onAddScheduledActivity,
         onChangeScheduledActivityStatus,
+        t: translate,
       }),
     },
     {
       id: 'lead_source',
-      header: 'المصدر',
+      header: translate ? translate('leads.source') : 'Source',
       accessor: 'lead.source',
       searchable: true,
       sortable: true,
@@ -1505,7 +1523,7 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'marketing_source',
-      header: 'بيانات المصدر',
+      header: translate ? translate('customers.table.marketingSourceData') : 'Source Data',
       accessor: '__marketingSourceText',
       searchable: true,
       sortable: true,
@@ -1513,11 +1531,11 @@ export function useCustomersTableColumns(options = {}) {
       filterType: 'text',
       visible: true,
       width: 'w-80',
-      render: (row) => <CustomerMarketingSourceCell row={row} />,
+      render: (row) => <CustomerMarketingSourceCell row={row} t={translate} />,
     },
     {
       id: 'linked_products',
-      header: 'المنتجات والاهتمامات',
+      header: translate ? translate('customers.table.productsAndInterests') : 'Products & Interests',
       accessor: '__linkedProductsText',
       searchable: true,
       sortable: true,
@@ -1525,31 +1543,31 @@ export function useCustomersTableColumns(options = {}) {
       filterType: 'text',
       visible: true,
       width: 'w-96',
-      render: (row) => <CustomerProductsCell row={row} customerRows={customerRows} />,
+      render: (row) => <CustomerProductsCell row={row} customerRows={customerRows} t={translate} />,
     },
     {
       id: 'is_deal',
-      header: 'Deal',
+      header: translate ? translate('customers.table.deal') : 'Deal',
       accessor: 'is_deal',
       searchable: true,
       sortable: true,
       filterable: true,
       filterType: 'select',
       filterOptions: [
-        { label: 'Deal', value: '1' },
-        { label: 'Lead', value: '0' },
+        { label: translate ? translate('customers.table.deal') : 'Deal', value: '1' },
+        { label: translate ? translate('customers.table.lead') : 'Lead', value: '0' },
       ],
       visible: true,
       width: 'w-24',
       render: (row) => (
         <Badge variant={Number(row.is_deal) === 1 ? 'success' : 'warning'}>
-          {Number(row.is_deal) === 1 ? 'Deal' : 'Lead'}
+          {Number(row.is_deal) === 1 ? (translate ? translate('customers.table.deal') : 'Deal') : (translate ? translate('customers.table.lead') : 'Lead')}
         </Badge>
       ),
     },
     {
       id: 'linked_type',
-      header: 'طريقة الربط',
+      header: translate ? translate('customers.table.linkedType') : 'Link Method',
       accessor: '__linkedType',
       searchable: true,
       sortable: true,
@@ -1561,7 +1579,7 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'linked_by',
-      header: 'تم الربط بواسطة',
+      header: translate ? translate('customers.table.linkedBy') : 'Linked By',
       accessor: '__linkedByText',
       searchable: true,
       sortable: true,
@@ -1569,11 +1587,11 @@ export function useCustomersTableColumns(options = {}) {
       filterType: 'text',
       visible: true,
       width: 'w-48',
-      render: (row) => <CustomerPersonCell row={row} field="linked_by" userById={userById} />,
+      render: (row) => <CustomerPersonCell row={row} field="linked_by" userById={userById} t={translate} />,
     },
     {
       id: 'status_type_id',
-      header: 'الحالة',
+      header: translate ? translate('customers.table.status') : 'Status',
       accessor: 'lead.status_type_id',
       searchable: true,
       sortable: true,
@@ -1605,7 +1623,7 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'assigned_to',
-      header: 'المسؤول',
+      header: translate ? translate('customers.table.assignedTo') : 'Assigned To',
       accessor: 'lead.assigned_to',
       searchable: true,
       sortable: true,
@@ -1629,7 +1647,7 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'agent',
-      header: 'السيلز / الوكيل',
+      header: translate ? translate('customers.table.agent') : 'Sales / Agent',
       accessor: '__agentText',
       searchable: true,
       sortable: true,
@@ -1637,11 +1655,11 @@ export function useCustomersTableColumns(options = {}) {
       filterType: 'text',
       visible: true,
       width: 'w-48',
-      render: (row) => <CustomerPersonCell row={row} field="agent" userById={userById} />,
+      render: (row) => <CustomerPersonCell row={row} field="agent" userById={userById} t={translate} />,
     },
     {
       id: 'assigned_at',
-      header: 'Assigned At',
+      header: translate ? translate('customers.table.assignedAt') : 'Assigned At',
       accessor: 'lead.assigned_at',
       searchable: false,
       sortable: true,
@@ -1653,7 +1671,7 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'last_action_at',
-      header: 'Last Action',
+      header: translate ? translate('customers.table.lastAction') : 'Last Action',
       accessor: 'lead.last_action_at',
       searchable: false,
       sortable: true,
@@ -1665,18 +1683,18 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'lead_activities',
-      header: 'نشاط العميل',
+      header: translate ? translate('customers.table.leadActivities') : 'Customer Activity',
       accessor: '__leadActivitiesText',
       searchable: true,
       sortable: false,
       filterable: false,
       visible: true,
       width: 'w-96',
-      render: (row) => <CustomerLeadActivitiesCell row={row} userById={userById} />,
+      render: (row) => <CustomerLeadActivitiesCell row={row} userById={userById} t={translate} />,
     },
     {
       id: 'tag_id',
-      header: 'التاج',
+      header: translate ? translate('customers.table.tag') : 'Tag',
       accessor: 'lead.tag_id',
       searchable: true,
       sortable: true,
@@ -1702,7 +1720,7 @@ export function useCustomersTableColumns(options = {}) {
     },
     {
       id: 'created_at',
-      header: 'تاريخ الإضافة',
+      header: translate ? translate('customers.table.createdAt') : 'Date Added',
       accessor: 'created_at',
       searchable: false,
       sortable: true,

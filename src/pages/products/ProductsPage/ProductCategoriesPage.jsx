@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ChevronDown, ChevronLeft, Edit3, FolderTree, GitBranch, Package, Plus, RefreshCw, Table2 } from 'lucide-react'
 import { Button } from '../../../shared/components/ui/Button'
 import { Badge } from '../../../shared/components/ui/Badge'
@@ -8,6 +9,7 @@ import { AppModal } from '../../../shared/components/overlays/AppModal'
 import { useProductCategories, useProductMutations } from '../../../features/products/hooks/useProducts'
 import { displayValue, extractMessage } from '../../../shared/utils/apiResponse'
 import { resolveApiBaseURL } from '../../../services/apiBaseUrl'
+import { formatDate as formatDateWithLocale } from '../../../shared/utils/dateTime'
 import { CategoryFormDrawer } from './CategoryFormDrawer'
 import {
   countActiveCategoriesTree,
@@ -17,13 +19,6 @@ import {
   getCategoryChildren,
   getCategoryLabel,
 } from './categoryTree'
-
-function formatDate(value) {
-  if (!value) return ''
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return String(value)
-  return date.toLocaleDateString('ar-EG')
-}
 
 function getCategoryStatus(category) {
   return Number(category.active ?? category.status ?? 1) === 1
@@ -49,6 +44,7 @@ function buildCategoryImageUrl(imagePath) {
 }
 
 function CategoryImage({ category, size = 'md', onPreview }) {
+  const { t } = useTranslation()
   const imageUrl = buildCategoryImageUrl(category.image)
   const sizeClass = size === 'sm' ? 'h-9 w-9' : 'h-11 w-11'
 
@@ -71,7 +67,7 @@ function CategoryImage({ category, size = 'md', onPreview }) {
         })
       }}
       className={`inline-flex ${sizeClass} shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-2)] transition hover:ring-2 hover:ring-[#00C2CB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00C2CB]`}
-      title="عرض الصورة"
+      title={t('products.categories.viewImage')}
     >
       <img
         src={imageUrl}
@@ -87,11 +83,13 @@ function CategoryImage({ category, size = 'md', onPreview }) {
 }
 
 function CategoryImagePreviewModal({ image, onClose }) {
+  const { t } = useTranslation()
+
   return (
     <AppModal
       isOpen={Boolean(image)}
       onClose={onClose}
-      title={image?.title || 'صورة الفئة'}
+      title={image?.title || t('products.categories.categoryImageFallbackTitle')}
       size="lg"
       className="max-w-4xl"
     >
@@ -99,7 +97,7 @@ function CategoryImagePreviewModal({ image, onClose }) {
         {image?.src && (
           <img
             src={image.src}
-            alt={image.title || 'صورة الفئة'}
+            alt={image.title || t('products.categories.categoryImageFallbackTitle')}
             className="max-h-[75vh] w-auto max-w-full rounded-lg object-contain"
           />
         )}
@@ -168,11 +166,12 @@ function CategoryDataBadges({ data }) {
 }
 
 function CategoryPathTrail({ pathLabels }) {
+  const { t } = useTranslation()
   if (!pathLabels.length) return null
 
   return (
     <div className="mt-2 flex flex-wrap items-center gap-1 text-xs text-[var(--text-light)]">
-      <span className="font-semibold text-[var(--text-muted)]">المسار:</span>
+      <span className="font-semibold text-[var(--text-muted)]">{t('products.categories.pathLabel')}</span>
       {pathLabels.map((label, index) => (
         <span key={`${label}-${index}`} className="inline-flex items-center gap-1">
           {index > 0 && <ChevronLeft size={12} className="text-[#00C2CB]" />}
@@ -195,6 +194,7 @@ function CategoryTreeNode({
   onCreateChild,
   onPreviewImage,
 }) {
+  const { t, i18n } = useTranslation()
   const children = getCategoryChildren(category)
   const label = getCategoryLabel(category)
   const nextPath = [...path, label]
@@ -228,7 +228,7 @@ function CategoryTreeNode({
                     onToggle(category.id)
                   }}
                   className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#E8F9FA] text-[#007A80] transition-colors hover:bg-[#D2F4F6]"
-                  aria-label={isExpanded ? 'إغلاق الفئة' : 'فتح الفئة'}
+                  aria-label={isExpanded ? t('products.categories.closeCategory') : t('products.categories.openCategory')}
                 >
                   {isExpanded ? <ChevronDown size={17} /> : <ChevronLeft size={17} />}
                 </button>
@@ -245,29 +245,29 @@ function CategoryTreeNode({
                   {displayValue(label)}
                 </h3>
                 <p className="mt-0.5 text-xs text-[var(--text-muted)]">
-                  كود #{category.id} {category.category_id ? `داخل فئة #${category.category_id}` : 'فئة رئيسية'}
+                  {t('products.categories.codePrefix', { id: category.id })} {category.category_id ? t('products.categories.insideCategory', { id: category.category_id }) : t('products.categories.mainCategory')}
                 </p>
               </div>
 
               <Badge variant={isActive ? 'success' : 'warning'}>
-                {isActive ? 'نشطة' : 'معطلة'}
+                {isActive ? t('products.categories.active') : t('products.categories.inactive')}
               </Badge>
 
               <span className="rounded-full bg-[#EEF6FF] px-2 py-1 text-xs font-semibold text-[#1D4ED8]">
-                المستوى {depth + 1}
+                {t('products.categories.levelLabel', { level: depth + 1 })}
               </span>
 
               <span className="rounded-full bg-[var(--surface-2)] px-2 py-1 text-xs font-semibold text-[var(--text-muted)]">
-                داخلها {children.length} فئة
+                {t('products.categories.childrenCountLabel', { count: children.length })}
               </span>
 
               <span className="rounded-full bg-[var(--surface-2)] px-2 py-1 text-xs font-semibold text-[var(--text-muted)]">
-                {productsCount} منتج
+                {t('products.categories.productsCountLabel', { count: productsCount })}
               </span>
 
               {hasChildren && (
                 <span className="rounded-full bg-[#E8F9FA] px-2 py-1 text-xs font-semibold text-[#007A80]">
-                  {isExpanded ? 'مفتوحة' : 'مغلقة'}
+                  {isExpanded ? t('products.categories.expanded') : t('products.categories.collapsed')}
                 </span>
               )}
             </div>
@@ -283,7 +283,7 @@ function CategoryTreeNode({
             <CategoryDataBadges data={category.data} />
 
             <div className="mt-2 flex flex-wrap gap-2 text-xs text-[var(--text-light)]">
-              <span>تاريخ الإنشاء: {formatDate(category.created_at) || 'غير محدد'}</span>
+              <span>{t('products.categories.createdAtLabel', { value: formatDateWithLocale(category.created_at, i18n.language, { dateStyle: 'medium' }) || t('products.categories.notSpecified') })}</span>
             </div>
           </div>
 
@@ -297,7 +297,7 @@ function CategoryTreeNode({
               }}
             >
               <Plus size={14} />
-              إضافة فرعية
+              {t('products.categories.addSubcategory')}
             </Button>
             <Button
               variant="outline"
@@ -308,7 +308,7 @@ function CategoryTreeNode({
               }}
             >
               <Edit3 size={14} />
-              تعديل
+              {t('actions.edit')}
             </Button>
           </div>
         </div>
@@ -318,7 +318,7 @@ function CategoryTreeNode({
         <div className="relative ms-5 mt-2 space-y-2 border-s-2 border-dashed border-[#00C2CB]/35 ps-4">
           <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#E8F9FA] px-3 py-1 text-xs font-semibold text-[#007A80]">
             <GitBranch size={13} />
-            الفئات داخل {label}
+            {t('products.categories.categoriesInside', { label })}
           </div>
 
           {children.map((child) => (
@@ -343,10 +343,12 @@ function CategoryTreeNode({
 }
 
 function CategoryTreeView({ categories, isLoading, error, onRetry, expandedIds, onToggle, onEdit, onCreateChild, onPreviewImage }) {
+  const { t } = useTranslation()
+
   if (isLoading) {
     return (
       <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-center text-sm text-[var(--text-muted)]">
-        جاري تحميل شجرة الفئات...
+        {t('products.categories.loadingTree')}
       </div>
     )
   }
@@ -354,9 +356,9 @@ function CategoryTreeView({ categories, isLoading, error, onRetry, expandedIds, 
   if (error) {
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-        تعذر تحميل الفئات.
+        {t('products.categories.loadFailed')}
         <Button variant="outline" size="sm" className="ms-2" onClick={onRetry}>
-          إعادة المحاولة
+          {t('common.retry')}
         </Button>
       </div>
     )
@@ -366,9 +368,9 @@ function CategoryTreeView({ categories, isLoading, error, onRetry, expandedIds, 
     return (
       <div className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface)] p-8 text-center">
         <FolderTree className="mx-auto mb-3 text-[var(--text-muted)]" size={32} />
-        <h3 className="font-bold text-[var(--text)]">لا توجد فئات</h3>
+        <h3 className="font-bold text-[var(--text)]">{t('products.categories.noCategories')}</h3>
         <p className="mt-1 text-sm text-[var(--text-muted)]">
-          أضف أول فئة رئيسية ثم اربط بها الفئات الفرعية.
+          {t('products.categories.addFirstCategoryHint')}
         </p>
       </div>
     )
@@ -393,12 +395,17 @@ function CategoryTreeView({ categories, isLoading, error, onRetry, expandedIds, 
 
 export function ProductCategoriesPage({
   categoryType = 'product',
-  title = 'فئات المنتجات',
-  description = 'اختر طريقة عرض الفئات: شجرة توضح التبعية، أو جدول DataTable للبحث والفرز.',
+  title,
+  description,
   tableId = 'product-categories-table',
-  emptyMessage = 'لا توجد فئات',
-  createLabel = 'فئة جديدة',
+  emptyMessage,
+  createLabel,
 } = {}) {
+  const { t, i18n } = useTranslation()
+  const resolvedTitle = title ?? t('products.categories.pageTitle')
+  const resolvedDescription = description ?? t('products.categories.pageDescription')
+  const resolvedEmptyMessage = emptyMessage ?? t('products.categories.emptyMessage')
+  const resolvedCreateLabel = createLabel ?? t('products.categories.createLabel')
   const categoriesQuery = useProductCategories()
   const mutations = useProductMutations()
   const [drawerMode, setDrawerMode] = useState(null)
@@ -434,17 +441,17 @@ export function ProductCategoriesPage({
       return {
         ...category,
         _level: (category._depth || 0) + 1,
-        _statusLabel: active ? 'نشطة' : 'معطلة',
+        _statusLabel: active ? t('products.categories.active') : t('products.categories.inactive'),
         _active: active,
         _childrenCount: children.length,
         _productsCount: Array.isArray(category.products) ? category.products.length : 0,
-        _parentLabel: parent ? getCategoryLabel(parent) : 'فئة رئيسية',
+        _parentLabel: parent ? getCategoryLabel(parent) : t('products.categories.mainCategory'),
         _dataDisplay: formatCategoryData(category.data),
         _dataFields: categoryDataToObject(category.data),
-        _createdAtDisplay: formatDate(category.created_at),
+        _createdAtDisplay: formatDateWithLocale(category.created_at, i18n.language, { dateStyle: 'medium' }),
       }
     })
-  }, [flatCategories])
+  }, [flatCategories, t, i18n.language])
 
   const openCreateDrawer = (parentCategory = null) => {
     setDrawerMode('create')
@@ -495,7 +502,7 @@ export function ProductCategoriesPage({
       }
       closeDrawer()
     } catch (error) {
-      setFormError(extractMessage(error, 'تعذر حفظ بيانات الفئة'))
+      setFormError(extractMessage(error, t('products.categories.saveFailed')))
     }
   }
 
@@ -523,7 +530,7 @@ export function ProductCategoriesPage({
   const tableColumns = useMemo(() => [
     {
       id: 'image',
-      header: 'الصورة',
+      header: t('products.categories.columns.image'),
       accessor: 'image',
       searchable: false,
       sortable: false,
@@ -533,7 +540,7 @@ export function ProductCategoriesPage({
     },
     {
       id: 'name',
-      header: 'اسم الفئة',
+      header: t('products.categories.columns.name'),
       accessor: 'name',
       searchable: true,
       sortable: true,
@@ -547,7 +554,7 @@ export function ProductCategoriesPage({
     },
     {
       id: 'path',
-      header: 'المسار',
+      header: t('products.categories.columns.path'),
       accessor: '_pathLabel',
       searchable: true,
       sortable: true,
@@ -557,7 +564,7 @@ export function ProductCategoriesPage({
     },
     {
       id: 'parent',
-      header: 'الفئة الأب',
+      header: t('products.categories.columns.parent'),
       accessor: '_parentLabel',
       searchable: true,
       sortable: true,
@@ -567,17 +574,17 @@ export function ProductCategoriesPage({
     },
     {
       id: 'level',
-      header: 'المستوى',
+      header: t('products.categories.columns.level'),
       accessor: '_level',
       searchable: false,
       sortable: true,
       visible: true,
       width: 'w-24',
-      render: (row) => `المستوى ${row._level}`,
+      render: (row) => t('products.categories.levelLabel', { level: row._level }),
     },
     {
       id: 'children',
-      header: 'فئات داخلها',
+      header: t('products.categories.columns.children'),
       accessor: '_childrenCount',
       searchable: false,
       sortable: true,
@@ -587,7 +594,7 @@ export function ProductCategoriesPage({
     },
     {
       id: 'status',
-      header: 'الحالة',
+      header: t('activities.table.status'),
       accessor: '_statusLabel',
       searchable: true,
       sortable: true,
@@ -602,7 +609,7 @@ export function ProductCategoriesPage({
     ...additionalDataColumns,
     {
       id: 'createdAt',
-      header: 'تاريخ الإنشاء',
+      header: t('products.categories.columns.createdAt'),
       accessor: '_createdAtDisplay',
       searchable: false,
       sortable: true,
@@ -612,7 +619,7 @@ export function ProductCategoriesPage({
     },
     {
       id: 'actions',
-      header: 'الإجراءات',
+      header: t('activities.table.actions'),
       accessor: 'id',
       searchable: false,
       sortable: false,
@@ -622,22 +629,22 @@ export function ProductCategoriesPage({
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={() => openCreateDrawer(row)}>
             <Plus size={14} />
-            فرعية
+            {t('products.categories.subcategoryButton')}
           </Button>
           <Button variant="outline" size="sm" onClick={() => openEditDrawer(row)}>
             <Edit3 size={14} />
-            تعديل
+            {t('actions.edit')}
           </Button>
         </div>
       ),
     },
-  ], [additionalDataColumns])
+  ], [additionalDataColumns, t])
 
   return (
     <div className="space-y-4">
       <PageToolbar
-        title={title}
-        description={description}
+        title={resolvedTitle}
+        description={resolvedDescription}
       >
         <div className="inline-flex rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1">
           <Button
@@ -646,7 +653,7 @@ export function ProductCategoriesPage({
             onClick={() => setViewMode('tree')}
           >
             <FolderTree size={15} />
-            شجرة
+            {t('products.categories.treeViewToggle')}
           </Button>
           <Button
             variant={viewMode === 'table' ? 'primary' : 'ghost'}
@@ -654,7 +661,7 @@ export function ProductCategoriesPage({
             onClick={() => setViewMode('table')}
           >
             <Table2 size={15} />
-            جدول
+            {t('products.categories.tableViewToggle')}
           </Button>
         </div>
         {viewMode === 'tree' && (
@@ -664,7 +671,7 @@ export function ProductCategoriesPage({
             disabled={!expandableCategoryIds.length}
           >
             {allExpanded ? <ChevronDown size={16} /> : <ChevronLeft size={16} />}
-            {allExpanded ? 'إغلاق كل الفئات' : 'فتح كل الفئات'}
+            {allExpanded ? t('products.categories.collapseAll') : t('products.categories.expandAll')}
           </Button>
         )}
         <Button
@@ -673,11 +680,11 @@ export function ProductCategoriesPage({
           disabled={categoriesQuery.isFetching}
         >
           <RefreshCw size={16} className={categoriesQuery.isFetching ? 'animate-spin' : ''} />
-          تحديث
+          {t('products.categories.refresh')}
         </Button>
         <Button onClick={() => openCreateDrawer()}>
           <Plus size={16} />
-          {createLabel}
+          {resolvedCreateLabel}
         </Button>
       </PageToolbar>
 
@@ -685,21 +692,21 @@ export function ProductCategoriesPage({
         <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
           <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-muted)]">
             <FolderTree size={14} />
-            إجمالي الفئات
+            {t('products.categories.totalCategories')}
           </div>
           <div className="mt-1 text-xl font-bold text-[var(--text)]">{totalCategories}</div>
         </div>
         <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
           <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-muted)]">
             <GitBranch size={14} />
-            فئات رئيسية
+            {t('products.categories.mainCategoriesStat')}
           </div>
           <div className="mt-1 text-xl font-bold text-[var(--text)]">{categories.length}</div>
         </div>
         <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
           <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-muted)]">
             <Package size={14} />
-            فئات نشطة
+            {t('products.categories.activeCategoriesStat')}
           </div>
           <div className="mt-1 text-xl font-bold text-[var(--text)]">{activeCategories}</div>
         </div>
@@ -725,7 +732,7 @@ export function ProductCategoriesPage({
           isLoading={categoriesQuery.isLoading}
           error={categoriesQuery.error}
           onRetry={categoriesQuery.refetch}
-          emptyMessage={emptyMessage}
+          emptyMessage={resolvedEmptyMessage}
           enableSorting={true}
           enableFiltering={true}
           enablePagination={true}

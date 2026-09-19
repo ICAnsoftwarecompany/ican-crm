@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { FormDialog } from '../../../../../shared/components/overlays/FormDialog'
 import { Input } from '../../../../../shared/components/ui/Input'
 import { Select } from '../../../../../shared/components/ui/Select'
@@ -7,17 +8,18 @@ import { useUsers, useTeams } from '../../../../../features/teams/hooks/useTeams
 import { useOpportunityMutations } from '../../../../../features/opportunities/hooks/useOpportunities'
 import { extractMessage } from '../../../../../shared/utils/apiResponse'
 
-const NEXT_ACTION_OPTIONS = [
-  { value: 'call_customer', label: 'الاتصال بالعميل' },
-  { value: 'send_proposal', label: 'إرسال عرض سعر' },
-  { value: 'schedule_meeting', label: 'جدولة اجتماع' },
-  { value: 'send_email', label: 'إرسال بريد متابعة' },
-]
-
 export function ActivateOpportunityDialog({ opportunity, onClose }) {
+  const { t } = useTranslation()
   const usersQuery = useUsers()
   const teamsQuery = useTeams()
   const mutations = useOpportunityMutations()
+
+  const nextActionOptions = [
+    { value: 'call_customer', label: t('opportunities.dialogs.activate.nextActionOptions.call_customer') },
+    { value: 'send_proposal', label: t('opportunities.dialogs.activate.nextActionOptions.send_proposal') },
+    { value: 'schedule_meeting', label: t('opportunities.dialogs.activate.nextActionOptions.schedule_meeting') },
+    { value: 'send_email', label: t('opportunities.dialogs.activate.nextActionOptions.send_email') },
+  ]
 
   const [form, setForm] = useState({
     estimated_value: opportunity.estimated_value || '',
@@ -32,7 +34,7 @@ export function ActivateOpportunityDialog({ opportunity, onClose }) {
   const handleSubmit = async () => {
     const selectedUser = (usersQuery.data || []).find((user) => String(user.id) === String(form.assigned_user_id))
     const selectedTeam = (teamsQuery.data || []).find((team) => String(team.id) === String(form.assigned_team_id))
-    const actionMeta = NEXT_ACTION_OPTIONS.find((item) => item.value === form.next_action_type)
+    const actionMeta = nextActionOptions.find((item) => item.value === form.next_action_type)
 
     try {
       await mutations.activate.mutateAsync({
@@ -50,10 +52,10 @@ export function ActivateOpportunityDialog({ opportunity, onClose }) {
             : opportunity.next_action,
         },
       })
-      toast.success('تم تفعيل الفرصة بنجاح')
+      toast.success(t('opportunities.dialogs.activate.successMsg'))
       onClose()
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر تفعيل الفرصة'))
+      toast.error(extractMessage(error, t('opportunities.dialogs.activate.errorMsg')))
     }
   }
 
@@ -61,39 +63,39 @@ export function ActivateOpportunityDialog({ opportunity, onClose }) {
     <FormDialog
       open
       onClose={onClose}
-      title="تفعيل الفرصة"
+      title={t('opportunities.dialogs.activate.title')}
       description={opportunity.customer?.name}
-      submitText="تفعيل"
+      submitText={t('opportunities.dialogs.activate.submit')}
       loading={mutations.activate.isPending}
       onSubmit={handleSubmit}
     >
-      <Input label="المنتج" value={opportunity.product?.name || ''} disabled readOnly />
+      <Input label={t('opportunities.dialogs.activate.productLabel')} value={opportunity.product?.name || ''} disabled readOnly />
       <Input
-        label="القيمة المتوقعة"
+        label={t('opportunities.dialogs.activate.estimatedValueLabel')}
         type="number"
         value={form.estimated_value}
         onChange={(event) => updateField('estimated_value', event.target.value)}
       />
       <Select
-        label="إسناد إلى"
+        label={t('opportunities.dialogs.activate.assignToLabel')}
         value={form.assigned_user_id}
         onChange={(value) => updateField('assigned_user_id', value)}
         options={(usersQuery.data || []).map((user) => ({ value: String(user.id), label: user.name || user.username || `#${user.id}` }))}
       />
       <Select
-        label="الفريق"
+        label={t('opportunities.dialogs.activate.teamLabel')}
         value={form.assigned_team_id}
         onChange={(value) => updateField('assigned_team_id', value)}
         options={(teamsQuery.data || []).map((team) => ({ value: String(team.id), label: team.name || `#${team.id}` }))}
       />
       <Select
-        label="الإجراء القادم"
+        label={t('opportunities.dialogs.activate.nextActionLabel')}
         value={form.next_action_type}
         onChange={(value) => updateField('next_action_type', value)}
-        options={NEXT_ACTION_OPTIONS}
+        options={nextActionOptions}
       />
       <Input
-        label="موعد الإجراء القادم"
+        label={t('opportunities.dialogs.activate.nextActionAtLabel')}
         type="datetime-local"
         value={form.next_action_at}
         onChange={(event) => updateField('next_action_at', event.target.value)}

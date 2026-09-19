@@ -1,9 +1,10 @@
 import { BellRing, Clock3 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { fieldValue, formatDateTime12 } from '../../utils/scheduleUiUtils'
 import { getCallStatusLabel } from './CallFilters'
 
-function formatRemainingTime(startAt) {
+function formatRemainingTime(startAt, t) {
   const targetDate = new Date(startAt)
   if (Number.isNaN(targetDate.getTime())) return null
 
@@ -15,18 +16,19 @@ function formatRemainingTime(startAt) {
   const minutes = Math.floor((absMs % (1000 * 60 * 60)) / (1000 * 60))
   const parts = []
 
-  if (days > 0) parts.push(`${days} يوم`)
-  if (hours > 0) parts.push(`${hours} ساعة`)
-  if (days === 0 && minutes > 0) parts.push(`${minutes} دقيقة`)
+  if (days > 0) parts.push(t('activities.duration.day', { count: days }))
+  if (hours > 0) parts.push(t('activities.duration.hour', { count: hours }))
+  if (days === 0 && minutes > 0) parts.push(t('activities.duration.minute', { count: minutes }))
 
-  const value = parts.length ? parts.join(' و ') : 'أقل من دقيقة'
-  return diffMs >= 0 ? `متبقي ${value}` : `مر ${value} على موعدها`
+  const value = parts.length ? parts.join(t('activities.duration.and')) : t('activities.duration.lessThanMinute')
+  return diffMs >= 0 ? t('activities.table.remainingLabel', { value }) : t('callMeetings.callReminderBanner.pastDue', { value })
 }
 
 export function CallReminderBanner({ call }) {
+  const { t } = useTranslation()
   if (!call) return null
 
-  const remainingText = formatRemainingTime(call.start_at)
+  const remainingText = formatRemainingTime(call.start_at, t)
   if (!remainingText) return null
 
   return (
@@ -39,16 +41,16 @@ export function CallReminderBanner({ call }) {
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <span className="text-xs font-black text-[var(--text)]">
-              تنبيه آخر مكالمة نشطة
+              {t('callMeetings.callReminderBanner.title')}
             </span>
             <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-[#007A80]">
-              {getCallStatusLabel(call.status)}
+              {getCallStatusLabel(call.status, t)}
             </span>
           </div>
 
           <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2 text-[11px] font-bold text-[var(--text-muted)]">
             <span className="min-w-0 truncate">
-              {fieldValue(call.title, 'مكالمة بدون عنوان')}
+              {fieldValue(call.title, t('activities.untitledCall'))}
             </span>
             <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5">
               <Clock3 size={12} />

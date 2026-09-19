@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { AppDrawer } from '../../../../shared/components/overlays/AppDrawer'
 import { MeetingDataDrawer } from '../../../call-meetings/components/MeetingDataDrawer'
@@ -12,15 +13,6 @@ import { ActivityParticipantsTab } from './ActivityParticipantsTab'
 import { ActivityPreparationTab } from './ActivityPreparationTab'
 import { ActivityReportTab } from './ActivityReportTab'
 
-const BASE_TABS = [
-  { id: 'overview', label: 'البيانات' },
-  { id: 'preparation', label: 'التحضير' },
-  { id: 'report', label: 'التقرير' },
-  { id: 'notes', label: 'الملاحظات' },
-  { id: 'files', label: 'الملفات' },
-  { id: 'history', label: 'السجل' },
-]
-
 export function ActivityDrawer({
   activity,
   open,
@@ -33,6 +25,7 @@ export function ActivityDrawer({
   onDelete,
   onFollowUp,
 }) {
+  const { t } = useTranslation()
   const isCallOrMeeting = activity?.type === 'call' || activity?.type === 'meeting'
   const [activeTab, setActiveTab] = useState('overview')
 
@@ -40,14 +33,23 @@ export function ActivityDrawer({
     if (open) setActiveTab('overview')
   }, [open, activity?.id])
 
+  const baseTabs = useMemo(() => [
+    { id: 'overview', label: t('activities.drawer.tabs.overview') },
+    { id: 'preparation', label: t('activities.drawer.tabs.preparation') },
+    { id: 'report', label: t('activities.table.report') },
+    { id: 'notes', label: t('activities.meetingDrawer.tabs.notes') },
+    { id: 'files', label: t('activities.drawer.tabs.files') },
+    { id: 'history', label: t('activities.drawer.tabs.history') },
+  ], [t])
+
   const tabs = useMemo(() => {
-    if (activity?.type !== 'meeting') return BASE_TABS
+    if (activity?.type !== 'meeting') return baseTabs
     return [
-      ...BASE_TABS.slice(0, 5),
-      { id: 'participants', label: 'المشاركون' },
-      ...BASE_TABS.slice(5),
+      ...baseTabs.slice(0, 5),
+      { id: 'participants', label: t('activities.meetingDrawer.tabs.participants') },
+      ...baseTabs.slice(5),
     ]
-  }, [activity?.type])
+  }, [activity?.type, baseTabs, t])
 
   const body = () => {
     if (!activity) return null
@@ -78,7 +80,7 @@ export function ActivityDrawer({
     <AppDrawer
       open={open}
       onClose={onClose}
-      title="تفاصيل النشاط"
+      title={t('activities.drawer.detailsTitle')}
       size="xl"
       drawerKey="activity-drawer"
       portal

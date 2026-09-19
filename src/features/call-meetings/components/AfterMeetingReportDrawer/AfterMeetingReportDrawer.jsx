@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Check, Eye, FileText, Hash, Pencil, X } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 import { useMeetingInfo, useMeetingMutations } from '../../../meetings/hooks/useMeetings'
 import { AppDrawer } from '../../../../shared/components/overlays/AppDrawer'
@@ -27,6 +28,7 @@ function InlineEditableTitle({
   multiline = false,
   placeholder = '',
 }) {
+  const { t } = useTranslation()
   const [isEditing, setIsEditing] = useState(false)
   const [draftValue, setDraftValue] = useState(value || '')
 
@@ -58,7 +60,7 @@ function InlineEditableTitle({
             className="inline-flex items-center gap-1 rounded-md border border-[#BEEFF2] bg-white px-2 py-1 text-[11px] font-black text-[#007A80] hover:bg-[#F8FEFF]"
           >
             <Pencil size={12} />
-            تعديل
+            {t('actions.edit')}
           </button>
         ) : null}
       </div>
@@ -95,7 +97,7 @@ function InlineEditableTitle({
               className="inline-flex items-center gap-1 rounded-md border border-[#E2E8F0] bg-white px-2 py-1 text-[11px] font-black text-[#64748B]"
             >
               <X size={12} />
-              إلغاء
+              {t('actions.cancel')}
             </button>
             <button
               type="button"
@@ -103,7 +105,7 @@ function InlineEditableTitle({
               className="inline-flex items-center gap-1 rounded-md border border-[#BBF7D0] bg-[#F0FDF4] px-2 py-1 text-[11px] font-black text-[#166534]"
             >
               <Check size={12} />
-              حفظ
+              {t('actions.save')}
             </button>
           </div>
         </div>
@@ -123,6 +125,7 @@ export function AfterMeetingReportDrawer({
   inlineEndOffset,
   elapsedDuration,
 }) {
+  const { t } = useTranslation()
   const mutations = useMeetingMutations()
   const resolvedMeetingId = String(meetingId || '').trim()
   const meetingInfoQuery = useMeetingInfo(resolvedMeetingId, undefined, {
@@ -153,23 +156,23 @@ export function AfterMeetingReportDrawer({
       return
     }
 
-    const shouldClose = window.confirm('لديك محتوى مكتوب في تقرير ما بعد الاجتماع. هل تريد إغلاق الدروَر؟')
+    const shouldClose = window.confirm(t('activities.afterMeetingReport.closeConfirm'))
     if (shouldClose) {
       onClose?.()
     }
   }
 
   const selectedTemplate = useMemo(
-    () => getAfterMeetingTemplateById(selectedTemplateId),
-    [selectedTemplateId],
+    () => getAfterMeetingTemplateById(selectedTemplateId, t),
+    [selectedTemplateId, t],
   )
   const previewTemplate = useMemo(
-    () => getAfterMeetingTemplateById(previewTemplateId),
-    [previewTemplateId],
+    () => getAfterMeetingTemplateById(previewTemplateId, t),
+    [previewTemplateId, t],
   )
   const activeTemplate = useMemo(
-    () => activeTemplateDraft || getAfterMeetingTemplateById(activeTemplateId),
-    [activeTemplateDraft, activeTemplateId],
+    () => activeTemplateDraft || getAfterMeetingTemplateById(activeTemplateId, t),
+    [activeTemplateDraft, activeTemplateId, t],
   )
 
   const selectTemplate = (templateId) => {
@@ -177,7 +180,7 @@ export function AfterMeetingReportDrawer({
       activeTemplateId &&
       templateId !== activeTemplateId &&
       hasAfterMeetingValues(values) &&
-      !window.confirm('تغيير القالب سيؤدي إلى مسح البيانات التي تم إدخالها. هل تريد المتابعة؟')
+      !window.confirm(t('activities.afterMeetingReport.changeTemplateConfirm'))
     ) {
       return
     }
@@ -187,7 +190,7 @@ export function AfterMeetingReportDrawer({
 
   const handlePreview = () => {
     if (!selectedTemplateId) {
-      toast.error('اختر قالب أولا.')
+      toast.error(t('activities.preMeetingReport.chooseTemplateFirst'))
       return
     }
 
@@ -196,12 +199,12 @@ export function AfterMeetingReportDrawer({
 
   const handleApplyTemplate = () => {
     if (!selectedTemplate) {
-      toast.error('اختر قالب أولا.')
+      toast.error(t('activities.preMeetingReport.chooseTemplateFirst'))
       return
     }
 
     setActiveTemplateId(selectedTemplate.id)
-    setActiveTemplateDraft(createAfterMeetingEditableTemplate(selectedTemplate))
+    setActiveTemplateDraft(createAfterMeetingEditableTemplate(selectedTemplate, t))
     setValues(createAfterMeetingInitialValues(selectedTemplate))
     setPreviewTemplateId('')
   }
@@ -243,19 +246,19 @@ export function AfterMeetingReportDrawer({
     event.preventDefault()
 
     if (!resolvedMeetingId) {
-      toast.error('لا يوجد رقم اجتماع لإضافة التقرير.')
+      toast.error(t('activities.preMeetingReport.noMeetingIdError'))
       return
     }
 
     if (!activeTemplate) {
-      toast.error('اختر وطبّق قالب التقرير أولا.')
+      toast.error(t('activities.preMeetingReport.applyTemplateFirst'))
       return
     }
 
     const missingRequiredField = validateAfterMeetingRequiredFields(activeTemplate, values)
 
     if (missingRequiredField) {
-      toast.error(`أكمل حقل: ${missingRequiredField.label}`)
+      toast.error(t('activities.preMeetingReport.completeFieldError', { field: missingRequiredField.label }))
       return
     }
 
@@ -263,7 +266,7 @@ export function AfterMeetingReportDrawer({
       meetingTitle: resolvedMeetingTitle,
       reportHeading: activeTemplate?.reportHeading,
       elapsedDuration,
-    })
+    }, t)
 
     await mutations.createReport.mutateAsync({
       meetingId: resolvedMeetingId,
@@ -273,7 +276,7 @@ export function AfterMeetingReportDrawer({
       },
     })
 
-    toast.success('تم حفظ تقرير بعد الاجتماع.')
+    toast.success(t('activities.afterMeetingReport.savedToast'))
     onSaved?.()
     onClose?.()
   }
@@ -282,8 +285,8 @@ export function AfterMeetingReportDrawer({
     <AppDrawer
       open={open}
       onClose={handleDrawerClose}
-      title="تقرير بعد الاجتماع"
-      description="اختر القالب المناسب لنوع الاجتماع ثم يمكنك معاينته قبل تسجيل النتيجة."
+      title={t('activities.meetingDrawer.afterMeetingReportLabel')}
+      description={t('activities.afterMeetingReport.drawerDescription')}
       size="xl"
       drawerKey="after-meeting-report"
       className="border-s border-[#BEEFF2] shadow-2xl"
@@ -306,12 +309,12 @@ export function AfterMeetingReportDrawer({
                 {resolvedMeetingId}
               </span>
               <span className="min-w-0 break-words font-black">
-                الاجتماع المرتبط: {resolvedMeetingTitle || 'بدون عنوان'}
+                {t('activities.preMeetingReport.linkedMeetingLabel', { title: resolvedMeetingTitle || t('activities.preMeetingReport.untitled') })}
               </span>
             </div>
             {elapsedDuration ? (
               <div className="mt-2 rounded-lg border border-[#BBF7D0] bg-white px-2 py-1 text-[11px] font-black text-[#166534]">
-                الوقت المنقضي: {elapsedDuration}
+                {t('activities.afterMeetingReport.elapsedDurationLabel', { value: elapsedDuration })}
               </div>
             ) : null}
           </div>
@@ -319,9 +322,9 @@ export function AfterMeetingReportDrawer({
 
         <section className="space-y-3">
           <div>
-            <h3 className="text-sm font-black text-[var(--text)]">اختر قالب تسجيل النتيجة</h3>
+            <h3 className="text-sm font-black text-[var(--text)]">{t('activities.afterMeetingReport.chooseResultTemplateTitle')}</h3>
             <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
-              القالب يحول إجاباتك إلى تقرير واضح ويتم حفظه في ملاحظات التقرير.
+              {t('activities.afterMeetingReport.templateHint')}
             </p>
           </div>
 
@@ -330,11 +333,11 @@ export function AfterMeetingReportDrawer({
           <div className="flex flex-wrap justify-end gap-2">
             <Button type="button" variant="outline" onClick={handlePreview} disabled={!selectedTemplateId}>
               <Eye size={15} />
-              عرض القالب
+              {t('activities.preMeetingReport.previewTemplate')}
             </Button>
 
             <Button type="button" variant="ai" onClick={handleApplyTemplate} disabled={!selectedTemplateId}>
-              تطبيق القالب
+              {t('activities.preMeetingReport.applyTemplate')}
             </Button>
           </div>
         </section>
@@ -344,38 +347,38 @@ export function AfterMeetingReportDrawer({
         {activeTemplateDraft ? (
           <section className="space-y-3 rounded-xl border border-[#D7E2E6] bg-white p-4">
             <div>
-              <h3 className="text-sm font-black text-[var(--text)]">تنسيق التقرير (نمط مستند)</h3>
+              <h3 className="text-sm font-black text-[var(--text)]">{t('activities.afterMeetingReport.documentFormatTitle')}</h3>
               <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
-                كل عنوان بجواره زر تعديل، وبعد كتابة النص الجديد اضغط حفظ.
+                {t('activities.afterMeetingReport.documentFormatHint')}
               </p>
             </div>
 
             <div className="grid gap-2">
               <InlineEditableTitle
-                label="الهيدر الرئيسي"
+                label={t('activities.afterMeetingReport.mainHeaderLabel')}
                 value={activeTemplateDraft.reportHeading || ''}
                 onSave={(nextValue) => updateActiveTemplateMeta('reportHeading', nextValue)}
-                placeholder="مثال: تقرير بعد الاجتماع"
+                placeholder={t('activities.afterMeetingReport.mainHeaderPlaceholder')}
               />
 
               <InlineEditableTitle
-                label="عنوان القالب"
+                label={t('activities.afterMeetingReport.templateTitleLabel')}
                 value={activeTemplateDraft.headerTitle || ''}
                 onSave={(nextValue) => updateActiveTemplateMeta('headerTitle', nextValue)}
-                placeholder="اكتب عنوان القالب"
+                placeholder={t('activities.afterMeetingReport.templateTitlePlaceholder')}
               />
 
               <InlineEditableTitle
-                label="وصف/مقدمة الهيدر"
+                label={t('activities.afterMeetingReport.headerSubtitleLabel')}
                 value={activeTemplateDraft.headerSubtitle || ''}
                 onSave={(nextValue) => updateActiveTemplateMeta('headerSubtitle', nextValue)}
                 multiline
-                placeholder="اكتب مقدمة التقرير"
+                placeholder={t('activities.afterMeetingReport.headerSubtitlePlaceholder')}
               />
             </div>
 
             <details className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3">
-              <summary className="cursor-pointer text-xs font-black text-[#007A80]">تعديل عناوين الحقول</summary>
+              <summary className="cursor-pointer text-xs font-black text-[#007A80]">{t('activities.afterMeetingReport.editFieldTitlesSummary')}</summary>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {(activeTemplateDraft.fields || []).map((field) => (
                   <InlineEditableTitle
@@ -383,7 +386,7 @@ export function AfterMeetingReportDrawer({
                     label={field.key}
                     value={field.label || ''}
                     onSave={(nextValue) => updateActiveTemplateFieldLabel(field.key, nextValue)}
-                    placeholder="عنوان الحقل"
+                    placeholder={t('activities.afterMeetingReport.fieldTitlePlaceholder')}
                   />
                 ))}
               </div>
@@ -395,7 +398,7 @@ export function AfterMeetingReportDrawer({
 
         <div className="sticky -bottom-4 -mx-4 mt-4 flex flex-col-reverse gap-2 border-t border-[var(--border)] bg-[var(--surface)] p-4 sm:flex-row sm:justify-end">
           <Button type="button" variant="outline" onClick={onClose}>
-            إلغاء
+            {t('actions.cancel')}
           </Button>
 
           <Button
@@ -406,7 +409,7 @@ export function AfterMeetingReportDrawer({
             loading={mutations.createReport.isPending}
           >
             <FileText size={15} />
-            حفظ التقرير
+            {t('activities.preMeetingReport.saveReport')}
           </Button>
         </div>
       </form>

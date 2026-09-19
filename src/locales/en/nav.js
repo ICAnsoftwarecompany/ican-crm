@@ -1,0 +1,32 @@
+export default {
+  "sections": {
+    "overview": "Overview",
+    "sales": "Sales",
+    "growth": "Growth",
+    "customerService": "Customer Service",
+    "workspace": "Workspace",
+    "insights": "Insights",
+    "automation": "Automation",
+    "administration": "Administration"
+  },
+  "dashboard": "Dashboard",
+  "leads": "Leads",
+  "customers": "Leads Center",
+  "activities": "Activities",
+  "proposals": "Proposals",
+  "conversations": "Conversations",
+  "campaigns": "Campaigns",
+  "opportunities": "Opportunities",
+  "opportunityCenter": "Opportunity Center",
+  "outreachCampaigns": "Outreach Campaigns",
+  "automation": "Automation Center",
+  "leadGeneration": "Lead Generation",
+  "tasks": "Tasks",
+  "calendar": "Calendar",
+  "teamChat": "Team Chat",
+  "products": "Products & Services",
+  "teams": "Teams",
+  "users": "Users",
+  "templates": "Templates",
+  "settings": "Settings"
+}

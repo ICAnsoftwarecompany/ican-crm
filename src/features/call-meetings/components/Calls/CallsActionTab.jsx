@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AlarmClockCheck, Clock3, Loader2, PhoneCall, Plus, UserRound } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { useLeadCallsMeetings } from '../../../meetings/hooks/useMeetings'
 import { Button } from '../../../../shared/components/ui/Button'
@@ -20,14 +21,16 @@ function toTime(value) {
   return Number.isNaN(date.getTime()) ? 0 : date.getTime()
 }
 
-function formatDuration(seconds) {
+function formatDuration(seconds, t) {
   const value = Number(seconds)
   if (!Number.isFinite(value)) return null
 
   const minutes = Math.floor(value / 60)
   const remainingSeconds = value % 60
-  if (minutes <= 0) return `${remainingSeconds} ثانية`
-  return remainingSeconds ? `${minutes} دقيقة و ${remainingSeconds} ثانية` : `${minutes} دقيقة`
+  if (minutes <= 0) return t('activities.duration.second', { count: remainingSeconds })
+  return remainingSeconds
+    ? `${t('activities.duration.minute', { count: minutes })}${t('activities.duration.and')}${t('activities.duration.second', { count: remainingSeconds })}`
+    : t('activities.duration.minute', { count: minutes })
 }
 
 function isWithinDateRange(call, filters) {
@@ -123,9 +126,10 @@ function getStatusStyle(status) {
 }
 
 function CallCard({ call, onOpenDetails }) {
+  const { t } = useTranslation()
   const creatorName = call?.creator?.name || call?.creator?.username
   const participants = Array.isArray(call?.participants) ? call.participants : []
-  const duration = formatDuration(call?.call_duration_seconds)
+  const duration = formatDuration(call?.call_duration_seconds, t)
   const statusStyle = getStatusStyle(call?.status)
   const showAlarm = isAlarmActive(call)
 
@@ -143,15 +147,15 @@ function CallCard({ call, onOpenDetails }) {
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <h4 className="min-w-0 truncate text-sm font-black text-[var(--text)]">
-              {fieldValue(call?.title, 'مكالمة بدون عنوان')}
+              {fieldValue(call?.title, t('activities.untitledCall'))}
             </h4>
             <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${statusStyle.badge}`}>
-              {getCallStatusLabel(call?.status)}
+              {getCallStatusLabel(call?.status, t)}
             </span>
             {showAlarm ? (
               <span className="inline-flex items-center gap-1 rounded-full bg-[#FEE2E2] px-2 py-0.5 text-[10px] font-black text-[#B91C1C]">
                 <AlarmClockCheck size={11} />
-                Alarm
+                {t('callMeetings.actionTab.alarmLabel')}
               </span>
             ) : null}
             {call?.priority && (
@@ -171,13 +175,13 @@ function CallCard({ call, onOpenDetails }) {
             {call?.start_at && (
               <span className="inline-flex items-center gap-1 rounded-full bg-[#F8FEFF] px-2 py-1">
                 <Clock3 size={12} />
-                يبدأ: {formatDateTime12(call.start_at)}
+                {t('callMeetings.actionTab.startsAt', { value: formatDateTime12(call.start_at) })}
               </span>
             )}
             {call?.end_at && (
               <span className="inline-flex items-center gap-1 rounded-full bg-[#F8FEFF] px-2 py-1">
                 <Clock3 size={12} />
-                ينتهي: {formatDateTime12(call.end_at)}
+                {t('callMeetings.actionTab.endsAt', { value: formatDateTime12(call.end_at) })}
               </span>
             )}
             {creatorName && (
@@ -201,9 +205,11 @@ function CallCard({ call, onOpenDetails }) {
 
           {participants.length > 0 && (
             <div className="mt-2 text-[11px] font-semibold text-[var(--text-muted)]">
-              المشاركون: {participants.map((participant) => (
-                participant?.user?.name || participant?.user?.username || `#${participant?.user_id}`
-              )).filter(Boolean).join('، ')}
+              {t('callMeetings.actionTab.participantsLabel', {
+                names: participants.map((participant) => (
+                  participant?.user?.name || participant?.user?.username || `#${participant?.user_id}`
+                )).filter(Boolean).join(t('common.listSeparator')),
+              })}
             </div>
           )}
         </div>
@@ -213,6 +219,7 @@ function CallCard({ call, onOpenDetails }) {
 }
 
 export function CallsActionTab({ customer, onChanged, actionRequest, layoutMode = 'compact' }) {
+  const { t } = useTranslation()
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false)
   const [selectedCall, setSelectedCall] = useState(null)
   const [filters, setFilters] = useState({
@@ -270,7 +277,7 @@ export function CallsActionTab({ customer, onChanged, actionRequest, layoutMode 
       customer,
       actionType: 'activity',
       activityType: 'call',
-      activityTitle: payload?.title || result?.data?.title || 'موعد مكالمة',
+      activityTitle: payload?.title || result?.data?.title || t('activities.scheduleDialog.call.actionTitle'),
     })
   }
 
@@ -280,14 +287,14 @@ export function CallsActionTab({ customer, onChanged, actionRequest, layoutMode 
       customer,
       actionType: 'activity',
       activityType: 'call',
-      activityTitle: 'تحديث بيانات المكالمة',
+      activityTitle: t('callMeetings.actionTab.callDataUpdated'),
     })
   }
 
   if (!leadId) {
     return (
       <div className="rounded-lg border border-[#E5F7F8] bg-white px-3 py-2 text-xs font-semibold text-[var(--text-muted)]">
-        لا يوجد Lead مرتبط بهذا العميل.
+        {t('callMeetings.actionTab.noLeadLinked')}
       </div>
     )
   }
@@ -310,7 +317,7 @@ export function CallsActionTab({ customer, onChanged, actionRequest, layoutMode 
           className="shrink-0 justify-center gap-2"
         >
           <Plus size={14} />
-          إضافة موعد مكالمة
+          {t('callMeetings.actionTab.addCallAppointment')}
         </Button>
       </div>
 
@@ -318,7 +325,7 @@ export function CallsActionTab({ customer, onChanged, actionRequest, layoutMode 
 
       <div className="space-y-2 border-t border-[#E5F7F8] pt-3">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="text-sm font-black text-[var(--text)]">المكالمات المسجلة</h3>
+          <h3 className="text-sm font-black text-[var(--text)]">{t('callMeetings.actionTab.recordedCallsTitle')}</h3>
           <span className="rounded-full bg-[#F8FEFF] px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">
             {hasActiveFilters ? `${filteredCalls.length} / ${calls.length}` : calls.length}
           </span>
@@ -327,19 +334,19 @@ export function CallsActionTab({ customer, onChanged, actionRequest, layoutMode 
         {callsQuery.isLoading && (
           <div className="flex items-center justify-center gap-2 rounded-xl border border-[#E5F7F8] bg-white p-4 text-xs font-bold text-[#007A80]">
             <Loader2 size={15} className="animate-spin" />
-            جاري تحميل المكالمات...
+            {t('callMeetings.actionTab.loadingCalls')}
           </div>
         )}
 
         {callsQuery.isError && (
           <div className="rounded-xl border border-red-100 bg-red-50 p-3 text-xs font-bold text-red-700">
-            تعذر تحميل المكالمات.
+            {t('callMeetings.actionTab.loadCallsFailed')}
           </div>
         )}
 
         {!callsQuery.isLoading && !callsQuery.isError && filteredCalls.length === 0 && (
           <div className="rounded-xl border border-[#E5F7F8] bg-[#F8FEFF] p-4 text-center text-xs font-semibold text-[var(--text-muted)]">
-            لا توجد مكالمات مطابقة للفلاتر الحالية.
+            {t('callMeetings.actionTab.noMatchingCalls')}
           </div>
         )}
 

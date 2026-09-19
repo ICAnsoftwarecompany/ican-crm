@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from './Button'
 import { cn } from '../../utils/cn'
+import { useTranslation } from 'react-i18next'
 
 export function Pagination({
   page = 1,
@@ -10,6 +11,7 @@ export function Pagination({
   pageSizeOptions = [10, 20, 50],
   className,
 }) {
+  const { t, i18n } = useTranslation()
   const totalPages = Math.ceil(total / pageSize)
   const canPreviousPage = page > 1
   const canNextPage = page < totalPages
@@ -29,7 +31,7 @@ export function Pagination({
     )}>
       <div className="flex items-center gap-4">
         <span className="text-[var(--text-light)]">
-          إظهار
+          {t('dataTable.show')}
         </span>
         <select
           value={pageSize}
@@ -47,13 +49,13 @@ export function Pagination({
           ))}
         </select>
         <span className="text-[var(--text-light)]">
-          من {total} عنصر
+          {t('dataTable.ofItems', { total })}
         </span>
       </div>
 
       <div className="flex items-center gap-2">
         <span className="text-[var(--text-light)] px-2">
-          الصفحة {page} من {totalPages}
+          {t('dataTable.pageOf', { page, total: totalPages })}
         </span>
 
         <Button
@@ -61,9 +63,9 @@ export function Pagination({
           variant="outline"
           onClick={() => onPageChange({ page: page - 1, pageSize })}
           disabled={!canPreviousPage}
-          aria-label="الصفحة السابقة"
+          aria-label={t('common.previousPage')}
         >
-          <ChevronLeft size={16} />
+          {i18n.dir() === 'rtl' ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </Button>
 
         <Button
@@ -71,9 +73,9 @@ export function Pagination({
           variant="outline"
           onClick={() => onPageChange({ page: page + 1, pageSize })}
           disabled={!canNextPage}
-          aria-label="الصفحة التالية"
+          aria-label={t('common.nextPage')}
         >
-          <ChevronRight size={16} />
+          {i18n.dir() === 'rtl' ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
         </Button>
       </div>
     </div>

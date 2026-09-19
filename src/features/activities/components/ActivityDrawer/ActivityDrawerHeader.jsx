@@ -1,10 +1,12 @@
 import { ExternalLink } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { ActivityStatusBadge } from '../ActivityStatus/ActivityStatusBadge'
 import { ActivityTypeBadge } from '../common/ActivityTypeBadge'
 import { formatActivityDateTime } from '../../utils/activityDateHelpers'
 
 export function ActivityDrawerHeader({ activity, onOpenRelated }) {
+  const { t } = useTranslation()
   if (!activity) return null
 
   return (
@@ -25,14 +27,14 @@ export function ActivityDrawerHeader({ activity, onOpenRelated }) {
             className="inline-flex items-center gap-2 rounded-lg border border-[#A0ECF0] bg-white px-3 py-2 text-xs font-black text-[#007A80] hover:bg-[#E8F9FA]"
           >
             <ExternalLink size={14} />
-            فتح العميل
+            {t('activities.table.openCustomerTitle')}
           </button>
         ) : null}
       </div>
       <div className="flex flex-wrap gap-2 text-xs font-bold text-[var(--text-muted)]">
-        <span>العميل: {activity.relatedEntity?.name || '-'}</span>
-        <span>المسؤول: {activity.assignedUser?.name || '-'}</span>
-        <span>الفريق: {activity.assignedTeam?.name || '-'}</span>
+        <span>{t('activities.scheduleDialog.customerLabel')}: {activity.relatedEntity?.name || '-'}</span>
+        <span>{t('activities.table.assigned')}: {activity.assignedUser?.name || '-'}</span>
+        <span>{t('activities.scheduleDialog.teamLabel')}: {activity.assignedTeam?.name || '-'}</span>
       </div>
     </div>
   )

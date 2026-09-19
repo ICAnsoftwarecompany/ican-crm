@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { ExternalLink, FileText, Mail, Phone, UserRound } from 'lucide-react'
 
 import { cn } from '../../../../../../shared/utils/cn'
@@ -25,11 +26,12 @@ function BlockShell({ children, editable, selected, onClick, className }) {
 }
 
 function CustomerInfo({ customer, data }) {
+  const { t } = useTranslation()
   const rows = [
-    { show: true, icon: UserRound, label: 'العميل', value: customer?.name },
-    { show: data?.show_email !== false, icon: Mail, label: 'البريد', value: customer?.email },
-    { show: data?.show_phone !== false, icon: Phone, label: 'الهاتف', value: customer?.phone },
-    { show: data?.show_company !== false, icon: FileText, label: 'الشركة', value: customer?.company },
+    { show: true, icon: UserRound, label: t('proposals.wizard.steps.customer'), value: customer?.name },
+    { show: data?.show_email !== false, icon: Mail, label: t('proposals.builder.fields.email'), value: customer?.email },
+    { show: data?.show_phone !== false, icon: Phone, label: t('customers.phone'), value: customer?.phone },
+    { show: data?.show_company !== false, icon: FileText, label: t('proposals.renderer.companyLabel'), value: customer?.company },
   ].filter((item) => item.show && item.value)
 
   return (
@@ -48,16 +50,18 @@ function CustomerInfo({ customer, data }) {
           </div>
         )
       })}
-      {!rows.length ? <div className="text-sm font-semibold text-slate-500">لم يتم اختيار بيانات العميل بعد</div> : null}
+      {!rows.length ? <div className="text-sm font-semibold text-slate-500">{t('proposals.renderer.noCustomerInfoYet')}</div> : null}
     </div>
   )
 }
 
 function PricingBlock({ options = [], currency }) {
+  const { t } = useTranslation()
+
   if (!options.length) {
     return (
       <div className="rounded-lg border border-dashed border-[#C9D8E8] bg-[#F8FAFC] px-4 py-5 text-sm font-bold text-slate-500">
-        لم تتم إضافة خيارات أسعار بعد.
+        {t('proposals.pricing.noPricingOptionsYet')}
       </div>
     )
   }
@@ -68,11 +72,11 @@ function PricingBlock({ options = [], currency }) {
         <div key={option.id || option.name} className="rounded-lg border border-[#DCE8F3] bg-white p-4">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <div className="font-black text-slate-950">{option.name || 'خيار سعر'}</div>
-              <p className="mt-1 text-xs font-semibold text-slate-500">{option.description || 'بدون وصف'}</p>
+              <div className="font-black text-slate-950">{option.name || t('proposals.renderer.optionFallback')}</div>
+              <p className="mt-1 text-xs font-semibold text-slate-500">{option.description || t('proposals.renderer.noDescription')}</p>
             </div>
             {option.is_recommended ? (
-              <span className="rounded-full bg-[#E8F9FA] px-2 py-1 text-[11px] font-black text-[#007A80]">مقترح</span>
+              <span className="rounded-full bg-[#E8F9FA] px-2 py-1 text-[11px] font-black text-[#007A80]">{t('proposals.renderer.recommendedBadge')}</span>
             ) : null}
           </div>
           <div className="mt-4 rounded-lg bg-[#F6F9FC] px-3 py-2 text-lg font-black text-[#162847]" dir="ltr">
@@ -85,10 +89,12 @@ function PricingBlock({ options = [], currency }) {
 }
 
 function ProductsBlock({ products = [], title }) {
+  const { t } = useTranslation()
+
   if (!products.length) {
     return (
       <div className="rounded-lg border border-dashed border-[#C9D8E8] bg-[#F8FAFC] px-4 py-5 text-sm font-bold text-slate-500">
-        اختر المنتجات من لوحة الأسعار أو أضفها كعناصر للعرض.
+        {t('proposals.renderer.chooseProductsHint')}
       </div>
     )
   }
@@ -99,7 +105,7 @@ function ProductsBlock({ products = [], title }) {
       <div className="flex flex-wrap gap-2">
         {products.slice(0, 8).map((product) => (
           <span key={product.id || product.name} className="rounded-full border border-[#BFDBFE] bg-[#EFF6FF] px-3 py-1 text-xs font-black text-[#1D4ED8]">
-            {product.name || product.product?.name || `منتج #${product.id}`}
+            {product.name || product.product?.name || t('proposals.pricing.productFallback', { id: product.id })}
           </span>
         ))}
       </div>
@@ -111,6 +117,7 @@ function renderBlock(block, context) {
   const data = block.data || {}
   const styles = block.styles || {}
   const align = styles.align || 'start'
+  const { t } = context
 
   if (block.type === 'cover') {
     return (
@@ -119,7 +126,7 @@ function renderBlock(block, context) {
           <img src={data.image_url} alt="" className="h-56 w-full object-cover" />
         ) : null}
         <div className={cn('px-8 py-10', align === 'center' && 'text-center', align === 'end' && 'text-end')}>
-          <div className="text-xs font-black uppercase tracking-wide text-[#007A80]">{data.eyebrow || 'عرض سعر'}</div>
+          <div className="text-xs font-black uppercase tracking-wide text-[#007A80]">{data.eyebrow || t('proposals.builder.defaults.coverEyebrow')}</div>
           <h1 className="mt-3 text-4xl font-black leading-tight text-[#162847]">{data.title || context.title}</h1>
           <p className="mx-auto mt-3 max-w-2xl text-sm font-semibold leading-7 text-slate-600">{data.subtitle}</p>
         </div>
@@ -144,7 +151,7 @@ function renderBlock(block, context) {
       </figure>
     ) : (
       <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-[#C9D8E8] bg-[#F8FAFC] text-sm font-bold text-slate-500">
-        أضف رابط الصورة من الخصائص
+        {t('proposals.renderer.addImageUrlHint')}
       </div>
     )
   }
@@ -152,7 +159,7 @@ function renderBlock(block, context) {
   if (block.type === 'button') {
     return (
       <a href={data.url || '#'} className="inline-flex items-center gap-2 rounded-lg bg-[#162847] px-5 py-3 text-sm font-black text-white">
-        {data.label || 'فتح الرابط'} <ExternalLink size={15} />
+        {data.label || t('proposals.builder.defaults.linkLabel')} <ExternalLink size={15} />
       </a>
     )
   }
@@ -164,7 +171,7 @@ function renderBlock(block, context) {
   if (block.type === 'company_info') {
     return (
       <div className="rounded-lg border border-[#DCE8F3] bg-white p-4">
-        <div className="text-lg font-black text-[#162847]">{data.name || 'الشركة'}</div>
+        <div className="text-lg font-black text-[#162847]">{data.name || t('proposals.renderer.companyLabel')}</div>
         <div className="mt-2 flex flex-wrap gap-2 text-xs font-bold text-slate-500">
           {[data.email, data.phone, data.address].filter(Boolean).map((value) => <span key={value}>{value}</span>)}
         </div>
@@ -181,23 +188,23 @@ function renderBlock(block, context) {
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="rounded-lg border border-dashed border-[#94A3B8] p-6">
           <div className="h-10 border-b border-[#94A3B8]" />
-          <div className="mt-2 text-xs font-black text-slate-600">{data.line_label || 'التوقيع'}</div>
+          <div className="mt-2 text-xs font-black text-slate-600">{data.line_label || t('proposals.builder.defaults.signatureLineLabel')}</div>
         </div>
         <div className="rounded-lg bg-[#F8FAFC] p-4 text-sm font-bold text-slate-600">
-          <div>{data.signer_name || 'اسم المسؤول'}</div>
-          <div className="mt-1 text-xs text-slate-500">{data.signer_title || 'المسمى الوظيفي'}</div>
+          <div>{data.signer_name || t('proposals.renderer.signerNameFallback')}</div>
+          <div className="mt-1 text-xs text-slate-500">{data.signer_title || t('proposals.renderer.jobTitleFallback')}</div>
         </div>
       </div>
     )
   }
 
-  if (block.type === 'page_break') return <div className="my-3 border-t border-dashed border-[#94A3B8] pt-2 text-center text-xs font-black text-slate-400">{data.label || 'صفحة جديدة'}</div>
-  if (block.type === 'video') return <div className="rounded-lg border border-[#DCE8F3] bg-[#F8FAFC] p-4 text-sm font-bold text-slate-600">{data.title || 'فيديو'}: {data.url || 'لم يتم إضافة رابط'}</div>
-  if (block.type === 'link') return <a href={data.url || '#'} className="inline-flex items-center gap-2 text-sm font-black text-[#007A80] underline">{data.label || data.url || 'رابط'} <ExternalLink size={14} /></a>
+  if (block.type === 'page_break') return <div className="my-3 border-t border-dashed border-[#94A3B8] pt-2 text-center text-xs font-black text-slate-400">{data.label || t('proposals.builder.defaults.pageBreakLabel')}</div>
+  if (block.type === 'video') return <div className="rounded-lg border border-[#DCE8F3] bg-[#F8FAFC] p-4 text-sm font-bold text-slate-600">{data.title || t('proposals.builder.blockTypes.video')}: {data.url || t('proposals.renderer.noLinkAdded')}</div>
+  if (block.type === 'link') return <a href={data.url || '#'} className="inline-flex items-center gap-2 text-sm font-black text-[#007A80] underline">{data.label || data.url || t('proposals.builder.blockTypes.link')} <ExternalLink size={14} /></a>
 
   return (
     <div className="rounded-lg border border-[#DCE8F3] bg-[#F8FAFC] p-4">
-      <div className="text-xs font-black text-slate-500">{data.label || block.name || 'ملاحظة'}</div>
+      <div className="text-xs font-black text-slate-500">{data.label || block.name || t('proposals.builder.defaults.customLabel')}</div>
       <div className="mt-1 whitespace-pre-wrap text-sm font-semibold text-slate-700">{data.value || data.content || ''}</div>
     </div>
   )
@@ -213,6 +220,7 @@ export function ProposalRenderer({
   onSelect,
   className,
 }) {
+  const { t } = useTranslation()
   const design = content?.design || {}
   const visibleSections = (content?.sections || []).filter((section) => section.is_visible !== false)
   const customer = content?.customer || proposal?.metadata?.customer || proposal?.customer || {}
@@ -248,6 +256,7 @@ export function ProposalRenderer({
                   options,
                   products,
                   currency: proposal?.currency,
+                  t,
                 })}
               </BlockShell>
             ))}

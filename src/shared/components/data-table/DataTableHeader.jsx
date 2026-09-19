@@ -1,6 +1,7 @@
 import { ChevronUp, ChevronDown, Lock, LockOpen } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '../../utils/cn'
+import { useTranslation } from 'react-i18next'
 
 function toExcelColumnLabel(index) {
   let n = index + 1
@@ -27,6 +28,7 @@ export function DataTableHeader({
   onSelectPage,
   onSelectAllFiltered,
 }) {
+  const { t } = useTranslation()
   const [showSelectMenu, setShowSelectMenu] = useState(false)
   const [draggedColumnId, setDraggedColumnId] = useState(null)
   const [dragOverColumnId, setDragOverColumnId] = useState(null)
@@ -74,13 +76,13 @@ export function DataTableHeader({
                   checked={Boolean(selectionState?.allPageSelected)}
                   onChange={(e) => onSelectPage?.(e.target.checked)}
                   className="h-4 w-4 rounded border-slate-300 cursor-pointer"
-                  title="تحديد عناصر الصفحة الحالية"
+                  title={t('dataTable.selectPage')}
                 />
                 <button
                   type="button"
                   className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text)]"
                   onClick={() => setShowSelectMenu((value) => !value)}
-                  title="خيارات التحديد"
+                  title={t('dataTable.selectionOptions')}
                 >
                   ▾
                 </button>
@@ -96,7 +98,7 @@ export function DataTableHeader({
                       setShowSelectMenu(false)
                     }}
                   >
-                    تحديد الصفحة الحالية
+                    {t('dataTable.selectPage')}
                   </button>
                   <button
                     type="button"
@@ -106,7 +108,7 @@ export function DataTableHeader({
                       setShowSelectMenu(false)
                     }}
                   >
-                    {selectionState?.hasMoreOnServer ? 'تحديد كل العملاء المحمّلة' : 'تحديد كل العملاء'}
+                    {t(selectionState?.hasMoreOnServer ? 'dataTable.selectLoaded' : 'dataTable.selectAll')}
                   </button>
                   <button
                     type="button"
@@ -116,7 +118,7 @@ export function DataTableHeader({
                       setShowSelectMenu(false)
                     }}
                   >
-                    إلغاء تحديد الصفحة
+                    {t('dataTable.clearPage')}
                   </button>
                   <button
                     type="button"
@@ -126,7 +128,7 @@ export function DataTableHeader({
                       setShowSelectMenu(false)
                     }}
                   >
-                    {selectionState?.hasMoreOnServer ? 'إلغاء تحديد العملاء المحمّلة' : 'إلغاء تحديد الكل'}
+                    {t(selectionState?.hasMoreOnServer ? 'dataTable.clearLoaded' : 'dataTable.clearAllSelection')}
                   </button>
                 </div>
               )}

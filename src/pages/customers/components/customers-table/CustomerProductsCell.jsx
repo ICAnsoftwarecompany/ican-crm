@@ -11,22 +11,25 @@ function formatDataItems(items = []) {
 }
 
 const INTEREST_LEVEL_META = {
-  high: { label: 'H', text: 'High', className: 'border-[#FCA5A5] bg-[#FEF2F2] text-[#B91C1C]' },
-  hight: { label: 'H', text: 'High', className: 'border-[#FCA5A5] bg-[#FEF2F2] text-[#B91C1C]' },
-  medium: { label: 'M', text: 'Medium', className: 'border-[#FDE68A] bg-[#FFFBEB] text-[#92400E]' },
-  low: { label: 'L', text: 'Low', className: 'border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]' },
+  high: { label: 'H', textKey: 'activities.priority.high', text: 'High', className: 'border-[#FCA5A5] bg-[#FEF2F2] text-[#B91C1C]' },
+  hight: { label: 'H', textKey: 'activities.priority.high', text: 'High', className: 'border-[#FCA5A5] bg-[#FEF2F2] text-[#B91C1C]' },
+  medium: { label: 'M', textKey: 'activities.priority.medium', text: 'Medium', className: 'border-[#FDE68A] bg-[#FFFBEB] text-[#92400E]' },
+  low: { label: 'L', textKey: 'activities.priority.low', text: 'Low', className: 'border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]' },
 }
 
-function getInterestMeta(value = '') {
+function getInterestMeta(value = '', t) {
   const key = String(value || '').trim().toLowerCase()
-  return INTEREST_LEVEL_META[key] || {
+  const meta = INTEREST_LEVEL_META[key]
+  if (meta) return { ...meta, text: t && meta.textKey ? t(meta.textKey) : meta.text }
+
+  return {
     label: key ? key.slice(0, 1).toUpperCase() : '',
     text: value,
     className: 'border-[#E2E8F0] bg-white text-[#475569]',
   }
 }
 
-export function CustomerProductsCell({ row, customerRows = [] }) {
+export function CustomerProductsCell({ row, customerRows = [], t }) {
   const [isProductsDialogOpen, setIsProductsDialogOpen] = useState(false)
   const products = [...getCustomerLinkedProducts(row)].sort((first, second) => {
     const firstTime = new Date(
@@ -54,10 +57,11 @@ export function CustomerProductsCell({ row, customerRows = [] }) {
   }
 
   const dataItems = formatDataItems(latestProduct.dataItems).slice(0, 2)
-  const interestMeta = getInterestMeta(latestProduct.interestLevel)
+  const interestMeta = getInterestMeta(latestProduct.interestLevel, t)
+  const priceLabel = t ? t('customers.table.price') : 'Price'
   const title = [
     latestProduct.name,
-    latestProduct.price ? `Price: ${latestProduct.price}` : '',
+    latestProduct.price ? `${priceLabel}: ${latestProduct.price}` : '',
     latestProduct.description,
     latestProduct.note,
     latestProduct.interestLevel,
@@ -77,7 +81,7 @@ export function CustomerProductsCell({ row, customerRows = [] }) {
               <Package size={14} />
             </span>
             <span className="min-w-0 flex-1 break-words text-xs font-black text-[var(--text)]">
-              {latestProduct.name || `Product ${latestProduct.productId || ''}`}
+              {latestProduct.name || (t ? t('customers.table.productFallback', { id: latestProduct.productId || '' }) : `Product ${latestProduct.productId || ''}`)}
             </span>
             {latestProduct.price ? (
               <span className="shrink-0 rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-1.5 py-0.5 text-[9px] font-black text-[#166534]">
@@ -86,13 +90,13 @@ export function CustomerProductsCell({ row, customerRows = [] }) {
             ) : null}
             {latestProduct.isMain ? (
               <span className="shrink-0 rounded-full bg-[#DCFCE7] px-1.5 py-0.5 text-[9px] font-black text-[#166534]">
-                Main
+                {t ? t('customers.table.mainProduct') : 'Main'}
               </span>
             ) : null}
             {remainingProducts.length ? (
               <span
                 className="shrink-0 rounded-full border border-[#BEEFF2] bg-white px-2 py-0.5 text-[10px] font-black text-[#007A80]"
-                title={remainingProducts.map((product) => product.name || `Product ${product.productId || ''}`).join(' | ')}
+                title={remainingProducts.map((product) => product.name || (t ? t('customers.table.productFallback', { id: product.productId || '' }) : `Product ${product.productId || ''}`)).join(' | ')}
               >
                 +{remainingProducts.length}
               </span>
@@ -101,7 +105,7 @@ export function CustomerProductsCell({ row, customerRows = [] }) {
               onClick={() => {
                 setIsProductsDialogOpen(true)
               }}
-              label="عرض"
+              label={t ? t('customers.table.view') : 'View'}
             />
           </div>
           {latestProduct.note || latestProduct.description ? (

@@ -1,8 +1,11 @@
 import { Eye } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '../../../../shared/components/ui/Button'
 
 export function AfterMeetingTemplatePreview({ template, onApply }) {
+  const { t } = useTranslation()
+
   if (!template) return null
 
   return (
@@ -10,15 +13,15 @@ export function AfterMeetingTemplatePreview({ template, onApply }) {
       <div className="mb-4 flex items-center gap-2">
         <Eye size={16} className="text-[#007A80]" />
         <div>
-          <div className="text-sm font-black text-[var(--text)]">معاينة: {template.title}</div>
+          <div className="text-sm font-black text-[var(--text)]">{t('activities.preMeetingReport.previewPrefix', { title: template.title })}</div>
           <div className="text-xs font-semibold text-[var(--muted)]">
-            {template.description} - {template.fields.length} حقول
+            {template.description} - {t('activities.afterMeetingReport.fieldsCountSuffix', { count: template.fields.length })}
           </div>
         </div>
       </div>
 
       <div className="mb-4 rounded-xl border border-[#E2E8F0] bg-white px-4 py-3">
-        <div className="text-center text-base font-black text-[#0F172A]">{template.reportHeading || 'تقرير بعد الاجتماع'}</div>
+        <div className="text-center text-base font-black text-[#0F172A]">{template.reportHeading || t('activities.meetingDrawer.afterMeetingReportLabel')}</div>
         <div className="mt-1 text-center text-sm font-bold text-[#1E293B]">{template.headerTitle || template.title}</div>
         {template.headerSubtitle ? (
           <div className="mt-1 text-center text-xs font-semibold leading-6 text-[#64748B]">{template.headerSubtitle}</div>
@@ -38,7 +41,7 @@ export function AfterMeetingTemplatePreview({ template, onApply }) {
               </div>
               {field.options?.length ? (
                 <div className="mt-1 text-[11px] font-semibold leading-5 text-[var(--muted)]">
-                  الخيارات: {field.options.join('، ')}
+                  {t('activities.preMeetingReport.optionsLabel', { options: field.options.join(t('common.listSeparator')) })}
                 </div>
               ) : null}
             </div>
@@ -48,7 +51,7 @@ export function AfterMeetingTemplatePreview({ template, onApply }) {
 
       <div className="mt-4 flex justify-end">
         <Button type="button" variant="ai" onClick={onApply}>
-          تطبيق هذا القالب
+          {t('activities.preMeetingReport.applyThisTemplate')}
         </Button>
       </div>
     </section>

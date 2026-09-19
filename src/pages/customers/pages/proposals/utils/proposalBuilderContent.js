@@ -1,67 +1,69 @@
 import { DEFAULT_COMPANY_INFO, DEFAULT_PROPOSAL_DESIGN, DEFAULT_PROPOSAL_SETTINGS } from '../constants/proposalBuilderDefaults'
+import { getBlockLabel } from '../constants/proposalBlockTypes'
 
 export function createUid(prefix = 'item') {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) return `${prefix}_${crypto.randomUUID()}`
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
 }
 
-export function createDefaultBlock(type, seed = {}) {
+export function createDefaultBlock(type, seed = {}, t) {
   const id = seed.id || createUid(type)
+  const d = (key) => (t ? t(`proposals.builder.defaults.${key}`) : key)
 
   const defaults = {
     cover: {
-      name: 'غلاف العرض',
-      data: { eyebrow: 'عرض سعر', title: 'عرض مخصص للعميل', subtitle: 'حلول عملية بتفاصيل واضحة', image_url: '' },
+      name: getBlockLabel('cover', t),
+      data: { eyebrow: d('coverEyebrow'), title: d('coverTitle'), subtitle: d('coverSubtitle'), image_url: '' },
       styles: { align: 'center', background: '#F0FDFF' },
     },
     heading: {
-      name: 'عنوان',
-      data: { text: 'عنوان جديد', level: 'h2' },
+      name: getBlockLabel('heading', t),
+      data: { text: d('headingText'), level: 'h2' },
       styles: { align: 'start', color: DEFAULT_PROPOSAL_DESIGN.primary_color },
     },
     text: {
-      name: 'نص',
-      data: { content: 'اكتب محتوى هذا الجزء هنا.' },
+      name: getBlockLabel('text', t),
+      data: { content: d('textContent') },
       styles: { align: 'start' },
     },
     image: {
-      name: 'صورة',
+      name: getBlockLabel('image', t),
       data: { url: '', caption: '' },
       styles: { fit: 'cover' },
     },
     button: {
-      name: 'زر',
-      data: { label: 'قبول العرض', url: '' },
+      name: getBlockLabel('button', t),
+      data: { label: d('buttonLabel'), url: '' },
       styles: { variant: 'primary' },
     },
-    divider: { name: 'فاصل', data: {}, styles: {} },
-    spacer: { name: 'مسافة', data: { height: 24 }, styles: {} },
+    divider: { name: getBlockLabel('divider', t), data: {}, styles: {} },
+    spacer: { name: getBlockLabel('spacer', t), data: { height: 24 }, styles: {} },
     customer_info: {
-      name: 'بيانات العميل',
+      name: getBlockLabel('customer_info', t),
       data: { show_email: true, show_phone: true, show_company: true },
       styles: {},
     },
     company_info: {
-      name: 'بيانات الشركة',
+      name: getBlockLabel('company_info', t),
       data: DEFAULT_COMPANY_INFO,
       styles: {},
     },
-    products: { name: 'المنتجات', data: { title: 'المنتجات المقترحة' }, styles: {} },
-    pricing: { name: 'الأسعار', data: { title: 'خيارات الأسعار' }, styles: {} },
+    products: { name: getBlockLabel('products', t), data: { title: d('productsTitle') }, styles: {} },
+    pricing: { name: getBlockLabel('pricing', t), data: { title: d('pricingTitle') }, styles: {} },
     terms: {
-      name: 'الشروط',
-      data: { content: 'هذا العرض صالح حتى تاريخ الانتهاء الموضح، ويتم الاتفاق على تفاصيل التنفيذ قبل البدء.' },
+      name: getBlockLabel('terms', t),
+      data: { content: d('termsContent') },
       styles: {},
     },
     signature: {
-      name: 'التوقيع',
-      data: { signer_name: '', signer_title: '', line_label: 'توقيع العميل' },
+      name: getBlockLabel('signature', t),
+      data: { signer_name: '', signer_title: '', line_label: d('signatureLineLabel') },
       styles: {},
     },
-    page_break: { name: 'فاصل صفحة', data: { label: 'صفحة جديدة' }, styles: {} },
-    video: { name: 'فيديو', data: { url: '', title: 'فيديو توضيحي' }, styles: {} },
-    custom: { name: 'ملاحظة مخصصة', data: { label: 'ملاحظة', value: '' }, styles: {} },
-    link: { name: 'رابط', data: { label: 'فتح الرابط', url: '' }, styles: {} },
+    page_break: { name: getBlockLabel('page_break', t), data: { label: d('pageBreakLabel') }, styles: {} },
+    video: { name: getBlockLabel('video', t), data: { url: '', title: d('videoTitle') }, styles: {} },
+    custom: { name: getBlockLabel('custom', t), data: { label: d('customLabel'), value: '' }, styles: {} },
+    link: { name: getBlockLabel('link', t), data: { label: d('linkLabel'), url: '' }, styles: {} },
   }
 
   return {
@@ -75,21 +77,22 @@ export function createDefaultBlock(type, seed = {}) {
   }
 }
 
-export function createDefaultSection(seed = {}) {
+export function createDefaultSection(seed = {}, t) {
   return {
     id: seed.id || createUid('section'),
-    title: seed.title || 'قسم جديد',
+    title: seed.title || (t ? t('proposals.builder.defaults.newSectionTitle') : 'New Section'),
     description: seed.description || '',
     is_visible: seed.is_visible ?? true,
-    blocks: seed.blocks || [createDefaultBlock('heading'), createDefaultBlock('text')],
+    blocks: seed.blocks || [createDefaultBlock('heading', {}, t), createDefaultBlock('text', {}, t)],
   }
 }
 
-export function createDefaultBuilderContent(proposal = {}, customer = null) {
-  const customerName = customer?.name || proposal?.metadata?.customer_name || proposal?.metadata?.client_name || 'العميل'
+export function createDefaultBuilderContent(proposal = {}, customer = null, t) {
+  const d = (key) => (t ? t(`proposals.builder.defaults.${key}`) : key)
+  const customerName = customer?.name || proposal?.metadata?.customer_name || proposal?.metadata?.client_name || (t ? t('customers.table.theCustomer') : 'the customer')
   return {
     schema_version: 1,
-    title: proposal?.title || 'عرض سعر جديد',
+    title: proposal?.title || d('newProposalTitle'),
     settings: DEFAULT_PROPOSAL_SETTINGS,
     design: DEFAULT_PROPOSAL_DESIGN,
     customer: customer || proposal?.metadata?.customer || {
@@ -101,82 +104,84 @@ export function createDefaultBuilderContent(proposal = {}, customer = null) {
     },
     sections: [
       createDefaultSection({
-        title: 'الغلاف',
+        title: d('coverSectionTitle'),
         blocks: [
           createDefaultBlock('cover', {
             data: {
-              eyebrow: 'عرض سعر',
-              title: proposal?.title || `عرض مخصص إلى ${customerName}`,
-              subtitle: proposal?.description || 'تفاصيل العرض، المنتجات، الأسعار وخطوات التنفيذ.',
+              eyebrow: d('coverEyebrow'),
+              title: proposal?.title || (t ? t('proposals.builder.defaults.customTitleFor', { name: customerName }) : `Custom proposal for ${customerName}`),
+              subtitle: proposal?.description || d('defaultDescription'),
               image_url: '',
             },
-          }),
-          createDefaultBlock('customer_info'),
+          }, t),
+          createDefaultBlock('customer_info', {}, t),
         ],
-      }),
+      }, t),
       createDefaultSection({
-        title: 'نطاق العمل',
+        title: d('scopeSectionTitle'),
         blocks: [
-          createDefaultBlock('heading', { data: { text: 'نطاق العمل', level: 'h2' } }),
-          createDefaultBlock('text', { data: { content: 'نوضح هنا ما سيتم تنفيذه للعميل والنتائج المتوقعة من العرض.' } }),
-          createDefaultBlock('products'),
+          createDefaultBlock('heading', { data: { text: d('scopeSectionTitle'), level: 'h2' } }, t),
+          createDefaultBlock('text', { data: { content: d('scopeText') } }, t),
+          createDefaultBlock('products', {}, t),
         ],
-      }),
+      }, t),
       createDefaultSection({
-        title: 'الأسعار والشروط',
+        title: d('pricingTermsSectionTitle'),
         blocks: [
-          createDefaultBlock('pricing'),
-          createDefaultBlock('terms'),
-          createDefaultBlock('signature'),
+          createDefaultBlock('pricing', {}, t),
+          createDefaultBlock('terms', {}, t),
+          createDefaultBlock('signature', {}, t),
         ],
-      }),
+      }, t),
     ],
   }
 }
 
-function normalizeOldSection(section, index) {
+function normalizeOldSection(section, index, t) {
+  const sectionFallback = t ? t('proposals.builder.defaults.sectionFallback', { index: index + 1 }) : `Section ${index + 1}`
+
   if (section?.blocks?.length) {
     return {
       id: String(section.id || createUid(`section_${index}`)),
-      title: section.title || section.name || `قسم ${index + 1}`,
+      title: section.title || section.name || sectionFallback,
       description: section.description || '',
       is_visible: section.is_visible ?? true,
       blocks: section.blocks.map((block, blockIndex) => createDefaultBlock(block.type || 'text', {
         ...block,
         id: String(block.id || createUid(`block_${index}_${blockIndex}`)),
-      })),
+      }, t)),
     }
   }
 
   return createDefaultSection({
     id: String(section?.id || createUid(`section_${index}`)),
-    title: section?.title || section?.name || `قسم ${index + 1}`,
+    title: section?.title || section?.name || sectionFallback,
     blocks: [
-      createDefaultBlock('heading', { data: { text: section?.title || section?.name || `قسم ${index + 1}` } }),
-      createDefaultBlock('text', { data: { content: section?.content || section?.description || '' } }),
+      createDefaultBlock('heading', { data: { text: section?.title || section?.name || sectionFallback } }, t),
+      createDefaultBlock('text', { data: { content: section?.content || section?.description || '' } }, t),
     ],
-  })
+  }, t)
 }
 
-export function normalizeBuilderContent(rawContent, proposal = {}) {
-  if (!rawContent) return createDefaultBuilderContent(proposal)
+export function normalizeBuilderContent(rawContent, proposal = {}, t) {
+  if (!rawContent) return createDefaultBuilderContent(proposal, null, t)
 
   let content = rawContent
   if (typeof rawContent === 'string') {
     try {
       content = JSON.parse(rawContent)
     } catch (_error) {
-      return createDefaultBuilderContent(proposal)
+      return createDefaultBuilderContent(proposal, null, t)
     }
   }
 
   const sections = Array.isArray(content?.sections) && content.sections.length
-    ? content.sections.map(normalizeOldSection)
-    : createDefaultBuilderContent(proposal).sections
+    ? content.sections.map((section, index) => normalizeOldSection(section, index, t))
+    : createDefaultBuilderContent(proposal, null, t).sections
 
   return {
     schema_version: content?.schema_version || 1,
-    title: content?.title || proposal?.title || 'عرض سعر',
+    title: content?.title || proposal?.title || (t ? t('proposals.builder.defaults.coverEyebrow') : 'Price Quote'),
     settings: { ...DEFAULT_PROPOSAL_SETTINGS, ...(content?.settings || {}) },
     design: { ...DEFAULT_PROPOSAL_DESIGN, ...(content?.design || {}) },
     customer: content?.customer || proposal?.metadata?.customer || {

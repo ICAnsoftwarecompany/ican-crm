@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Loader2, Plus } from 'lucide-react'
 
 import { useTeams } from '../../teams/hooks/useTeams'
 import { useUsers } from '../../users/hooks/useUsers'
+import { getTaskPriorityMetaMap, getTaskTypeMetaMap } from '../utils/taskMeta'
 
 const DEFAULT_FORM = {
   title: '',
@@ -21,37 +23,6 @@ const DEFAULT_FORM = {
   teams: [],
   attachments: [],
 }
-
-const TASK_TYPES = [
-  { value: 'call', label: 'مكالمة' },
-  { value: 'email', label: 'بريد' },
-  { value: 'meeting', label: 'اجتماع' },
-  { value: 'follow_up', label: 'متابعة' },
-  { value: 'todo', label: 'مهمة' },
-]
-
-const TASK_PRIORITIES = [
-  { value: 'low', label: 'منخفضة' },
-  { value: 'medium', label: 'متوسطة' },
-  { value: 'high', label: 'عالية' },
-  { value: 'urgent', label: 'عاجلة' },
-]
-
-const TASK_VISIBILITY = [
-  { value: 'private', label: 'خاصة' },
-  { value: 'shared', label: 'مشتركة' },
-]
-
-const REMINDER_TYPES = [
-  { value: 'system', label: 'System' },
-  { value: 'gmail', label: 'Gmail' },
-]
-
-const REMINDER_UNITS = [
-  { value: 'minutes', label: 'دقائق' },
-  { value: 'hours', label: 'ساعات' },
-  { value: 'days', label: 'أيام' },
-]
 
 function normalizeInitialValues(initialValues = {}) {
   return {
@@ -75,16 +46,34 @@ function toEntityList(value) {
 export function TaskForm({
   initialValues,
   onSubmit,
-  submitLabel = 'حفظ المهمة',
+  submitLabel,
   isSaving = false,
   hideTaskableFields = false,
 }) {
+  const { t } = useTranslation()
+  const resolvedSubmitLabel = submitLabel ?? t('tasks.form.submitLabel')
   const [form, setForm] = useState(() => normalizeInitialValues(initialValues))
   const usersQuery = useUsers()
   const teamsQuery = useTeams()
 
   const users = useMemo(() => toEntityList(usersQuery.data), [usersQuery.data])
   const teams = useMemo(() => toEntityList(teamsQuery.data), [teamsQuery.data])
+
+  const taskTypes = useMemo(() => Object.entries(getTaskTypeMetaMap(t)).map(([value, meta]) => ({ value, label: meta.label })), [t])
+  const taskPriorities = useMemo(() => Object.entries(getTaskPriorityMetaMap(t)).map(([value, meta]) => ({ value, label: meta.label })), [t])
+  const taskVisibility = useMemo(() => [
+    { value: 'private', label: t('tasks.visibility.private') },
+    { value: 'shared', label: t('tasks.visibility.shared') },
+  ], [t])
+  const reminderTypes = useMemo(() => [
+    { value: 'system', label: t('tasks.reminderTypes.system') },
+    { value: 'gmail', label: t('tasks.reminderTypes.gmail') },
+  ], [t])
+  const reminderUnits = useMemo(() => [
+    { value: 'minutes', label: t('activities.scheduleDialog.minutesOption') },
+    { value: 'hours', label: t('activities.scheduleDialog.hoursOption') },
+    { value: 'days', label: t('activities.scheduleDialog.daysOption') },
+  ], [t])
 
   const updateField = (field, value) => {
     setForm((current) => ({ ...current, [field]: value }))
@@ -136,17 +125,17 @@ export function TaskForm({
     <form onSubmit={handleSubmit} className="space-y-3">
       <div className="grid gap-2 sm:grid-cols-2">
         <label className="grid gap-1 text-xs font-bold text-[var(--text)] sm:col-span-2">
-          عنوان المهمة
+          {t('tasks.form.titleLabel')}
           <input
             value={form.title}
             onChange={(event) => updateField('title', event.target.value)}
-            placeholder="مثال: متابعة العميل"
+            placeholder={t('tasks.form.titlePlaceholder')}
             className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm text-[var(--text)] outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#00A8B0]/15"
           />
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)] sm:col-span-2">
-          الوصف
+          {t('tasks.form.descriptionLabel')}
           <textarea
             value={form.description}
             onChange={(event) => updateField('description', event.target.value)}
@@ -156,52 +145,52 @@ export function TaskForm({
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-          النوع
+          {t('tasks.form.typeLabel')}
           <select value={form.type} onChange={(event) => updateField('type', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm">
-            {TASK_TYPES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+            {taskTypes.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-          الأولوية
+          {t('tasks.form.priorityLabel')}
           <select value={form.priority} onChange={(event) => updateField('priority', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm">
-            {TASK_PRIORITIES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+            {taskPriorities.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-          التاريخ
+          {t('tasks.form.dateLabel')}
           <input type="date" value={form.due_date} onChange={(event) => updateField('due_date', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm" />
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-          الوقت
+          {t('tasks.form.timeLabel')}
           <input type="time" value={form.due_time} onChange={(event) => updateField('due_time', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm" />
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-          الظهور
+          {t('tasks.form.visibilityLabel')}
           <select value={form.visibility} onChange={(event) => updateField('visibility', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm">
-            {TASK_VISIBILITY.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+            {taskVisibility.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-          نوع التذكير
+          {t('tasks.form.reminderTypeLabel')}
           <select value={form.reminder_type} onChange={(event) => updateField('reminder_type', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm">
-            {REMINDER_TYPES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+            {reminderTypes.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-          قبل التذكير
+          {t('tasks.form.reminderBeforeLabel')}
           <input type="number" min="0" value={form.reminder_before} onChange={(event) => updateField('reminder_before', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm" />
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-          وحدة التذكير
+          {t('tasks.form.reminderUnitLabel')}
           <select value={form.reminder_unit} onChange={(event) => updateField('reminder_unit', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm">
-            {REMINDER_UNITS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+            {reminderUnits.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </label>
 
@@ -220,7 +209,7 @@ export function TaskForm({
         )}
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)] sm:col-span-2">
-          المستخدمون
+          {t('tasks.form.usersLabel')}
           <div className="max-h-28 overflow-auto rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] p-2">
             {users.length ? users.map((user) => {
               const checked = form.users.includes(Number(user.id))
@@ -230,12 +219,12 @@ export function TaskForm({
                   <span>{user.name || user.username || user.email || `User ${user.id}`}</span>
                 </label>
               )
-            }) : <div className="text-xs text-[var(--text-muted)]">لا يوجد مستخدمون</div>}
+            }) : <div className="text-xs text-[var(--text-muted)]">{t('tasks.fallback.noUsers')}</div>}
           </div>
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)] sm:col-span-2">
-          الفرق
+          {t('tasks.form.teamsLabel')}
           <div className="max-h-28 overflow-auto rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] p-2">
             {teams.length ? teams.map((team) => {
               const checked = form.teams.includes(Number(team.id))
@@ -245,12 +234,12 @@ export function TaskForm({
                   <span>{team.name || `Team ${team.id}`}</span>
                 </label>
               )
-            }) : <div className="text-xs text-[var(--text-muted)]">لا توجد فرق</div>}
+            }) : <div className="text-xs text-[var(--text-muted)]">{t('tasks.fallback.noTeams')}</div>}
           </div>
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)] sm:col-span-2">
-          المرفقات
+          {t('tasks.form.attachmentsLabel')}
           <input type="file" multiple onChange={handleAttachments} className="block h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-2 py-2 text-xs" />
         </label>
       </div>
@@ -261,7 +250,7 @@ export function TaskForm({
         className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[#007A80] px-4 text-sm font-black text-white transition-colors hover:bg-[#00656A] disabled:cursor-not-allowed disabled:bg-slate-300"
       >
         {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
-        {submitLabel}
+        {resolvedSubmitLabel}
       </button>
     </form>
   )

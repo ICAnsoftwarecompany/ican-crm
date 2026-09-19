@@ -53,24 +53,24 @@ function formatClockParts(totalMs) {
   return `${hh}:${mm}:${ss}`
 }
 
-function getStatusTimingText(activity, nowTimestamp) {
+function getStatusTimingText(activity, nowTimestamp, t) {
   const status = String(activity?.status || '').trim().toLowerCase()
   const startAt = parseDateTime(firstValue(activity?.startAt, activity?.raw?.start_at))
   const actualStart = parseDateTime(firstValue(activity?.actualStartAt, activity?.raw?.actual_start_at))
-  if (!startAt && !actualStart) return ''
+  if (!startAt && !actualStart) return { text: '', late: false }
 
   if (status === 'in_progress' && actualStart) {
-    return `منذ ${formatClockParts(nowTimestamp - actualStart.getTime())}`
+    return { text: t('activities.table.sinceLabel', { value: formatClockParts(nowTimestamp - actualStart.getTime()) }), late: false }
   }
 
-  if (status !== 'scheduled' || !startAt) return ''
+  if (status !== 'scheduled' || !startAt) return { text: '', late: false }
 
   const diff = startAt.getTime() - nowTimestamp
   if (diff >= 0) {
-    return `متبقي ${formatClockParts(diff)}`
+    return { text: t('activities.table.remainingLabel', { value: formatClockParts(diff) }), late: false }
   }
 
-  return `متأخر ${formatClockParts(diff)}`
+  return { text: t('activities.table.overdueLabel', { value: formatClockParts(diff) }), late: true }
 }
 
 function getRelatedDisplayName(activity) {
@@ -156,11 +156,12 @@ export function buildActivityColumns({
   onOpenRelated,
   customerDataLookup,
   nowTimestamp = Date.now(),
+  t,
 }) {
   const columns = [
     {
       id: 'type',
-      header: 'النوع',
+      header: t('activities.table.type'),
       accessor: 'type',
       sortable: true,
       customWidth: 120,
@@ -168,7 +169,7 @@ export function buildActivityColumns({
     },
     {
       id: 'related',
-      header: 'Lead / Customer',
+      header: t('activities.table.relatedLeadCustomer'),
       accessor: 'relatedEntity.name',
       sortable: true,
       customWidth: 220,
@@ -178,7 +179,7 @@ export function buildActivityColumns({
         const status = String(activity?.status || '').trim().toLowerCase()
         const actualStartAt = parseDateTime(firstValue(activity?.actualStartAt, activity?.raw?.actual_start_at))
         const elapsedText = status === 'in_progress' && actualStartAt
-          ? `الوقت المنقضي ${formatClockParts(nowTimestamp - actualStartAt.getTime())}`
+          ? t('activities.table.elapsedTimePrefix', { value: formatClockParts(nowTimestamp - actualStartAt.getTime()) })
           : ''
 
         return (
@@ -188,7 +189,7 @@ export function buildActivityColumns({
               {status === 'in_progress' ? (
                 <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-[#FECACA] bg-[#FFF1F2] px-2 py-0.5 text-[10px] font-black text-[#B91C1C]">
                   <span className="h-2 w-2 animate-pulse rounded-full bg-[#EF4444]" />
-                  LIVE
+                  {t('activities.meetingDrawer.live')}
                 </span>
               ) : null}
               <SmallText>{elapsedText || customerData?.company || activity.relatedEntity?.company}</SmallText>
@@ -201,7 +202,7 @@ export function buildActivityColumns({
                   onOpenRelated?.(activity)
                 }}
                 className="mt-0.5 shrink-0 rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] p-1 text-[#007A80] hover:bg-[#E8F9FA]"
-                title="فتح العميل"
+                title={t('activities.table.openCustomerTitle')}
               >
                 <ExternalLink size={14} />
               </button>
@@ -212,7 +213,7 @@ export function buildActivityColumns({
     },
     {
       id: 'customerEmail',
-      header: 'البريد',
+      header: t('activities.table.customerEmail'),
       accessor: 'relatedEntity.email',
       sortable: true,
       customWidth: 200,
@@ -223,7 +224,7 @@ export function buildActivityColumns({
     },
     {
       id: 'customerPhone',
-      header: 'الهاتف',
+      header: t('customers.phone'),
       accessor: 'relatedEntity.phone',
       sortable: true,
       customWidth: 150,
@@ -234,7 +235,7 @@ export function buildActivityColumns({
     },
     {
       id: 'customerCompany',
-      header: 'الشركة',
+      header: t('activities.table.customerCompany'),
       accessor: 'relatedEntity.company',
       sortable: true,
       customWidth: 170,
@@ -245,7 +246,7 @@ export function buildActivityColumns({
     },
     {
       id: 'customerSource',
-      header: 'المصدر',
+      header: t('activities.meetingDrawer.fields.source'),
       accessor: 'relatedEntity.source',
       sortable: true,
       customWidth: 140,
@@ -256,7 +257,7 @@ export function buildActivityColumns({
     },
     {
       id: 'customerAgent',
-      header: 'الوكيل',
+      header: t('activities.table.customerAgent'),
       accessor: 'assignedUser.name',
       sortable: true,
       customWidth: 150,
@@ -267,20 +268,19 @@ export function buildActivityColumns({
     },
     {
       id: 'status',
-      header: 'الحالة',
+      header: t('activities.table.status'),
       accessor: 'status',
       sortable: true,
       customWidth: 185,
       render: (activity) => {
-        const timingText = getStatusTimingText(activity, nowTimestamp)
-        const isLate = timingText.startsWith('متأخر')
+        const timing = getStatusTimingText(activity, nowTimestamp, t)
 
         return (
           <div className="space-y-1">
             <ActivityStatusBadge activity={activity} />
-            {timingText ? (
-              <div className={`text-[11px] font-black ${isLate ? 'text-[#B91C1C]' : 'text-[#0369A1]'}`}>
-                {timingText}
+            {timing.text ? (
+              <div className={`text-[11px] font-black ${timing.late ? 'text-[#B91C1C]' : 'text-[#0369A1]'}`}>
+                {timing.text}
               </div>
             ) : null}
           </div>
@@ -289,7 +289,7 @@ export function buildActivityColumns({
     },
     {
       id: 'customerLeadStatus',
-      header: 'حالة العميل',
+      header: t('activities.table.customerLeadStatus'),
       accessor: 'relatedEntity.status',
       sortable: true,
       customWidth: 170,
@@ -300,7 +300,7 @@ export function buildActivityColumns({
     },
     {
       id: 'title',
-      header: 'النشاط',
+      header: t('activities.table.title'),
       accessor: 'title',
       sortable: true,
       customWidth: 260,
@@ -313,7 +313,7 @@ export function buildActivityColumns({
     },
     {
       id: 'assigned',
-      header: 'المسؤول',
+      header: t('activities.table.assigned'),
       accessor: 'assignedUser.name',
       sortable: true,
       customWidth: 170,
@@ -326,7 +326,7 @@ export function buildActivityColumns({
     },
     {
       id: 'startAt',
-      header: 'البداية',
+      header: t('activities.table.startAt'),
       accessor: 'startAt',
       sortable: true,
       customWidth: 170,
@@ -334,20 +334,20 @@ export function buildActivityColumns({
     },
     {
       id: 'endAt',
-      header: 'النهاية / المدة',
+      header: t('activities.table.endAt'),
       accessor: 'endAt',
       sortable: true,
       customWidth: 170,
       render: (activity) => (
         <div className="min-w-0 space-y-1">
           <span className="block whitespace-normal break-words font-bold">{formatActivityDateTime(activity.endAt)}</span>
-          <SmallText>{formatDuration(activity.startAt, activity.endAt)}</SmallText>
+          <SmallText>{formatDuration(activity.startAt, activity.endAt, t)}</SmallText>
         </div>
       ),
     },
     {
       id: 'priority',
-      header: 'الأولوية',
+      header: t('activities.scheduleDialog.priorityLabel'),
       accessor: 'priority',
       sortable: true,
       customWidth: 125,
@@ -355,15 +355,15 @@ export function buildActivityColumns({
     },
     {
       id: 'outcome',
-      header: 'النتيجة',
+      header: t('activities.meetingDrawer.fields.outcome'),
       accessor: 'outcome',
       sortable: true,
       customWidth: 150,
-      render: (activity) => <span className="whitespace-normal break-words font-bold">{getOutcomeLabel(activity.outcome, activity.type)}</span>,
+      render: (activity) => <span className="whitespace-normal break-words font-bold">{getOutcomeLabel(activity.outcome, activity.type, t)}</span>,
     },
     {
       id: 'nextAction',
-      header: 'الإجراء التالي',
+      header: t('activities.meetingDrawer.fields.nextAction'),
       accessor: 'nextAction',
       sortable: true,
       customWidth: 150,
@@ -371,20 +371,20 @@ export function buildActivityColumns({
     },
     {
       id: 'report',
-      header: 'التقرير',
+      header: t('activities.table.report'),
       accessor: 'hasReport',
       sortable: true,
       customWidth: 120,
       render: (activity) => (
         <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-black ${activity.hasReport ? 'border-emerald-100 bg-emerald-50 text-emerald-700' : 'border-amber-100 bg-amber-50 text-amber-700'}`}>
           <FileText size={13} />
-          {activity.hasReport ? 'موجود' : 'ناقص'}
+          {activity.hasReport ? t('activities.table.reportPresent') : t('activities.table.reportMissing')}
         </span>
       ),
     },
     {
       id: 'actions',
-      header: 'الإجراءات',
+      header: t('activities.table.actions'),
       accessor: 'id',
       customWidth: 260,
       enableFilter: false,

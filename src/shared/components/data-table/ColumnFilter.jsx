@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { Input } from '../ui/Input'
 import { Button } from '../ui/Button'
 import { FILTER_OPERATORS } from './constants'
+import { useTranslation } from 'react-i18next'
 
 export function ColumnFilter({
   column,
   onApplyFilter,
   onClose,
 }) {
+  const { t } = useTranslation()
   const [operator, setOperator] = useState(
     FILTER_OPERATORS[column.filterType]?.[0]?.value || 'equals'
   )
@@ -35,19 +37,19 @@ export function ColumnFilter({
   const operators = FILTER_OPERATORS[column.filterType] || []
 
   return (
-    <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-lg space-y-3">
+    <div className="p-4 bg-[var(--surface)] text-[var(--text)] rounded-lg border border-[var(--border)] shadow-lg space-y-3">
       <h4 className="font-bold font-arabic">{column.header}</h4>
 
       <div>
-        <label className="block text-sm font-medium mb-1 font-arabic">المعامل</label>
+        <label className="block text-sm font-medium mb-1 font-arabic">{t('dataTable.operator')}</label>
         <select
           value={operator}
           onChange={(e) => setOperator(e.target.value)}
-          className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm"
+          className="w-full h-10 px-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] text-sm"
         >
           {operators.map(op => (
             <option key={op.value} value={op.value}>
-              {op.label}
+              {t(`dataTable.operators.${String(op.value)}`, { defaultValue: op.label })}
             </option>
           ))}
         </select>
@@ -55,14 +57,14 @@ export function ColumnFilter({
 
       {!isBetween && (
         <div>
-          <label className="block text-sm font-medium mb-1 font-arabic">القيمة</label>
+          <label className="block text-sm font-medium mb-1 font-arabic">{t('dataTable.value')}</label>
           {column.filterType === 'select' ? (
             <select
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm"
+              className="w-full h-10 px-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] text-sm"
             >
-              <option value="">اختر</option>
+              <option value="">{t('common.choose')}</option>
               {column.filterOptions?.map(opt => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
@@ -74,23 +76,23 @@ export function ColumnFilter({
               type="date"
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm"
+              className="w-full h-10 px-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] text-sm"
             />
           ) : column.filterType === 'number' ? (
             <input
               type="number"
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder="أدخل رقم"
-              className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm"
+              placeholder={t('dataTable.enterNumber')}
+              className="w-full h-10 px-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] text-sm"
             />
           ) : (
             <input
               type="text"
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder="أدخل نصاً"
-              className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm"
+              placeholder={t('dataTable.enterText')}
+              className="w-full h-10 px-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] text-sm"
             />
           )}
         </div>
@@ -99,21 +101,21 @@ export function ColumnFilter({
       {isBetween && (
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-xs font-medium mb-1 font-arabic">من</label>
+            <label className="block text-xs font-medium mb-1 font-arabic">{t('dataTable.from')}</label>
             <input
               type={column.filterType === 'date' ? 'date' : 'number'}
               value={valueFrom}
               onChange={(e) => setValueFrom(e.target.value)}
-              className="w-full h-9 px-2 rounded-lg border border-gray-300 text-sm"
+              className="w-full h-9 px-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium mb-1 font-arabic">إلى</label>
+            <label className="block text-xs font-medium mb-1 font-arabic">{t('dataTable.to')}</label>
             <input
               type={column.filterType === 'date' ? 'date' : 'number'}
               value={valueTo}
               onChange={(e) => setValueTo(e.target.value)}
-              className="w-full h-9 px-2 rounded-lg border border-gray-300 text-sm"
+              className="w-full h-9 px-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] text-sm"
             />
           </div>
         </div>
@@ -121,10 +123,10 @@ export function ColumnFilter({
 
       <div className="flex gap-2 justify-end pt-2">
         <Button variant="outline" size="sm" onClick={onClose}>
-          إلغاء
+          {t('actions.cancel')}
         </Button>
         <Button variant="primary" size="sm" onClick={handleApply}>
-          تطبيق
+          {t('dataTable.apply')}
         </Button>
       </div>
     </div>

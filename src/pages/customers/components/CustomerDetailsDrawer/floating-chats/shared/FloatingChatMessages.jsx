@@ -546,29 +546,6 @@ export function FloatingChatMessages({
                           messageBackendId={messageBackendId}
                         />
                       )
-
-                      return (
-                        <span
-                          key={`${reaction?.reactor_id || index}-${reactionText}`}
-                          role={onRemoveReaction ? 'button' : undefined}
-                          tabIndex={onRemoveReaction ? 0 : undefined}
-                          onDoubleClick={() => onRemoveReaction?.({ messageId: messageBackendId, reaction: reactionText })}
-                          onKeyDown={(event) => {
-                            if (!onRemoveReaction) return
-                            if (event.key === 'Delete' || event.key === 'Backspace') {
-                              event.preventDefault()
-                              onRemoveReaction({ messageId: messageBackendId, reaction: reactionText })
-                            }
-                          }}
-                          className={`group/reaction relative inline-flex cursor-help items-center rounded-full border px-1.5 py-0.5 text-xs font-black ${getReactionClassName(reactionOrigin)}`}
-                          title="اضغط مرتين لإزالة التفاعل"
-                        >
-                          <span className="pointer-events-none absolute bottom-[calc(100%+0.35rem)] start-1/2 z-40 hidden min-w-32 -translate-x-1/2 rounded-lg border border-[#D8E7EA] bg-white px-2 py-1 text-center text-[10px] font-black text-[#0F172A] shadow-xl group-hover/reaction:block">
-                            {getReactionTitle(reactionOrigin, reactionActorName)}
-                          </span>
-                          {reactionText}
-                        </span>
-                      )
                     })}
                   </div>
                 ) : null}

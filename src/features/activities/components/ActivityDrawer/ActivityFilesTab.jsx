@@ -1,8 +1,11 @@
+import { useTranslation } from 'react-i18next'
+
 export function ActivityFilesTab({ activity }) {
+  const { t } = useTranslation()
   const files = activity.files || []
 
   if (!files.length) {
-    return <p className="rounded-lg border border-dashed border-[var(--border)] p-4 text-sm font-semibold text-[var(--text-muted)]">لا توجد ملفات مرفقة.</p>
+    return <p className="rounded-lg border border-dashed border-[var(--border)] p-4 text-sm font-semibold text-[var(--text-muted)]">{t('activities.drawer.noFilesAttached')}</p>
   }
 
   return (

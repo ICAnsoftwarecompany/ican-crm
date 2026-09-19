@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { CSS } from '@dnd-kit/utilities'
 import { DndContext, closestCenter } from '@dnd-kit/core'
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
@@ -5,7 +6,7 @@ import { EyeOff, GripVertical, Plus, Trash2 } from 'lucide-react'
 
 import { Button } from '../../../../../shared/components/ui/Button'
 import { cn } from '../../../../../shared/utils/cn'
-import { BLOCK_LABELS, PROPOSAL_BLOCK_GROUPS } from '../constants/proposalBlockTypes'
+import { getBlockLabel, getProposalBlockGroups } from '../constants/proposalBlockTypes'
 
 function SortableRow({ id, selected, children, onClick }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
@@ -40,6 +41,7 @@ export function ProposalBuilderSidebar({
   onSectionDragEnd,
   onBlockDragEnd,
 }) {
+  const { t } = useTranslation()
   const sections = content?.sections || []
   const activeSection = sections.find((section) => section.id === selectedSectionId) || sections[0]
   const blocks = activeSection?.blocks || []
@@ -48,10 +50,10 @@ export function ProposalBuilderSidebar({
     <aside className="h-[calc(100vh-4.5rem)] w-[300px] shrink-0 overflow-y-auto border-e border-[var(--border)] bg-[var(--surface)] p-4">
       <div className="mb-5 flex items-center justify-between gap-2">
         <div>
-          <h2 className="text-sm font-black text-[var(--text)]">هيكل العرض</h2>
-          <p className="text-xs font-semibold text-[var(--text-muted)]">الأقسام والبلوكات</p>
+          <h2 className="text-sm font-black text-[var(--text)]">{t('proposals.builder.structureTitle')}</h2>
+          <p className="text-xs font-semibold text-[var(--text-muted)]">{t('proposals.builder.structureSubtitle')}</p>
         </div>
-        <Button variant="accent" size="icon" onClick={onAddSection} aria-label="إضافة قسم">
+        <Button variant="accent" size="icon" onClick={onAddSection} aria-label={t('proposals.builder.addSection')}>
           <Plus size={17} />
         </Button>
       </div>
@@ -74,7 +76,7 @@ export function ProposalBuilderSidebar({
                   size="icon"
                   className="h-8 w-8 opacity-0 group-hover:opacity-100"
                   onClick={() => onDeleteSection(section.id)}
-                  aria-label="حذف القسم"
+                  aria-label={t('proposals.builder.deleteSection')}
                 >
                   <Trash2 size={14} />
                 </Button>
@@ -85,7 +87,7 @@ export function ProposalBuilderSidebar({
       </DndContext>
 
       <div className="mt-6 border-t border-[var(--border)] pt-5">
-        <h3 className="mb-3 text-xs font-black text-[var(--text-muted)]">بلوكات القسم المحدد</h3>
+        <h3 className="mb-3 text-xs font-black text-[var(--text-muted)]">{t('proposals.builder.selectedSectionBlocks')}</h3>
         <DndContext collisionDetection={closestCenter} onDragEnd={onBlockDragEnd}>
           <SortableContext items={blocks.map((block) => block.id)} strategy={verticalListSortingStrategy}>
             <div className="space-y-2">
@@ -96,7 +98,7 @@ export function ProposalBuilderSidebar({
                   selected={selected?.type === 'block' && selected.id === block.id}
                   onClick={() => onSelect({ type: 'block', id: block.id, sectionId: activeSection?.id })}
                 >
-                  {BLOCK_LABELS[block.type] || block.name || block.type}
+                  {getBlockLabel(block.type, t) || block.name || block.type}
                 </SortableRow>
               ))}
             </div>
@@ -105,9 +107,9 @@ export function ProposalBuilderSidebar({
       </div>
 
       <div className="mt-6 border-t border-[var(--border)] pt-5">
-        <h3 className="mb-3 text-xs font-black text-[var(--text-muted)]">مكتبة البلوكات</h3>
+        <h3 className="mb-3 text-xs font-black text-[var(--text-muted)]">{t('proposals.builder.blockLibrary')}</h3>
         <div className="space-y-4">
-          {PROPOSAL_BLOCK_GROUPS.map((group) => (
+          {getProposalBlockGroups(t).map((group) => (
             <div key={group.id}>
               <div className="mb-2 text-[11px] font-black text-[var(--text-light)]">{group.label}</div>
               <div className="grid grid-cols-2 gap-2">

@@ -40,18 +40,20 @@ function resolvePersonId(row, field) {
   )
 }
 
-export function CustomerPersonCell({ row, field, userById }) {
+export function CustomerPersonCell({ row, field, userById, t }) {
   const person = getCustomerPerson(row, field) || normalizePerson(userById?.get?.(String(resolvePersonId(row, field))))
 
   if (!person?.name) {
     return <span className="text-xs font-semibold text-[var(--text-muted)]">-</span>
   }
 
-  const hoverTitle = field === 'agent' ? 'بيانات السيلز / الوكيل' : 'بيانات المستخدم المرتبط'
+  const hoverTitle = field === 'agent'
+    ? (t ? t('customers.table.person.agentTitle') : 'Sales / Agent data')
+    : (t ? t('customers.table.person.linkedUserTitle') : 'Linked user data')
 
   return (
     <CustomerTableHoverCard
-      content={<CustomerPersonHoverDetails person={person} title={hoverTitle} />}
+      content={<CustomerPersonHoverDetails person={person} title={hoverTitle} t={t} />}
       width={440}
       estimatedHeight={340}
       wrapperClassName="min-w-0"

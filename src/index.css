@@ -14,11 +14,14 @@
   --surface:            #FFFFFF;
   --surface-2:          #F8FAFF;
   --border:             #E2E6F0;
+  --shell-surface:      #FAFAF9;
+  --shell-hover:        #F0F0EF;
+  --shell-active:       #ECECEA;
 
   /* Text */
   --text:               #0F172A;
   --text-muted:         #64748B;
-  --text-light:         #94A3B8;
+  --text-light:         #64748B;
 
   /* Pipeline Status */
   --status-new:         #3B82F6;
@@ -33,6 +36,11 @@
   --ai-border:          #A0ECF0;
   --ai-text:            #007A80;
 
+  /* Calendar sources */
+  --calendar-tasks:     #4F46E5;
+  --calendar-meetings:  #0EA5E9;
+  --calendar-calls:     #F59E0B;
+
   /* Sidebar */
   --sidebar-width:      240px;
   --sidebar-collapsed:  64px;
@@ -44,9 +52,20 @@
   --surface:            #0D1425;
   --surface-2:          #111827;
   --border:             #1E2D4A;
+  --shell-surface:      #111827;
+  --shell-hover:        #1E2D4A;
+  --shell-active:       #263954;
   --text:               #F1F5F9;
   --text-muted:         #94A3B8;
-  --text-light:         #475569;
+  --text-light:         #94A3B8;
+  --brand-accent-soft: #10343B;
+  --ai-bg:             #10343B;
+  --ai-border:         #245D65;
+  --ai-text:           #8CE6EB;
+
+  --calendar-tasks:     #818CF8;
+  --calendar-meetings:  #38BDF8;
+  --calendar-calls:     #FBBF24;
 }
 
 * {

@@ -1,3 +1,5 @@
+import { formatDate as formatDateWithLocale } from '../../../../../shared/utils/dateTime'
+
 export function getResponseEntity(response) {
   return response?.data?.data || response?.data || response || null
 }
@@ -6,8 +8,9 @@ export function getEntityId(entity) {
   return entity?.id || entity?.proposal_id || entity?.version_id || entity?.option_id || entity?.item_id
 }
 
-export function getCustomerName(customer) {
-  return customer?.name || customer?.full_name || customer?.lead?.name || `عميل #${customer?.id || '-'}`
+export function getCustomerName(customer, t) {
+  return customer?.name || customer?.full_name || customer?.lead?.name
+    || (t ? t('proposals.customerFallback', { id: customer?.id || '-' }) : `Customer #${customer?.id || '-'}`)
 }
 
 export function getProposalCustomer(proposal) {
@@ -27,11 +30,11 @@ export function formatMoney(value, currency = '') {
   return `${numberValue.toLocaleString()} ${currency || ''}`.trim()
 }
 
-export function formatDate(value) {
+export function formatDate(value, language) {
   if (!value) return '-'
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return String(value)
-  return date.toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' })
+  return formatDateWithLocale(date, language, { year: 'numeric', month: 'short', day: 'numeric' }) || '-'
 }
 
 export function extractCustomersFromInfinite(queryData) {

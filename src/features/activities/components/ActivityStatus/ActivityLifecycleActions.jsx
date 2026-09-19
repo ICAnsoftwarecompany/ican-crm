@@ -1,4 +1,5 @@
 import { CalendarPlus, Eye, FileCheck2, Pencil, Play, Trash2, XCircle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '../../../../shared/components/ui/Button'
 
 function stop(event, action) {
@@ -18,46 +19,54 @@ export function ActivityLifecycleActions({
   compact = false,
   isBusy = false,
 }) {
+  const { t } = useTranslation()
   const status = activity?.status
   const buttonSize = compact ? 'icon' : 'sm'
+  const viewLabel = t('activities.lifecycleActions.view')
+  const startLabel = t('activities.meetingDrawer.start')
+  const editLabel = t('actions.edit')
+  const cancelLabel = t('actions.cancel')
+  const finishLabel = t('activities.meetingDrawer.finish')
+  const followUpLabel = t('activities.lifecycleActions.followUp')
+  const deleteLabel = t('actions.delete')
 
   return (
     <div className="flex flex-wrap items-center gap-1">
-      <Button size={buttonSize} variant="ghost" title="عرض" onClick={(event) => stop(event, onView)}>
+      <Button size={buttonSize} variant="ghost" title={viewLabel} onClick={(event) => stop(event, onView)}>
         <Eye size={14} />
-        {!compact && 'عرض'}
+        {!compact && viewLabel}
       </Button>
       {status === 'scheduled' ? (
         <>
-          <Button size={buttonSize} variant="ai" loading={isBusy} title="بدء" onClick={(event) => stop(event, onStart)}>
+          <Button size={buttonSize} variant="ai" loading={isBusy} title={startLabel} onClick={(event) => stop(event, onStart)}>
             <Play size={14} />
-            {!compact && 'بدء'}
+            {!compact && startLabel}
           </Button>
-          <Button size={buttonSize} variant="ghost" title="تعديل" onClick={(event) => stop(event, onEdit)}>
+          <Button size={buttonSize} variant="ghost" title={editLabel} onClick={(event) => stop(event, onEdit)}>
             <Pencil size={14} />
-            {!compact && 'تعديل'}
+            {!compact && editLabel}
           </Button>
-          <Button size={buttonSize} variant="outline" title="إلغاء" onClick={(event) => stop(event, onCancel)}>
+          <Button size={buttonSize} variant="outline" title={cancelLabel} onClick={(event) => stop(event, onCancel)}>
             <XCircle size={14} />
-            {!compact && 'إلغاء'}
+            {!compact && cancelLabel}
           </Button>
         </>
       ) : null}
       {status === 'in_progress' ? (
-        <Button size={buttonSize} variant="ai" title="إنهاء" onClick={(event) => stop(event, onFinish)}>
+        <Button size={buttonSize} variant="ai" title={finishLabel} onClick={(event) => stop(event, onFinish)}>
           <FileCheck2 size={14} />
-          {!compact && 'إنهاء'}
+          {!compact && finishLabel}
         </Button>
       ) : null}
       {status === 'completed' ? (
-        <Button size={buttonSize} variant="ghost" title="متابعة" onClick={(event) => stop(event, onFollowUp)}>
+        <Button size={buttonSize} variant="ghost" title={followUpLabel} onClick={(event) => stop(event, onFollowUp)}>
           <CalendarPlus size={14} />
-          {!compact && 'متابعة'}
+          {!compact && followUpLabel}
         </Button>
       ) : null}
-      <Button size={buttonSize} variant="ghost" title="حذف" onClick={(event) => stop(event, onDelete)}>
+      <Button size={buttonSize} variant="ghost" title={deleteLabel} onClick={(event) => stop(event, onDelete)}>
         <Trash2 size={14} />
-        {!compact && 'حذف'}
+        {!compact && deleteLabel}
       </Button>
     </div>
   )

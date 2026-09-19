@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { FormDialog } from '../../../../../shared/components/overlays/FormDialog'
 import { Select } from '../../../../../shared/components/ui/Select'
 import { useOpportunityMutations } from '../../../../../features/opportunities/hooks/useOpportunities'
-import { OPPORTUNITY_DISMISS_REASONS } from '../../../../../features/opportunities/constants/opportunityTypes'
+import { getOpportunityDismissReasons } from '../../../../../features/opportunities/constants/opportunityTypes'
 import { extractMessage } from '../../../../../shared/utils/apiResponse'
 
 export function DismissOpportunityDialog({ opportunity, onClose }) {
+  const { t } = useTranslation()
   const mutations = useOpportunityMutations()
   const [form, setForm] = useState({ reason: '', note: '' })
 
@@ -14,7 +16,7 @@ export function DismissOpportunityDialog({ opportunity, onClose }) {
 
   const handleSubmit = async () => {
     if (!form.reason) {
-      toast.error('اختر سبب الرفض أولًا')
+      toast.error(t('opportunities.dialogs.dismiss.reasonRequired'))
       return
     }
 
@@ -23,10 +25,10 @@ export function DismissOpportunityDialog({ opportunity, onClose }) {
         id: opportunity.id,
         payload: { reason: form.reason, note: form.note || null },
       })
-      toast.success('تم رفض الفرصة')
+      toast.success(t('opportunities.dialogs.dismiss.successMsg'))
       onClose()
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر رفض الفرصة'))
+      toast.error(extractMessage(error, t('opportunities.dialogs.dismiss.errorMsg')))
     }
   }
 
@@ -34,25 +36,25 @@ export function DismissOpportunityDialog({ opportunity, onClose }) {
     <FormDialog
       open
       onClose={onClose}
-      title="رفض الفرصة"
+      title={t('opportunities.dialogs.dismiss.title')}
       description={opportunity.customer?.name}
-      submitText="رفض الفرصة"
+      submitText={t('opportunities.dialogs.dismiss.submit')}
       loading={mutations.dismiss.isPending}
       onSubmit={handleSubmit}
     >
       <Select
-        label="سبب الرفض"
+        label={t('opportunities.dialogs.dismiss.reasonLabel')}
         value={form.reason}
         onChange={(value) => updateField('reason', value)}
-        options={OPPORTUNITY_DISMISS_REASONS}
+        options={getOpportunityDismissReasons(t)}
       />
       <label className="flex flex-col gap-1.5">
-        <span className="text-sm font-medium font-arabic text-[var(--text)]">ملاحظة</span>
+        <span className="text-sm font-medium font-arabic text-[var(--text)]">{t('opportunities.dialogs.dismiss.noteLabel')}</span>
         <textarea
           rows={3}
           value={form.note}
           onChange={(event) => updateField('note', event.target.value)}
-          placeholder="اختياري"
+          placeholder={t('opportunities.dialogs.optionalPlaceholder')}
           className="w-full resize-y rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-arabic text-[var(--text)] outline-none transition focus:border-transparent focus:ring-2 focus:ring-[#00C2CB]"
         />
       </label>

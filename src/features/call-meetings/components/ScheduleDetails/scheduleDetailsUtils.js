@@ -1,24 +1,28 @@
-export const SCHEDULE_STATUS_OPTIONS = [
-  { value: 'scheduled', label: 'مجدول' },
-  { value: 'in_progress', label: 'قيد التنفيذ' },
-  { value: 'completed', label: 'مكتمل' },
-  { value: 'cancelled', label: 'ملغي' },
-]
-
-export const PARTICIPANT_STATUS_OPTIONS = [
-  { value: 'invited', label: 'مدعو' },
-  { value: 'accepted', label: 'موافق' },
-  { value: 'declined', label: 'رفض' },
-  { value: 'attended', label: 'حضر' },
-  { value: 'no_show', label: 'لم يحضر' },
-]
-
-export function getScheduleTypeLabel(type) {
-  return String(type || '').toLowerCase() === 'call' ? 'مكالمة' : 'اجتماع'
+export function getScheduleStatusOptions(t) {
+  return [
+    { value: 'scheduled', label: t('activities.status.scheduled') },
+    { value: 'in_progress', label: t('activities.status.in_progress') },
+    { value: 'completed', label: t('activities.status.completed') },
+    { value: 'cancelled', label: t('activities.status.cancelled') },
+  ]
 }
 
-export function getScheduleStatusLabel(status) {
-  return SCHEDULE_STATUS_OPTIONS.find((option) => option.value === status)?.label || status || 'غير محدد'
+export function getParticipantStatusOptions(t) {
+  return [
+    { value: 'invited', label: t('activities.drawer.invitedStatus') },
+    { value: 'accepted', label: t('activities.participantStatus.accepted') },
+    { value: 'declined', label: t('activities.participantStatus.declined') },
+    { value: 'attended', label: t('activities.participantStatus.attended') },
+    { value: 'no_show', label: t('activities.outcomes.meeting.no_show') },
+  ]
+}
+
+export function getScheduleTypeLabel(type, t) {
+  return String(type || '').toLowerCase() === 'call' ? t('activities.type.call') : t('activities.type.meeting')
+}
+
+export function getScheduleStatusLabel(status, t) {
+  return getScheduleStatusOptions(t).find((option) => option.value === status)?.label || status || t('activities.preMeetingReport.options.unspecified')
 }
 
 export function getScheduleStatusBadgeClasses(status) {

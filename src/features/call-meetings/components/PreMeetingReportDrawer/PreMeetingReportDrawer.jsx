@@ -9,6 +9,7 @@ import {
   Users,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 import { useMeetingInfo, useMeetingMutations } from '../../../meetings/hooks/useMeetings'
 import { AppDrawer } from '../../../../shared/components/overlays/AppDrawer'
@@ -17,326 +18,134 @@ import { getMeetingInfoPayload } from '../ScheduleDetails/scheduleDetailsUtils'
 
 const FORM_ID = 'pre-meeting-report-form'
 
-const PRE_MEETING_TEMPLATES = [
-  {
-    id: 'real-estate-discovery',
-    title: 'استكشاف عميل عقاري',
-    description: 'مناسب لأول اجتماع مع عميل مهتم بشراء أو استئجار عقار.',
-    category: 'real_estate',
-    icon: Home,
-    fields: [
-      {
-        key: 'meeting_objective',
-        label: 'هدف الاجتماع',
-        type: 'textarea',
-        required: true,
-        placeholder: 'ما الهدف الأساسي من الاجتماع؟',
-      },
-      {
-        key: 'property_type',
-        label: 'نوع العقار المطلوب',
-        type: 'select',
-        required: true,
-        options: [
-          'شقة',
-          'فيلا',
-          'تاون هاوس',
-          'دوبلكس',
-          'مكتب إداري',
-          'محل تجاري',
-          'أرض',
-          'أخرى',
-        ],
-      },
-      {
-        key: 'preferred_location',
-        label: 'المنطقة المطلوبة',
-        type: 'text',
-        placeholder: 'مثال: التجمع الخامس',
-      },
-      {
-        key: 'expected_budget',
-        label: 'الميزانية المتوقعة',
-        type: 'text',
-        placeholder: 'مثال: من 5 إلى 7 مليون',
-      },
-      {
-        key: 'purchase_purpose',
-        label: 'الغرض من العقار',
-        type: 'select',
-        options: ['سكن', 'استثمار', 'تجاري', 'إداري', 'إعادة بيع'],
-      },
-      {
-        key: 'payment_method',
-        label: 'طريقة الدفع المفضلة',
-        type: 'select',
-        options: ['كاش', 'تقسيط', 'كاش أو تقسيط', 'غير محدد'],
-      },
-      {
-        key: 'decision_maker',
-        label: 'صاحب القرار',
-        type: 'text',
-        placeholder: 'من صاحب قرار الشراء؟',
-      },
-      {
-        key: 'questions_to_ask',
-        label: 'أسئلة يجب طرحها',
-        type: 'textarea',
-        placeholder: 'اكتب أهم الأسئلة المطلوب مناقشتها...',
-      },
-    ],
-  },
+function getPreMeetingTemplates(t) {
+  const opt = (key) => t(`activities.preMeetingReport.options.${key}`)
+  const field = (template, key, extra = {}) => ({
+    key,
+    label: t(`activities.preMeetingReport.templates.${template}.fields.${key}.label`),
+    ...extra,
+  })
+  const withPlaceholder = (template, key, type, extra = {}) => ({
+    ...field(template, key, { type, ...extra }),
+    placeholder: t(`activities.preMeetingReport.templates.${template}.fields.${key}.placeholder`),
+  })
 
-  {
-    id: 'property-requirements',
-    title: 'تحديد متطلبات العقار',
-    description: 'لجمع احتياجات العميل بالتفصيل قبل ترشيح الوحدات المناسبة.',
-    category: 'real_estate',
-    icon: Building2,
-    fields: [
-      {
-        key: 'property_type',
-        label: 'نوع الوحدة',
-        type: 'select',
-        required: true,
-        options: [
-          'شقة',
-          'فيلا',
-          'تاون هاوس',
-          'دوبلكس',
-          'شاليه',
-          'مكتب',
-          'محل',
-        ],
-      },
-      {
-        key: 'preferred_projects',
-        label: 'المشروعات أو المناطق المفضلة',
-        type: 'textarea',
-        placeholder: 'اذكر المشروعات أو المناطق التي يفضلها العميل.',
-      },
-      {
-        key: 'area_requirement',
-        label: 'المساحة المطلوبة',
-        type: 'text',
-        placeholder: 'مثال: من 150 إلى 200 متر',
-      },
-      {
-        key: 'bedrooms',
-        label: 'عدد الغرف',
-        type: 'select',
-        options: ['1', '2', '3', '4', '5+', 'غير محدد'],
-      },
-      {
-        key: 'delivery_date',
-        label: 'موعد الاستلام المناسب',
-        type: 'text',
-        placeholder: 'فوري / سنة / سنتين / غير محدد',
-      },
-      {
-        key: 'budget',
-        label: 'الميزانية',
-        type: 'text',
-      },
-      {
-        key: 'down_payment',
-        label: 'المقدم المناسب',
-        type: 'text',
-      },
-      {
-        key: 'installment_period',
-        label: 'مدة التقسيط المطلوبة',
-        type: 'text',
-      },
-      {
-        key: 'must_have_features',
-        label: 'المتطلبات الأساسية',
-        type: 'textarea',
-        placeholder: 'جاردن، دور معين، View، تشطيب، Parking...',
-      },
-    ],
-  },
+  return [
+    {
+      id: 'real-estate-discovery',
+      title: t('activities.preMeetingReport.templates.realEstateDiscovery.title'),
+      description: t('activities.preMeetingReport.templates.realEstateDiscovery.description'),
+      category: 'real_estate',
+      icon: Home,
+      fields: [
+        withPlaceholder('realEstateDiscovery', 'meeting_objective', 'textarea', { required: true }),
+        field('realEstateDiscovery', 'property_type', {
+          type: 'select',
+          required: true,
+          options: [opt('apartment'), opt('villa'), opt('townhouse'), opt('duplex'), opt('officeAdmin'), opt('commercialShop'), opt('land'), opt('other')],
+        }),
+        withPlaceholder('realEstateDiscovery', 'preferred_location', 'text'),
+        withPlaceholder('realEstateDiscovery', 'expected_budget', 'text'),
+        field('realEstateDiscovery', 'purchase_purpose', {
+          type: 'select',
+          options: [opt('residential'), opt('investment'), opt('commercial'), opt('administrative'), opt('resale')],
+        }),
+        field('realEstateDiscovery', 'payment_method', {
+          type: 'select',
+          options: [opt('cash'), opt('installment'), opt('cashOrInstallment'), opt('unspecified')],
+        }),
+        withPlaceholder('realEstateDiscovery', 'decision_maker', 'text'),
+        withPlaceholder('realEstateDiscovery', 'questions_to_ask', 'textarea'),
+      ],
+    },
 
-  {
-    id: 'real-estate-negotiation',
-    title: 'تفاوض وإغلاق صفقة عقارية',
-    description: 'مناسب للاجتماعات المتقدمة بعد ترشيح الوحدة أو تقديم العرض.',
-    category: 'real_estate',
-    icon: Target,
-    fields: [
-      {
-        key: 'meeting_objective',
-        label: 'هدف الاجتماع',
-        type: 'textarea',
-        required: true,
-      },
-      {
-        key: 'selected_property',
-        label: 'الوحدة أو المشروع محل التفاوض',
-        type: 'text',
-        required: true,
-      },
-      {
-        key: 'offered_price',
-        label: 'السعر الحالي',
-        type: 'text',
-      },
-      {
-        key: 'customer_budget',
-        label: 'ميزانية العميل',
-        type: 'text',
-      },
-      {
-        key: 'customer_objections',
-        label: 'اعتراضات العميل السابقة',
-        type: 'textarea',
-      },
-      {
-        key: 'negotiation_points',
-        label: 'نقاط التفاوض',
-        type: 'textarea',
-        placeholder: 'السعر، المقدم، سنوات التقسيط، الاستلام...',
-      },
-      {
-        key: 'decision_maker',
-        label: 'صاحب القرار',
-        type: 'text',
-      },
-      {
-        key: 'expected_close_date',
-        label: 'موعد الإغلاق المتوقع',
-        type: 'date',
-      },
-      {
-        key: 'closing_strategy',
-        label: 'خطة إغلاق الصفقة',
-        type: 'textarea',
-      },
-    ],
-  },
+    {
+      id: 'property-requirements',
+      title: t('activities.preMeetingReport.templates.propertyRequirements.title'),
+      description: t('activities.preMeetingReport.templates.propertyRequirements.description'),
+      category: 'real_estate',
+      icon: Building2,
+      fields: [
+        field('propertyRequirements', 'property_type', {
+          type: 'select',
+          required: true,
+          options: [opt('apartment'), opt('villa'), opt('townhouse'), opt('duplex'), opt('chalet'), opt('office'), opt('shop')],
+        }),
+        withPlaceholder('propertyRequirements', 'preferred_projects', 'textarea'),
+        withPlaceholder('propertyRequirements', 'area_requirement', 'text'),
+        field('propertyRequirements', 'bedrooms', {
+          type: 'select',
+          options: ['1', '2', '3', '4', '5+', opt('unspecified')],
+        }),
+        withPlaceholder('propertyRequirements', 'delivery_date', 'text'),
+        field('propertyRequirements', 'budget', { type: 'text' }),
+        field('propertyRequirements', 'down_payment', { type: 'text' }),
+        field('propertyRequirements', 'installment_period', { type: 'text' }),
+        withPlaceholder('propertyRequirements', 'must_have_features', 'textarea'),
+      ],
+    },
 
-  {
-    id: 'general-sales',
-    title: 'اجتماع مبيعات عام',
-    description: 'قالب عام لأي اجتماع مبيعات أو متابعة مع العميل.',
-    category: 'general',
-    icon: Users,
-    fields: [
-      {
-        key: 'meeting_objective',
-        label: 'هدف الاجتماع',
-        type: 'textarea',
-        required: true,
-      },
-      {
-        key: 'customer_needs',
-        label: 'احتياجات العميل',
-        type: 'textarea',
-        required: true,
-      },
-      {
-        key: 'customer_problems',
-        label: 'المشكلات الحالية',
-        type: 'textarea',
-      },
-      {
-        key: 'interested_products',
-        label: 'المنتجات أو الخدمات المهتم بها',
-        type: 'textarea',
-      },
-      {
-        key: 'expected_budget',
-        label: 'الميزانية المتوقعة',
-        type: 'text',
-      },
-      {
-        key: 'decision_maker',
-        label: 'صاحب القرار',
-        type: 'text',
-      },
-      {
-        key: 'objections',
-        label: 'الاعتراضات المتوقعة',
-        type: 'textarea',
-      },
-      {
-        key: 'questions_to_ask',
-        label: 'الأسئلة المطلوب طرحها',
-        type: 'textarea',
-      },
-      {
-        key: 'desired_next_step',
-        label: 'الخطوة المستهدفة بعد الاجتماع',
-        type: 'text',
-      },
-    ],
-  },
+    {
+      id: 'real-estate-negotiation',
+      title: t('activities.preMeetingReport.templates.realEstateNegotiation.title'),
+      description: t('activities.preMeetingReport.templates.realEstateNegotiation.description'),
+      category: 'real_estate',
+      icon: Target,
+      fields: [
+        field('realEstateNegotiation', 'meeting_objective', { type: 'textarea', required: true }),
+        field('realEstateNegotiation', 'selected_property', { type: 'text', required: true }),
+        field('realEstateNegotiation', 'offered_price', { type: 'text' }),
+        field('realEstateNegotiation', 'customer_budget', { type: 'text' }),
+        field('realEstateNegotiation', 'customer_objections', { type: 'textarea' }),
+        withPlaceholder('realEstateNegotiation', 'negotiation_points', 'textarea'),
+        field('realEstateNegotiation', 'decision_maker', { type: 'text' }),
+        field('realEstateNegotiation', 'expected_close_date', { type: 'date' }),
+        field('realEstateNegotiation', 'closing_strategy', { type: 'textarea' }),
+      ],
+    },
 
-  {
-    id: 'demo-presentation',
-    title: 'عرض أو Demo',
-    description: 'مناسب لاجتماع عرض منتج أو خدمة أو تقديم Demo للعميل.',
-    category: 'general',
-    icon: Presentation,
-    fields: [
-      {
-        key: 'demo_goal',
-        label: 'هدف الـ Demo',
-        type: 'textarea',
-        required: true,
-      },
-      {
-        key: 'current_solution',
-        label: 'الحل أو النظام المستخدم حاليًا',
-        type: 'text',
-      },
-      {
-        key: 'current_problems',
-        label: 'المشكلات الحالية',
-        type: 'textarea',
-        required: true,
-      },
-      {
-        key: 'features_to_show',
-        label: 'النقاط أو المميزات المطلوب عرضها',
-        type: 'textarea',
-        required: true,
-      },
-      {
-        key: 'customer_priorities',
-        label: 'أولويات العميل',
-        type: 'textarea',
-      },
-      {
-        key: 'expected_questions',
-        label: 'الأسئلة المتوقعة',
-        type: 'textarea',
-      },
-      {
-        key: 'decision_maker',
-        label: 'صاحب القرار',
-        type: 'text',
-      },
-      {
-        key: 'budget',
-        label: 'الميزانية المتوقعة',
-        type: 'text',
-      },
-      {
-        key: 'target_next_step',
-        label: 'النتيجة المستهدفة',
-        type: 'select',
-        options: [
-          'تجربة النظام',
-          'إرسال عرض سعر',
-          'اجتماع آخر',
-          'بدء التفاوض',
-          'إغلاق الصفقة',
-        ],
-      },
-    ],
-  },
-]
+    {
+      id: 'general-sales',
+      title: t('activities.preMeetingReport.templates.generalSales.title'),
+      description: t('activities.preMeetingReport.templates.generalSales.description'),
+      category: 'general',
+      icon: Users,
+      fields: [
+        field('generalSales', 'meeting_objective', { type: 'textarea', required: true }),
+        field('generalSales', 'customer_needs', { type: 'textarea', required: true }),
+        field('generalSales', 'customer_problems', { type: 'textarea' }),
+        field('generalSales', 'interested_products', { type: 'textarea' }),
+        field('generalSales', 'expected_budget', { type: 'text' }),
+        field('generalSales', 'decision_maker', { type: 'text' }),
+        field('generalSales', 'objections', { type: 'textarea' }),
+        field('generalSales', 'questions_to_ask', { type: 'textarea' }),
+        field('generalSales', 'desired_next_step', { type: 'text' }),
+      ],
+    },
+
+    {
+      id: 'demo-presentation',
+      title: t('activities.preMeetingReport.templates.demoPresentation.title'),
+      description: t('activities.preMeetingReport.templates.demoPresentation.description'),
+      category: 'general',
+      icon: Presentation,
+      fields: [
+        field('demoPresentation', 'demo_goal', { type: 'textarea', required: true }),
+        field('demoPresentation', 'current_solution', { type: 'text' }),
+        field('demoPresentation', 'current_problems', { type: 'textarea', required: true }),
+        field('demoPresentation', 'features_to_show', { type: 'textarea', required: true }),
+        field('demoPresentation', 'customer_priorities', { type: 'textarea' }),
+        field('demoPresentation', 'expected_questions', { type: 'textarea' }),
+        field('demoPresentation', 'decision_maker', { type: 'text' }),
+        field('demoPresentation', 'budget', { type: 'text' }),
+        field('demoPresentation', 'target_next_step', {
+          type: 'select',
+          options: [opt('trySystem'), opt('sendQuote'), opt('anotherMeeting'), opt('startNegotiation'), opt('closeDeal')],
+        }),
+      ],
+    },
+  ]
+}
 
 function createEmptyTemplateValues(template) {
   return template.fields.reduce((values, field) => {
@@ -365,6 +174,7 @@ function buildReportText(template, values) {
 }
 
 function TemplateField({ field, value, onChange }) {
+  const { t } = useTranslation()
   const inputClassName =
     'h-10 w-full min-w-0 rounded-lg border border-[var(--border)] bg-white px-3 text-sm font-semibold text-[var(--text)] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]'
 
@@ -395,7 +205,7 @@ function TemplateField({ field, value, onChange }) {
           onChange={(event) => onChange(event.target.value)}
           className={inputClassName}
         >
-          <option value="">اختر...</option>
+          <option value="">{t('common.choose')}</option>
 
           {field.options?.map((option) => (
             <option key={option} value={option}>
@@ -435,6 +245,7 @@ export function PreMeetingReportDrawer({
   onSaved,
   inlineEndOffset,
 }) {
+  const { t } = useTranslation()
   const mutations = useMeetingMutations()
   const resolvedMeetingId = String(meetingId || '').trim()
   const meetingInfoQuery = useMeetingInfo(resolvedMeetingId, undefined, {
@@ -443,6 +254,7 @@ export function PreMeetingReportDrawer({
   const meetingInfo = getMeetingInfoPayload(meetingInfoQuery.data, null)
   const resolvedMeetingTitle = meetingTitle || meetingInfo?.title || ''
 
+  const PRE_MEETING_TEMPLATES = useMemo(() => getPreMeetingTemplates(t), [t])
   const [selectedTemplateId, setSelectedTemplateId] = useState('')
   const [previewTemplateId, setPreviewTemplateId] = useState('')
   const [activeTemplateId, setActiveTemplateId] = useState('')
@@ -462,7 +274,7 @@ export function PreMeetingReportDrawer({
       PRE_MEETING_TEMPLATES.find(
         (template) => template.id === selectedTemplateId,
       ),
-    [selectedTemplateId],
+    [PRE_MEETING_TEMPLATES, selectedTemplateId],
   )
 
   const previewTemplate = useMemo(
@@ -470,7 +282,7 @@ export function PreMeetingReportDrawer({
       PRE_MEETING_TEMPLATES.find(
         (template) => template.id === previewTemplateId,
       ),
-    [previewTemplateId],
+    [PRE_MEETING_TEMPLATES, previewTemplateId],
   )
 
   const activeTemplate = useMemo(
@@ -478,12 +290,12 @@ export function PreMeetingReportDrawer({
       PRE_MEETING_TEMPLATES.find(
         (template) => template.id === activeTemplateId,
       ),
-    [activeTemplateId],
+    [PRE_MEETING_TEMPLATES, activeTemplateId],
   )
 
   const handlePreview = () => {
     if (!selectedTemplateId) {
-      toast.error('اختر قالب أولا.')
+      toast.error(t('activities.preMeetingReport.chooseTemplateFirst'))
       return
     }
 
@@ -492,7 +304,7 @@ export function PreMeetingReportDrawer({
 
   const handleApplyTemplate = () => {
     if (!selectedTemplate) {
-      toast.error('اختر قالب أولا.')
+      toast.error(t('activities.preMeetingReport.chooseTemplateFirst'))
       return
     }
 
@@ -512,12 +324,12 @@ export function PreMeetingReportDrawer({
     event.preventDefault()
 
     if (!resolvedMeetingId) {
-      toast.error('لا يوجد رقم اجتماع لإضافة التقرير.')
+      toast.error(t('activities.preMeetingReport.noMeetingIdError'))
       return
     }
 
     if (!activeTemplate) {
-      toast.error('اختر وطبّق قالب التقرير أولا.')
+      toast.error(t('activities.preMeetingReport.applyTemplateFirst'))
       return
     }
 
@@ -526,7 +338,7 @@ export function PreMeetingReportDrawer({
     )
 
     if (missingRequiredField) {
-      toast.error(`أكمل حقل: ${missingRequiredField.label}`)
+      toast.error(t('activities.preMeetingReport.completeFieldError', { field: missingRequiredField.label }))
       return
     }
 
@@ -540,7 +352,7 @@ export function PreMeetingReportDrawer({
       },
     })
 
-    toast.success('تم حفظ تقرير قبل الاجتماع.')
+    toast.success(t('activities.preMeetingReport.savedToast'))
     onSaved?.()
     onClose?.()
   }
@@ -549,7 +361,7 @@ export function PreMeetingReportDrawer({
     <AppDrawer
       open={open}
       onClose={onClose}
-      title="تقرير قبل الاجتماع"
+      title={t('activities.preMeetingReport.title')}
       size="lg"
       drawerKey="pre-meeting-report"
       className="border-s border-[#BEEFF2] shadow-2xl"
@@ -569,10 +381,10 @@ export function PreMeetingReportDrawer({
           <div className="rounded-xl border border-[#BEEFF2] bg-[#F8FEFF] p-3 text-xs font-bold text-[var(--text)]">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-white px-3 py-1 font-black text-[#007A80]">
-                رقم الاجتماع: {resolvedMeetingId}
+                {t('activities.preMeetingReport.meetingNumberLabel', { id: resolvedMeetingId })}
               </span>
               <span className="min-w-0 break-words font-black">
-                الاجتماع المرتبط: {resolvedMeetingTitle || 'بدون عنوان'}
+                {t('activities.preMeetingReport.linkedMeetingLabel', { title: resolvedMeetingTitle || t('activities.preMeetingReport.untitled') })}
               </span>
             </div>
           </div>
@@ -581,11 +393,11 @@ export function PreMeetingReportDrawer({
         <section className="space-y-3">
           <div>
             <h3 className="text-sm font-black text-[var(--text)]">
-              اختر قالب التحضير
+              {t('activities.preMeetingReport.chooseTemplateTitle')}
             </h3>
 
             <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
-              يمكنك عرض القالب أولا ثم تطبيقه على التقرير.
+              {t('activities.preMeetingReport.chooseTemplateHint')}
             </p>
           </div>
 
@@ -622,8 +434,8 @@ export function PreMeetingReportDrawer({
 
                       <div className="mt-2 text-[11px] font-black text-[#007A80]">
                         {template.category === 'real_estate'
-                          ? 'قطاع العقارات'
-                          : 'قالب عام'}
+                          ? t('activities.preMeetingReport.categoryRealEstate')
+                          : t('activities.preMeetingReport.categoryGeneral')}
                       </div>
                     </div>
                   </div>
@@ -640,7 +452,7 @@ export function PreMeetingReportDrawer({
               disabled={!selectedTemplateId}
             >
               <Eye size={15} />
-              عرض القالب
+              {t('activities.preMeetingReport.previewTemplate')}
             </Button>
 
             <Button
@@ -649,7 +461,7 @@ export function PreMeetingReportDrawer({
               onClick={handleApplyTemplate}
               disabled={!selectedTemplateId}
             >
-              تطبيق القالب
+              {t('activities.preMeetingReport.applyTemplate')}
             </Button>
           </div>
         </section>
@@ -661,11 +473,11 @@ export function PreMeetingReportDrawer({
 
               <div>
                 <div className="text-sm font-black text-[var(--text)]">
-                  معاينة: {previewTemplate.title}
+                  {t('activities.preMeetingReport.previewPrefix', { title: previewTemplate.title })}
                 </div>
 
                 <div className="text-xs font-semibold text-[var(--muted)]">
-                  الحقول التي سيحتوي عليها التقرير
+                  {t('activities.preMeetingReport.previewFieldsHint')}
                 </div>
               </div>
             </div>
@@ -691,7 +503,7 @@ export function PreMeetingReportDrawer({
 
                     {field.options?.length ? (
                       <div className="mt-1 text-[11px] font-semibold text-[var(--muted)]">
-                        الخيارات: {field.options.join('، ')}
+                        {t('activities.preMeetingReport.optionsLabel', { options: field.options.join(t('common.listSeparator')) })}
                       </div>
                     ) : null}
                   </div>
@@ -705,7 +517,7 @@ export function PreMeetingReportDrawer({
                 variant="ai"
                 onClick={handleApplyTemplate}
               >
-                تطبيق هذا القالب
+                {t('activities.preMeetingReport.applyThisTemplate')}
               </Button>
             </div>
           </section>
@@ -749,11 +561,11 @@ export function PreMeetingReportDrawer({
             />
 
             <p className="text-sm font-black text-[var(--text)]">
-              لم يتم تطبيق قالب بعد
+              {t('activities.preMeetingReport.noTemplateAppliedTitle')}
             </p>
 
             <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
-              اختر أحد القوالب بالأعلى ثم قم بعرضه أو تطبيقه.
+              {t('activities.preMeetingReport.noTemplateAppliedHint')}
             </p>
           </div>
         )}
@@ -764,7 +576,7 @@ export function PreMeetingReportDrawer({
             variant="outline"
             onClick={onClose}
           >
-            إلغاء
+            {t('activities.preMeetingReport.cancel')}
           </Button>
 
           <Button
@@ -774,7 +586,7 @@ export function PreMeetingReportDrawer({
             disabled={!activeTemplate}
             loading={mutations.createReport.isPending}
           >
-            حفظ التقرير
+            {t('activities.preMeetingReport.saveReport')}
           </Button>
         </div>
       </form>

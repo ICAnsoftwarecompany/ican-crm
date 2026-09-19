@@ -21,8 +21,8 @@ function SidebarNavItem({ item, isActive, collapsed, t }) {
         'text-sm font-arabic',
         collapsed && 'justify-center',
         isActive
-          ? 'bg-[#ECECEA] font-medium text-[#111827]'
-          : 'text-[#6B7280] hover:bg-[#F0F0EF] hover:text-[#111827]'
+          ? 'bg-[var(--shell-active)] font-medium text-[var(--text)]'
+          : 'text-[var(--text-muted)] hover:bg-[var(--shell-hover)] hover:text-[var(--text)]'
       )}
       aria-current={isActive ? 'page' : undefined}
     >
@@ -74,7 +74,7 @@ function SidebarSection({ section, collapsed, activeItemId, activeSectionId, exp
       <button
         type="button"
         onClick={() => onToggle(section.id)}
-        className="flex w-full items-center justify-between px-2 py-1 rounded-md text-[#9CA3AF] hover:text-[#6B7280] transition-colors"
+        className="flex w-full items-center justify-between px-2 py-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
         aria-expanded={isExpanded}
         aria-controls={`sidebar-section-${section.id}`}
       >
@@ -114,10 +114,8 @@ export function Sidebar({ collapsed }) {
   const [collapsedSections, setCollapsedSections] = useLocalStorage('main-sidebar-collapsed-sections', {})
 
   const toggleLanguage = () => {
-    const next = i18n.language === 'ar' ? 'en' : 'ar'
+    const next = i18n.resolvedLanguage?.startsWith('ar') ? 'en' : 'ar'
     i18n.changeLanguage(next)
-    document.documentElement.dir = next === 'ar' ? 'rtl' : 'ltr'
-    document.documentElement.lang = next
   }
 
   const handleLogout = () => {
@@ -133,16 +131,16 @@ export function Sidebar({ collapsed }) {
     <aside
       className={cn(
         'fixed inset-y-0 start-0 z-30 flex flex-col transition-all duration-300',
-        'bg-[#FAFAF9] text-[var(--text)] border-e border-[#ECECEC]',
+        'bg-[var(--shell-surface)] text-[var(--text)] border-e border-[var(--border)]',
         collapsed ? 'w-16' : 'w-60'
       )}
     >
       {/* Workspace chip */}
-      <button className="flex items-center gap-2 mx-3 mt-3 mb-2 h-9 px-2 rounded-lg hover:bg-[#F0F0EF] transition-colors">
+      <button className="flex items-center gap-2 mx-3 mt-3 mb-2 h-9 px-2 rounded-lg hover:bg-[var(--shell-hover)] transition-colors">
         <LogoMark />
         {!collapsed && (
           <>
-            <span className="font-latin font-semibold text-[14px] text-[#111827] truncate">
+            <span className="font-latin font-semibold text-[14px] text-[var(--text)] truncate">
               ICAN CRM
             </span>
             <ChevronDown size={14} className="text-[#9CA3AF] shrink-0" />
@@ -169,7 +167,7 @@ export function Sidebar({ collapsed }) {
       {/* AI Indicator */}
       {!collapsed && (
         <div className="px-4 py-2">
-          <div className="flex items-center gap-2 text-xs text-[#6B7280]">
+          <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00C2CB] opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00C2CB]" />
@@ -181,10 +179,10 @@ export function Sidebar({ collapsed }) {
       )}
 
       {/* Bottom controls */}
-      <div className="border-t border-[#ECECEC] p-3 space-y-0.5">
+      <div className="border-t border-[var(--border)] p-3 space-y-0.5">
         <button
           onClick={toggleTheme}
-          className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[#6B7280] hover:bg-[#F0F0EF] hover:text-[#111827] text-sm font-arabic transition-colors"
+          className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[var(--text-muted)] hover:bg-[var(--shell-hover)] hover:text-[var(--text)] text-sm font-arabic transition-colors"
         >
           {isDark ? <Sun size={16} /> : <Moon size={16} />}
           {!collapsed && (isDark ? t('common.lightMode') : t('common.darkMode'))}
@@ -192,10 +190,10 @@ export function Sidebar({ collapsed }) {
 
         <button
           onClick={toggleLanguage}
-          className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[#6B7280] hover:bg-[#F0F0EF] hover:text-[#111827] text-sm font-arabic transition-colors"
+          className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[var(--text-muted)] hover:bg-[var(--shell-hover)] hover:text-[var(--text)] text-sm font-arabic transition-colors"
         >
           <span className="font-latin text-xs font-bold w-4 text-center">
-            {i18n.language === 'ar' ? 'EN' : 'ع'}
+            {i18n.resolvedLanguage?.startsWith('ar') ? 'EN' : 'ع'}
           </span>
           {!collapsed && t('common.language')}
         </button>
@@ -204,7 +202,7 @@ export function Sidebar({ collapsed }) {
           <div className={cn('flex items-center gap-2.5 px-2 py-1.5', collapsed && 'justify-center')}>
             <Avatar name={user.name || user.login} size="sm" />
             {!collapsed && (
-              <p className="text-sm font-medium text-[#111827] truncate font-arabic">
+              <p className="text-sm font-medium text-[var(--text)] truncate font-arabic">
                 {user.name || user.login}
               </p>
             )}
@@ -213,7 +211,7 @@ export function Sidebar({ collapsed }) {
 
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[#6B7280] hover:bg-[#FEF2F2] hover:text-[#B91C1C] text-sm font-arabic transition-colors"
+          className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[var(--text-muted)] hover:bg-[#FEF2F2] hover:text-[#B91C1C] dark:hover:bg-[#451E28] dark:hover:text-[#FDA4AF] text-sm font-arabic transition-colors"
         >
           <LogOut size={16} />
           {!collapsed && t('actions.logout')}

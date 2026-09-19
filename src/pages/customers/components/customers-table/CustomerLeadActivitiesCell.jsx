@@ -16,7 +16,7 @@ function formatActivityDate(value) {
   return date.toLocaleDateString(undefined, { day: '2-digit', month: '2-digit' })
 }
 
-export function CustomerLeadActivitiesCell({ row, userById }) {
+export function CustomerLeadActivitiesCell({ row, userById, t }) {
   const [isOpen, setIsOpen] = useState(false)
   const activities = getCustomerLeadActivities(row)
     .filter((activity) => String(activity?.type || '').trim().toLowerCase() === 'status_change')
@@ -34,7 +34,7 @@ export function CustomerLeadActivitiesCell({ row, userById }) {
         {visibleActivities.map((activity, index) => (
           <div key={activity.id || index} className="flex min-w-0 items-center gap-1">
             <CustomerTableHoverCard
-              content={<CustomerStatusChangeHoverDetails activities={[activity]} userById={userById} />}
+              content={<CustomerStatusChangeHoverDetails activities={[activity]} userById={userById} t={t} />}
               width={380}
               estimatedHeight={260}
               wrapperClassName="relative inline-flex min-w-0"
@@ -42,7 +42,7 @@ export function CustomerLeadActivitiesCell({ row, userById }) {
             >
               <span
                 className="inline-flex min-w-0 flex-1 flex-wrap items-center gap-1.5 rounded-full border border-[#D7EEF0] bg-[#F8FEFF] px-2 py-1 text-[10px] font-black text-[#0F766E]"
-                title={getCustomerActivityTooltipTitle(activity, userById)}
+                title={getCustomerActivityTooltipTitle(activity, userById, t)}
               >
                 <Activity size={12} className="shrink-0" />
                 <span className="min-w-0 break-words">{getCustomerActivityUserName(activity, userById)}</span>
@@ -56,7 +56,7 @@ export function CustomerLeadActivitiesCell({ row, userById }) {
         ))}
         {hiddenActivities.length ? (
           <CustomerTableHoverCard
-            content={<CustomerStatusChangeHoverDetails activities={hiddenActivities} userById={userById} />}
+            content={<CustomerStatusChangeHoverDetails activities={hiddenActivities} userById={userById} t={t} />}
             width={440}
             estimatedHeight={260}
             wrapperClassName="relative inline-flex min-w-0"
@@ -65,19 +65,19 @@ export function CustomerLeadActivitiesCell({ row, userById }) {
             <button
               type="button"
               className="inline-flex h-7 items-center rounded-full border border-[#CBD5E1] bg-white px-2 text-[10px] font-black text-[#475569] transition hover:border-[#94A3B8] hover:bg-[#F8FAFC]"
-              title={`عرض ${hiddenActivities.length} تغييرات حالة إضافية`}
+              title={t ? t('customers.table.viewMoreStatusChanges', { count: hiddenActivities.length }) : `View ${hiddenActivities.length} more status changes`}
               data-no-cell-copy="true"
             >
               +{hiddenActivities.length}
             </button>
           </CustomerTableHoverCard>
         ) : null}
-        <OpenDetailsButton onClick={() => setIsOpen(true)} label="الكل" />
+        <OpenDetailsButton onClick={() => setIsOpen(true)} label={t ? t('customers.table.viewAll') : 'All'} />
       </div>
       <div className="mt-1 line-clamp-2 text-[10px] font-semibold text-[var(--text-muted)]">
         {renderSafeValue(visibleActivities[0]?.title || visibleActivities[0]?.description)}
       </div>
-      <LeadActivitiesDialog row={row} open={isOpen} onClose={() => setIsOpen(false)} />
+      <LeadActivitiesDialog row={row} open={isOpen} onClose={() => setIsOpen(false)} t={t} />
     </>
   )
 }

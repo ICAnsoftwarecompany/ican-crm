@@ -1,31 +1,37 @@
 import { CalendarClock, CheckCircle2, ClipboardCheck, Mail, PhoneCall, RefreshCcw } from 'lucide-react'
 
-export const TASK_TYPE_META = {
-  call: { label: 'مكالمة', icon: PhoneCall },
-  email: { label: 'بريد', icon: Mail },
-  meeting: { label: 'اجتماع', icon: CalendarClock },
-  follow_up: { label: 'متابعة', icon: RefreshCcw },
-  todo: { label: 'مهمة', icon: ClipboardCheck },
+export function getTaskTypeMetaMap(t) {
+  return {
+    call: { label: t('activities.type.call'), icon: PhoneCall },
+    email: { label: t('tasks.types.email'), icon: Mail },
+    meeting: { label: t('activities.type.meeting'), icon: CalendarClock },
+    follow_up: { label: t('activities.lifecycleActions.followUp'), icon: RefreshCcw },
+    todo: { label: t('tasks.types.todo'), icon: ClipboardCheck },
+  }
 }
 
-export const TASK_PRIORITY_META = {
-  low: { label: 'منخفضة', className: 'bg-slate-50 text-slate-600 border-slate-200' },
-  medium: { label: 'متوسطة', className: 'bg-blue-50 text-blue-700 border-blue-100' },
-  high: { label: 'عالية', className: 'bg-amber-50 text-amber-700 border-amber-100' },
-  urgent: { label: 'عاجلة', className: 'bg-red-50 text-red-700 border-red-100' },
+export function getTaskPriorityMetaMap(t) {
+  return {
+    low: { label: t('activities.scheduleDialog.priorityOptions.low'), className: 'bg-slate-50 text-slate-600 border-slate-200' },
+    medium: { label: t('activities.scheduleDialog.priorityOptions.medium'), className: 'bg-blue-50 text-blue-700 border-blue-100' },
+    high: { label: t('activities.scheduleDialog.priorityOptions.high'), className: 'bg-amber-50 text-amber-700 border-amber-100' },
+    urgent: { label: t('activities.scheduleDialog.priorityOptions.urgent'), className: 'bg-red-50 text-red-700 border-red-100' },
+  }
 }
 
-export const TASK_STATUS_META = {
-  pending: { label: 'قيد الانتظار', tone: 'bg-slate-100 text-slate-700' },
-  in_progress: { label: 'جاري العمل', tone: 'bg-blue-100 text-blue-700' },
-  completed: { label: 'مكتملة', tone: 'bg-emerald-100 text-emerald-700' },
-  cancelled: { label: 'ملغاة', tone: 'bg-zinc-200 text-zinc-700' },
+export function getTaskStatusMetaMap(t) {
+  return {
+    pending: { label: t('tasks.statuses.pending'), tone: 'bg-slate-100 text-slate-700' },
+    in_progress: { label: t('tasks.statuses.in_progress'), tone: 'bg-blue-100 text-blue-700' },
+    completed: { label: t('tasks.statuses.completed'), tone: 'bg-emerald-100 text-emerald-700' },
+    cancelled: { label: t('tasks.statuses.cancelled'), tone: 'bg-zinc-200 text-zinc-700' },
+  }
 }
 
-export const TASK_STATUSES = Object.keys(TASK_STATUS_META)
+export const TASK_STATUSES = ['pending', 'in_progress', 'completed', 'cancelled']
 
-export function getTaskTitle(task) {
-  return task?.title || task?.name || 'مهمة بدون عنوان'
+export function getTaskTitle(task, t) {
+  return task?.title || task?.name || (t ? t('tasks.fallback.untitledTask') : 'مهمة بدون عنوان')
 }
 
 export function getTaskDescription(task) {
@@ -36,16 +42,19 @@ export function getTaskType(task) {
   return String(task?.type || 'todo').toLowerCase()
 }
 
-export function getTaskTypeMeta(type) {
-  return TASK_TYPE_META[String(type || '').toLowerCase()] || { label: type || 'مهمة', icon: ClipboardCheck }
+export function getTaskTypeMeta(type, t) {
+  const map = getTaskTypeMetaMap(t)
+  return map[String(type || '').toLowerCase()] || { label: type || t('tasks.types.todo'), icon: ClipboardCheck }
 }
 
-export function getTaskPriorityMeta(priority) {
-  return TASK_PRIORITY_META[String(priority || '').toLowerCase()] || TASK_PRIORITY_META.medium
+export function getTaskPriorityMeta(priority, t) {
+  const map = getTaskPriorityMetaMap(t)
+  return map[String(priority || '').toLowerCase()] || map.medium
 }
 
-export function getTaskStatusMeta(status) {
-  return TASK_STATUS_META[String(status || '').toLowerCase()] || { label: status || 'غير محدد', tone: 'bg-slate-100 text-slate-700' }
+export function getTaskStatusMeta(status, t) {
+  const map = getTaskStatusMetaMap(t)
+  return map[String(status || '').toLowerCase()] || { label: status || t('activities.preMeetingReport.options.unspecified'), tone: 'bg-slate-100 text-slate-700' }
 }
 
 export function getTaskDueDate(task) {
@@ -76,9 +85,9 @@ export function isTaskOverdue(task, now = new Date()) {
   return due.getTime() < now.getTime() && !isTaskCompleted(task)
 }
 
-export function formatTaskDateLabel(task, locale = 'ar-EG') {
+export function formatTaskDateLabel(task, locale, t) {
   const due = getTaskDateTime(task)
-  if (!due) return 'بدون موعد'
+  if (!due) return t ? t('tasks.fallback.noDueDate') : 'بدون موعد'
 
   const today = new Date()
   const tomorrow = new Date(today)
@@ -92,11 +101,18 @@ export function formatTaskDateLabel(task, locale = 'ar-EG') {
 
   const time = due.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', hour12: true })
 
-  if (sameDay(due, today)) return `اليوم • ${time}`
-  if (sameDay(due, tomorrow)) return `غدًا • ${time}`
+  if (!t) {
+    if (sameDay(due, today)) return `اليوم • ${time}`
+    if (sameDay(due, tomorrow)) return `غدًا • ${time}`
+    const dateLabel = due.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' })
+    return `${dateLabel} • ${time}`
+  }
+
+  if (sameDay(due, today)) return t('tasks.dateLabels.atTime', { day: t('activities.derivedStates.today'), time })
+  if (sameDay(due, tomorrow)) return t('tasks.dateLabels.atTime', { day: t('tasks.dateLabels.tomorrow'), time })
 
   const dateLabel = due.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' })
-  return `${dateLabel} • ${time}`
+  return t('tasks.dateLabels.atTime', { day: dateLabel, time })
 }
 
 export function getTaskUnread(task) {
@@ -106,16 +122,16 @@ export function getTaskUnread(task) {
   return false
 }
 
-export function getTaskAssigneeLabel(task) {
+export function getTaskAssigneeLabel(task, t) {
   const user = task?.user || task?.assigned_user || task?.assignedTo
   const username = user?.name || user?.username
   if (username) return username
 
   const users = Array.isArray(task?.users) ? task.users : []
-  if (users.length === 1) return users[0]?.name || users[0]?.username || 'مستخدم واحد'
-  if (users.length > 1) return `${users.length} مستخدمين`
+  if (users.length === 1) return users[0]?.name || users[0]?.username || (t ? t('tasks.fallback.oneUser') : 'مستخدم واحد')
+  if (users.length > 1) return t ? t('tasks.fallback.multipleUsers', { count: users.length }) : `${users.length} مستخدمين`
 
-  return 'غير مسند'
+  return t ? t('tasks.fallback.unassigned') : 'غير مسند'
 }
 
 export function getTaskSummaryMetrics(tasks = []) {
@@ -175,15 +191,15 @@ export function getTaskStatusOptions(tasks = []) {
   return Array.from(set)
 }
 
-export function getTaskTypeOptions(tasks = []) {
+export function getTaskTypeOptions(tasks = [], t) {
   const set = new Set(tasks.map((task) => String(task?.type || '').toLowerCase()).filter(Boolean))
-  if (!set.size) return Object.keys(TASK_TYPE_META)
+  if (!set.size) return Object.keys(getTaskTypeMetaMap(t))
   return Array.from(set)
 }
 
-export function getTaskPriorityOptions(tasks = []) {
+export function getTaskPriorityOptions(tasks = [], t) {
   const set = new Set(tasks.map((task) => String(task?.priority || '').toLowerCase()).filter(Boolean))
-  if (!set.size) return Object.keys(TASK_PRIORITY_META)
+  if (!set.size) return Object.keys(getTaskPriorityMetaMap(t))
   return Array.from(set)
 }
 
@@ -198,10 +214,10 @@ export function getTaskQuickStatus(task) {
   return 'in_progress'
 }
 
-export function getTaskQuickStatusLabel(task) {
-  if (String(task?.status || '').toLowerCase() === 'pending') return 'ابدأ المهمة'
-  if (String(task?.status || '').toLowerCase() === 'in_progress') return 'إكمال المهمة'
-  return 'جعلها قيد التنفيذ'
+export function getTaskQuickStatusLabel(task, t) {
+  if (String(task?.status || '').toLowerCase() === 'pending') return t('tasks.quickStatus.start')
+  if (String(task?.status || '').toLowerCase() === 'in_progress') return t('tasks.quickStatus.complete')
+  return t('tasks.quickStatus.markInProgress')
 }
 
 export function getTaskQuickStatusIcon(task) {

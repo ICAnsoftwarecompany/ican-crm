@@ -231,7 +231,8 @@ export function SourceDetailsDialog({ source, onClose }) {
   )
 }
 
-export function LeadActivitiesDialog({ row, open, onClose }) {
+export function LeadActivitiesDialog({ row, open, onClose, t }) {
+  const at = (key, fallback) => (t ? t(`customers.table.activityTimeline.${key}`) : fallback)
   const leadId = useMemo(() => {
     const value = row?.lead?.id ?? row?.lead_id ?? row?.lead?.lead_id
     if (value === null || value === undefined || value === '') return null
@@ -262,7 +263,7 @@ export function LeadActivitiesDialog({ row, open, onClose }) {
     || row?.lead?.name
     || row?.lead?.customer?.name
     || row?.lead?.customer_name
-    || 'عميل غير معروف'
+    || at('unknownCustomer', 'Unknown customer')
   ), [row])
 
   const dragStateRef = useRef(null)
@@ -416,7 +417,7 @@ export function LeadActivitiesDialog({ row, open, onClose }) {
       <div
         role="dialog"
         aria-modal={isPinned ? 'false' : 'true'}
-        aria-label="خط سير نشاط العميل"
+        aria-label={at('title', 'Customer activity timeline')}
         className="pointer-events-auto absolute overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)] shadow-2xl"
         style={{
           left: 0,
@@ -430,10 +431,10 @@ export function LeadActivitiesDialog({ row, open, onClose }) {
         <div
           className={`flex cursor-grab touch-none select-none items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)] px-4 py-3 ${isDragging ? 'cursor-grabbing bg-[var(--surface-2)]' : ''}`}
           onPointerDown={onHeaderPointerDown}
-          title="اسحب لتحريك النافذة"
+          title={at('dragToMove', 'Drag to move the window')}
         >
           <div className="min-w-0">
-            <h2 className="font-bold font-arabic text-lg text-[var(--text)]">خط سير نشاط العميل</h2>
+            <h2 className="font-bold font-arabic text-lg text-[var(--text)]">{at('title', 'Customer activity timeline')}</h2>
             <p className="text-sm text-[var(--text-light)] font-arabic mt-1">{customerName}</p>
           </div>
 
@@ -444,18 +445,18 @@ export function LeadActivitiesDialog({ row, open, onClose }) {
               onClick={() => setIsPinned((value) => !value)}
               onPointerDown={(event) => event.stopPropagation()}
               className={`inline-flex h-8 items-center justify-center gap-1 rounded-md border px-2 text-xs font-black transition ${isPinned ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'border-[var(--border)] text-[var(--text)] hover:bg-[var(--surface-2)]'}`}
-              aria-label={isPinned ? 'إلغاء التثبيت' : 'تثبيت الديالوج'}
-              title={isPinned ? 'إلغاء التثبيت' : 'تثبيت الديالوج'}
+              aria-label={isPinned ? at('unpin', 'Unpin') : at('pinDialog', 'Pin the dialog')}
+              title={isPinned ? at('unpin', 'Unpin') : at('pinDialog', 'Pin the dialog')}
             >
               {isPinned ? <PinOff size={14} /> : <Pin size={14} />}
-              {isPinned ? 'مثبت' : 'تثبيت'}
+              {isPinned ? at('pinned', 'Pinned') : at('pin', 'Pin')}
             </button>
             <button
               type="button"
               onClick={onClose}
               onPointerDown={(event) => event.stopPropagation()}
               className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[var(--border)] text-[var(--text)] transition hover:bg-[var(--surface-2)]"
-              aria-label="إغلاق"
+              aria-label={at('close', 'Close')}
             >
               <X size={16} />
             </button>
@@ -467,12 +468,12 @@ export function LeadActivitiesDialog({ row, open, onClose }) {
             <div className="flex h-full items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
               <div className="inline-flex items-center gap-2 text-sm font-bold text-slate-600">
                 <Loader2 size={16} className="animate-spin" />
-                جاري تحميل سجل الأنشطة...
+                {at('loading', 'Loading activity log...')}
               </div>
             </div>
           ) : leadLogQuery.isError && !fallbackLogs.length ? (
             <div className="flex h-full items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-4 text-center text-sm font-bold text-rose-700">
-              تعذر تحميل سجل الأنشطة حاليا.
+              {at('loadError', 'Could not load the activity log right now.')}
             </div>
           ) : (
             <CustomerActivityTimeline activities={activities} />
@@ -482,8 +483,8 @@ export function LeadActivitiesDialog({ row, open, onClose }) {
         <button
           type="button"
           onPointerDown={onResizePointerDown}
-          title="تغيير عرض وارتفاع النافذة"
-          aria-label="تغيير عرض وارتفاع النافذة"
+          title={at('resizeWindow', 'Resize the window')}
+          aria-label={at('resizeWindow', 'Resize the window')}
           className={`absolute bottom-2 right-2 h-4 w-4 rounded-sm border border-[#BEEFF2] bg-[#E8F9FA] ${isResizing ? 'bg-[#c6ecef]' : ''}`}
         />
       </div>
@@ -492,7 +493,7 @@ export function LeadActivitiesDialog({ row, open, onClose }) {
   )
 }
 
-export function OpenDetailsButton({ onClick, label = 'فتح' }) {
+export function OpenDetailsButton({ onClick, label = 'Open' }) {
   return (
     <button
       type="button"

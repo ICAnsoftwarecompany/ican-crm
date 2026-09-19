@@ -2,14 +2,16 @@ export function createAfterMeetingInitialValues(template) {
   return Object.fromEntries((template?.fields || []).map((field) => [field.key, '']))
 }
 
-export function createAfterMeetingEditableTemplate(template) {
+export function createAfterMeetingEditableTemplate(template, t) {
   if (!template) return null
+
+  const defaultHeading = t('activities.meetingDrawer.afterMeetingReportLabel')
 
   return {
     ...template,
-    headerTitle: template.title || 'تقرير بعد الاجتماع',
+    headerTitle: template.title || defaultHeading,
     headerSubtitle: template.description || '',
-    reportHeading: 'تقرير بعد الاجتماع',
+    reportHeading: defaultHeading,
     fields: (template.fields || []).map((field) => ({
       ...field,
       label: field.label,
@@ -27,7 +29,7 @@ export function validateAfterMeetingRequiredFields(template, values = {}) {
   )
 }
 
-export function buildAfterMeetingReportText(template, values = {}, options = {}) {
+export function buildAfterMeetingReportText(template, values = {}, options = {}, t) {
   const heading = String(options.reportHeading || template?.reportHeading || '').trim()
   const templateTitle = String(template?.headerTitle || template?.title || '').trim()
   const templateSubtitle = String(template?.headerSubtitle || '').trim()
@@ -36,9 +38,9 @@ export function buildAfterMeetingReportText(template, values = {}, options = {})
   const lines = []
 
   if (heading) lines.push(heading)
-  if (templateTitle) lines.push(`القالب: ${templateTitle}`)
-  if (meetingTitle) lines.push(`الاجتماع: ${meetingTitle}`)
-  if (elapsedDuration) lines.push(`الوقت المنقضي: ${elapsedDuration}`)
+  if (templateTitle) lines.push(t('activities.afterMeetingReport.templateLine', { value: templateTitle }))
+  if (meetingTitle) lines.push(t('activities.afterMeetingReport.meetingLine', { value: meetingTitle }))
+  if (elapsedDuration) lines.push(t('activities.afterMeetingReport.elapsedDurationLabel', { value: elapsedDuration }))
   if (templateSubtitle) lines.push(templateSubtitle)
 
   ;(template.fields || []).forEach((field) => {

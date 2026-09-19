@@ -1,11 +1,12 @@
 import { AppModal } from './AppModal'
 import { Button } from '../ui/Button'
 import { cn } from '../../utils/cn'
+import { useTranslation } from 'react-i18next'
 
 const typeStyles = {
-  info: 'bg-blue-50 border border-blue-200 text-blue-700',
-  warning: 'bg-amber-50 border border-amber-200 text-amber-700',
-  danger: 'bg-red-50 border border-red-200 text-red-700',
+  info: 'bg-blue-50 border border-blue-200 text-blue-700 dark:bg-blue-950 dark:border-blue-800 dark:text-blue-200',
+  warning: 'bg-amber-50 border border-amber-200 text-amber-700 dark:bg-amber-950 dark:border-amber-800 dark:text-amber-200',
+  danger: 'bg-red-50 border border-red-200 text-red-700 dark:bg-red-950 dark:border-red-800 dark:text-red-200',
 }
 
 const typeIcons = {
@@ -20,11 +21,12 @@ export function ConfirmDialog({
   onCancel,
   title,
   message,
-  confirmText = 'تأكيد',
-  cancelText = 'إلغاء',
+  confirmText,
+  cancelText,
   type = 'info',
   loading = false,
 }) {
+  const { t } = useTranslation()
   const confirmVariant = type === 'danger' ? 'danger' : 'primary'
 
   return (
@@ -40,14 +42,14 @@ export function ConfirmDialog({
             onClick={onCancel}
             disabled={loading}
           >
-            {cancelText}
+            {cancelText ?? t('actions.cancel')}
           </Button>
           <Button
             variant={confirmVariant}
             onClick={onConfirm}
             loading={loading}
           >
-            {confirmText}
+            {confirmText ?? t('actions.confirm')}
           </Button>
         </div>
       }

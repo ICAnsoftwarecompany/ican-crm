@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { AppDrawer } from '../../../shared/components/overlays/AppDrawer'
 import { Button } from '../../../shared/components/ui/Button'
 import { Input } from '../../../shared/components/ui/Input'
@@ -63,12 +64,14 @@ export function ProductFormDrawer({
   categories = [],
   productFieldNames = [],
   productType = 'product',
-  entityLabel = 'منتج',
+  entityLabel,
   loading,
   error,
   onClose,
   onSubmit,
 }) {
+  const { t } = useTranslation()
+  const resolvedEntityLabel = entityLabel ?? t('products.list.entityLabel')
   const [form, setForm] = useState(INITIAL_FORM)
   const [additionalRows, setAdditionalRows] = useState([])
   const [activeTab, setActiveTab] = useState('basic')
@@ -129,7 +132,7 @@ export function ProductFormDrawer({
     setLocalError('')
 
     if (!form.name.trim()) {
-      setLocalError('اسم المنتج مطلوب')
+      setLocalError(t('products.formDrawer.nameRequired', { entity: resolvedEntityLabel }))
       return
     }
 
@@ -139,23 +142,23 @@ export function ProductFormDrawer({
   const tabs = [
     {
       id: 'basic',
-      label: 'البيانات الأساسية',
+      label: t('products.formDrawer.basicDataTab'),
       content: (
         <div className="space-y-4">
           <Input
-            label={`اسم ${entityLabel}`}
+            label={t('products.formDrawer.nameLabel', { entity: resolvedEntityLabel })}
             value={form.name}
             onChange={(event) => updateField('name', event.target.value)}
-            placeholder="مثال: باقة شهرية"
+            placeholder={t('products.formDrawer.namePlaceholder')}
           />
           <Input
-            label="الوصف"
+            label={t('products.list.columns.description')}
             value={form.desc}
             onChange={(event) => updateField('desc', event.target.value)}
-            placeholder={`وصف مختصر لـ ${entityLabel}`}
+            placeholder={t('products.formDrawer.descPlaceholder', { entity: resolvedEntityLabel })}
           />
           <Input
-            label="السعر"
+            label={t('products.list.columns.price')}
             type="number"
             value={form.price}
             onChange={(event) => updateField('price', event.target.value)}
@@ -163,14 +166,14 @@ export function ProductFormDrawer({
           />
 
           <Input
-            label="النوع"
+            label={t('products.formDrawer.typeLabel')}
             value={productType}
             disabled
             readOnly
           />
 
           <label className="grid gap-1.5 text-sm font-medium text-[var(--text)]">
-            صورة {entityLabel}
+            {t('products.formDrawer.imageLabel', { entity: resolvedEntityLabel })}
             <input
               type="file"
               accept="image/*"
@@ -180,13 +183,13 @@ export function ProductFormDrawer({
           </label>
 
           <label className="grid gap-1.5 text-sm font-medium text-[var(--text)]">
-            التصنيف
+            {t('products.formDrawer.categoryLabel')}
             <select
               value={form.category_id}
               onChange={(event) => handleCategoryChange(event.target.value)}
               className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00C2CB]"
             >
-              <option value="">بدون تصنيف</option>
+              <option value="">{t('products.formDrawer.noCategoryOption')}</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {getCategoryLabel(category)}
@@ -196,14 +199,14 @@ export function ProductFormDrawer({
           </label>
 
           <label className="grid gap-1.5 text-sm font-medium text-[var(--text)]">
-            الحالة
+            {t('activities.table.status')}
             <select
               value={form.status}
               onChange={(event) => updateField('status', event.target.value)}
               className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00C2CB]"
             >
-              <option value="1">نشط</option>
-              <option value="0">معطل</option>
+              <option value="1">{t('products.list.activeStatus')}</option>
+              <option value="0">{t('products.list.inactiveStatus')}</option>
             </select>
           </label>
         </div>
@@ -211,7 +214,7 @@ export function ProductFormDrawer({
     },
     {
       id: 'additional',
-      label: 'البيانات الإضافية',
+      label: t('products.formDrawer.additionalDataTab'),
       content: (
         <AdditionalDataFields
           rows={additionalRows}
@@ -227,8 +230,8 @@ export function ProductFormDrawer({
       open={open}
       onClose={onClose}
       size="lg"
-      title={mode === 'create' ? `إضافة ${entityLabel}` : `تعديل ${entityLabel}`}
-      description="أدخل بيانات المنتج واربطه بالفئة المناسبة."
+      title={mode === 'create' ? t('products.formDrawer.addTitle', { entity: resolvedEntityLabel }) : t('products.formDrawer.editTitle', { entity: resolvedEntityLabel })}
+      description={t('products.formDrawer.drawerDescription')}
     >
       <form onSubmit={handleSubmit} className="flex min-h-[calc(100vh-7.5rem)] flex-col gap-4">
         {(localError || error) && (
@@ -241,10 +244,10 @@ export function ProductFormDrawer({
 
         <div className="mt-auto flex items-center justify-end gap-2 border-t border-[var(--border)] pt-4">
           <Button variant="outline" onClick={onClose} disabled={loading}>
-            إلغاء
+            {t('actions.cancel')}
           </Button>
           <Button type="submit" loading={loading}>
-            {mode === 'create' ? `إضافة ${entityLabel}` : 'حفظ التعديل'}
+            {mode === 'create' ? t('products.formDrawer.addTitle', { entity: resolvedEntityLabel }) : t('products.formDrawer.saveEdit')}
           </Button>
         </div>
       </form>

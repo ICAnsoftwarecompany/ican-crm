@@ -1,49 +1,24 @@
 # ICAN CRM
 
-Arabic-first CRM frontend built with React, Vite, Tailwind CSS, Zustand, Axios, and TanStack Query.
+React/Vite multi-tenant CRM frontend. The current codebase inventory is [README_About_project.md](README_About_project.md); architecture and mandatory development rules are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/DEVELOPMENT_ROADMAP.md](docs/DEVELOPMENT_ROADMAP.md).
 
-## Run
+## Start
 
 ```bash
 npm install
-npm start
-```
-
-Local URL:
-
-```text
-http://localhost:3000
-```
-
-## Environment
-
-Create `.env`:
-
-```bash
-VITE_API_URL=https://your-backend-url
-VITE_API_PASSWORD=TenantSecret
-VITE_TENANT=test006
-VITE_WS_URL=ws://your-backend-url
-```
-
-Restart Vite after changing `.env`.
-
-## Scripts
-
-```bash
-npm start
 npm run dev
-npm run build
-npm run test
 ```
 
-## Current Scope
+Vite serves port 3000 by default. Configure the tenant API root/dev proxy and backend credentials for your environment. Do not put real secrets in `VITE_*`: these values are public in the browser bundle. The existing backend requires `VITE_API_PASSWORD` as an `api_password` request parameter; treat this as a compatibility value, not a secret.
 
-- Auth and protected layout.
-- Unified `httpClient` with bearer token and `api_password`.
-- API modules generated from the Postman collection.
-- React Query hooks for the main CRM modules.
-- Operational first-pass pages for Dashboard, Customers, Leads, Teams, Products, Conversations, Campaigns, and Settings.
-- AI permission scaffold and basic AI components.
+## Checks
 
-Detailed planning lives in [PROJECT_DEVELOPMENT_PLAN.md](./PROJECT_DEVELOPMENT_PLAN.md).
+```bash
+npm run build
+npm run lint
+npm run check:i18n
+npm run check:architecture
+npx vitest run
+```
+
+`npm test` runs Vitest in watch mode. The architecture report records actual check results and unresolved migration work: [docs/ARCHITECTURE_REFACTOR_REPORT.md](docs/ARCHITECTURE_REFACTOR_REPORT.md).

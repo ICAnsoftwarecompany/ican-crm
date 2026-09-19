@@ -1,15 +1,18 @@
 import { FileText } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { AfterMeetingFieldRenderer } from './AfterMeetingFieldRenderer'
 
 export function AfterMeetingDynamicForm({ template, values, onChange }) {
+  const { t } = useTranslation()
+
   if (!template) {
     return (
       <div className="rounded-xl border border-dashed border-[var(--border)] p-8 text-center">
         <FileText size={28} className="mx-auto mb-2 text-[var(--muted)]" />
-        <p className="text-sm font-black text-[var(--text)]">لم يتم تطبيق قالب بعد</p>
+        <p className="text-sm font-black text-[var(--text)]">{t('activities.preMeetingReport.noTemplateAppliedTitle')}</p>
         <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
-          اختر أحد القوالب بالأعلى ثم قم بعرضه أو تطبيقه.
+          {t('activities.preMeetingReport.noTemplateAppliedHint')}
         </p>
       </div>
     )
@@ -19,7 +22,7 @@ export function AfterMeetingDynamicForm({ template, values, onChange }) {
     <section className="rounded-xl border border-[#E5F7F8] bg-[#F8FEFF] p-4">
       <div className="mb-4 flex items-center gap-2 text-sm font-black text-[var(--text)]">
         <FileText size={16} className="text-[#007A80]" />
-        <span>القالب المستخدم: {template.headerTitle || template.title}</span>
+        <span>{t('activities.afterMeetingReport.usedTemplateLabel', { value: template.headerTitle || template.title })}</span>
       </div>
 
       {template.headerSubtitle ? (

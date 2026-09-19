@@ -1,4 +1,5 @@
 import { CalendarPlus, History, MonitorUp, Video } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { useLeadCallsMeetings } from '../../../meetings/hooks/useMeetings'
 import { QuickActionMenu } from '../../../../pages/customers/components/CustomerDetailsDrawer/quick-actions/QuickActionMenu'
@@ -37,6 +38,7 @@ function getLatestMeetingAlert(meetings) {
 }
 
 export function MeetingQuickAction({ customer, onTimelineAction }) {
+  const { t } = useTranslation()
   const leadId = getLeadId(customer)
   const meetingsQuery = useLeadCallsMeetings(leadId, undefined, {
     enabled: Boolean(leadId),
@@ -49,20 +51,20 @@ export function MeetingQuickAction({ customer, onTimelineAction }) {
   return (
     <QuickActionMenu
       icon={Video}
-      label="ميتينج"
+      label={t('callMeetings.quickAction.meetingLabel')}
       accentClassName="text-[#7C3AED]"
       alert={hasAlert}
-      alertTitle={hasAlert ? `تنبيه: ${activeMeeting?.title || 'اجتماع'}${activeMeeting?.status === 'in_progress' ? ' · قيد التنفيذ' : ''}` : undefined}
+      alertTitle={hasAlert ? t('callMeetings.quickAction.alertPrefix', { title: activeMeeting?.title || t('callMeetings.quickAction.meetingFallback') }) + (activeMeeting?.status === 'in_progress' ? t('callMeetings.quickAction.inProgressSuffix') : '') : undefined}
       options={[
         {
           id: 'schedule-meeting',
-          label: 'إضافة موعد اجتماع',
+          label: t('callMeetings.actionTab.addMeetingAppointment'),
           icon: CalendarPlus,
           onClick: () => onTimelineAction?.('meeting', { intent: 'schedule' }),
         },
         {
           id: 'meeting-history',
-          label: 'عرض سجل الاجتماعات',
+          label: t('callMeetings.quickAction.viewMeetingHistory'),
           icon: History,
           onClick: () => onTimelineAction?.('meeting', { intent: 'history' }),
         },
@@ -70,15 +72,15 @@ export function MeetingQuickAction({ customer, onTimelineAction }) {
           id: 'google-meet',
           label: 'Google Meet',
           icon: MonitorUp,
-          onClick: () => openExternalAction('https://meet.google.com/new', 'تعذر فتح Google Meet.'),
+          onClick: () => openExternalAction('https://meet.google.com/new', t('callMeetings.quickAction.openGoogleMeetFailed')),
         },
         {
           id: 'zoom',
           label: 'Zoom',
           icon: Video,
           onClick: () => {
-            notifySoon('تم اختيار Zoom')
-            openExternalAction('https://zoom.us/start/videomeeting', 'تعذر فتح Zoom.')
+            notifySoon(t('callMeetings.quickAction.zoomSelected'), t)
+            openExternalAction('https://zoom.us/start/videomeeting', t('callMeetings.quickAction.openZoomFailed'))
           },
         },
       ]}

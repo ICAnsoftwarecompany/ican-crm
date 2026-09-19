@@ -4,6 +4,7 @@ import { cn } from '../../utils/cn'
 import { buildStylesFromFormatRules } from './utils/tableFormatRules'
 import { copyCellToClipboard } from './utils/clipboardHelpers'
 import { buildSplitRowsLayout } from './utils/splitRowsLayout'
+import { useTranslation } from 'react-i18next'
 
 const BG_COLORS = ['#FFFFFF', '#FEF3C7', '#DBEAFE', '#DCFCE7', '#FCE7F3', '#F3F4F6', '#E2E8F0']
 const TEXT_COLORS = ['#0F172A', '#1D4ED8', '#047857', '#B45309', '#BE185D', '#374151', '#7C3AED']
@@ -54,6 +55,7 @@ export function DataTableBody({
   splitRowsConfig = null,
   splitRowsLayout = null,
 }) {
+  const { t } = useTranslation()
   const [contextMenu, setContextMenu] = useState(null)
   const [rowContextMenu, setRowContextMenu] = useState(null)
   const lastBulkActionIdRef = useRef(null)
@@ -363,7 +365,7 @@ export function DataTableBody({
         onChange={(e) => onToggleRowSelection?.(rowKey, e.target.checked)}
         onClick={(e) => e.stopPropagation()}
         className="h-4 w-4 rounded border-slate-300 cursor-pointer"
-        title="تحديد الصف"
+        title={t('dataTable.selectRow')}
       />
     </td>
   )
@@ -500,7 +502,7 @@ export function DataTableBody({
       <tbody>
         <tr>
           <td colSpan={columns.length} className="px-4 py-8 text-center text-[var(--text-muted)]">
-            لا توجد بيانات
+            {t('dataTable.empty')}
           </td>
         </tr>
       </tbody>
@@ -662,7 +664,7 @@ export function DataTableBody({
                     onChange={(e) => onToggleRowSelection?.(rowKey, e.target.checked)}
                     onClick={(e) => e.stopPropagation()}
                     className="h-4 w-4 rounded border-slate-300 cursor-pointer"
-                    title="تحديد العميل"
+                    title={t('dataTable.selectCustomer')}
                   />
                 </td>
               )
@@ -761,7 +763,7 @@ export function DataTableBody({
           style={{ left: contextMenu.x, top: contextMenu.y }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="text-xs text-slate-500 font-medium">تخصيص الخلية / الصف / العمود</div>
+          <div className="text-xs text-slate-500 font-medium">{t('dataTable.customizeScope')}</div>
 
           <div className="flex gap-1 bg-slate-50 p-1 rounded-lg">
             {['cell', 'row', 'column'].map((scope) => (
@@ -774,13 +776,13 @@ export function DataTableBody({
                 )}
                 onClick={() => setContextMenu((prev) => ({ ...prev, scope }))}
               >
-                {scope === 'cell' ? 'خلية' : scope === 'row' ? 'صف' : 'عمود'}
+                {t(`dataTable.${scope}`)}
               </button>
             ))}
           </div>
 
           <div className="space-y-1">
-            <div className="text-[11px] text-slate-600">الخلفية</div>
+            <div className="text-[11px] text-slate-600">{t('dataTable.background')}</div>
             <div className="flex flex-wrap gap-1">
               {BG_COLORS.map((color) => (
                 <button
@@ -795,7 +797,7 @@ export function DataTableBody({
           </div>
 
           <div className="space-y-1">
-            <div className="text-[11px] text-slate-600">لون الخط</div>
+            <div className="text-[11px] text-slate-600">{t('dataTable.textColor')}</div>
             <div className="flex flex-wrap gap-1">
               {TEXT_COLORS.map((color) => (
                 <button
@@ -810,7 +812,7 @@ export function DataTableBody({
           </div>
 
           <div className="space-y-1">
-            <div className="text-[11px] text-slate-600">حجم الخط</div>
+            <div className="text-[11px] text-slate-600">{t('dataTable.fontSize')}</div>
             <div className="flex flex-wrap gap-1">
               {FONT_SIZES.map((size) => (
                 <button
@@ -826,21 +828,21 @@ export function DataTableBody({
           </div>
 
           <div className="space-y-1">
-            <div className="text-[11px] text-slate-600">نوع الخط</div>
+            <div className="text-[11px] text-slate-600">{t('dataTable.fontFamily')}</div>
             <select
               className="w-full h-8 rounded border border-slate-300 text-xs px-2"
               onChange={(e) => applyStyleByScope(contextMenu.scope, contextMenu.rowKey, contextMenu.colId, { fontFamily: e.target.value || undefined })}
               value=""
             >
-              <option value="">اختيار...</option>
+              <option value="">{t('dataTable.choose')}</option>
               {FONT_FAMILIES.map((font) => (
-                <option key={font.label} value={font.value}>{font.label}</option>
+                <option key={font.label} value={font.value}>{font.label === 'Default' ? t('dataTable.defaultFont') : font.label === 'Monospace' ? t('dataTable.monospace') : font.label}</option>
               ))}
             </select>
           </div>
 
           <div className="space-y-1">
-            <div className="text-[11px] text-slate-600">وزن الخط</div>
+            <div className="text-[11px] text-slate-600">{t('dataTable.fontWeight')}</div>
             <div className="flex flex-wrap gap-1">
               {[
                 { label: 'N', value: '400' },
@@ -866,7 +868,7 @@ export function DataTableBody({
               className="text-xs text-red-600 hover:text-red-700"
               onClick={() => clearStylesByScope(contextMenu.scope, contextMenu.rowKey, contextMenu.colId)}
             >
-              مسح تنسيق هذا النطاق
+              {t('dataTable.clearScopeStyle')}
             </button>
           </div>
         </div>,
@@ -890,7 +892,7 @@ export function DataTableBody({
               )}
               onClick={() => setRowContextMenu((prev) => ({ ...prev, activeTab: 'actions' }))}
             >
-              الإجراءات
+              {t('dataTable.actions')}
             </button>
             <button
               type="button"
@@ -902,7 +904,7 @@ export function DataTableBody({
               )}
               onClick={() => setRowContextMenu((prev) => ({ ...prev, activeTab: 'format' }))}
             >
-              التنسيق
+              {t('dataTable.format')}
             </button>
           </div>
 
@@ -939,7 +941,7 @@ export function DataTableBody({
               )
             }) : (
               <div className="rounded-lg border border-dashed border-slate-200 px-3 py-4 text-center text-xs font-semibold text-slate-500">
-                لا توجد إجراءات متاحة لهذا الصف
+                {t('dataTable.noRowActions')}
               </div>
             )
           ) : (
@@ -978,7 +980,7 @@ export function DataTableBody({
 
               {rowContextMenu.formatActions.length ? <div className="my-1 border-t border-slate-100" /> : null}
 
-              <div className="text-xs text-slate-500 font-medium">تخصيص الخلية / الصف / العمود</div>
+              <div className="text-xs text-slate-500 font-medium">{t('dataTable.customizeScope')}</div>
 
               <div className="flex gap-1 bg-slate-50 p-1 rounded-lg">
                 {['cell', 'row', 'column'].map((scope) => (
@@ -991,13 +993,13 @@ export function DataTableBody({
                     )}
                     onClick={() => setRowContextMenu((prev) => ({ ...prev, formatScope: scope }))}
                   >
-                    {scope === 'cell' ? 'خلية' : scope === 'row' ? 'صف' : 'عمود'}
+                    {t(`dataTable.${scope}`)}
                   </button>
                 ))}
               </div>
 
               <div className="space-y-1">
-                <div className="text-[11px] text-slate-600">الخلفية</div>
+                <div className="text-[11px] text-slate-600">{t('dataTable.background')}</div>
                 <div className="flex flex-wrap gap-1">
                   {BG_COLORS.map((color) => (
                     <button
@@ -1012,7 +1014,7 @@ export function DataTableBody({
               </div>
 
               <div className="space-y-1">
-                <div className="text-[11px] text-slate-600">لون الخط</div>
+                <div className="text-[11px] text-slate-600">{t('dataTable.textColor')}</div>
                 <div className="flex flex-wrap gap-1">
                   {TEXT_COLORS.map((color) => (
                     <button
@@ -1027,7 +1029,7 @@ export function DataTableBody({
               </div>
 
               <div className="space-y-1">
-                <div className="text-[11px] text-slate-600">حجم الخط</div>
+                <div className="text-[11px] text-slate-600">{t('dataTable.fontSize')}</div>
                 <div className="flex flex-wrap gap-1">
                   {FONT_SIZES.map((size) => (
                     <button
@@ -1043,21 +1045,21 @@ export function DataTableBody({
               </div>
 
               <div className="space-y-1">
-                <div className="text-[11px] text-slate-600">نوع الخط</div>
+                <div className="text-[11px] text-slate-600">{t('dataTable.fontFamily')}</div>
                 <select
                   className="w-full h-8 rounded border border-slate-300 text-xs px-2"
                   onChange={(e) => applyStyleByScope(rowContextMenu.formatScope, rowContextMenu.rowKey, rowContextMenu.colId, { fontFamily: e.target.value || undefined })}
                   value=""
                 >
-                  <option value="">اختيار...</option>
+                  <option value="">{t('dataTable.choose')}</option>
                   {FONT_FAMILIES.map((font) => (
-                    <option key={`row-context-font-${font.label}`} value={font.value}>{font.label}</option>
+                    <option key={`row-context-font-${font.label}`} value={font.value}>{font.label === 'Default' ? t('dataTable.defaultFont') : font.label === 'Monospace' ? t('dataTable.monospace') : font.label}</option>
                   ))}
                 </select>
               </div>
 
               <div className="space-y-1">
-                <div className="text-[11px] text-slate-600">وزن الخط</div>
+                <div className="text-[11px] text-slate-600">{t('dataTable.fontWeight')}</div>
                 <div className="flex flex-wrap gap-1">
                   {[
                     { label: 'N', value: '400' },
@@ -1083,7 +1085,7 @@ export function DataTableBody({
                   className="text-xs text-red-600 hover:text-red-700"
                   onClick={() => clearStylesByScope(rowContextMenu.formatScope, rowContextMenu.rowKey, rowContextMenu.colId)}
                 >
-                  مسح تنسيق هذا النطاق
+                  {t('dataTable.clearScopeStyle')}
                 </button>
               </div>
             </>

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ChevronDown, Flame, Eye as EyeIcon, Clock, Sparkles, Cog, Megaphone, Inbox } from 'lucide-react'
 import { ResourceState } from '../../../shared/components/data/ResourceState'
 import { Avatar } from '../../../shared/components/ui/Avatar'
@@ -7,13 +8,13 @@ import { useOpportunityDrawerStore } from '../../../features/opportunities/store
 import { isHighPotentialOpportunity, isOpportunityOverdue } from '../../../features/opportunities/utils/opportunityFormatters'
 
 const GROUP_DEFINITIONS = [
-  { id: 'high_potential', label: 'إمكانية عالية', icon: Flame, color: '#EF4444', match: (row) => isHighPotentialOpportunity(row) },
-  { id: 'needs_review', label: 'تحتاج مراجعة', icon: EyeIcon, color: '#F59E0B', match: (row) => row.status === 'reviewing' },
-  { id: 'needs_attention', label: 'تحتاج متابعة عاجلة', icon: Clock, color: '#DC2626', match: (row, now) => isOpportunityOverdue(row, now) },
-  { id: 'ai_suggested', label: 'مقترحة من AI', icon: Sparkles, color: '#00C2CB', match: (row) => row.source?.type === 'ai' },
-  { id: 'system_detected', label: 'مكتشفة من النظام', icon: Cog, color: '#8B5CF6', match: (row) => row.source?.type === 'system_rule' },
-  { id: 'campaign_generated', label: 'ناتجة عن حملة', icon: Megaphone, color: '#3B82F6', match: (row) => row.source?.type === 'campaign' },
-  { id: 'watching', label: 'تحت المراقبة', icon: EyeIcon, color: '#6366F1', match: (row) => row.status === 'watching' },
+  { id: 'high_potential', icon: Flame, color: '#EF4444', match: (row) => isHighPotentialOpportunity(row) },
+  { id: 'needs_review', icon: EyeIcon, color: '#F59E0B', match: (row) => row.status === 'reviewing' },
+  { id: 'needs_attention', icon: Clock, color: '#DC2626', match: (row, now) => isOpportunityOverdue(row, now) },
+  { id: 'ai_suggested', icon: Sparkles, color: '#00C2CB', match: (row) => row.source?.type === 'ai' },
+  { id: 'system_detected', icon: Cog, color: '#8B5CF6', match: (row) => row.source?.type === 'system_rule' },
+  { id: 'campaign_generated', icon: Megaphone, color: '#3B82F6', match: (row) => row.source?.type === 'campaign' },
+  { id: 'watching', icon: EyeIcon, color: '#6366F1', match: (row) => row.status === 'watching' },
 ]
 
 function InboxRow({ opportunity, onOpen }) {
@@ -37,7 +38,7 @@ function InboxRow({ opportunity, onOpen }) {
   )
 }
 
-function InboxGroup({ group, rows, expanded, onToggle, onOpen }) {
+function InboxGroup({ group, rows, expanded, onToggle, onOpen, t }) {
   const Icon = group.icon
 
   return (
@@ -51,7 +52,7 @@ function InboxGroup({ group, rows, expanded, onToggle, onOpen }) {
           <div className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${group.color}18` }}>
             <Icon size={16} style={{ color: group.color }} />
           </div>
-          <span className="font-bold text-sm text-[var(--text)]">{group.label}</span>
+          <span className="font-bold text-sm text-[var(--text)]">{t(`opportunities.groups.${group.id}`)}</span>
           <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-xs font-bold text-[var(--text-muted)]">
             {rows.length}
           </span>
@@ -62,7 +63,7 @@ function InboxGroup({ group, rows, expanded, onToggle, onOpen }) {
       {expanded && (
         <div className="border-t border-[var(--border)] px-1.5 py-1.5">
           {rows.length === 0 ? (
-            <p className="px-3 py-3 text-xs text-[var(--text-muted)]">لا توجد فرص في هذه المجموعة حاليًا</p>
+            <p className="px-3 py-3 text-xs text-[var(--text-muted)]">{t('opportunities.inbox.emptyGroup')}</p>
           ) : (
             rows.map((opportunity) => (
               <InboxRow key={opportunity.id} opportunity={opportunity} onOpen={onOpen} />
@@ -75,6 +76,7 @@ function InboxGroup({ group, rows, expanded, onToggle, onOpen }) {
 }
 
 export function OpportunityInbox() {
+  const { t } = useTranslation()
   const opportunitiesQuery = useOpportunities()
   const openDrawer = useOpportunityDrawerStore((state) => state.open)
   const rows = opportunitiesQuery.data || []
@@ -106,7 +108,7 @@ export function OpportunityInbox() {
       error={opportunitiesQuery.error}
       empty={rows.length === 0}
       emptyIcon={<Inbox size={24} />}
-      emptyTitle="صندوق الفرص فارغ"
+      emptyTitle={t('opportunities.inbox.empty')}
       onRetry={opportunitiesQuery.refetch}
     >
       <div className="grid gap-3">
@@ -118,6 +120,7 @@ export function OpportunityInbox() {
             expanded={Boolean(expandedGroups[group.id])}
             onToggle={toggleGroup}
             onOpen={openDrawer}
+            t={t}
           />
         ))}
       </div>

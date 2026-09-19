@@ -110,6 +110,8 @@ export function normalizeActivity(item = {}) {
   return {
     id: item.id,
     type,
+    // Data-normalization default (runs outside React/i18n context via the API layer);
+    // kept as an Arabic literal on purpose — see docs/TRANSLATION_MIGRATION_AUDIT.md.
     title: firstValue(item.title, item.name, type === 'call' ? 'مكالمة بدون عنوان' : 'اجتماع بدون عنوان'),
     description: activityText(firstValue(item.description, item.note, item.notes, ''), ''),
     status,
@@ -143,6 +145,7 @@ export function normalizeActivity(item = {}) {
   }
 }
 
-export function getActivityLabel(activity) {
-  return activity?.type === 'call' ? 'المكالمة' : 'الاجتماع'
+export function getActivityLabel(activity, t) {
+  if (!t) return activity?.type === 'call' ? 'المكالمة' : 'الاجتماع'
+  return activity?.type === 'call' ? t('activities.page.callLabel') : t('activities.page.meetingLabel')
 }

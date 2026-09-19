@@ -1,14 +1,15 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { DataTable } from '../../../shared/components/data-table'
 import { Badge } from '../../../shared/components/ui/Badge'
 import { Avatar } from '../../../shared/components/ui/Avatar'
 import { useOpportunities } from '../../../features/opportunities/hooks/useOpportunities'
 import { useOpportunityDrawerStore } from '../../../features/opportunities/store/opportunityDrawerStore'
 import {
-  OPPORTUNITY_TYPES,
-  OPPORTUNITY_STATUSES,
-  OPPORTUNITY_PRIORITIES,
-  OPPORTUNITY_SOURCES,
+  getOpportunityTypes,
+  getOpportunityStatuses,
+  getOpportunityPriorities,
+  getOpportunitySources,
 } from '../../../features/opportunities/constants/opportunityTypes'
 import {
   formatCurrency,
@@ -19,20 +20,21 @@ import {
   getOpportunityTypeLabel,
 } from '../../../features/opportunities/utils/opportunityFormatters'
 
-const TYPE_OPTIONS = OPPORTUNITY_TYPES.map((item) => ({ label: item.label, value: item.value }))
-const STATUS_OPTIONS = OPPORTUNITY_STATUSES.map((item) => ({ label: item.label, value: item.value }))
-const PRIORITY_OPTIONS = OPPORTUNITY_PRIORITIES.map((item) => ({ label: item.label, value: item.value }))
-const SOURCE_OPTIONS = OPPORTUNITY_SOURCES.map((item) => ({ label: item.label, value: item.value }))
-
 export function OpportunitiesTable() {
+  const { t, i18n } = useTranslation()
   const opportunitiesQuery = useOpportunities()
   const openDrawer = useOpportunityDrawerStore((state) => state.open)
   const rows = opportunitiesQuery.data || []
 
+  const typeOptions = useMemo(() => getOpportunityTypes(t).map((item) => ({ label: item.label, value: item.value })), [t])
+  const statusOptions = useMemo(() => getOpportunityStatuses(t).map((item) => ({ label: item.label, value: item.value })), [t])
+  const priorityOptions = useMemo(() => getOpportunityPriorities(t).map((item) => ({ label: item.label, value: item.value })), [t])
+  const sourceOptions = useMemo(() => getOpportunitySources(t).map((item) => ({ label: item.label, value: item.value })), [t])
+
   const columns = useMemo(() => [
     {
       id: 'title',
-      header: 'الفرصة',
+      header: t('opportunities.columns.title'),
       accessor: 'title',
       searchable: true,
       sortable: true,
@@ -40,7 +42,7 @@ export function OpportunitiesTable() {
     },
     {
       id: 'customer',
-      header: 'العميل',
+      header: t('opportunities.columns.customer'),
       accessor: 'customer.name',
       searchable: true,
       sortable: true,
@@ -48,15 +50,15 @@ export function OpportunitiesTable() {
     },
     {
       id: 'type',
-      header: 'النوع',
+      header: t('opportunities.columns.type'),
       accessor: 'type',
       filterType: 'select',
-      filterOptions: TYPE_OPTIONS,
-      render: (row) => getOpportunityTypeLabel(row.type),
+      filterOptions: typeOptions,
+      render: (row) => getOpportunityTypeLabel(row.type, t),
     },
     {
       id: 'product',
-      header: 'المنتج',
+      header: t('opportunities.columns.product'),
       accessor: 'product.name',
       searchable: true,
     },
@@ -74,12 +76,12 @@ export function OpportunitiesTable() {
     },
     {
       id: 'priority',
-      header: 'الأولوية',
+      header: t('opportunities.columns.priority'),
       accessor: 'priority',
       filterType: 'select',
-      filterOptions: PRIORITY_OPTIONS,
+      filterOptions: priorityOptions,
       render: (row) => {
-        const meta = getOpportunityPriorityMeta(row.priority)
+        const meta = getOpportunityPriorityMeta(row.priority, t)
         return (
           <span className="inline-flex items-center gap-1.5 text-xs font-bold" style={{ color: meta.color }}>
             <span className="h-2 w-2 rounded-full" style={{ background: meta.color }} />
@@ -90,12 +92,12 @@ export function OpportunitiesTable() {
     },
     {
       id: 'source',
-      header: 'المصدر',
+      header: t('opportunities.columns.source'),
       accessor: 'source.type',
       filterType: 'select',
-      filterOptions: SOURCE_OPTIONS,
+      filterOptions: sourceOptions,
       render: (row) => {
-        const meta = getOpportunitySourceMeta(row.source?.type)
+        const meta = getOpportunitySourceMeta(row.source?.type, t)
         const Icon = meta.icon
         return (
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)]">
@@ -107,7 +109,7 @@ export function OpportunitiesTable() {
     },
     {
       id: 'signals',
-      header: 'الإشارات',
+      header: t('opportunities.signals'),
       accessor: 'signals',
       sortable: false,
       searchable: false,
@@ -115,17 +117,17 @@ export function OpportunitiesTable() {
     },
     {
       id: 'estimated_value',
-      header: 'القيمة المحتملة',
+      header: t('opportunities.estimatedValue'),
       accessor: 'estimated_value',
       sortable: true,
       filterType: 'number',
       render: (row) => (
-        <span dir="ltr" className="font-latin">{formatCurrency(row.estimated_value, row.currency)}</span>
+        <span dir="ltr" className="font-latin">{formatCurrency(row.estimated_value, row.currency, i18n.language)}</span>
       ),
     },
     {
       id: 'owner',
-      header: 'المسؤول',
+      header: t('opportunities.columns.owner'),
       accessor: 'assigned_user.name',
       searchable: true,
       render: (row) => (
@@ -135,31 +137,31 @@ export function OpportunitiesTable() {
             <span className="text-sm">{row.assigned_user.name}</span>
           </span>
         ) : (
-          <span className="text-xs text-[var(--text-muted)]">غير مسند</span>
+          <span className="text-xs text-[var(--text-muted)]">{t('opportunities.unassigned')}</span>
         )
       ),
     },
     {
       id: 'status',
-      header: 'الحالة',
+      header: t('opportunities.columns.status'),
       accessor: 'status',
       filterType: 'select',
-      filterOptions: STATUS_OPTIONS,
+      filterOptions: statusOptions,
       render: (row) => {
-        const meta = getOpportunityStatusMeta(row.status)
+        const meta = getOpportunityStatusMeta(row.status, t)
         return <Badge variant={meta.variant}>{meta.label}</Badge>
       },
     },
     {
       id: 'next_action',
-      header: 'الإجراء القادم',
+      header: t('opportunities.columns.nextAction'),
       accessor: 'next_action.label',
       searchable: true,
       render: (row) => (
         row.next_action ? (
           <div className="text-xs">
             <p className="font-semibold text-[var(--text)]">{row.next_action.label}</p>
-            <p className="text-[var(--text-muted)]" dir="ltr">{formatDateTime(row.next_action.due_at)}</p>
+            <p className="text-[var(--text-muted)]" dir="ltr">{formatDateTime(row.next_action.due_at, i18n.language)}</p>
           </div>
         ) : (
           <span className="text-xs text-[var(--text-muted)]">-</span>
@@ -168,13 +170,13 @@ export function OpportunitiesTable() {
     },
     {
       id: 'detected_at',
-      header: 'تاريخ الاكتشاف',
+      header: t('opportunities.columns.detectedAt'),
       accessor: 'detected_at',
       sortable: true,
       filterType: 'date',
-      render: (row) => <span dir="ltr" className="text-xs">{formatDateTime(row.detected_at)}</span>,
+      render: (row) => <span dir="ltr" className="text-xs">{formatDateTime(row.detected_at, i18n.language)}</span>,
     },
-  ], [])
+  ], [t, i18n.language, typeOptions, statusOptions, priorityOptions, sourceOptions])
 
   return (
     <DataTable
@@ -185,7 +187,7 @@ export function OpportunitiesTable() {
       error={opportunitiesQuery.error}
       onRetry={opportunitiesQuery.refetch}
       onRowDoubleClick={(row) => openDrawer(row.id)}
-      emptyMessage="لا توجد فرص بيعية"
+      emptyMessage={t('opportunities.noOpportunities')}
       enableSorting
       enableFiltering
       enableAdvancedFilters

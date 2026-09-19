@@ -1,9 +1,12 @@
-import { ACTIVITY_STATUSES } from '../../constants/activityConstants'
+import { useTranslation } from 'react-i18next'
+import { getActivityStatuses } from '../../constants/activityConstants'
 import { getDerivedActivityState } from '../../utils/activityDateHelpers'
 
 export function ActivityStatusBadge({ activity, status }) {
-  const lifecycle = ACTIVITY_STATUSES[status || activity?.status] || ACTIVITY_STATUSES.scheduled
-  const derived = activity?.status === 'scheduled' ? getDerivedActivityState(activity) : null
+  const { t } = useTranslation()
+  const statuses = getActivityStatuses(t)
+  const lifecycle = statuses[status || activity?.status] || statuses.scheduled
+  const derived = activity?.status === 'scheduled' ? getDerivedActivityState(activity, t) : null
   const Icon = lifecycle.icon
 
   return (

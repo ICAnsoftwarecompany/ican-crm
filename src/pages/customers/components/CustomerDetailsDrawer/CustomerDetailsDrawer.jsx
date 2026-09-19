@@ -58,19 +58,23 @@ const DRAWER_TABS_ORDER_KEY = 'customer-details-drawer-tabs-order:v4'
 const DRAWER_TABS_LONG_PRESS_MS = 280
 
 const DRAWER_TABS = [
-  { id: 'home', label: 'بيانات العميل', icon: BadgeInfo, fixed: true, iconOnly: true },
-  { id: 'timeline', label: 'Timeline', icon: Clock3 },
-  { id: 'interests', label: 'الاهتمامات', icon: Heart },
-  { id: 'notes', label: 'Notes', icon: FileText },
-  { id: 'tasks', label: 'Tasks', icon: CheckSquare },
-  { id: 'calls', label: 'Calls', icon: PhoneCall },
-  { id: 'meetings', label: 'Meetings', icon: Video },
-  { id: 'calendar', label: 'Calendar', icon: CalendarDays },
-  { id: 'files', label: 'Files', icon: Paperclip },
-  { id: 'emails', label: 'Chats', icon: Mail },
+  { id: 'home', labelKey: 'customers.drawer.tabs.home', icon: BadgeInfo, fixed: true, iconOnly: true },
+  { id: 'timeline', labelKey: 'customers.drawer.tabs.timeline', icon: Clock3 },
+  { id: 'interests', labelKey: 'customers.drawer.tabs.interests', icon: Heart },
+  { id: 'notes', labelKey: 'customers.drawer.tabs.notes', icon: FileText },
+  { id: 'tasks', labelKey: 'customers.drawer.tabs.tasks', icon: CheckSquare },
+  { id: 'calls', labelKey: 'customers.drawer.tabs.calls', icon: PhoneCall },
+  { id: 'meetings', labelKey: 'customers.drawer.tabs.meetings', icon: Video },
+  { id: 'calendar', labelKey: 'customers.drawer.tabs.calendar', icon: CalendarDays },
+  { id: 'files', labelKey: 'customers.drawer.tabs.files', icon: Paperclip },
+  { id: 'emails', labelKey: 'customers.drawer.tabs.emails', icon: Mail },
 ]
 
 const PAGE_TABS = DRAWER_TABS.filter((tab) => tab.id !== 'home')
+
+function getTabLabel(tab, t) {
+  return t ? t(tab.labelKey) : tab.id
+}
 
 function useElementWidth(ref, enabled = true) {
   const [width, setWidth] = useState(0)
@@ -354,6 +358,7 @@ function CustomerHeader({ customer, currentStatus, currentTag, statuses, isLoadi
 }
 
 function CustomerTagChanger({ customer, currentTag, tags = [], onChanged, iconOnly = false }) {
+  const { t } = useTranslation()
   const mutations = useLeadMutations()
   const [editing, setEditing] = useState(false)
   const [selectedTagId, setSelectedTagId] = useState('')
@@ -383,7 +388,7 @@ function CustomerTagChanger({ customer, currentTag, tags = [], onChanged, iconOn
         tag_id: Number(selectedTagId),
       })
 
-      toast.success('تم تغيير تاج العميل')
+      toast.success(t('customers.drawer.tagChanged'))
       setEditing(false)
       onChanged?.({
         customer,
@@ -392,7 +397,7 @@ function CustomerTagChanger({ customer, currentTag, tags = [], onChanged, iconOn
         oldTag: currentTag,
       })
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر تغيير تاج العميل'))
+      toast.error(extractMessage(error, t('customers.drawer.tagChangeFailed')))
     }
   }
 
@@ -408,7 +413,7 @@ function CustomerTagChanger({ customer, currentTag, tags = [], onChanged, iconOn
         tag_id: Number(tag.id),
       })
 
-      toast.success('تم تغيير تاج العميل')
+      toast.success(t('customers.drawer.tagChanged'))
       setEditing(false)
       onChanged?.({
         customer,
@@ -417,7 +422,7 @@ function CustomerTagChanger({ customer, currentTag, tags = [], onChanged, iconOn
         oldTag: currentTag,
       })
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر تغيير تاج العميل'))
+      toast.error(extractMessage(error, t('customers.drawer.tagChangeFailed')))
     }
   }
 
@@ -429,19 +434,19 @@ function CustomerTagChanger({ customer, currentTag, tags = [], onChanged, iconOn
           onClick={() => setEditing((value) => !value)}
           disabled={!leadId || availableTags.length === 0 || mutations.updateTag.isPending}
           className="inline-flex h-8 max-w-40 shrink-0 items-center justify-center gap-1 rounded-lg bg-transparent px-1 text-[#007A80] transition-colors hover:bg-[#E8F9FA] disabled:cursor-not-allowed disabled:text-[#94A3B8]"
-          title={`تغيير تاج العميل: ${tagLabel || 'بدون تاج'}`}
-          aria-label={`تغيير تاج العميل: ${tagLabel || 'بدون تاج'}`}
+          title={t('customers.drawer.changeCustomerTag', { tag: tagLabel || t('customers.drawer.noTag') })}
+          aria-label={t('customers.drawer.changeCustomerTag', { tag: tagLabel || t('customers.drawer.noTag') })}
         >
           <Tag size={18} />
           <span className="min-w-0 truncate text-xs font-black text-[var(--text)]">
-            {tagLabel || 'بدون تاج'}
+            {tagLabel || t('customers.drawer.noTag')}
           </span>
         </button>
 
         {editing && (
           <div className="absolute end-0 top-9 z-[80] w-52 max-w-[calc(100vw-2rem)] rounded-xl border border-[#BEEFF2] bg-white p-2 shadow-2xl">
             <div className="mb-1 px-2 py-1 text-[11px] font-black text-[var(--text-muted)]">
-              اختر تاج العميل
+              {t('customers.drawer.chooseCustomerTag')}
             </div>
             <div className="max-h-56 space-y-1 overflow-y-auto">
               {availableTags.map((tag) => {
@@ -459,7 +464,7 @@ function CustomerTagChanger({ customer, currentTag, tags = [], onChanged, iconOn
                         : 'text-[var(--text)] hover:bg-[#F8FEFF]',
                       mutations.updateTag.isPending && 'cursor-wait opacity-70'
                     )}
-                    title={`اختيار تاج: ${getTagLabel(tag)}`}
+                    title={t('customers.drawer.chooseTagOption', { tag: getTagLabel(tag) })}
                   >
                     <span className="min-w-0 truncate">{getTagLabel(tag)}</span>
                     {selected ? <Check size={14} className="shrink-0" /> : null}
@@ -485,7 +490,7 @@ function CustomerTagChanger({ customer, currentTag, tags = [], onChanged, iconOn
           className="h-8 min-w-0 max-w-40 rounded-lg border border-[#D7EEF0] bg-white px-2 text-xs font-bold text-[var(--text)] outline-none focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]"
           autoFocus
         >
-          <option value="">اختر التاج</option>
+          <option value="">{t('customers.drawer.chooseTagPlaceholder')}</option>
           {availableTags.map((tag) => (
             <option key={tag.id} value={tag.id}>
               {getTagLabel(tag)}
@@ -497,8 +502,8 @@ function CustomerTagChanger({ customer, currentTag, tags = [], onChanged, iconOn
           onClick={handleSave}
           disabled={!canSubmit || mutations.updateTag.isPending}
           className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#007A80] text-white transition-colors hover:bg-[#00656A] disabled:cursor-not-allowed disabled:bg-[#94A3B8]"
-          title="حفظ التاج"
-          aria-label="حفظ التاج"
+          title={t('customers.drawer.saveTag')}
+          aria-label={t('customers.drawer.saveTag')}
         >
           <Check size={16} />
         </button>
@@ -507,8 +512,8 @@ function CustomerTagChanger({ customer, currentTag, tags = [], onChanged, iconOn
           onClick={closeEditor}
           disabled={mutations.updateTag.isPending}
           className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#D7EEF0] bg-white text-[#64748B] transition-colors hover:bg-[#F1F5F9]"
-          title="إلغاء"
-          aria-label="إلغاء"
+          title={t('customers.table.cancel')}
+          aria-label={t('customers.table.cancel')}
         >
           <X size={16} />
         </button>
@@ -519,14 +524,14 @@ function CustomerTagChanger({ customer, currentTag, tags = [], onChanged, iconOn
   return (
     <span className="inline-flex min-w-0 items-center gap-1.5 rounded-xl border border-[#BEEFF2] bg-[#E8F9FA] px-2 py-1.5 text-sm font-black text-[#007A80] shadow-sm">
       <Tag size={19} className="shrink-0" />
-      <span className="min-w-0 max-w-32 truncate">{tagLabel || 'بدون تاج'}</span>
+      <span className="min-w-0 max-w-32 truncate">{tagLabel || t('customers.drawer.noTag')}</span>
       <button
         type="button"
         onClick={() => setEditing(true)}
         disabled={!leadId || availableTags.length === 0}
         className="ms-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-white/80 text-[#007A80] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:text-[#94A3B8]"
-        title="تغيير تاج العميل"
-        aria-label="تغيير تاج العميل"
+        title={t('customers.drawer.changeCustomerTagShort')}
+        aria-label={t('customers.drawer.changeCustomerTagShort')}
       >
         <Pencil size={13} />
       </button>
@@ -590,7 +595,7 @@ function CustomerHeaderModernLegacy({
             />
             {isLoadingDetails && (
               <span className="rounded-full bg-[#E8F9FA] px-2 py-0.5 text-[11px] font-semibold text-[#007A80]">
-                Loading...
+                {t('common.loading')}
               </span>
             )}
             <span
@@ -838,10 +843,11 @@ function CustomerHeaderModern({
   const linkedByTeamName = getLinkedByTeamName(customer)
   const linkDate = getLinkedAt(customer)
   const statusColor = currentStatus?.color || '#64748B'
-  const customerName = fieldValue(customer.name || customer.email || customer.phone, 'عميل بدون اسم')
+  const customerName = fieldValue(customer.name || customer.email || customer.phone, t('customers.drawer.unnamedCustomer'))
   const createdAt = customer.created_at || customer.createdAt
   const statusLabel = currentStatus?.status || currentStatus?.name
   const tagLabel = getTagLabel(currentTag)
+  const noTagLabel = t('customers.drawer.noTag')
   const createdAtLabel = createdAt ? formatDateTime12(createdAt) : ''
   const linkDateLabel = linkDate ? formatDateTime12(linkDate) : ''
   const freshLead = isFreshLeadCustomer(customer)
@@ -854,8 +860,8 @@ function CustomerHeaderModern({
       <div className="relative flex min-w-0 items-start gap-3">
         <div
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#BEEFF2] bg-[#E8F9FA] text-base font-black text-[#007A80] shadow-sm"
-          title={`اختصار اسم العميل: ${getInitial(customer)}`}
-          aria-label={`اختصار اسم العميل: ${getInitial(customer)}`}
+          title={t('customers.drawer.initialsTitle', { initial: getInitial(customer) })}
+          aria-label={t('customers.drawer.initialsTitle', { initial: getInitial(customer) })}
         >
           {getInitial(customer)}
         </div>
@@ -864,16 +870,16 @@ function CustomerHeaderModern({
           <div className="flex min-w-0 flex-wrap items-start justify-between gap-2">
             <h3
               className="min-w-0 max-w-full truncate text-base font-black text-[var(--text)]"
-              title={`اسم العميل: ${customerName}`}
+              title={t('customers.drawer.nameTitle', { name: customerName })}
             >
               {customerName}
             </h3>
-            <CustomerSourceBadge source={source} iconOnly title={source ? `مصدر العميل: ${source}` : undefined} />
+            <CustomerSourceBadge source={source} iconOnly title={source ? t('customers.drawer.sourceTitle', { source }) : undefined} />
             {freshLead ? (
               <span
                 className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-2 py-1 text-[11px] font-black text-[#166534]"
-                title={`نوع العميل: ${freshLeadLabel}`}
-                aria-label={`نوع العميل: ${freshLeadLabel}`}
+                title={t('customers.drawer.typeTitle', { type: freshLeadLabel })}
+                aria-label={t('customers.drawer.typeTitle', { type: freshLeadLabel })}
               >
                 <Sparkles size={12} />
                 {freshLeadLabel}
@@ -881,13 +887,13 @@ function CustomerHeaderModern({
             ) : null}
             {isLoadingDetails && (
               <span className="rounded-full bg-[#E8F9FA] px-2 py-0.5 text-[11px] font-semibold text-[#007A80]">
-                Loading...
+                {t('common.loading')}
               </span>
             )}
             <span
               className="ms-auto inline-flex min-w-0 shrink-0"
-              title={`تاج العميل: ${tagLabel || 'بدون تاج'}`}
-              aria-label={`تاج العميل: ${tagLabel || 'بدون تاج'}`}
+              title={t('customers.drawer.tagTitle', { tag: tagLabel || noTagLabel })}
+              aria-label={t('customers.drawer.tagTitle', { tag: tagLabel || noTagLabel })}
             >
               <CustomerTagChanger
                 customer={customer}
@@ -903,8 +909,8 @@ function CustomerHeaderModern({
             {currentStatus ? (
               <span
                 className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-[#E5F7F8] bg-[#F8FEFF] px-2 py-1 text-[11px] font-bold text-[var(--text)]"
-                title={`حالة العميل الحالية: ${statusLabel}`}
-                aria-label={`حالة العميل الحالية: ${statusLabel}`}
+                title={t('customers.drawer.currentStatusTitle', { status: statusLabel })}
+                aria-label={t('customers.drawer.currentStatusTitle', { status: statusLabel })}
               >
                 <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: statusColor }} />
                 <span className="min-w-0 max-w-36 truncate">{statusLabel}</span>
@@ -912,16 +918,16 @@ function CustomerHeaderModern({
             ) : (
               <span
                 className="inline-flex rounded-full border border-[#E5F7F8] bg-[#F8FEFF] px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]"
-                title="حالة العميل: لا توجد حالة محددة"
-                aria-label="حالة العميل: لا توجد حالة محددة"
+                title={t('customers.drawer.noStatusTitle')}
+                aria-label={t('customers.drawer.noStatusTitle')}
               >
-                بدون حالة
+                {t('customers.drawer.noStatus')}
               </span>
             )}
             <span
               className="hidden"
-              title={`تاج العميل: ${tagLabel || 'بدون تاج'}`}
-              aria-label={`تاج العميل: ${tagLabel || 'بدون تاج'}`}
+              title={t('customers.drawer.tagTitle', { tag: tagLabel || noTagLabel })}
+              aria-label={t('customers.drawer.tagTitle', { tag: tagLabel || noTagLabel })}
             >
               <CustomerTagChanger
                 customer={customer}
@@ -930,12 +936,12 @@ function CustomerHeaderModern({
                 onChanged={onTagChanged}
               />
             </span>
-            <CustomerSourceBadge source={source} title={source ? `مصدر العميل: ${source}` : undefined} />
+            <CustomerSourceBadge source={source} title={source ? t('customers.drawer.sourceTitle', { source }) : undefined} />
             {linkedByName ? (
               <span
                 className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-[#E5F7F8] bg-white px-2 py-1 text-[11px] font-bold text-[var(--text)]"
-                title={`المستخدم المرتبط بالعميل: ${linkedByName}`}
-                aria-label={`المستخدم المرتبط بالعميل: ${linkedByName}`}
+                title={t('customers.drawer.linkedUserTitle', { name: linkedByName })}
+                aria-label={t('customers.drawer.linkedUserTitle', { name: linkedByName })}
               >
                 <UserCheck size={13} className="shrink-0 text-[#007A80]" />
                 <span className="min-w-0 max-w-36 truncate">{linkedByName}</span>
@@ -943,17 +949,17 @@ function CustomerHeaderModern({
             ) : (
               <span
                 className="inline-flex rounded-full border border-[#E5F7F8] bg-white px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]"
-                title="المستخدم المرتبط بالعميل: غير مربوط بمستخدم"
-                aria-label="المستخدم المرتبط بالعميل: غير مربوط بمستخدم"
+                title={t('customers.drawer.linkedUserTitle', { name: t('customers.drawer.notLinkedToUser') })}
+                aria-label={t('customers.drawer.linkedUserTitle', { name: t('customers.drawer.notLinkedToUser') })}
               >
-                غير مربوط بمستخدم
+                {t('customers.drawer.notLinkedToUser')}
               </span>
             )}
             {linkedByTeamName && (
               <span
                 className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-[#E5F7F8] bg-white px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]"
-                title={`فريق المستخدم المرتبط: ${linkedByTeamName}`}
-                aria-label={`فريق المستخدم المرتبط: ${linkedByTeamName}`}
+                title={t('customers.drawer.linkedUserTeamTitle', { team: linkedByTeamName })}
+                aria-label={t('customers.drawer.linkedUserTeamTitle', { team: linkedByTeamName })}
               >
                 <UsersRound size={13} className="shrink-0 text-[#007A80]" />
                 <span className="min-w-0 max-w-32 truncate">{linkedByTeamName}</span>
@@ -965,21 +971,21 @@ function CustomerHeaderModern({
             {createdAt && (
               <span
                 className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-[#F8FEFF] px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]"
-                title={`تاريخ إضافة العميل: ${createdAtLabel}`}
-                aria-label={`تاريخ إضافة العميل: ${createdAtLabel}`}
+                title={t('customers.drawer.addedDateTitle', { date: createdAtLabel })}
+                aria-label={t('customers.drawer.addedDateTitle', { date: createdAtLabel })}
               >
                 <CalendarPlus size={12} className="shrink-0 text-[#007A80]" />
-                <span className="truncate">إضافة: {createdAtLabel}</span>
+                <span className="truncate">{t('customers.drawer.added', { date: createdAtLabel })}</span>
               </span>
             )}
             {linkDate && (
               <span
                 className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-[#F8FEFF] px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]"
-                title={`تاريخ ربط العميل: ${linkDateLabel}`}
-                aria-label={`تاريخ ربط العميل: ${linkDateLabel}`}
+                title={t('customers.drawer.linkDateTitle', { date: linkDateLabel })}
+                aria-label={t('customers.drawer.linkDateTitle', { date: linkDateLabel })}
               >
                 <CalendarDays size={13} className="shrink-0 text-[#007A80]" />
-                <span className="truncate">ربط: {linkDateLabel}</span>
+                <span className="truncate">{t('customers.drawer.linked', { date: linkDateLabel })}</span>
               </span>
             )}
           </div>
@@ -991,8 +997,10 @@ function CustomerHeaderModern({
 }
 
 function TabButton({ tab, active, dragging, onClick, onPointerDown, onPointerUp, onPointerCancel, onPointerEnter, onPointerLeave, onClickCapture }) {
+  const { t } = useTranslation()
   const Icon = tab.icon
-  const hint = tab.fixed ? tab.label : `${tab.label} - اضغط مطولًا واسحب يمين أو يسار لتغيير الترتيب`
+  const label = getTabLabel(tab, t)
+  const hint = tab.fixed ? label : t('customers.drawer.tabReorderHint', { label })
 
   return (
     <button
@@ -1016,7 +1024,7 @@ function TabButton({ tab, active, dragging, onClick, onPointerDown, onPointerUp,
       )}
     >
       <Icon size={16} className="shrink-0" />
-      {!tab.iconOnly && <span className="min-w-0 truncate">{tab.label}</span>}
+      {!tab.iconOnly && <span className="min-w-0 truncate">{label}</span>}
     </button>
   )
 }
@@ -1033,6 +1041,7 @@ function getMoreTabsMenuPosition(anchor) {
 }
 
 function MoreTabsMenu({ activeTab, tabs, onChange }) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [menuPosition, setMenuPosition] = useState({ top: 8, left: 8, width: 256 })
   const buttonWrapRef = useRef(null)
@@ -1077,7 +1086,7 @@ function MoreTabsMenu({ activeTab, tabs, onChange }) {
         )}
       >
         <MoreHorizontal size={16} className="shrink-0" />
-        <span className="min-w-0 truncate">{activeMoreTab ? activeMoreTab.label : `+${tabs.length} More`}</span>
+        <span className="min-w-0 truncate">{activeMoreTab ? getTabLabel(activeMoreTab, t) : t('customers.drawer.moreCount', { count: tabs.length })}</span>
         <ChevronDown size={14} className="shrink-0" />
       </button>
 
@@ -1109,7 +1118,7 @@ function MoreTabsMenu({ activeTab, tabs, onChange }) {
                 )}
               >
                 <Icon size={16} />
-                {tab.label}
+                {getTabLabel(tab, t)}
               </button>
             )
           })}
@@ -1309,6 +1318,7 @@ export function CustomerDetailsContent({
   mode = 'drawer',
   initialTab = 'timeline',
 }) {
+  const { t } = useTranslation()
   const contentRef = useRef(null)
   const requestedCustomerKey = customer?.id || customer?.lead_id || customer?.lead?.id
   const [activeTab, setActiveTab] = useState(() => getStoredCustomerTab(requestedCustomerKey, initialTab || 'timeline'))
@@ -1411,7 +1421,7 @@ export function CustomerDetailsContent({
 
   if (!detailedCustomer) {
     return (
-      <div className="text-sm text-[var(--text-muted)]">لا يوجد عميل محدد.</div>
+      <div className="text-sm text-[var(--text-muted)]">{t('customers.drawer.noCustomerSelected')}</div>
     )
   }
 
@@ -1569,13 +1579,14 @@ export function CustomerDetailsContent({
 }
 
 export function CustomerDetailsDrawer({ customer, open, onClose, onStatusChanged, initialTab = 'timeline' }) {
+  const { t } = useTranslation()
   const detailsPageId = customer?.id || getLeadId(customer)
 
   return (
     <AppDrawer
       open={open}
       onClose={onClose}
-      title="تفاصيل العميل"
+      title={t('customers.drawer.detailsTitle')}
       description={undefined}
       size="lg"
       className="w-full border-s border-[#BEEFF2] shadow-2xl"
@@ -1590,11 +1601,11 @@ export function CustomerDetailsDrawer({ customer, open, onClose, onStatusChanged
         <Link
           to={`/lead/${detailsPageId}`}
           className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] px-2.5 text-xs font-black text-[#007A80] shadow-sm transition-colors hover:bg-[#E8F9FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#BEEFF2]"
-          title="فتح صفحة العميل"
-          aria-label="فتح صفحة العميل"
+          title={t('customers.drawer.openCustomerPage')}
+          aria-label={t('customers.drawer.openCustomerPage')}
         >
           <ExternalLink size={14} />
-          <span className="hidden sm:inline">فتح الصفحة</span>
+          <span className="hidden sm:inline">{t('customers.drawer.openPageButton')}</span>
         </Link>
       ) : null}
     >

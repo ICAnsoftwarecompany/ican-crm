@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { BadgeDollarSign, Layers, Settings2 } from 'lucide-react'
 
@@ -21,13 +22,17 @@ import { ProposalPricingPanel } from './ProposalPricingPanel'
 import { ProposalPropertiesPanel } from './ProposalPropertiesPanel'
 import { ProposalVersionsPanel } from './ProposalVersionsPanel'
 
-const RIGHT_TABS = [
-  { id: 'properties', label: 'خصائص', icon: Settings2 },
-  { id: 'pricing', label: 'أسعار', icon: BadgeDollarSign },
-  { id: 'versions', label: 'نسخ', icon: Layers },
-]
+function getRightTabs(t) {
+  return [
+    { id: 'properties', label: t('proposals.builder.tabs.properties'), icon: Settings2 },
+    { id: 'pricing', label: t('proposals.builder.tabs.pricing'), icon: BadgeDollarSign },
+    { id: 'versions', label: t('proposals.builder.tabs.versions'), icon: Layers },
+  ]
+}
 
 export function ProposalBuilder({ proposalId }) {
+  const { t } = useTranslation()
+  const RIGHT_TABS = useMemo(() => getRightTabs(t), [t])
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [content, setContent] = useState(null)
@@ -37,7 +42,7 @@ export function ProposalBuilder({ proposalId }) {
   const [rightTab, setRightTab] = useState('properties')
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [isDirty, setIsDirty] = useState(false)
-  const [saveState, setSaveState] = useState('جاهز')
+  const [saveState, setSaveState] = useState(t('proposals.builder.saveState.ready'))
   const hydratedVersionRef = useRef(null)
   const saveTimerRef = useRef(null)
 
@@ -72,56 +77,56 @@ export function ProposalBuilder({ proposalId }) {
   useEffect(() => {
     if (!proposal) return
     if (!currentVersion) {
-      const initialContent = createDefaultBuilderContent(proposal)
+      const initialContent = createDefaultBuilderContent(proposal, null, t)
       setContent(initialContent)
       setSelected({ type: 'section', id: initialContent.sections[0]?.id })
-      setSaveState('لم يتم إنشاء نسخة بعد')
+      setSaveState(t('proposals.builder.saveState.noVersionYet'))
       return
     }
 
     if (hydratedVersionRef.current === currentVersion.id) return
-    const normalized = normalizeBuilderContent(currentVersion.content, proposal)
+    const normalized = normalizeBuilderContent(currentVersion.content, proposal, t)
     hydratedVersionRef.current = currentVersion.id
     setContent(normalized)
     setSelected({ type: 'section', id: normalized.sections[0]?.id })
     setSelectedVersionId(currentVersion.id)
     setIsDirty(false)
-    setSaveState('محفوظ')
-  }, [currentVersion, proposal])
+    setSaveState(t('proposals.builder.saveState.saved'))
+  }, [currentVersion, proposal, t])
 
   const updateContent = useCallback((updater) => {
     setContent((prev) => {
       const next = typeof updater === 'function' ? updater(prev) : updater
       setIsDirty(true)
-      setSaveState('تغييرات غير محفوظة')
+      setSaveState(t('proposals.builder.saveState.unsavedChanges'))
       return next
     })
-  }, [])
+  }, [t])
 
   const saveVersion = useCallback(async (nextContent = content) => {
     if (!proposal?.id || !currentVersion?.id || !nextContent) return
-    setSaveState('جار الحفظ...')
+    setSaveState(t('proposals.builder.saveState.saving'))
     await mutations.updateProposalVersion.mutateAsync({
       proposalId: proposal.id,
       versionId: currentVersion.id,
       payload: buildVersionPayload(currentVersion, proposal, nextContent),
     })
     setIsDirty(false)
-    setSaveState('محفوظ')
-  }, [content, currentVersion, mutations.updateProposalVersion, proposal])
+    setSaveState(t('proposals.builder.saveState.saved'))
+  }, [content, currentVersion, mutations.updateProposalVersion, proposal, t])
 
   useEffect(() => {
     if (!isDirty || !currentVersion?.id || !content) return undefined
     window.clearTimeout(saveTimerRef.current)
     saveTimerRef.current = window.setTimeout(() => {
-      saveVersion(content).catch(() => setSaveState('تعذر الحفظ التلقائي'))
+      saveVersion(content).catch(() => setSaveState(t('proposals.builder.saveState.autoSaveFailed')))
     }, 900)
     return () => window.clearTimeout(saveTimerRef.current)
-  }, [content, currentVersion?.id, isDirty, saveVersion])
+  }, [content, currentVersion?.id, isDirty, saveVersion, t])
 
   const handleCreateVersion = async () => {
     if (!proposal?.id) return
-    const initialContent = content || createDefaultBuilderContent(proposal)
+    const initialContent = content || createDefaultBuilderContent(proposal, null, t)
     const response = await mutations.createProposalVersion.mutateAsync({
       proposalId: proposal.id,
       payload: buildVersionPayload(null, proposal, initialContent, {
@@ -133,19 +138,19 @@ export function ProposalBuilder({ proposalId }) {
     const created = getResponseEntity(response)
     if (created?.id) setSelectedVersionId(created.id)
     setIsDirty(false)
-    setSaveState('محفوظ')
-    toast.success('تم إنشاء نسخة العرض')
+    setSaveState(t('proposals.builder.saveState.saved'))
+    toast.success(t('proposals.builder.versionCreated'))
   }
 
   const handleAddSection = () => {
-    const section = createDefaultSection()
+    const section = createDefaultSection({}, t)
     updateContent((prev) => ({ ...prev, sections: [...(prev?.sections || []), section] }))
     setSelected({ type: 'section', id: section.id })
   }
 
   const handleDeleteSection = (sectionId) => {
     if ((content?.sections || []).length <= 1) {
-      toast.error('لا يمكن حذف آخر قسم في العرض')
+      toast.error(t('proposals.builder.cannotDeleteLastSection'))
       return
     }
     updateContent((prev) => {
@@ -158,7 +163,7 @@ export function ProposalBuilder({ proposalId }) {
   const handleAddBlock = (type, sectionId) => {
     const targetSectionId = sectionId || selectedSectionId || content?.sections?.[0]?.id
     if (!targetSectionId) return
-    const block = createDefaultBlock(type)
+    const block = createDefaultBlock(type, {}, t)
     updateContent((prev) => ({
       ...prev,
       sections: prev.sections.map((section) => (
@@ -200,15 +205,15 @@ export function ProposalBuilder({ proposalId }) {
   }
 
   if (proposalQuery.isLoading) {
-    return <div className="flex min-h-[70vh] items-center justify-center text-sm font-black text-[var(--text-muted)]">جاري تحميل العرض...</div>
+    return <div className="flex min-h-[70vh] items-center justify-center text-sm font-black text-[var(--text-muted)]">{t('proposals.builder.loadingProposal')}</div>
   }
 
   if (!proposal) {
-    return <div className="p-6 text-sm font-black text-[#EF4444]">لم يتم العثور على العرض.</div>
+    return <div className="p-6 text-sm font-black text-[#EF4444]">{t('proposals.builder.proposalNotFound')}</div>
   }
 
   return (
-    <div className="min-h-screen bg-[#EEF4FA]" dir="rtl">
+    <div className="min-h-screen bg-[#EEF4FA]">
       <ProposalBuilderHeader
         proposal={proposal}
         currentVersion={currentVersion}
@@ -216,7 +221,7 @@ export function ProposalBuilder({ proposalId }) {
         onBack={() => navigate('/LeadsCenter/proposals')}
         onPreview={() => setIsPreviewOpen(true)}
         onCreateVersion={handleCreateVersion}
-        onSaveNow={() => saveVersion().then(() => toast.success('تم الحفظ'))}
+        onSaveNow={() => saveVersion().then(() => toast.success(t('proposals.builder.saveState.saved')))}
         creatingVersion={mutations.createProposalVersion.isPending}
       />
 

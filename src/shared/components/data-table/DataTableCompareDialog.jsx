@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import * as XLSX from 'xlsx'
 import {
   ArrowLeftRight,
@@ -44,6 +45,7 @@ function getRowTitle(row) {
 }
 
 function CompareSide({ title, rows, columns, onRemove }) {
+  const { t } = useTranslation()
   const minTableWidth = Math.max(520, 220 + columns.length * 160)
 
   return (
@@ -58,11 +60,11 @@ function CompareSide({ title, rows, columns, onRemove }) {
       <div className="max-h-[620px] overflow-auto p-2">
         {rows.length === 0 ? (
           <div className="flex min-h-[320px] items-center justify-center text-sm text-[var(--text-muted)]">
-            اختر عملاء لهذا الجانب
+            {t('dataTable.comparison.chooseCustomers')}
           </div>
         ) : columns.length === 0 ? (
           <div className="flex min-h-[320px] items-center justify-center rounded-md border border-dashed border-[var(--border)] text-sm text-[var(--text-muted)]">
-            اختر أعمدة للمقارنة من أعلى الموديل
+            {t('dataTable.comparison.chooseColumns')}
           </div>
         ) : (
           <div className="overflow-auto rounded-lg border border-[var(--border)]">
@@ -73,7 +75,7 @@ function CompareSide({ title, rows, columns, onRemove }) {
                     #
                   </th>
                   <th className="min-w-[170px] border-b border-[var(--border)] px-2 py-2 text-start font-bold text-[var(--text)]">
-                    العميل
+                    {t('dataTable.comparison.customer')}
                   </th>
                   {columns.map((column) => (
                     <th
@@ -84,7 +86,7 @@ function CompareSide({ title, rows, columns, onRemove }) {
                     </th>
                   ))}
                   <th className="w-16 border-b border-[var(--border)] px-2 py-2 text-center font-bold text-[var(--text)]">
-                    حذف
+                    {t('dataTable.comparison.remove')}
                   </th>
                 </tr>
               </thead>
@@ -110,7 +112,7 @@ function CompareSide({ title, rows, columns, onRemove }) {
                         onClick={() => onRemove(row.__rowKey)}
                         className="rounded-md px-2 py-1 text-xs text-red-600 hover:bg-red-50"
                       >
-                        إزالة
+                        {t('dataTable.comparison.remove')}
                       </button>
                     </td>
                   </tr>
@@ -131,6 +133,7 @@ export function DataTableCompareDialog({
   columns,
   selectedRowKeys,
 }) {
+  const { t } = useTranslation()
   const printRef = useRef(null)
   const wasOpenRef = useRef(false)
   const [fromSerial, setFromSerial] = useState(1)
@@ -252,7 +255,7 @@ export function DataTableCompareDialog({
     printWindow.document.write(`
       <html lang="${document.documentElement.lang || 'ar'}" dir="${document.documentElement.dir || 'rtl'}">
         <head>
-          <title>مقارنة العملاء</title>
+          <title>${t('dataTable.compare')}</title>
           ${documentStyles}
           <style>
             body { margin: 24px; background: #fff; color: #111827; font-family: Tahoma, Arial, sans-serif; }
@@ -287,11 +290,11 @@ export function DataTableCompareDialog({
     const workbook = XLSX.utils.book_new()
     const maxRows = Math.max(rightRows.length, leftRows.length)
     const headers = [
-      '# يمين',
-      ...selectedColumns.map((column) => `يمين - ${column.header}`),
+      t('dataTable.comparison.rightNumber'),
+      ...selectedColumns.map((column) => `${t('dataTable.comparison.right')} - ${column.header}`),
       '',
-      '# يسار',
-      ...selectedColumns.map((column) => `يسار - ${column.header}`),
+      t('dataTable.comparison.leftNumber'),
+      ...selectedColumns.map((column) => `${t('dataTable.comparison.left')} - ${column.header}`),
     ]
 
     const sheetRows = [headers]
@@ -322,14 +325,14 @@ export function DataTableCompareDialog({
     <AppModal
       isOpen={isOpen}
       onClose={onClose}
-      title="مقارنة العملاء"
-      description="اختر العملاء والأعمدة، ثم وزعهم على يمين ويسار المقارنة."
+      title={t('dataTable.compare')}
+      description={t('dataTable.comparison.description')}
       size="lg"
       className="max-w-[calc(100vw-1rem)] xl:max-w-7xl"
       footer={
         <>
-          <Button variant="outline" onClick={reset}>مسح المقارنة</Button>
-          <Button variant="primary" onClick={onClose}>تم</Button>
+          <Button variant="outline" onClick={reset}>{t('dataTable.comparison.reset')}</Button>
+          <Button variant="primary" onClick={onClose}>{t('dataTable.comparison.done')}</Button>
         </>
       }
     >
@@ -337,7 +340,7 @@ export function DataTableCompareDialog({
         <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-2">
           <div className="grid gap-2 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-end">
             <label className="grid gap-1 text-[11px] font-medium text-[var(--text)]">
-              من رقم
+              {t('dataTable.comparison.fromNumber')}
               <input
                 type="number"
                 min="1"
@@ -347,7 +350,7 @@ export function DataTableCompareDialog({
               />
             </label>
             <label className="grid gap-1 text-[11px] font-medium text-[var(--text)]">
-              إلى رقم
+              {t('dataTable.comparison.toNumber')}
               <input
                 type="number"
                 min="1"
@@ -359,11 +362,11 @@ export function DataTableCompareDialog({
 
             <Button size="sm" variant="outline" onClick={() => addRows('right', rangeRows)} className="gap-1">
               <ArrowLeftRight size={14} />
-              النطاق يمين
+              {t('dataTable.comparison.rangeRight')}
             </Button>
             <Button size="sm" variant="outline" onClick={() => addRows('left', rangeRows)} className="gap-1">
               <ArrowLeftRight size={14} />
-              النطاق يسار
+              {t('dataTable.comparison.rangeLeft')}
             </Button>
             <Button
               size="sm"
@@ -371,7 +374,7 @@ export function DataTableCompareDialog({
               onClick={() => addRows('right', selectedRows)}
               disabled={selectedRows.length === 0}
             >
-              المحدد يمين ({selectedRows.length})
+              {t('dataTable.comparison.selectedRight', { count: selectedRows.length })}
             </Button>
             <Button
               size="sm"
@@ -379,17 +382,17 @@ export function DataTableCompareDialog({
               onClick={() => addRows('left', selectedRows)}
               disabled={selectedRows.length === 0}
             >
-              المحدد يسار ({selectedRows.length})
+              {t('dataTable.comparison.selectedLeft', { count: selectedRows.length })}
             </Button>
             <Button size="sm" variant="accent" onClick={splitEvenly} className="gap-1">
               <Split size={14} />
-              تقسيم بالتساوي
+              {t('dataTable.comparison.splitEvenly')}
             </Button>
 
             <div className="flex flex-wrap items-end gap-2 lg:ms-auto">
               <Button size="sm" variant="outline" onClick={handlePrint} className="gap-1">
                 <Printer size={14} />
-                طباعة
+                {t('dataTable.comparison.print')}
               </Button>
               <Button
                 size="sm"
@@ -407,12 +410,12 @@ export function DataTableCompareDialog({
           <details className="mt-2 rounded-md border border-[var(--border)] bg-[var(--surface)]">
             <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-xs font-bold text-[var(--text)]">
               <SlidersHorizontal size={14} />
-              أعمدة المقارنة ({selectedColumns.length}/{comparableColumns.length})
+              {t('dataTable.comparison.columns', { selected: selectedColumns.length, total: comparableColumns.length })}
             </summary>
             <div className="border-t border-[var(--border)] p-2">
               <div className="mb-2 flex flex-wrap gap-2">
-                <Button size="sm" variant="ghost" onClick={selectAllColumns}>اختيار الكل</Button>
-                <Button size="sm" variant="ghost" onClick={clearColumns}>مسح الأعمدة</Button>
+                <Button size="sm" variant="ghost" onClick={selectAllColumns}>{t('dataTable.comparison.selectAll')}</Button>
+                <Button size="sm" variant="ghost" onClick={clearColumns}>{t('dataTable.comparison.clearColumns')}</Button>
               </div>
               <div className="grid max-h-32 gap-1 overflow-auto sm:grid-cols-2 lg:grid-cols-4">
                 {comparableColumns.map((column) => (
@@ -438,20 +441,20 @@ export function DataTableCompareDialog({
           <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--text-muted)]">
             <GitCompareArrows size={15} />
             <span>
-              مصدر التقسيم الحالي: {selectedRows.length > 0 ? `الصفوف المحددة (${selectedRows.length})` : `النطاق (${rangeRows.length})`}
+              {t('dataTable.comparison.source')}: {selectedRows.length > 0 ? t('dataTable.comparison.selectedRows', { count: selectedRows.length }) : t('dataTable.comparison.range', { count: rangeRows.length })}
             </span>
-            <span>الأعمدة المختارة: {selectedColumns.length}</span>
+            <span>{t('dataTable.comparison.selectedColumns', { count: selectedColumns.length })}</span>
           </div>
 
           <div className="grid gap-4 xl:grid-cols-2">
             <CompareSide
-              title="اليمين"
+              title={t('dataTable.comparison.right')}
               rows={rightRows}
               columns={selectedColumns}
               onRemove={removeFromRight}
             />
             <CompareSide
-              title="اليسار"
+              title={t('dataTable.comparison.left')}
               rows={leftRows}
               columns={selectedColumns}
               onRemove={removeFromLeft}

@@ -1,7 +1,8 @@
 import { NavLink } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { PanelLeftClose, PanelLeftOpen, UsersRound } from 'lucide-react'
 import { cn } from '../../../shared/utils/cn'
-import { customerNavigationGroups, customerSettingsItem } from '../constants/customerNavigation'
+import { getCustomerNavigationGroups, getCustomerSettingsItem } from '../constants/customerNavigation'
 
 export const CUSTOMERS_SIDEBAR_BULK_ACTIONS_SLOT_ID = 'customers-bulk-actions-rail-slot'
 export const CUSTOMERS_BULK_ACTIONS_PIN_MODE_EVENT = 'customers:bulk-actions-pin-mode'
@@ -57,6 +58,9 @@ export function CustomersSidebar({
   collapsed = false,
   onToggleCollapse,
 }) {
+  const { t } = useTranslation()
+  const customerNavigationGroups = getCustomerNavigationGroups(t)
+  const customerSettingsItem = getCustomerSettingsItem(t)
   const effectiveCollapsed = collapsed
   const ToggleIcon = effectiveCollapsed ? PanelLeftOpen : PanelLeftClose
 
@@ -69,7 +73,7 @@ export function CustomersSidebar({
         effectiveCollapsed ? 'w-16' : 'w-[260px]',
         className
       )}
-      aria-label="قائمة العملاء"
+      aria-label={t('customers.nav.customersListAriaLabel')}
     >
       <div className={cn('border-b border-[var(--border)] p-3', effectiveCollapsed && 'px-2')}>
         <div className={cn('flex items-center gap-3', effectiveCollapsed && 'flex-col justify-center gap-2')}>
@@ -79,9 +83,9 @@ export function CustomersSidebar({
 
           {!effectiveCollapsed && (
             <div className="min-w-0 flex-1">
-              <h2 className="truncate text-sm font-bold text-[var(--text)]">إدارة العملاء</h2>
+              <h2 className="truncate text-sm font-bold text-[var(--text)]">{t('customers.nav.manageCustomers')}</h2>
               <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">
-                العملاء، التصنيفات، المتابعة والإعدادات
+                {t('customers.nav.manageCustomersDesc')}
               </p>
             </div>
           )}
@@ -95,8 +99,8 @@ export function CustomersSidebar({
                 'text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text)]',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00C2CB]',
               )}
-              aria-label={effectiveCollapsed ? 'فتح قائمة العملاء' : 'غلق قائمة العملاء'}
-              title={effectiveCollapsed ? 'فتح قائمة العملاء' : 'غلق قائمة العملاء'}
+              aria-label={effectiveCollapsed ? t('customers.nav.openCustomersList') : t('customers.nav.closeCustomersList')}
+              title={effectiveCollapsed ? t('customers.nav.openCustomersList') : t('customers.nav.closeCustomersList')}
             >
               <ToggleIcon size={16} />
             </button>

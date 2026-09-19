@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { AppDrawer } from '../../../shared/components/overlays/AppDrawer'
 import { Button } from '../../../shared/components/ui/Button'
 import { Input } from '../../../shared/components/ui/Input'
@@ -63,6 +64,7 @@ export function CategoryFormDrawer({
   onClose,
   onSubmit,
 }) {
+  const { t } = useTranslation()
   const [form, setForm] = useState(INITIAL_FORM)
   const [additionalRows, setAdditionalRows] = useState([])
   const [activeTab, setActiveTab] = useState('basic')
@@ -95,7 +97,7 @@ export function CategoryFormDrawer({
     setLocalError('')
 
     if (!form.name.trim()) {
-      setLocalError('اسم التصنيف مطلوب')
+      setLocalError(t('products.categoryFormDrawer.nameRequired'))
       return
     }
 
@@ -108,33 +110,33 @@ export function CategoryFormDrawer({
   const tabs = [
     {
       id: 'basic',
-      label: 'البيانات الأساسية',
+      label: t('products.formDrawer.basicDataTab'),
       content: (
         <div className="space-y-4">
           <Input
-            label="اسم التصنيف"
+            label={t('products.categoryFormDrawer.nameLabel')}
             value={form.name}
             onChange={(event) => updateField('name', event.target.value)}
-            placeholder="مثال: مشروبات"
+            placeholder={t('products.categoryFormDrawer.namePlaceholder')}
           />
 
           <Input
-            label="الوصف"
+            label={t('products.list.columns.description')}
             value={form.desc}
             onChange={(event) => updateField('desc', event.target.value)}
-            placeholder="وصف مختصر للتصنيف"
+            placeholder={t('products.categoryFormDrawer.descPlaceholder')}
           />
 
-          <Input label="النوع" value={typeLabel} disabled readOnly />
+          <Input label={t('products.formDrawer.typeLabel')} value={typeLabel} disabled readOnly />
 
           <label className="grid gap-1.5 text-sm font-medium text-[var(--text)]">
-            التصنيف الأب
+            {t('products.categoryFormDrawer.parentCategoryLabel')}
             <select
               value={form.category_id}
               onChange={(event) => updateField('category_id', event.target.value)}
               className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00C2CB]"
             >
-              <option value="">بدون تصنيف أب</option>
+              <option value="">{t('products.categoryFormDrawer.noParentOption')}</option>
               {parentCategories.map((item) => (
                 <option key={item.id} value={item.id}>
                   {getCategoryLabel(item)}
@@ -144,7 +146,7 @@ export function CategoryFormDrawer({
           </label>
 
           <label className="grid gap-1.5 text-sm font-medium text-[var(--text)]">
-            صورة التصنيف
+            {t('products.categoryFormDrawer.imageLabel')}
             <input
               type="file"
               accept="image/*"
@@ -154,14 +156,14 @@ export function CategoryFormDrawer({
           </label>
 
           <label className="grid gap-1.5 text-sm font-medium text-[var(--text)]">
-            الحالة
+            {t('activities.table.status')}
             <select
               value={form.status}
               onChange={(event) => updateField('status', event.target.value)}
               className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00C2CB]"
             >
-              <option value="1">نشطة</option>
-              <option value="0">معطلة</option>
+              <option value="1">{t('products.categories.active')}</option>
+              <option value="0">{t('products.categories.inactive')}</option>
             </select>
           </label>
         </div>
@@ -169,7 +171,7 @@ export function CategoryFormDrawer({
     },
     {
       id: 'additional',
-      label: 'البيانات الإضافية',
+      label: t('products.formDrawer.additionalDataTab'),
       content: (
         <AdditionalDataFields
           rows={additionalRows}
@@ -184,8 +186,8 @@ export function CategoryFormDrawer({
       open={open}
       onClose={onClose}
       size="md"
-      title={mode === 'create' ? 'إضافة تصنيف' : 'تعديل التصنيف'}
-      description={`نوع التصنيف سيتم إرساله دائمًا كـ ${typeLabel}.`}
+      title={mode === 'create' ? t('products.categoryFormDrawer.addTitle') : t('products.categoryFormDrawer.editTitle')}
+      description={t('products.categoryFormDrawer.typeSentDescription', { type: typeLabel })}
     >
       <form onSubmit={handleSubmit} className="flex min-h-[calc(100vh-7.5rem)] flex-col gap-4">
         {(localError || error) && (
@@ -198,10 +200,10 @@ export function CategoryFormDrawer({
 
         <div className="mt-auto flex items-center justify-end gap-2 border-t border-[var(--border)] pt-4">
           <Button variant="outline" onClick={onClose} disabled={loading}>
-            إلغاء
+            {t('actions.cancel')}
           </Button>
           <Button type="submit" loading={loading}>
-            {mode === 'create' ? 'إضافة التصنيف' : 'حفظ التعديل'}
+            {mode === 'create' ? t('products.categoryFormDrawer.addTitle') : t('products.formDrawer.saveEdit')}
           </Button>
         </div>
       </form>

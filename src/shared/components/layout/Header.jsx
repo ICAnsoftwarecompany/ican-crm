@@ -53,7 +53,7 @@ export function Header({
 
   return (
     <header
-      className="fixed top-0 end-0 start-0 z-20 flex items-center gap-3 px-4 border-b border-[#E5E7EB] bg-[#FBFBFA]"
+      className="fixed top-0 end-0 start-0 z-20 flex items-center gap-3 px-4 border-b border-[var(--border)] bg-[var(--shell-surface)]"
       style={{
         height: 'var(--layout-header-height, 48px)',
         paddingInlineStart: collapsed
@@ -66,17 +66,17 @@ export function Header({
     >
       <button
         onClick={onToggleSidebar}
-        className="h-8 w-8 inline-flex items-center justify-center rounded-lg text-[#9CA3AF] hover:text-[#111827] hover:bg-[#F3F4F6] transition-colors shrink-0"
-        aria-label="Toggle sidebar"
+        className="h-8 w-8 inline-flex items-center justify-center rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--shell-hover)] transition-colors shrink-0"
+        aria-label={t('app.toggleSidebar')}
       >
         <PanelLeft size={16} />
       </button>
 
       {/* Page identity — set per-page via usePageHeader() */}
       <div className="flex items-center gap-2 min-w-0">
-        {Icon && <Icon size={16} className="text-[#6B7280] shrink-0" />}
+        {Icon && <Icon size={16} className="text-[var(--text-muted)] shrink-0" />}
         {ChannelIcon && <ChannelIcon size={18} />}
-        <span className="font-arabic font-medium text-[15px] text-[#111827] truncate">
+        <span className="font-arabic font-medium text-[15px] text-[var(--text)] truncate">
           {title}
         </span>
       </div>
@@ -123,29 +123,29 @@ export function Header({
             'inline-flex h-8 items-center gap-1.5 rounded-lg border px-2 text-xs font-black transition-colors',
             activeUsersSidebarOpen
               ? 'border-[#7FDDE1] bg-[#F3FDFF] text-[#007A80]'
-              : 'border-[#E5E7EB] bg-white text-[#374151] hover:bg-[#F9FAFB]',
+              : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-2)]',
           ].join(' ')}
-          aria-label="Active users"
+          aria-label={t('app.activeUsers')}
           title="المستخدمون النشطون"
         >
           <Users size={14} />
-          <span className="hidden md:inline">Active</span>
+          <span className="hidden md:inline">{t('app.active')}</span>
         </button>
 
         <IconButton onClick={() => {}} aria-label={t('actions.search')}>
           <Search size={16} />
         </IconButton>
 
-        <button className="h-8 px-2.5 inline-flex items-center gap-1.5 rounded-lg border border-[#E5E7EB] bg-white text-sm font-medium text-[#374151] hover:bg-[#F9FAFB] transition-colors">
+        <button className="h-8 px-2.5 inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-sm font-medium text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors">
           <Plus size={14} />
           <span className="font-latin">{t('actions.new')}</span>
         </button>
 
-        <IconButton aria-label="More">
+        <IconButton aria-label={t('app.more')}>
           <MoreHorizontal size={16} />
         </IconButton>
 
-        <span className="hidden md:flex items-center gap-0.5 h-8 px-1.5 rounded-md border border-[#E5E7EB] text-xs text-[#9CA3AF]">
+        <span className="hidden md:flex items-center gap-0.5 h-8 px-1.5 rounded-md border border-[var(--border)] text-xs text-[var(--text-muted)]">
           <Command size={11} /> K
         </span>
 
@@ -163,7 +163,7 @@ function IconButton({ children, ...props }) {
   return (
     <button
       type="button"
-      className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-[#E5E7EB] bg-white text-[#6B7280] hover:text-[#111827] hover:bg-[#F9FAFB] transition-colors"
+      className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors"
       {...props}
     >
       {children}
@@ -176,7 +176,7 @@ export function HeaderButton({ icon: Icon, label, ...props }) {
   return (
     <button
       type="button"
-      className="h-8 px-2.5 inline-flex items-center gap-1.5 rounded-lg border border-[#E5E7EB] bg-white text-sm text-[#6B7280] hover:text-[#111827] hover:bg-[#F9FAFB] transition-colors"
+      className="h-8 px-2.5 inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-sm text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors"
       {...props}
     >
       <Icon size={14} />

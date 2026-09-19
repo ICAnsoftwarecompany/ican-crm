@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { opportunitiesApi } from '../api/opportunitiesApi'
 import { QUERY_KEYS } from '../../../shared/constants/queryKeys'
 import { extractList } from '../../../shared/utils/apiResponse'
@@ -24,22 +25,24 @@ export function useOpportunityInfo(id, options = {}) {
   return { ...listQuery, data: opportunity }
 }
 
-function appendTimelineEvent(opportunity, event) {
+function appendTimelineEvent(opportunity, event, actorName) {
   const timeline = Array.isArray(opportunity.timeline) ? opportunity.timeline : []
   return [
     ...timeline,
     {
       id: `evt_${opportunity.id}_${Date.now()}`,
       at: new Date().toISOString(),
-      actor: { id: 'current_user', name: 'أنت' },
+      actor: { id: 'current_user', name: actorName },
       ...event,
     },
   ]
 }
 
 export function useOpportunityMutations() {
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
   const listKey = QUERY_KEYS.opportunities.list(LIST_PARAMS)
+  const actorName = t('opportunities.you')
 
   const patchOpportunity = (id, patch = {}, timelineEvent = null) => {
     queryClient.setQueryData(listKey, (current) => {
@@ -49,7 +52,7 @@ export function useOpportunityMutations() {
 
         const nextRow = { ...row, ...patch, updated_at: new Date().toISOString() }
         if (timelineEvent) {
-          nextRow.timeline = appendTimelineEvent(row, timelineEvent)
+          nextRow.timeline = appendTimelineEvent(row, timelineEvent, actorName)
         }
         return nextRow
       })
@@ -64,7 +67,6 @@ export function useOpportunityMutations() {
       onSuccess: (_response, id) => {
         patchOpportunity(id, { status: 'qualified' }, {
           type: 'status_changed',
-          label: 'Status changed',
           meta: { to: 'qualified' },
         })
       },
@@ -81,7 +83,6 @@ export function useOpportunityMutations() {
           next_action: payload?.next_action || null,
         }, {
           type: 'status_changed',
-          label: 'Status changed',
           meta: { to: 'activated' },
         })
       },
@@ -95,7 +96,6 @@ export function useOpportunityMutations() {
           watch_until: payload?.watch_until || null,
         }, {
           type: 'status_changed',
-          label: 'Status changed',
           meta: { to: 'watching', reason: payload?.reason },
         })
       },
@@ -110,7 +110,6 @@ export function useOpportunityMutations() {
           dismiss_note: payload?.note || null,
         }, {
           type: 'status_changed',
-          label: 'Status changed',
           meta: { to: 'dismissed', reason: payload?.reason },
         })
       },
@@ -124,7 +123,6 @@ export function useOpportunityMutations() {
           assigned_team: payload?.assigned_team || null,
         }, {
           type: 'assigned',
-          label: 'Assigned',
           meta: { to: payload?.assigned_user?.name || payload?.assigned_team?.name || '-' },
         })
       },

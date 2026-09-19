@@ -1,4 +1,4 @@
-import { ACTIVITY_DERIVED_STATES } from '../constants/activityConstants'
+import { getActivityDerivedStates } from '../constants/activityConstants'
 
 export function parseActivityDate(value) {
   if (!value) return null
@@ -36,17 +36,21 @@ export function formatActivityTime(value) {
   }).format(date)
 }
 
-export function formatDuration(startAt, endAt) {
+export function formatDuration(startAt, endAt, t) {
   const start = parseActivityDate(startAt)
   const end = parseActivityDate(endAt)
   if (!start || !end) return '-'
 
   const minutes = Math.max(0, Math.round((end.getTime() - start.getTime()) / 60000))
-  if (minutes < 60) return `${minutes} دقيقة`
+  if (minutes < 60) return t ? t('activities.duration.minute', { count: minutes }) : `${minutes} دقيقة`
 
   const hours = Math.floor(minutes / 60)
   const rest = minutes % 60
-  return rest ? `${hours} ساعة ${rest} دقيقة` : `${hours} ساعة`
+  const hourText = t ? t('activities.duration.hour', { count: hours }) : `${hours} ساعة`
+  if (!rest) return hourText
+
+  const minuteText = t ? t('activities.duration.minute', { count: rest }) : `${rest} دقيقة`
+  return `${hourText} ${minuteText}`
 }
 
 export function isToday(value) {
@@ -66,10 +70,11 @@ export function isOverdueActivity(activity) {
   return Boolean(start && activity?.status === 'scheduled' && start.getTime() < Date.now())
 }
 
-export function getDerivedActivityState(activity) {
-  if (isOverdueActivity(activity)) return ACTIVITY_DERIVED_STATES.overdue
-  if (isToday(activity?.startAt)) return ACTIVITY_DERIVED_STATES.today
-  return ACTIVITY_DERIVED_STATES.upcoming
+export function getDerivedActivityState(activity, t) {
+  const states = getActivityDerivedStates(t)
+  if (isOverdueActivity(activity)) return states.overdue
+  if (isToday(activity?.startAt)) return states.today
+  return states.upcoming
 }
 
 export function toDateTimeLocalValue(value = new Date()) {

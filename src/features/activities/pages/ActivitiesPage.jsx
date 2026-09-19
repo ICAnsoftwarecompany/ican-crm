@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 
 import { ACTIVITY_VIEW_MODES } from '../constants/activityConstants'
 import { AfterMeetingReportDrawer, ScheduleActivityDialog } from '../../call-meetings'
@@ -126,6 +127,7 @@ function getElapsedDuration(activity, nowTimestamp = Date.now()) {
 const ACTIVITY_ROWS_BATCH_SIZE = 30
 
 export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIEW_MODES.list }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const filtersState = useActivityFilters(defaultType, defaultView)
   const activitiesQuery = useActivities(filtersState.apiParams)
@@ -261,36 +263,36 @@ export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIE
   const handleStart = useCallback(async (activity) => {
     try {
       await mutations.start.mutateAsync(activity.id)
-      toast.success(activity.type === 'call' ? 'تم بدء المكالمة.' : 'تم بدء الاجتماع.')
+      toast.success(activity.type === 'call' ? t('activities.page.startedCall') : t('activities.page.startedMeeting'))
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر بدء النشاط'))
+      toast.error(extractMessage(error, t('activities.page.startFailed')))
     }
-  }, [mutations.start])
+  }, [mutations.start, t])
 
   const handleCancel = useCallback(async (activity) => {
-    const ok = window.confirm('هل تريد إلغاء هذا النشاط؟')
+    const ok = window.confirm(t('activities.page.cancelConfirm'))
     if (!ok) return
 
     try {
       await mutations.cancel.mutateAsync(activity.id)
-      toast.success('تم إلغاء النشاط.')
+      toast.success(t('activities.page.cancelledToast'))
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر إلغاء النشاط'))
+      toast.error(extractMessage(error, t('activities.page.cancelFailed')))
     }
-  }, [mutations.cancel])
+  }, [mutations.cancel, t])
 
   const handleDelete = useCallback(async (activity) => {
-    const ok = window.confirm('هل تريد حذف هذا النشاط نهائيا؟')
+    const ok = window.confirm(t('activities.page.deleteConfirm'))
     if (!ok) return
 
     try {
       await mutations.remove.mutateAsync(activity.id)
-      toast.success('تم حذف النشاط.')
+      toast.success(t('activities.page.deletedToast'))
       if (drawerActivity?.id === activity.id) setDrawerActivity(null)
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر حذف النشاط'))
+      toast.error(extractMessage(error, t('activities.page.deleteFailed')))
     }
-  }, [drawerActivity?.id, mutations.remove])
+  }, [drawerActivity?.id, mutations.remove, t])
 
   const handleFollowUp = useCallback((activity) => {
     setFormState({
@@ -299,13 +301,13 @@ export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIE
       activity: {
         ...activity,
         id: null,
-        title: `متابعة - ${activity.title}`,
+        title: t('activities.page.followUpTitlePrefix', { title: activity.title }),
         status: 'scheduled',
         startAt: undefined,
         endAt: undefined,
       },
     })
-  }, [])
+  }, [t])
 
   const handleOpenRelated = useCallback((activity) => {
     const id = activity?.relatedEntity?.id || activity?.raw?.taskable_id
@@ -318,7 +320,7 @@ export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIE
       try {
         await mutations.complete.mutateAsync(activity.id)
       } catch (error) {
-        toast.error(extractMessage(error, 'تعذر إنهاء الاجتماع'))
+        toast.error(extractMessage(error, t('activities.page.finishMeetingFailed')))
         return
       }
 
@@ -327,7 +329,7 @@ export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIE
     }
 
     setReportActivity(activity)
-  }, [mutations.complete])
+  }, [mutations.complete, t])
 
   const rowClassName = useCallback((activity) => {
     return getActivityAlertRowClass(activity, nowTimestamp)
@@ -337,12 +339,12 @@ export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIE
     if (!row) return []
 
     const status = String(row?.status || '').trim().toLowerCase()
-    const activityLabel = row?.type === 'call' ? 'المكالمة' : 'الاجتماع'
+    const activityLabel = row?.type === 'call' ? t('activities.page.callLabel') : t('activities.page.meetingLabel')
     const actions = [
       {
         id: 'activities-view-details',
-        label: `فتح تفاصيل ${activityLabel}`,
-        section: 'إجراءات الصفحة',
+        label: t('activities.page.openDetails', { label: activityLabel }),
+        section: t('activities.page.pageActionsSection'),
         tab: 'actions',
         onClick: () => setDrawerActivity(row),
       },
@@ -351,8 +353,8 @@ export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIE
     if (filtersState.filters.type === 'meeting') {
       actions.unshift({
         id: 'activities-create-meeting',
-        label: 'إضافة اجتماع جديد',
-        section: 'إجراءات الاجتماعات',
+        label: t('activities.page.addNewMeeting'),
+        section: t('activities.page.meetingActionsSection'),
         tab: 'actions',
         onClick: () => setScheduleDialogType('meeting'),
       })
@@ -362,15 +364,15 @@ export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIE
       actions.push(
         {
           id: 'activities-start',
-          label: `بدء ${activityLabel}`,
-          section: 'إجراءات الصفحة',
+          label: t('activities.page.startLabel', { label: activityLabel }),
+          section: t('activities.page.pageActionsSection'),
           tab: 'actions',
           onClick: () => handleStart(row),
         },
         {
           id: 'activities-cancel',
-          label: `إلغاء ${activityLabel}`,
-          section: 'إجراءات الصفحة',
+          label: t('activities.page.cancelLabel', { label: activityLabel }),
+          section: t('activities.page.pageActionsSection'),
           tab: 'actions',
           onClick: () => handleCancel(row),
         }
@@ -380,15 +382,15 @@ export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIE
     if (status === 'in_progress') {
       actions.push({
         id: 'activities-finish',
-        label: `إنهاء ${activityLabel}`,
-        section: 'إجراءات الصفحة',
+        label: t('activities.page.finishLabel', { label: activityLabel }),
+        section: t('activities.page.pageActionsSection'),
         tab: 'actions',
         onClick: () => handleFinish(row),
       })
     }
 
     return actions
-  }, [filtersState.filters.type, handleCancel, handleFinish, handleStart])
+  }, [filtersState.filters.type, handleCancel, handleFinish, handleStart, t])
 
   const commonActions = {
     onView: setDrawerActivity,
@@ -420,12 +422,12 @@ export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIE
 
       {activitiesQuery.isLoading ? (
         <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-sm font-bold text-[var(--text-muted)]">
-          جاري تحميل الأنشطة...
+          {t('activities.page.loadingActivities')}
         </div>
       ) : !scopedActivities.length ? (
         <EmptyActivitiesState
-          title={isFiltered ? 'لا توجد نتائج مطابقة' : 'لا توجد مكالمات أو اجتماعات بعد'}
-          description={isFiltered ? 'غير الفلاتر أو امسحها لعرض أنشطة أخرى.' : 'أنشئ أول نشاط لإدارة متابعة العملاء من مكان واحد.'}
+          title={isFiltered ? t('activities.page.noMatchingResultsTitle') : t('activities.page.noActivitiesYetTitle')}
+          description={isFiltered ? t('activities.page.changeFiltersDesc') : t('activities.page.createFirstActivityDesc')}
           onCreate={() => setScheduleDialogType(filtersState.filters.type === 'meeting' ? 'meeting' : 'call')}
           onClearFilters={isFiltered ? filtersState.clearFilters : undefined}
         />

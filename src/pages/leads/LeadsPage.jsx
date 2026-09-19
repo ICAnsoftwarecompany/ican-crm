@@ -46,16 +46,16 @@ export function LeadsPage() {
     setErrorMessage('')
 
     if (!actionForm.lead_id || !actionForm.action) {
-      setErrorMessage('lead_id ونوع الإجراء مطلوبان')
+      setErrorMessage(t('leads.page.actionRequiredError'))
       return
     }
 
     try {
       await mutations.saveAction.mutateAsync(actionForm)
       setActionForm(initialAction)
-      setMessage('تم حفظ إجراء العميل المحتمل')
+      setMessage(t('leads.page.actionSaved'))
     } catch (error) {
-      setErrorMessage(extractMessage(error, 'فشل حفظ الإجراء'))
+      setErrorMessage(extractMessage(error, t('leads.page.actionSaveFailed')))
     }
   }
 
@@ -67,15 +67,15 @@ export function LeadsPage() {
     try {
       await mutations.createRule.mutateAsync(ruleForm)
       setRuleForm({ name: '', active: true })
-      setMessage('تم إنشاء قاعدة التوزيع')
+      setMessage(t('leads.page.ruleCreated'))
     } catch (error) {
-      setErrorMessage(extractMessage(error, 'فشل إنشاء قاعدة التوزيع'))
+      setErrorMessage(extractMessage(error, t('leads.page.ruleCreateFailed')))
     }
   }
 
   return (
     <div>
-      <PageToolbar title={t('leads.title')} description="متابعة إجراءات العملاء المحتملين وقواعد التوزيع.">
+      <PageToolbar title={t('leads.title')} description={t('leads.page.description')}>
         <WorkflowLauncher context={{ module: 'leads', entity: 'lead' }}>{t('workflow.builder.createAutomation')}</WorkflowLauncher>
       </PageToolbar>
       {(message || errorMessage) && (
@@ -87,43 +87,43 @@ export function LeadsPage() {
       <div className="grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)] gap-4">
         <div className="grid gap-4 h-fit">
           <form onSubmit={handleSaveAction} className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4 grid gap-3">
-            <h2 className="font-bold">إجراء جديد</h2>
+            <h2 className="font-bold">{t('leads.page.newActionTitle')}</h2>
             <Input label="Lead ID" name="lead_id" value={actionForm.lead_id} onChange={handleActionChange} />
-            <Input label="نوع الإجراء" name="action" value={actionForm.action} onChange={handleActionChange} placeholder="call, note, status_change" />
-            <Input label="ملاحظة" name="note" value={actionForm.note} onChange={handleActionChange} />
+            <Input label={t('leads.page.actionTypeLabel')} name="action" value={actionForm.action} onChange={handleActionChange} placeholder="call, note, status_change" />
+            <Input label={t('leads.page.noteLabel')} name="note" value={actionForm.note} onChange={handleActionChange} />
             <Button type="submit" loading={mutations.saveAction.isPending}>
               <Plus size={16} />
-              حفظ الإجراء
+              {t('leads.page.saveAction')}
             </Button>
           </form>
 
           <form onSubmit={handleCreateRule} className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4 grid gap-3">
-            <h2 className="font-bold">قاعدة توزيع جديدة</h2>
-            <Input label="اسم القاعدة" value={ruleForm.name} onChange={(event) => setRuleForm((current) => ({ ...current, name: event.target.value }))} />
+            <h2 className="font-bold">{t('leads.page.newRuleTitle')}</h2>
+            <Input label={t('leads.page.ruleNameLabel')} value={ruleForm.name} onChange={(event) => setRuleForm((current) => ({ ...current, name: event.target.value }))} />
             <label className="inline-flex items-center gap-2 text-sm font-arabic">
               <input
                 type="checkbox"
                 checked={ruleForm.active}
                 onChange={(event) => setRuleForm((current) => ({ ...current, active: event.target.checked }))}
               />
-              نشطة
+              {t('leads.page.activeLabel')}
             </label>
             <Button type="submit" variant="accent" loading={mutations.createRule.isPending}>
               <Plus size={16} />
-              إنشاء القاعدة
+              {t('leads.page.createRule')}
             </Button>
           </form>
         </div>
 
         <section className="grid gap-4 min-w-0">
-          <Input placeholder="بحث في logs" value={search} onChange={(event) => setSearch(event.target.value)} startIcon={<Search size={16} />} />
+          <Input placeholder={t('leads.page.searchLogsPlaceholder')} value={search} onChange={(event) => setSearch(event.target.value)} startIcon={<Search size={16} />} />
           <ResourceState
             isLoading={logsQuery.isLoading}
             error={logsQuery.error}
             empty={filteredLogs.length === 0}
             emptyIcon={<Users size={24} />}
             emptyTitle={t('leads.noLeads')}
-            emptyDescription="لا توجد logs أو leads مطابقة حاليا."
+            emptyDescription={t('leads.page.noLogsOrLeadsMatch')}
             onRetry={logsQuery.refetch}
           >
             <div className="grid gap-3">
@@ -143,19 +143,19 @@ export function LeadsPage() {
           </ResourceState>
 
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4">
-            <h2 className="font-bold mb-3">قواعد التوزيع</h2>
+            <h2 className="font-bold mb-3">{t('leads.page.distributionRulesTitle')}</h2>
             <ResourceState
               isLoading={rulesQuery.isLoading}
               error={rulesQuery.error}
               empty={rules.length === 0}
-              emptyTitle="لا توجد قواعد توزيع"
+              emptyTitle={t('leads.page.noRulesFound')}
               onRetry={rulesQuery.refetch}
             >
               <div className="grid gap-2">
                 {rules.map((rule, index) => (
                   <div key={rule.id || index} className="rounded-lg bg-[var(--surface-2)] p-3 flex items-center justify-between gap-3">
-                    <span>{displayValue(rule.name || rule.rule_name, `Rule #${rule.id || index + 1}`)}</span>
-                    <Badge variant={rule.active === false ? 'danger' : 'success'}>{rule.active === false ? 'غير نشطة' : 'نشطة'}</Badge>
+                    <span>{displayValue(rule.name || rule.rule_name, t('leads.page.ruleFallback', { id: rule.id || index + 1 }))}</span>
+                    <Badge variant={rule.active === false ? 'danger' : 'success'}>{rule.active === false ? t('leads.page.inactiveLabel') : t('leads.page.activeLabel')}</Badge>
                   </div>
                 ))}
               </div>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { FormDialog } from '../../../../../../shared/components/overlays/FormDialog'
 
 function toDateTimeLocalValue(value = new Date()) {
@@ -28,6 +29,7 @@ export function StatusChangeReasonDialog({
   onClose,
   onSubmit,
 }) {
+  const { t } = useTranslation()
   const defaultDates = useMemo(() => {
     const start = addMinutes(new Date(), 15)
     const end = addMinutes(start, 60)
@@ -85,12 +87,12 @@ export function StatusChangeReasonDialog({
   const handleSubmit = () => {
     const normalized = reason.trim()
     if (!normalized) {
-      setError('السبب مطلوب لتغيير هذه الحالة')
+      setError(t('customers.statusChange.reasonRequired'))
       return
     }
 
     if (scheduleType !== 'none' && (!startAt || !endAt)) {
-      setError('اختر بداية ونهاية الموعد')
+      setError(t('customers.statusChange.chooseScheduleRange'))
       return
     }
 
@@ -126,15 +128,15 @@ export function StatusChangeReasonDialog({
     <FormDialog
       open={open}
       onClose={onClose}
-      title="سبب تغيير الحالة"
-      description={`الحالة ${status?.status || status?.name || ''} تتطلب إدخال سبب قبل الحفظ.`}
+      title={t('customers.statusChange.dialogTitle')}
+      description={t('customers.statusChange.dialogDescription', { status: status?.status || status?.name || '' })}
       onSubmit={handleSubmit}
-      submitText="حفظ وتغيير الحالة"
+      submitText={t('customers.statusChange.submitText')}
       loading={loading}
       submitDisabled={!reason.trim()}
     >
       <div className="grid gap-1.5">
-        <label className="text-sm font-medium text-[var(--text)]">السبب</label>
+        <label className="text-sm font-medium text-[var(--text)]">{t('customers.statusChange.reasonLabel')}</label>
         <textarea
           value={reason}
           onChange={(event) => {
@@ -143,20 +145,20 @@ export function StatusChangeReasonDialog({
           }}
           rows={4}
           className="w-full resize-y rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 text-sm text-[var(--text)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#00C2CB]"
-          placeholder="اكتب سبب تغيير الحالة"
+          placeholder={t('customers.statusChange.reasonPlaceholder')}
         />
       </div>
 
       <div className="grid gap-1.5">
-        <label className="text-sm font-medium text-[var(--text)]">هل هناك موعد؟</label>
+        <label className="text-sm font-medium text-[var(--text)]">{t('customers.statusChange.hasAppointmentLabel')}</label>
         <select
           value={scheduleType}
           onChange={(event) => setScheduleType(event.target.value)}
           className="h-10 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-semibold text-[var(--text)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#00C2CB]"
         >
-          <option value="none">بدون موعد</option>
-          <option value="call">هناك موعد مكالمة</option>
-          <option value="meeting">هناك موعد ميتنج</option>
+          <option value="none">{t('customers.followUp.schedule.typeNone')}</option>
+          <option value="call">{t('customers.statusChange.typeCallExisting')}</option>
+          <option value="meeting">{t('customers.statusChange.typeMeetingExisting')}</option>
         </select>
       </div>
 
@@ -164,39 +166,39 @@ export function StatusChangeReasonDialog({
         <div className="space-y-3 rounded-xl border border-[#E5F7F8] bg-[#F8FEFF] p-3">
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="space-y-1 text-xs font-bold text-[var(--text)]">
-              <span>العنوان</span>
+              <span>{t('customers.statusChange.titleLabel')}</span>
               <input value={title} onChange={(event) => setTitle(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold" />
             </label>
             <label className="space-y-1 text-xs font-bold text-[var(--text)]">
-              <span>الأولوية</span>
+              <span>{t('customers.table.hover.priority')}</span>
               <select value={priority} onChange={(event) => setPriority(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold">
-                <option value="low">منخفضة</option>
-                <option value="medium">متوسطة</option>
-                <option value="high">عالية</option>
-                <option value="urgent">عاجلة</option>
+                <option value="low">{t('customers.followUp.schedule.priorityLow')}</option>
+                <option value="medium">{t('customers.followUp.schedule.priorityMedium')}</option>
+                <option value="high">{t('customers.followUp.schedule.priorityHigh')}</option>
+                <option value="urgent">{t('customers.followUp.schedule.priorityUrgent')}</option>
               </select>
             </label>
             <label className="space-y-1 text-xs font-bold text-[var(--text)]">
-              <span>بداية الموعد</span>
+              <span>{t('customers.followUp.schedule.startLabel')}</span>
               <input type="datetime-local" value={startAt} onChange={(event) => handleStartChange(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold" />
             </label>
             <label className="space-y-1 text-xs font-bold text-[var(--text)]">
-              <span>نهاية الموعد</span>
+              <span>{t('customers.followUp.schedule.endLabel')}</span>
               <input type="datetime-local" value={endAt} onChange={(event) => setEndAt(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold" />
             </label>
             <label className="space-y-1 text-xs font-bold text-[var(--text)]">
-              <span>الوضع</span>
+              <span>{t('customers.followUp.schedule.modeLabel')}</span>
               <select value={mode} onChange={(event) => setMode(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold">
                 <option value="online">online</option>
                 <option value="offline">offline</option>
               </select>
             </label>
             <label className="space-y-1 text-xs font-bold text-[var(--text)]">
-              <span>رابط الاجتماع/المكالمة</span>
+              <span>{t('customers.statusChange.meetingCallLinkLabel')}</span>
               <input value={meetingLink} onChange={(event) => setMeetingLink(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold" />
             </label>
             <label className="space-y-1 text-xs font-bold text-[var(--text)] sm:col-span-2">
-              <span>المكان</span>
+              <span>{t('customers.followUp.schedule.locationLabel')}</span>
               <input value={location} onChange={(event) => setLocation(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold" />
             </label>
           </div>
@@ -204,18 +206,18 @@ export function StatusChangeReasonDialog({
           {scheduleType === 'call' ? (
             <div className="grid gap-3 sm:grid-cols-3">
               <label className="space-y-1 text-xs font-bold text-[var(--text)]">
-                <span>مزود المكالمة</span>
+                <span>{t('customers.followUp.schedule.callProviderLabel')}</span>
                 <select value={callProvider} onChange={(event) => setCallProvider(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold">
                   <option value="manual">manual</option>
                   <option value="cloud_call_center">cloud_call_center</option>
                 </select>
               </label>
               <label className="space-y-1 text-xs font-bold text-[var(--text)]">
-                <span>رقم المتصل</span>
+                <span>{t('customers.followUp.schedule.callerNumberLabel')}</span>
                 <input value={callerNumber} onChange={(event) => setCallerNumber(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold" />
               </label>
               <label className="space-y-1 text-xs font-bold text-[var(--text)]">
-                <span>رقم العميل</span>
+                <span>{t('customers.followUp.schedule.calleeNumberLabel')}</span>
                 <input value={calleeNumber} onChange={(event) => setCalleeNumber(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold" />
               </label>
             </div>
@@ -223,7 +225,7 @@ export function StatusChangeReasonDialog({
 
           <div className="grid gap-3 sm:grid-cols-3">
             <label className="space-y-1 text-xs font-bold text-[var(--text)]">
-              <span>نوع التذكير</span>
+              <span>{t('customers.followUp.schedule.reminderTypeLabel')}</span>
               <select value={reminderType} onChange={(event) => setReminderType(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold">
                 <option value="system">system</option>
                 <option value="email">email</option>
@@ -231,11 +233,11 @@ export function StatusChangeReasonDialog({
               </select>
             </label>
             <label className="space-y-1 text-xs font-bold text-[var(--text)]">
-              <span>قبل الموعد</span>
+              <span>{t('customers.followUp.schedule.reminderBeforeLabel')}</span>
               <input type="number" min="0" value={reminderBefore} onChange={(event) => setReminderBefore(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold" />
             </label>
             <label className="space-y-1 text-xs font-bold text-[var(--text)]">
-              <span>الوحدة</span>
+              <span>{t('customers.followUp.schedule.reminderUnitLabel')}</span>
               <select value={reminderUnit} onChange={(event) => setReminderUnit(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold">
                 <option value="minutes">minutes</option>
                 <option value="hours">hours</option>
@@ -245,7 +247,7 @@ export function StatusChangeReasonDialog({
           </div>
 
           <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-            <span>وصف الموعد</span>
+            <span>{t('customers.followUp.schedule.descriptionLabel')}</span>
             <textarea
               value={description}
               onChange={(event) => setDescription(event.target.value)}

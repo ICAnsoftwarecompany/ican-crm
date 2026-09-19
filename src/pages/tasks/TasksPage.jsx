@@ -27,6 +27,7 @@ import {
 } from '../../features/tasks/utils/taskMeta'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
 import { extractMessage } from '../../shared/utils/apiResponse'
+import { formatDate as formatDateWithLocale } from '../../shared/utils/dateTime'
 
 function SummaryCard({ title, value, active = false, onClick }) {
   return (
@@ -47,14 +48,15 @@ function SummaryCard({ title, value, active = false, onClick }) {
 }
 
 function TaskCard({ task }) {
-  const typeMeta = getTaskTypeMeta(task?.type)
-  const priorityMeta = getTaskPriorityMeta(task?.priority)
-  const statusMeta = getTaskStatusMeta(task?.status)
+  const { t, i18n } = useTranslation()
+  const typeMeta = getTaskTypeMeta(task?.type, t)
+  const priorityMeta = getTaskPriorityMeta(task?.priority, t)
+  const statusMeta = getTaskStatusMeta(task?.status, t)
   const overdue = isTaskOverdue(task)
   const due = getTaskDateTime(task)
   const dueLabel = due
-    ? due.toLocaleString('ar-EG', { dateStyle: 'medium', timeStyle: 'short' })
-    : 'بدون موعد'
+    ? formatDateWithLocale(due, i18n.language, { dateStyle: 'medium', timeStyle: 'short' })
+    : t('tasks.fallback.noDueDate')
   const TypeIcon = typeMeta.icon
 
   return (
@@ -63,7 +65,7 @@ function TaskCard({ task }) {
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <TypeIcon size={14} className="shrink-0 text-[#007A80]" />
-            <h3 className="truncate text-sm font-black text-[#0F172A]">{getTaskTitle(task)}</h3>
+            <h3 className="truncate text-sm font-black text-[#0F172A]">{getTaskTitle(task, t)}</h3>
           </div>
         </div>
         <span className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[10px] font-black ${priorityMeta.className}`}>
@@ -109,7 +111,7 @@ export function TasksPage() {
 
   const metrics = getTaskSummaryMetrics(tasks)
   const statusOptions = useMemo(() => getTaskStatusOptions(tasks), [tasks])
-  const typeOptions = useMemo(() => getTaskTypeOptions(tasks), [tasks])
+  const typeOptions = useMemo(() => getTaskTypeOptions(tasks, t), [tasks, t])
 
   const setView = (nextView) => {
     const next = new URLSearchParams(searchParams)
@@ -132,12 +134,12 @@ export function TasksPage() {
   const handleCreateTask = async (payload) => {
     try {
       await mutations.create.mutateAsync(payload)
-      toast.success('تم إنشاء المهمة')
+      toast.success(t('tasks.page.createdToast'))
       setIsCreateOpen(false)
       setCreateInitialValues(null)
       tasksQuery.refetch()
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر إنشاء المهمة'))
+      toast.error(extractMessage(error, t('tasks.page.createFailedToast')))
     }
   }
 
@@ -152,14 +154,14 @@ export function TasksPage() {
         taskId,
         payload: { status: nextStatus },
       })
-      toast.success('تم تحديث حالة المهمة')
+      toast.success(t('tasks.drawer.statusUpdated'))
     } catch (error) {
       setOptimisticStatuses((current) => {
         const next = { ...current }
         delete next[taskId]
         return next
       })
-      toast.error(extractMessage(error, 'تعذر تحديث حالة المهمة'))
+      toast.error(extractMessage(error, t('tasks.page.statusUpdateFailed')))
     } finally {
       tasksQuery.refetch()
     }
@@ -182,7 +184,7 @@ export function TasksPage() {
   }
 
   usePageHeader({
-    title: 'المهام',
+    title: t('nav.tasks'),
     icon: ListTodo,
     actions: (
       <button
@@ -194,7 +196,7 @@ export function TasksPage() {
         className="h-8 px-2.5 inline-flex items-center gap-1.5 rounded-lg border border-[#E5E7EB] bg-white text-sm text-[#6B7280] hover:text-[#111827] hover:bg-[#F9FAFB] transition-colors"
       >
         <Plus size={14} />
-        <span className="font-latin hidden lg:inline">New Task</span>
+        <span className="font-latin hidden lg:inline">{t('tasks.page.newTask')}</span>
       </button>
     ),
   })
@@ -233,47 +235,47 @@ export function TasksPage() {
   ), [mergedTasks, taskIdParam, visibleTasks])
 
   const boardItems = [
-    { id: 'main', name: 'Main Board', count: visibleTasks.length, accent: 'bg-[#E8F9FA] text-[#007A80]' },
-    { id: 'sales', name: 'Sales Team', count: Math.max(0, Math.ceil(visibleTasks.length / 2)), accent: 'bg-[#EEF2FF] text-[#4F46E5]' },
-    { id: 'followups', name: 'Follow-ups', count: Math.max(0, Math.ceil(visibleTasks.length / 3)), accent: 'bg-[#FFF7ED] text-[#C2410C]' },
+    { id: 'main', name: t('tasks.page.mainBoard'), count: visibleTasks.length, accent: 'bg-[#E8F9FA] text-[#007A80]' },
+    { id: 'sales', name: t('tasks.page.salesTeamBoard'), count: Math.max(0, Math.ceil(visibleTasks.length / 2)), accent: 'bg-[#EEF2FF] text-[#4F46E5]' },
+    { id: 'followups', name: t('tasks.page.followUpsBoard'), count: Math.max(0, Math.ceil(visibleTasks.length / 3)), accent: 'bg-[#FFF7ED] text-[#C2410C]' },
   ]
 
   const filterContent = (
     <>
       <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6">
-        <SummaryCard title="كل المهام" value={metrics.total} active={activeQuickFilter === 'all'} onClick={() => setActiveQuickFilter('all')} />
-        <SummaryCard title="اليوم" value={metrics.today} active={activeQuickFilter === 'today'} onClick={() => setActiveQuickFilter('today')} />
-        <SummaryCard title="متأخرة" value={metrics.overdue} active={activeQuickFilter === 'overdue'} onClick={() => setActiveQuickFilter('overdue')} />
-        <SummaryCard title="قيد التنفيذ" value={metrics.inProgress} active={activeQuickFilter === 'in_progress'} onClick={() => setActiveQuickFilter('in_progress')} />
-        <SummaryCard title="مكتملة" value={metrics.completed} active={activeQuickFilter === 'completed'} onClick={() => setActiveQuickFilter('completed')} />
-        <SummaryCard title="عاجلة" value={metrics.urgent} active={activeQuickFilter === 'urgent'} onClick={() => setActiveQuickFilter('urgent')} />
+        <SummaryCard title={t('tasks.page.allTasks')} value={metrics.total} active={activeQuickFilter === 'all'} onClick={() => setActiveQuickFilter('all')} />
+        <SummaryCard title={t('activities.derivedStates.today')} value={metrics.today} active={activeQuickFilter === 'today'} onClick={() => setActiveQuickFilter('today')} />
+        <SummaryCard title={t('tasks.page.overdueFilter')} value={metrics.overdue} active={activeQuickFilter === 'overdue'} onClick={() => setActiveQuickFilter('overdue')} />
+        <SummaryCard title={t('activities.status.in_progress')} value={metrics.inProgress} active={activeQuickFilter === 'in_progress'} onClick={() => setActiveQuickFilter('in_progress')} />
+        <SummaryCard title={t('tasks.statuses.completed')} value={metrics.completed} active={activeQuickFilter === 'completed'} onClick={() => setActiveQuickFilter('completed')} />
+        <SummaryCard title={t('activities.scheduleDialog.priorityOptions.urgent')} value={metrics.urgent} active={activeQuickFilter === 'urgent'} onClick={() => setActiveQuickFilter('urgent')} />
       </div>
 
       <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
         <label className="grid gap-1 text-[11px] font-bold text-[#64748B]">
-          فلتر الحالة
+          {t('tasks.page.statusFilterLabel')}
           <select
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
             className="h-9 rounded-lg border border-[#D7EEF0] bg-white px-2 text-xs font-semibold"
           >
-            <option value="all">كل الحالات</option>
+            <option value="all">{t('activities.form.allStatuses')}</option>
             {statusOptions.map((status) => (
-              <option key={status} value={status}>{getTaskStatusMeta(status).label}</option>
+              <option key={status} value={status}>{getTaskStatusMeta(status, t).label}</option>
             ))}
           </select>
         </label>
 
         <label className="grid gap-1 text-[11px] font-bold text-[#64748B]">
-          فلتر النوع
+          {t('tasks.page.typeFilterLabel')}
           <select
             value={typeFilter}
             onChange={(event) => setTypeFilter(event.target.value)}
             className="h-9 rounded-lg border border-[#D7EEF0] bg-white px-2 text-xs font-semibold"
           >
-            <option value="all">كل الأنواع</option>
+            <option value="all">{t('tasks.page.allTypes')}</option>
             {typeOptions.map((type) => (
-              <option key={type} value={type}>{getTaskTypeMeta(type).label}</option>
+              <option key={type} value={type}>{getTaskTypeMeta(type, t).label}</option>
             ))}
           </select>
         </label>
@@ -320,12 +322,12 @@ export function TasksPage() {
       >
         <section className="space-y-2">
           {tasksQuery.isLoading && (
-            <div className="rounded-xl border border-[#D7EEF0] bg-white p-4 text-sm font-semibold text-[#64748B]">جاري تحميل المهام...</div>
+            <div className="rounded-xl border border-[#D7EEF0] bg-white p-4 text-sm font-semibold text-[#64748B]">{t('tasks.sidebarPanel.loadingTasks')}</div>
           )}
 
           {!tasksQuery.isLoading && !visibleTasks.length && (
             <div className="rounded-xl border border-dashed border-[#D7EEF0] bg-white p-4 text-sm font-semibold text-[#64748B]">
-              لا توجد مهام مطابقة للفلاتر الحالية.
+              {t('tasks.page.noMatchingTasksFiltered')}
             </div>
           )}
 
@@ -366,19 +368,19 @@ export function TasksPage() {
                 }
 
                 mutations.create.mutateAsync(payload).then(() => {
-                  toast.success('تم إنشاء المهمة')
+                  toast.success(t('tasks.page.createdToast'))
                   tasksQuery.refetch()
                 }).catch((error) => {
-                  toast.error(extractMessage(error, 'تعذر إنشاء المهمة'))
+                  toast.error(extractMessage(error, t('tasks.page.createFailedToast')))
                 })
               }}
               onDeleteTask={(task) => {
                 if (!task?.id) return
                 mutations.remove.mutateAsync(task.id).then(() => {
-                  toast.success('تم حذف المهمة')
+                  toast.success(t('tasks.page.deletedToast'))
                   tasksQuery.refetch()
                 }).catch((error) => {
-                  toast.error(extractMessage(error, 'تعذر حذف المهمة'))
+                  toast.error(extractMessage(error, t('tasks.page.deleteFailedToast')))
                 })
               }}
             />
@@ -403,9 +405,9 @@ export function TasksPage() {
         onSubmit={handleCreateTask}
         isSaving={mutations.create.isPending}
         initialValues={createInitialValues}
-        title="إنشاء مهمة جديدة"
-        description="حدد بيانات المهمة الأساسية والربط المطلوب."
-        submitLabel="إنشاء المهمة"
+        title={t('tasks.page.createTaskDialogTitle')}
+        description={t('tasks.page.createTaskDialogDescription')}
+        submitLabel={t('tasks.page.createTaskSubmitLabel')}
       />
 
       <TaskDrawer

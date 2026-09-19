@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
 import { Button } from '../../../../../shared/components/ui/Button'
 import { cn } from '../../../../../shared/utils/cn'
 
 export function ProposalModal({ open, title, children, onClose, className, footer }) {
+  const { t } = useTranslation()
   if (!open) return null
 
   return (
@@ -10,7 +12,7 @@ export function ProposalModal({ open, title, children, onClose, className, foote
       <div className={cn('max-h-[92vh] w-full max-w-4xl overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl', className)}>
         <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-5 py-4">
           <h2 className="text-base font-black text-[var(--text)]">{title}</h2>
-          <Button variant="ghost" size="icon" onClick={onClose} aria-label="إغلاق">
+          <Button variant="ghost" size="icon" onClick={onClose} aria-label={t('customers.table.activityTimeline.close')}>
             <X size={18} />
           </Button>
         </div>

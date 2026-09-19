@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { X } from 'lucide-react'
 import { cn } from '../../utils/cn'
+import { useTranslation } from 'react-i18next'
 
 const sizes = {
   sm: 'max-w-sm',
@@ -20,6 +21,7 @@ export function AppModal({
   contentClassName,
   closeOnBackdrop = true,
 }) {
+  const { t } = useTranslation()
   useEffect(() => {
     if (!isOpen) return
 
@@ -81,7 +83,7 @@ export function AppModal({
               'transition-colors focus-visible:outline-none focus-visible:ring-2',
               'focus-visible:ring-[#00C2CB] ms-2 flex-shrink-0'
             )}
-            aria-label="إغلاق"
+            aria-label={t('actions.close')}
           >
             <X size={20} className="text-[var(--text)]" />
           </button>

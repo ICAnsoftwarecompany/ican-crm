@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { ActivityStatusBadge } from '../ActivityStatus/ActivityStatusBadge'
 import { ActivityTypeBadge } from '../common/ActivityTypeBadge'
@@ -14,13 +15,14 @@ function groupByDay(activities) {
 }
 
 export function ActivityCalendar({ activities, onActivityClick }) {
+  const { t } = useTranslation()
   const groups = useMemo(() => groupByDay(activities || []), [activities])
   const entries = Object.entries(groups)
 
   if (!entries.length) {
     return (
       <div className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface)] p-6 text-center text-sm font-semibold text-[var(--text-muted)]">
-        لا توجد أنشطة في التقويم.
+        {t('activities.calendar.noActivities')}
       </div>
     )
   }
@@ -30,7 +32,7 @@ export function ActivityCalendar({ activities, onActivityClick }) {
       {entries.map(([day, dayActivities]) => (
         <article key={day} className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3">
           <h3 className="mb-3 text-sm font-black text-[var(--text)]">
-            {day === 'no-date' ? 'بدون تاريخ' : formatActivityDate(day)}
+            {day === 'no-date' ? t('activities.calendar.noDate') : formatActivityDate(day)}
           </h3>
           <div className="space-y-2">
             {dayActivities.map((activity) => (

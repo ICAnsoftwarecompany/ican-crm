@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   formatTaskDateLabel,
@@ -16,10 +17,11 @@ function normalizeStatus(status) {
 }
 
 function KanbanCard({ task, onOpenTask }) {
-  const typeMeta = getTaskTypeMeta(task?.type)
-  const statusMeta = getTaskStatusMeta(task?.status)
-  const priorityMeta = getTaskPriorityMeta(task?.priority)
-  const dueLabel = formatTaskDateLabel(task)
+  const { t, i18n } = useTranslation()
+  const typeMeta = getTaskTypeMeta(task?.type, t)
+  const statusMeta = getTaskStatusMeta(task?.status, t)
+  const priorityMeta = getTaskPriorityMeta(task?.priority, t)
+  const dueLabel = formatTaskDateLabel(task, i18n.language, t)
   const TypeIcon = typeMeta.icon
 
   return (
@@ -33,7 +35,7 @@ function KanbanCard({ task, onOpenTask }) {
     >
       <div className="flex items-center gap-1.5">
         <TypeIcon size={13} className="text-[#007A80]" />
-        <h4 className="truncate text-xs font-black text-[#0F172A]">{getTaskTitle(task)}</h4>
+        <h4 className="truncate text-xs font-black text-[#0F172A]">{getTaskTitle(task, t)}</h4>
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-1 text-[10px] font-bold">
         <span className={`rounded-full px-1.5 py-0.5 ${statusMeta.tone}`}>{statusMeta.label}</span>
@@ -45,6 +47,7 @@ function KanbanCard({ task, onOpenTask }) {
 }
 
 export function TaskKanbanView({ tasks = [], onOpenTask, onStatusChange }) {
+  const { t } = useTranslation()
   const [dragOverStatus, setDragOverStatus] = useState('')
 
   const grouped = useMemo(() => {
@@ -66,7 +69,7 @@ export function TaskKanbanView({ tasks = [], onOpenTask, onStatusChange }) {
   return (
     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
       {DEFAULT_COLUMNS.map((status) => {
-        const statusMeta = getTaskStatusMeta(status)
+        const statusMeta = getTaskStatusMeta(status, t)
         const items = grouped[status] || []
         const isOver = dragOverStatus === status
 
@@ -100,7 +103,7 @@ export function TaskKanbanView({ tasks = [], onOpenTask, onStatusChange }) {
                 <KanbanCard key={task.id || `${task.title}-${task.due_date || ''}`} task={task} onOpenTask={onOpenTask} />
               )) : (
                 <div className="rounded-xl border border-dashed border-[#CDEEEF] bg-white p-3 text-center text-[11px] font-semibold text-[#64748B]">
-                  لا توجد مهام
+                  {t('tasks.fallback.noTasks')}
                 </div>
               )}
             </div>

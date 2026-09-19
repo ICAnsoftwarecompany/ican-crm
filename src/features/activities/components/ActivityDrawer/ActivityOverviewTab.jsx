@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { ActivityPriorityBadge } from '../common/ActivityPriorityBadge'
 import { formatActivityDateTime, formatDuration } from '../../utils/activityDateHelpers'
 
@@ -11,20 +12,22 @@ function InfoItem({ label, value, children }) {
 }
 
 export function ActivityOverviewTab({ activity }) {
+  const { t } = useTranslation()
+
   return (
     <div className="grid gap-3 sm:grid-cols-2">
-      <InfoItem label="الأولوية"><ActivityPriorityBadge priority={activity.priority} /></InfoItem>
-      <InfoItem label="المدة" value={activity.duration || formatDuration(activity.startAt, activity.endAt)} />
-      <InfoItem label="البداية" value={formatActivityDateTime(activity.startAt)} />
-      <InfoItem label="النهاية" value={formatActivityDateTime(activity.endAt)} />
-      <InfoItem label="المسؤول" value={activity.assignedUser?.name} />
-      <InfoItem label="الفريق" value={activity.assignedTeam?.name} />
-      <InfoItem label="الهاتف" value={activity.phone} />
-      <InfoItem label="طريقة الاجتماع / المكالمة" value={activity.mode || activity.callProvider} />
-      <InfoItem label="الرابط" value={activity.meetingUrl} />
-      <InfoItem label="المكان" value={activity.location} />
+      <InfoItem label={t('activities.scheduleDialog.priorityLabel')}><ActivityPriorityBadge priority={activity.priority} /></InfoItem>
+      <InfoItem label={t('activities.drawer.durationLabel')} value={activity.duration || formatDuration(activity.startAt, activity.endAt, t)} />
+      <InfoItem label={t('activities.table.startAt')} value={formatActivityDateTime(activity.startAt)} />
+      <InfoItem label={t('activities.drawer.endLabel')} value={formatActivityDateTime(activity.endAt)} />
+      <InfoItem label={t('activities.table.assigned')} value={activity.assignedUser?.name} />
+      <InfoItem label={t('activities.scheduleDialog.teamLabel')} value={activity.assignedTeam?.name} />
+      <InfoItem label={t('customers.phone')} value={activity.phone} />
+      <InfoItem label={t('activities.drawer.meetingOrCallModeLabel')} value={activity.mode || activity.callProvider} />
+      <InfoItem label={t('activities.meetingDrawer.fields.link')} value={activity.meetingUrl} />
+      <InfoItem label={t('activities.meetingDrawer.fields.location')} value={activity.location} />
       <div className="sm:col-span-2">
-        <InfoItem label="الوصف" value={activity.description} />
+        <InfoItem label={t('activities.form.descriptionLabel')} value={activity.description} />
       </div>
     </div>
   )

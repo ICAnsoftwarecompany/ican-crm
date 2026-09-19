@@ -1,10 +1,14 @@
-import { ACTIVITY_TAB_OPTIONS, ACTIVITY_VIEW_MODES } from '../../constants/activityConstants'
+import { useTranslation } from 'react-i18next'
+import { ACTIVITY_VIEW_MODES, getActivityTabOptions } from '../../constants/activityConstants'
 
 export function ActivityTabs({ type, view, onTypeChange, onViewChange }) {
+  const { t } = useTranslation()
+  const tabOptions = getActivityTabOptions(t)
+
   return (
     <section className="flex flex-col gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex flex-wrap gap-1">
-        {ACTIVITY_TAB_OPTIONS.map((item) => {
+        {tabOptions.map((item) => {
           const Icon = item.icon
           const active = type === item.value
           return (
@@ -17,7 +21,7 @@ export function ActivityTabs({ type, view, onTypeChange, onViewChange }) {
               }`}
             >
               <Icon size={15} />
-              {item.value === 'all' ? 'الكل' : item.pluralLabel}
+              {item.value === 'all' ? t('activities.typeMeta.all') : item.pluralLabel}
             </button>
           )
         })}
@@ -25,8 +29,8 @@ export function ActivityTabs({ type, view, onTypeChange, onViewChange }) {
 
       <div className="flex rounded-lg bg-[var(--surface-2)] p-1">
         {[
-          { value: ACTIVITY_VIEW_MODES.list, label: 'جدول' },
-          { value: ACTIVITY_VIEW_MODES.calendar, label: 'تقويم' },
+          { value: ACTIVITY_VIEW_MODES.list, label: t('activities.viewModeTabs.table') },
+          { value: ACTIVITY_VIEW_MODES.calendar, label: t('activities.viewModeTabs.calendar') },
         ].map((item) => (
           <button
             key={item.value}

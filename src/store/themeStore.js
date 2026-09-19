@@ -6,21 +6,9 @@ export const useThemeStore = create(
     (set, get) => ({
       isDark: false,
 
-      toggleTheme: () => {
-        const next = !get().isDark
-        set({ isDark: next })
-        if (next) {
-          document.documentElement.classList.add('dark')
-        } else {
-          document.documentElement.classList.remove('dark')
-        }
-      },
+      toggleTheme: () => set({ isDark: !get().isDark }),
 
-      initTheme: () => {
-        if (get().isDark) {
-          document.documentElement.classList.add('dark')
-        }
-      },
+      initTheme: () => document.documentElement.classList.toggle('dark', get().isDark),
     }),
     { name: 'ican-theme', version: 1 }
   )

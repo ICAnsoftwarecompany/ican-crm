@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useUsers } from '../../users/hooks/useUsers'
 import { useTeams } from '../../teams/hooks/useTeams'
 import { useStatuses, useTags } from '../../definitions/hooks/useDefinitions'
@@ -8,7 +9,7 @@ import { useFacebookIntegrations } from '../../meta-integrations/hooks/useFacebo
 import { useGmailMailboxes } from '../../conversations/hooks/useGmailConversations'
 import { useAuthStore } from '../../../store/authStore'
 import { resolveTenantId } from '../../../services/tenantResolver'
-import { OPPORTUNITY_STATUSES } from '../../opportunities/constants/opportunityTypes'
+import { getOpportunityStatuses } from '../../opportunities/constants/opportunityTypes'
 import { CAMPAIGN_CHANNEL_LIST } from '../../outreach-campaigns/config/campaignChannels'
 
 /**
@@ -27,6 +28,7 @@ import { CAMPAIGN_CHANNEL_LIST } from '../../outreach-campaigns/config/campaignC
  * @returns {{ options: {value:string,label:string}[], isLoading: boolean }}
  */
 export function useDataSourceOptions(source) {
+  const { t } = useTranslation()
   const user = useAuthStore((state) => state.user)
   const tenant = resolveTenantId(user)
 
@@ -62,7 +64,7 @@ export function useDataSourceOptions(source) {
           isLoading: tagsQuery.isLoading,
         }
       case 'opportunity_statuses':
-        return { options: OPPORTUNITY_STATUSES.map((status) => ({ value: status.value, label: status.label })), isLoading: false }
+        return { options: getOpportunityStatuses(t).map((status) => ({ value: status.value, label: status.label })), isLoading: false }
       case 'outreach_campaigns':
         return {
           options: (campaignsQuery.campaigns || []).map((campaign) => ({ value: String(campaign.id), label: campaign.name || `#${campaign.id}` })),
@@ -103,7 +105,7 @@ export function useDataSourceOptions(source) {
         return { options: [], isLoading: false }
     }
   }, [
-    source,
+    source, t,
     usersQuery.data, usersQuery.isLoading,
     teamsQuery.data, teamsQuery.isLoading,
     statusesQuery.data, statusesQuery.isLoading,

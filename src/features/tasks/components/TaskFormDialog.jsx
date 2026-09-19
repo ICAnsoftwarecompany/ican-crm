@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { AppModal } from '../../../shared/components/overlays/AppModal'
 import { TaskForm } from './TaskForm'
 
@@ -7,17 +8,19 @@ export function TaskFormDialog({
   onSubmit,
   initialValues,
   isSaving = false,
-  title = 'إنشاء مهمة',
-  description = 'أنشئ مهمة جديدة وحدد البيانات المطلوبة.',
-  submitLabel = 'حفظ المهمة',
+  title,
+  description,
+  submitLabel,
   hideTaskableFields = false,
 }) {
+  const { t } = useTranslation()
+
   return (
     <AppModal
       isOpen={open}
       onClose={onClose}
-      title={title}
-      description={description}
+      title={title ?? t('tasks.formDialog.createTitle')}
+      description={description ?? t('tasks.formDialog.createDescription')}
       size="lg"
       className="sm:max-w-3xl"
     >

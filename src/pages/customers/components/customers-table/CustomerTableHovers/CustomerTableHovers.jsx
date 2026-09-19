@@ -4,28 +4,32 @@ import { Clock3, FileText, Megaphone, MousePointerClick, UploadCloud, UserRound 
 
 export const CUSTOMER_SOURCE_META = {
   form: {
+    labelKey: 'customers.table.source.form',
     label: 'Form',
     icon: FileText,
     className: 'border-[#BBD7FF] bg-[#EFF6FF] text-[#145DBF]',
   },
   ad: {
+    labelKey: 'customers.table.source.ad',
     label: 'Ad',
     icon: MousePointerClick,
     className: 'border-[#FED7AA] bg-[#FFF7ED] text-[#C2410C]',
   },
   campaign: {
+    labelKey: 'customers.table.source.campaign',
     label: 'Campaign',
     icon: Megaphone,
     className: 'border-[#C4B5FD] bg-[#F5F3FF] text-[#6D28D9]',
   },
   manual: {
+    labelKey: 'customers.table.source.manual',
     label: 'Manual',
     icon: UploadCloud,
     className: 'border-[#D7EEF0] bg-[#F8FEFF] text-[#007A80]',
   },
 }
 
-function formatHoverDateTime(value) {
+function formatHoverDateTime(value, t) {
   if (!value) return '-'
 
   const text = String(value).trim()
@@ -40,7 +44,7 @@ function formatHoverDateTime(value) {
     const [, datePart, hourPart, minutePart] = match
     const hour24 = Number(hourPart)
     const hour12 = hour24 % 12 || 12
-    const period = hour24 >= 12 ? 'م' : 'ص'
+    const period = hour24 >= 12 ? (t ? t('common.pm') : 'PM') : (t ? t('common.am') : 'AM')
     return `${datePart} ${hour12}:${minutePart} ${period}`
   }
 
@@ -62,45 +66,45 @@ function renderValue(value) {
   return String(value)
 }
 
-function getActivityStatusMeta(statusValue = '') {
+function getActivityStatusMeta(statusValue = '', t) {
   const status = String(statusValue || '').trim().toLowerCase()
 
   if (status === 'scheduled') {
-    return { label: 'Scheduled', className: 'border-[#FDE68A] bg-[#FFFBEB] text-[#92400E]' }
+    return { label: t ? t('activities.status.scheduled') : 'Scheduled', className: 'border-[#FDE68A] bg-[#FFFBEB] text-[#92400E]' }
   }
 
   if (status === 'in_progress') {
-    return { label: 'In Progress', className: 'border-[#BFDBFE] bg-[#EFF6FF] text-[#1D4ED8]' }
+    return { label: t ? t('activities.status.in_progress') : 'In Progress', className: 'border-[#BFDBFE] bg-[#EFF6FF] text-[#1D4ED8]' }
   }
 
   if (status === 'completed') {
-    return { label: 'Completed', className: 'border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]' }
+    return { label: t ? t('activities.status.completed') : 'Completed', className: 'border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]' }
   }
 
   if (status === 'cancelled') {
-    return { label: 'Cancelled', className: 'border-[#FECACA] bg-[#FEF2F2] text-[#991B1B]' }
+    return { label: t ? t('activities.status.cancelled') : 'Cancelled', className: 'border-[#FECACA] bg-[#FEF2F2] text-[#991B1B]' }
   }
 
   return { label: renderValue(statusValue) || '-', className: 'border-[#E2E8F0] bg-white text-[#475569]' }
 }
 
-function getActivityPriorityMeta(priorityValue = '') {
+function getActivityPriorityMeta(priorityValue = '', t) {
   const priority = String(priorityValue || '').trim().toLowerCase()
 
   if (priority === 'urgent') {
-    return { label: 'Urgent', className: 'border-[#EF4444] bg-[#FEE2E2] text-[#991B1B]' }
+    return { label: t ? t('activities.priority.urgent') : 'Urgent', className: 'border-[#EF4444] bg-[#FEE2E2] text-[#991B1B]' }
   }
 
   if (priority === 'high') {
-    return { label: 'High', className: 'border-[#F97316] bg-[#FFF7ED] text-[#9A3412]' }
+    return { label: t ? t('activities.priority.high') : 'High', className: 'border-[#F97316] bg-[#FFF7ED] text-[#9A3412]' }
   }
 
   if (priority === 'medium') {
-    return { label: 'Medium', className: 'border-[#F59E0B] bg-[#FFFBEB] text-[#92400E]' }
+    return { label: t ? t('activities.priority.medium') : 'Medium', className: 'border-[#F59E0B] bg-[#FFFBEB] text-[#92400E]' }
   }
 
   if (priority === 'low') {
-    return { label: 'Low', className: 'border-[#22C55E] bg-[#F0FDF4] text-[#166534]' }
+    return { label: t ? t('activities.priority.low') : 'Low', className: 'border-[#22C55E] bg-[#F0FDF4] text-[#166534]' }
   }
 
   return { label: renderValue(priorityValue) || '-', className: 'border-[#E2E8F0] bg-white text-[#475569]' }
@@ -117,10 +121,10 @@ function getActivityNoteText(activity) {
   )
 }
 
-function getActivityTypeLabel(activity) {
+function getActivityTypeLabel(activity, t) {
   const type = String(activity?.type || '').trim().toLowerCase()
-  if (type === 'meeting') return 'Meeting'
-  if (type === 'call') return 'Call'
+  if (type === 'meeting') return t ? t('activities.type.meeting') : 'Meeting'
+  if (type === 'call') return t ? t('activities.type.call') : 'Call'
   return renderValue(type) || '-'
 }
 
@@ -243,7 +247,7 @@ export function CustomerTableHoverCard({
   )
 }
 
-export function CustomerNotePreviewHover({ note, activityAt, title, userName }) {
+export function CustomerNotePreviewHover({ note, activityAt, title, userName, t }) {
   return (
     <div>
       <div className="whitespace-pre-wrap break-words leading-6">{note}</div>
@@ -251,7 +255,7 @@ export function CustomerNotePreviewHover({ note, activityAt, title, userName }) 
         {title ? <span className="rounded-full bg-[#F8FAFC] px-2 py-0.5">{title}</span> : null}
         {activityAt ? (
           <span className="rounded-full bg-[#E8F9FA] px-2 py-0.5 text-[#007A80]">
-            {formatHoverDateTime(activityAt)}
+            {formatHoverDateTime(activityAt, t)}
           </span>
         ) : null}
         {userName ? <span className="rounded-full bg-[#F8FAFC] px-2 py-0.5">{userName}</span> : null}
@@ -260,36 +264,37 @@ export function CustomerNotePreviewHover({ note, activityAt, title, userName }) 
   )
 }
 
-export function CustomerLeadNoteHoverDetails({ activity }) {
+export function CustomerLeadNoteHoverDetails({ activity, t }) {
   const data = activity?.data && typeof activity.data === 'object' ? activity.data : null
+  const h = (key, fallback) => (t ? t(`customers.table.hover.${key}`) : fallback)
 
   const rows = [
-    { label: 'الملاحظة', value: activity?.note || activity?.data?.note || activity?.description },
-    { label: 'العنوان', value: activity?.title },
-    { label: 'النوع', value: activity?.type },
-    { label: 'التاريخ', value: formatHoverDateTime(activity?.activity_at) },
-    { label: 'تاريخ الإنشاء', value: formatHoverDateTime(activity?.created_at) },
-    { label: 'آخر تحديث', value: formatHoverDateTime(activity?.updated_at) },
-    { label: 'المستخدم', value: activity?.user?.name || activity?.user?.username },
-    { label: 'بريد المستخدم', value: activity?.user?.email },
-    { label: 'User ID', value: activity?.user_id || activity?.user?.id },
-    { label: 'Log ID', value: activity?.user_lead_log_id || activity?.id },
+    { label: h('note', 'Note'), value: activity?.note || activity?.data?.note || activity?.description },
+    { label: h('title', 'Title'), value: activity?.title },
+    { label: h('type', 'Type'), value: activity?.type },
+    { label: h('date', 'Date'), value: formatHoverDateTime(activity?.activity_at, t) },
+    { label: h('createdAt', 'Created At'), value: formatHoverDateTime(activity?.created_at, t) },
+    { label: h('updatedAt', 'Last Updated'), value: formatHoverDateTime(activity?.updated_at, t) },
+    { label: h('user', 'User'), value: activity?.user?.name || activity?.user?.username },
+    { label: h('userEmail', 'User Email'), value: activity?.user?.email },
+    { label: h('userId', 'User ID'), value: activity?.user_id || activity?.user?.id },
+    { label: h('logId', 'Log ID'), value: activity?.user_lead_log_id || activity?.id },
   ]
 
   return (
     <div className="space-y-3">
-      <div className="text-sm font-black text-[#007A80]">بيانات المتابعة</div>
+      <div className="text-sm font-black text-[#007A80]">{h('followUpData', 'Follow-up data')}</div>
       <HoverDetailGrid rows={rows} />
       {data ? (
         <details className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-2">
-          <summary className="cursor-pointer text-[11px] font-black text-[#007A80]">بيانات إضافية</summary>
+          <summary className="cursor-pointer text-[11px] font-black text-[#007A80]">{h('additionalData', 'Additional data')}</summary>
           <pre className="mt-2 max-h-36 overflow-auto whitespace-pre-wrap break-words text-[11px] leading-5 text-[#334155]">
             {JSON.stringify(data, null, 2)}
           </pre>
         </details>
       ) : null}
       <details className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-2">
-        <summary className="cursor-pointer text-[11px] font-black text-[#007A80]">كل بيانات المتابعة</summary>
+        <summary className="cursor-pointer text-[11px] font-black text-[#007A80]">{h('allFollowUpData', 'All follow-up data')}</summary>
         <pre className="mt-2 max-h-44 overflow-auto whitespace-pre-wrap break-words text-[11px] leading-5 text-[#334155]">
           {JSON.stringify(activity, null, 2)}
         </pre>
@@ -298,9 +303,9 @@ export function CustomerLeadNoteHoverDetails({ activity }) {
   )
 }
 
-export function CustomerScheduledActivityHoverDetails({ activity, remainingLabel, includeMode = false }) {
-  const statusMeta = getActivityStatusMeta(activity?.status)
-  const priorityMeta = getActivityPriorityMeta(activity?.priority)
+export function CustomerScheduledActivityHoverDetails({ activity, remainingLabel, includeMode = false, t }) {
+  const statusMeta = getActivityStatusMeta(activity?.status, t)
+  const priorityMeta = getActivityPriorityMeta(activity?.priority, t)
   const normalizedType = String(activity?.type || '').trim().toLowerCase()
   const normalizedStatus = String(activity?.status || '').trim().toLowerCase()
   const canStart = normalizedStatus === 'scheduled'
@@ -308,26 +313,27 @@ export function CustomerScheduledActivityHoverDetails({ activity, remainingLabel
   const canComplete = normalizedStatus === 'in_progress'
   const showCancelButton = !(normalizedType === 'meeting' && normalizedStatus === 'in_progress')
   const reportSummary = getMeetingReportSummary(activity)
+  const h = (key, fallback) => (t ? t(`customers.table.hover.${key}`) : fallback)
 
   const actionLoading = Boolean(activity?._statusActionLoading)
 
   const details = [
     { label: 'ID', value: activity?.id },
-    { label: 'العنوان', value: activity?.title },
-    { label: 'الوصف', value: activity?.description },
-    { label: 'الحالة', value: statusMeta.label, className: statusMeta.className },
-    { label: 'الأولوية', value: priorityMeta.label, className: priorityMeta.className },
-    { label: 'النوع', value: getActivityTypeLabel(activity) },
-    includeMode ? { label: 'طريقة التواصل', value: activity?.mode } : null,
+    { label: h('title', 'Title'), value: activity?.title },
+    { label: h('description', 'Description'), value: activity?.description },
+    { label: h('status', 'Status'), value: statusMeta.label, className: statusMeta.className },
+    { label: h('priority', 'Priority'), value: priorityMeta.label, className: priorityMeta.className },
+    { label: h('type', 'Type'), value: getActivityTypeLabel(activity, t) },
+    includeMode ? { label: h('contactMethod', 'Contact Method'), value: activity?.mode } : null,
     { label: 'Scope', value: activity?.scope },
-    { label: 'البداية الفعلية', value: formatHoverDateTime(activity?.actual_start_at) },
-    { label: 'النهاية الفعلية', value: formatHoverDateTime(activity?.actual_end_at) },
-    { label: 'البداية', value: formatHoverDateTime(activity?.start_at) },
-    { label: 'النهاية', value: formatHoverDateTime(activity?.end_at) },
-    { label: 'التذكير', value: remainingLabel },
-    { label: 'نوع التذكير', value: activity?.reminder_type },
-    { label: 'قبل التذكير', value: activity?.reminder_before ? `${activity.reminder_before} ${activity?.reminder_unit || ''}` : '' },
-    { label: 'تم إرسال التذكير', value: formatHoverDateTime(activity?.reminder_sent_at) },
+    { label: h('actualStart', 'Actual start'), value: formatHoverDateTime(activity?.actual_start_at, t) },
+    { label: h('actualEnd', 'Actual end'), value: formatHoverDateTime(activity?.actual_end_at, t) },
+    { label: h('start', 'Start'), value: formatHoverDateTime(activity?.start_at, t) },
+    { label: h('end', 'End'), value: formatHoverDateTime(activity?.end_at, t) },
+    { label: h('reminder', 'Reminder'), value: remainingLabel },
+    { label: h('reminderType', 'Reminder Type'), value: activity?.reminder_type },
+    { label: h('reminderBefore', 'Reminder Before'), value: activity?.reminder_before ? `${activity.reminder_before} ${activity?.reminder_unit || ''}` : '' },
+    { label: h('reminderSentAt', 'Reminder Sent At'), value: formatHoverDateTime(activity?.reminder_sent_at, t) },
     { label: 'Meeting Link', value: activity?.meeting_link },
     { label: 'Location', value: activity?.location },
     { label: 'Latitude', value: activity?.latitude },
@@ -335,23 +341,23 @@ export function CustomerScheduledActivityHoverDetails({ activity, remainingLabel
     { label: 'Call Provider', value: activity?.call_provider },
     { label: 'External Call ID', value: activity?.external_call_id },
     { label: 'Recording URL', value: activity?.recording_url },
-    { label: 'عدد التقارير', value: reportSummary.count },
-    { label: 'تقرير قبل الاجتماع', value: reportSummary.hasPreMeetingReport ? 'متوفر' : 'غير موجود' },
-    { label: 'تقرير بعد الاجتماع', value: reportSummary.hasAfterMeetingReport ? 'متوفر' : 'غير موجود' },
+    { label: h('reportsCount', 'Reports count'), value: reportSummary.count },
+    { label: h('preMeetingReport', 'Pre-meeting report'), value: reportSummary.hasPreMeetingReport ? h('available', 'Available') : h('notAvailable', 'Not available') },
+    { label: h('afterMeetingReport', 'After-meeting report'), value: reportSummary.hasAfterMeetingReport ? h('available', 'Available') : h('notAvailable', 'Not available') },
     { label: 'Call Duration', value: activity?.call_duration_seconds ? `${activity.call_duration_seconds} sec` : '' },
     { label: 'Call Status', value: activity?.call_status },
     { label: 'Caller Number', value: activity?.caller_number },
     { label: 'Callee Number', value: activity?.callee_number },
     { label: 'Team ID', value: activity?.team_id },
     { label: 'Created By', value: activity?.created_by },
-    { label: 'تم الإنشاء', value: formatHoverDateTime(activity?.created_at) },
-    { label: 'آخر تحديث', value: formatHoverDateTime(activity?.updated_at) },
+    { label: h('createdAt', 'Created At'), value: formatHoverDateTime(activity?.created_at, t) },
+    { label: h('updatedAt', 'Last Updated'), value: formatHoverDateTime(activity?.updated_at, t) },
   ].filter(Boolean)
 
   return (
     <div className="space-y-3">
       <div>
-        <div className="text-[11px] font-black text-[#007A80]">الملاحظة</div>
+        <div className="text-[11px] font-black text-[#007A80]">{h('note', 'Note')}</div>
         <div className="mt-1 whitespace-pre-wrap break-words rounded-lg bg-[#F8FEFF] px-2 py-1.5 text-xs font-bold text-[#334155]">
           {getActivityNoteText(activity)}
         </div>
@@ -366,7 +372,7 @@ export function CustomerScheduledActivityHoverDetails({ activity, remainingLabel
             disabled={!canStart || actionLoading}
             className="inline-flex h-8 items-center rounded-lg border border-[#BFDBFE] bg-[#EFF6FF] px-2 text-[11px] font-black text-[#1D4ED8] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            بدء
+            {t ? t('customers.table.start') : 'Start'}
           </button>
           {showCancelButton ? (
             <button
@@ -375,7 +381,7 @@ export function CustomerScheduledActivityHoverDetails({ activity, remainingLabel
               disabled={!canCancel || actionLoading}
               className="inline-flex h-8 items-center rounded-lg border border-[#FECACA] bg-[#FEF2F2] px-2 text-[11px] font-black text-[#991B1B] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              إلغاء
+              {t ? t('customers.table.cancel') : 'Cancel'}
             </button>
           ) : null}
           <button
@@ -384,14 +390,14 @@ export function CustomerScheduledActivityHoverDetails({ activity, remainingLabel
             disabled={!canComplete || actionLoading}
             className="inline-flex h-8 items-center rounded-lg border border-[#BBF7D0] bg-[#F0FDF4] px-2 text-[11px] font-black text-[#166534] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            إنهاء
+            {t ? t('customers.table.finish') : 'Finish'}
           </button>
         </div>
       ) : null}
 
       {activity?.data && typeof activity.data === 'object' ? (
         <details className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-2">
-          <summary className="cursor-pointer text-[11px] font-black text-[#007A80]">بيانات إضافية</summary>
+          <summary className="cursor-pointer text-[11px] font-black text-[#007A80]">{h('additionalData', 'Additional data')}</summary>
           <pre className="mt-2 max-h-36 overflow-auto whitespace-pre-wrap break-words text-[11px] leading-5 text-[#334155]">
             {JSON.stringify(activity.data, null, 2)}
           </pre>
@@ -412,25 +418,28 @@ export function getSourceDisplayName(source) {
   )
 }
 
-export function getSourceSpecificLabel(source) {
-  if (source?.kind === 'campaign') return 'Campaign'
-  if (source?.kind === 'ad') return 'Ad'
-  if (source?.kind === 'form') return 'Form'
-  return 'Manual'
+export function getSourceSpecificLabel(source, t) {
+  const h = (key, fallback) => (t ? t(`customers.table.source.${key}`) : fallback)
+  if (source?.kind === 'campaign') return h('campaign', 'Campaign')
+  if (source?.kind === 'ad') return h('ad', 'Ad')
+  if (source?.kind === 'form') return h('form', 'Form')
+  return h('manual', 'Manual')
 }
 
-function getSourceSummaryRows(source) {
+function getSourceSummaryRows(source, t) {
   const raw = source?.raw || {}
+  const h = (key, fallback) => (t ? t(`customers.table.source.${key}`) : fallback)
+  const hh = (key, fallback) => (t ? t(`customers.table.hover.${key}`) : fallback)
 
   return [
-    { label: 'نوع المصدر', value: source?.label || source?.kind },
-    { label: 'اسم الحملة', value: source?.campaignName || raw?.campaign?.name || raw?.campaign_name },
-    { label: 'اسم الإعلان', value: source?.adName || raw?.ad?.name || raw?.ads_name || raw?.ad_name },
-    { label: 'اسم الفورم', value: source?.formName || raw?.form?.name || raw?.form_name || raw?.lead_form_name },
-    { label: 'Manual', value: source?.manualName },
-    { label: 'العنوان', value: source?.title },
-    { label: 'الوصف', value: source?.description },
-    { label: 'الكود', value: source?.code },
+    { label: h('sourceType', 'Source Type'), value: source?.label || source?.kind },
+    { label: h('campaignName', 'Campaign Name'), value: source?.campaignName || raw?.campaign?.name || raw?.campaign_name },
+    { label: h('adName', 'Ad Name'), value: source?.adName || raw?.ad?.name || raw?.ads_name || raw?.ad_name },
+    { label: h('formName', 'Form Name'), value: source?.formName || raw?.form?.name || raw?.form_name || raw?.lead_form_name },
+    { label: h('manual', 'Manual'), value: source?.manualName },
+    { label: hh('title', 'Title'), value: source?.title },
+    { label: hh('description', 'Description'), value: source?.description },
+    { label: h('code', 'Code'), value: source?.code },
     { label: 'External ID', value: source?.externalId },
     { label: 'Campaign ID', value: raw?.campaign_id || raw?.campaign?.id },
     { label: 'Ad ID', value: raw?.ads_id || raw?.ad_id || raw?.ad?.id },
@@ -441,18 +450,19 @@ function getSourceSummaryRows(source) {
     { label: 'Target Audience', value: source?.targetAudience },
     { label: 'Start Date', value: source?.startDate },
     { label: 'End Date', value: source?.endDate },
-    { label: 'Linked Products', value: source?.linkedProducts?.length ? `${source.linkedProducts.length}` : '' },
+    { label: h('linkedProducts', 'Linked Products'), value: source?.linkedProducts?.length ? `${source.linkedProducts.length}` : '' },
   ]
 }
 
-export function CustomerMarketingSourceHoverDetails({ source, meta }) {
+export function CustomerMarketingSourceHoverDetails({ source, meta, t }) {
   const displayName = getSourceDisplayName(source)
+  const metaLabel = meta.labelKey && t ? t(meta.labelKey) : meta.label
 
   return (
     <div className="space-y-3">
       <div className="flex min-w-0 flex-wrap items-center gap-2">
         <span className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-black ${meta.className}`}>
-          {meta.label}
+          {metaLabel}
         </span>
         <div className="min-w-0 flex-1">
           <div className="break-words text-sm font-black text-[var(--text)]">{displayName}</div>
@@ -462,11 +472,11 @@ export function CustomerMarketingSourceHoverDetails({ source, meta }) {
         </div>
       </div>
 
-      <HoverDetailGrid rows={getSourceSummaryRows(source)} />
+      <HoverDetailGrid rows={getSourceSummaryRows(source, t)} />
 
       {source?.linkedProducts?.length ? (
         <div className="space-y-1.5">
-          <div className="text-[11px] font-black text-[#007A80]">المنتجات المرتبطة</div>
+          <div className="text-[11px] font-black text-[#007A80]">{t ? t('customers.table.source.linkedProducts') : 'Linked Products'}</div>
           <div className="flex flex-wrap gap-1.5">
             {source.linkedProducts.slice(0, 8).map((product) => (
               <span key={product.id} className="max-w-full rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-2 py-0.5 text-[10px] font-black text-[#166534]">
@@ -485,32 +495,35 @@ export function CustomerMarketingSourceHoverDetails({ source, meta }) {
   )
 }
 
-export function CustomerPersonHoverDetails({ person, title = 'بيانات المستخدم' }) {
+export function CustomerPersonHoverDetails({ person, title, t }) {
+  const h = (key, fallback) => (t ? t(`customers.table.hover.${key}`) : fallback)
+  const p = (key, fallback, opts) => (t ? t(`customers.table.person.${key}`, opts) : fallback)
+  const resolvedTitle = title || p('title', 'User data')
   const statusLabel = person?.active !== undefined && person?.active !== null
-    ? (Number(person.active) === 1 ? 'Active' : 'Inactive')
+    ? (Number(person.active) === 1 ? p('active', 'Active') : p('inactive', 'Inactive'))
     : ''
-  const teamLabel = person?.teamName || (person?.teamId ? `Team ${person.teamId}` : '')
+  const teamLabel = person?.teamName || (person?.teamId ? p('teamNumber', `Team ${person.teamId}`, { id: person.teamId }) : '')
   const rows = [
-    { label: 'الاسم', value: person?.name },
-    { label: 'اسم المستخدم', value: person?.username },
-    { label: 'البريد الإلكتروني', value: person?.email },
-    { label: 'الهاتف', value: person?.phone },
-    { label: 'الدور', value: person?.role },
-    { label: 'النوع', value: person?.type },
+    { label: t ? t('customers.name') : 'Name', value: person?.name },
+    { label: p('username', 'Username'), value: person?.username },
+    { label: t ? t('customers.email') : 'Email', value: person?.email },
+    { label: t ? t('customers.phone') : 'Phone', value: person?.phone },
+    { label: p('role', 'Role'), value: person?.role },
+    { label: h('type', 'Type'), value: person?.type },
     {
-      label: 'الحالة',
+      label: h('status', 'Status'),
       value: statusLabel,
       className: Number(person?.active) === 1
         ? 'border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]'
         : 'border-[#FECACA] bg-[#FEF2F2] text-[#991B1B]',
     },
-    { label: 'الفريق', value: teamLabel },
+    { label: p('team', 'Team'), value: teamLabel },
     { label: 'Team ID', value: person?.teamId },
     { label: 'Manager ID', value: person?.managerId },
     { label: 'Priority', value: person?.priority },
-    { label: 'User ID', value: person?.id },
-    { label: 'تاريخ الإنشاء', value: formatHoverDateTime(person?.createdAt) },
-    { label: 'آخر تحديث', value: formatHoverDateTime(person?.updatedAt) },
+    { label: h('userId', 'User ID'), value: person?.id },
+    { label: h('createdAt', 'Created At'), value: formatHoverDateTime(person?.createdAt, t) },
+    { label: h('updatedAt', 'Last Updated'), value: formatHoverDateTime(person?.updatedAt, t) },
   ]
 
   return (
@@ -520,14 +533,14 @@ export function CustomerPersonHoverDetails({ person, title = 'بيانات ال�
           <UserRound size={15} />
         </span>
         <div className="min-w-0">
-          <div className="text-sm font-black text-[var(--text)]">{title}</div>
+          <div className="text-sm font-black text-[var(--text)]">{resolvedTitle}</div>
           <div className="break-words text-xs font-bold text-[#64748B]">{person?.name || '-'}</div>
         </div>
       </div>
       <HoverDetailGrid rows={rows} />
       {person?.raw && typeof person.raw === 'object' ? (
         <details className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-2">
-          <summary className="cursor-pointer text-[11px] font-black text-[#007A80]">كل بيانات المستخدم</summary>
+          <summary className="cursor-pointer text-[11px] font-black text-[#007A80]">{p('allUserData', 'All user data')}</summary>
           <pre className="mt-2 max-h-44 overflow-auto whitespace-pre-wrap break-words text-[11px] leading-5 text-[#334155]">
             {JSON.stringify(person.raw, null, 2)}
           </pre>
@@ -549,21 +562,23 @@ export function getCustomerActivityUserName(activity, userById) {
   return user?.name || user?.username || user?.email || `User #${userId}`
 }
 
-export function getCustomerActivityTooltipTitle(activity, userById) {
+export function getCustomerActivityTooltipTitle(activity, userById, t) {
+  const userLabel = t ? t('customers.table.hover.user') : 'User'
+  const dateLabel = t ? t('customers.table.hover.date') : 'Date'
   return [
     activity?.title,
     activity?.description,
-    `المستخدم: ${getCustomerActivityUserName(activity, userById)}`,
-    `التاريخ: ${formatHoverDateTime(activity?.activity_at || activity?.created_at)}`,
+    `${userLabel}: ${getCustomerActivityUserName(activity, userById)}`,
+    `${dateLabel}: ${formatHoverDateTime(activity?.activity_at || activity?.created_at, t)}`,
   ].filter(Boolean).join('\n')
 }
 
-export function CustomerStatusChangeHoverDetails({ activities, userById }) {
+export function CustomerStatusChangeHoverDetails({ activities, userById, t }) {
   return (
     <div className="space-y-2">
       {activities.map((activity, index) => (
         <div key={activity.id || index} className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-2">
-          <div className="font-black text-[#0F172A]">{activity?.title || 'تغيير حالة'}</div>
+          <div className="font-black text-[#0F172A]">{activity?.title || (t ? t('customers.table.hover.statusChangeFallbackTitle') : 'Status change')}</div>
           {activity?.description ? (
             <div className="mt-1 whitespace-pre-wrap break-words text-[#475569]">{activity.description}</div>
           ) : null}
@@ -574,7 +589,7 @@ export function CustomerStatusChangeHoverDetails({ activities, userById }) {
             </span>
             <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5">
               <Clock3 size={12} />
-              {formatHoverDateTime(activity?.activity_at || activity?.created_at)}
+              {formatHoverDateTime(activity?.activity_at || activity?.created_at, t)}
             </span>
           </div>
         </div>

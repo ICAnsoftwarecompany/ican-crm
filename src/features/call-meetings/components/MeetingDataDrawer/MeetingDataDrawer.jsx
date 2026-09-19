@@ -19,6 +19,7 @@ import {
   UsersRound,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 import { useMeetingInfo, useMeetingMutations } from '../../../meetings/hooks/useMeetings'
 import { AppDrawer } from '../../../../shared/components/overlays/AppDrawer'
@@ -53,23 +54,23 @@ function getNormalizedStatus(status) {
   return String(status || '').trim().toLowerCase()
 }
 
-function getCountdown(startAt, nowTimestamp) {
+function getCountdown(startAt, nowTimestamp, t) {
   if (!startAt) return ''
   const startTime = new Date(startAt).getTime()
   if (Number.isNaN(startTime)) return ''
 
   const diff = startTime - nowTimestamp
-  if (diff > 0) return `يبدأ بعد ${formatElapsedDuration(diff, { includeSeconds: true })}`
-  return `متأخر منذ ${formatElapsedDuration(Math.abs(diff), { includeSeconds: true })}`
+  if (diff > 0) return t('activities.meetingDrawer.countdown.startsIn', { value: formatElapsedDuration(diff, { includeSeconds: true }, t) })
+  return t('activities.meetingDrawer.countdown.overdue', { value: formatElapsedDuration(Math.abs(diff), { includeSeconds: true }, t) })
 }
 
-function getElapsedDurationLabel(meeting, nowTimestamp) {
+function getElapsedDurationLabel(meeting, nowTimestamp, t) {
   const started = meeting?.actual_start_at || meeting?.start_at
   if (!started) return ''
 
   const startedAt = new Date(started).getTime()
   if (Number.isNaN(startedAt) || nowTimestamp < startedAt) return ''
-  return formatElapsedDuration(nowTimestamp - startedAt, { includeSeconds: true })
+  return formatElapsedDuration(nowTimestamp - startedAt, { includeSeconds: true }, t)
 }
 
 function InfoRow({ label, value, href }) {
@@ -91,12 +92,13 @@ function InfoRow({ label, value, href }) {
 }
 
 function DocumentPreview({ report }) {
+  const { t } = useTranslation()
   const lines = String(report?.notes || report?.note || '').split('\n').map((line) => line.trim()).filter(Boolean)
 
   return (
     <section className="rounded-xl border border-[#BEEFF2] bg-[#F8FEFF] p-4">
       <div className="mb-3 rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-center">
-        <div className="text-base font-black text-[#0F172A]">{fieldValue(report?.title, 'تقرير')}</div>
+        <div className="text-base font-black text-[#0F172A]">{fieldValue(report?.title, t('activities.meetingDrawer.reportFallback'))}</div>
         <div className="mt-1 text-xs font-semibold text-[#64748B]">{formatDateTime12(report?.created_at)}</div>
       </div>
 
@@ -109,7 +111,7 @@ function DocumentPreview({ report }) {
           ))}
         </div>
       ) : (
-        <p className="text-xs font-semibold text-[var(--text-muted)]">لا يوجد محتوى نصي للتقرير.</p>
+        <p className="text-xs font-semibold text-[var(--text-muted)]">{t('activities.meetingDrawer.noReportContent')}</p>
       )}
     </section>
   )
@@ -128,13 +130,15 @@ function Section({ title, icon: Icon, children }) {
 }
 
 function ReportsSection({ reports = [], onOpenReport, onOpenPreForm, onOpenAfterForm }) {
+  const { t } = useTranslation()
+
   if (!reports.length) {
     return (
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-[var(--text-muted)]">لا توجد تقارير.</p>
+        <p className="text-xs font-semibold text-[var(--text-muted)]">{t('activities.meetingDrawer.noReportsYet')}</p>
         <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="outline" onClick={onOpenPreForm}>إضافة تقرير قبل الاجتماع</Button>
-          <Button type="button" variant="ai" onClick={onOpenAfterForm}>إضافة تقرير بعد الاجتماع</Button>
+          <Button type="button" variant="outline" onClick={onOpenPreForm}>{t('activities.meetingDrawer.addPreReport')}</Button>
+          <Button type="button" variant="ai" onClick={onOpenAfterForm}>{t('activities.meetingDrawer.addAfterReport')}</Button>
         </div>
       </div>
     )
@@ -143,29 +147,29 @@ function ReportsSection({ reports = [], onOpenReport, onOpenPreForm, onOpenAfter
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
-        <Button type="button" variant="outline" onClick={onOpenPreForm}>إضافة تقرير قبل الاجتماع</Button>
-        <Button type="button" variant="ai" onClick={onOpenAfterForm}>إضافة تقرير بعد الاجتماع</Button>
+        <Button type="button" variant="outline" onClick={onOpenPreForm}>{t('activities.meetingDrawer.addPreReport')}</Button>
+        <Button type="button" variant="ai" onClick={onOpenAfterForm}>{t('activities.meetingDrawer.addAfterReport')}</Button>
       </div>
 
       {reports.map((report) => (
         <div key={report.id || `${report.created_at}-${report.title}`} className="rounded-lg border border-[#E5F7F8] bg-white p-3 text-xs">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-black text-[var(--text)]">{fieldValue(report.title, 'تقرير بدون عنوان')}</span>
+            <span className="font-black text-[var(--text)]">{fieldValue(report.title, t('activities.meetingDrawer.untitledReport'))}</span>
             <span className="rounded-full bg-[#F8FEFF] px-2 py-0.5 text-[10px] font-bold text-[var(--text-muted)]">#{fieldValue(report.id)}</span>
           </div>
           <div className="mt-1 text-[11px] font-semibold text-[var(--text-muted)]">
-            بواسطة {getPersonName(report.user)} - {formatDateTime12(report.created_at)}
+            {t('activities.meetingDrawer.byPrefix', { name: getPersonName(report.user), date: formatDateTime12(report.created_at) })}
           </div>
           <div className="mt-2 grid gap-2 sm:grid-cols-2">
-            <InfoRow label="النتيجة" value={report.outcome} />
-            <InfoRow label="الإجراء التالي" value={report.next_action} />
-            <InfoRow label="التقييم" value={report.rating} />
-            <InfoRow label="تاريخ التحديث" value={formatDateTime12(report.updated_at)} />
+            <InfoRow label={t('activities.meetingDrawer.fields.outcome')} value={report.outcome} />
+            <InfoRow label={t('activities.meetingDrawer.fields.nextAction')} value={report.next_action} />
+            <InfoRow label={t('activities.meetingDrawer.fields.rating')} value={report.rating} />
+            <InfoRow label={t('activities.meetingDrawer.fields.updatedAt')} value={formatDateTime12(report.updated_at)} />
           </div>
           <div className="mt-2 flex justify-end">
             <Button type="button" variant="outline" size="sm" onClick={() => onOpenReport(report)}>
               <Receipt size={14} />
-              عرض التقرير
+              {t('activities.meetingDrawer.viewReport')}
             </Button>
           </div>
         </div>
@@ -184,6 +188,7 @@ export function MeetingDataDrawer({
   onChanged,
   allowComplete = false,
 }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const mutations = useMeetingMutations()
@@ -212,8 +217,8 @@ export function MeetingDataDrawer({
   const isScheduled = getNormalizedStatus(meeting?.status) === 'scheduled'
   const isMeetingType = getNormalizedType(meeting?.type || schedule?.type) === 'meeting'
   const isCallType = getNormalizedType(meeting?.type || schedule?.type) === 'call'
-  const countdownLabel = isScheduled ? getCountdown(meeting?.start_at, nowTimestamp) : ''
-  const elapsedLabel = isInProgress ? getElapsedDurationLabel(meeting, nowTimestamp) : formatElapsedSince(meeting?.actual_start_at, nowTimestamp, { includeSeconds: true })
+  const countdownLabel = isScheduled ? getCountdown(meeting?.start_at, nowTimestamp, t) : ''
+  const elapsedLabel = isInProgress ? getElapsedDurationLabel(meeting, nowTimestamp, t) : formatElapsedSince(meeting?.actual_start_at, nowTimestamp, { includeSeconds: true }, t)
 
   const reportCounts = useMemo(() => {
     const pre = reports.filter((report) => String(report?.title || '').toLowerCase().includes('pre')).length
@@ -223,30 +228,30 @@ export function MeetingDataDrawer({
 
   const tabs = useMemo(() => {
     const baseTabs = [
-      { id: 'overview', label: 'نظرة عامة' },
-      { id: 'timing', label: 'التوقيت' },
-      { id: 'participants', label: 'المشاركون' },
-      { id: 'notes', label: 'الملاحظات' },
-      { id: 'attachments', label: 'المرفقات' },
+      { id: 'overview', label: t('activities.meetingDrawer.tabs.overview') },
+      { id: 'timing', label: t('activities.meetingDrawer.tabs.timing') },
+      { id: 'participants', label: t('activities.meetingDrawer.tabs.participants') },
+      { id: 'notes', label: t('activities.meetingDrawer.tabs.notes') },
+      { id: 'attachments', label: t('activities.meetingDrawer.tabs.attachments') },
     ]
 
     if (isMeetingType) {
-      return [...baseTabs.slice(0, 3), { id: 'reports', label: 'التقارير' }, ...baseTabs.slice(3)]
+      return [...baseTabs.slice(0, 3), { id: 'reports', label: t('activities.meetingDrawer.tabs.reports') }, ...baseTabs.slice(3)]
     }
 
     if (isCallType) {
-      return [...baseTabs.slice(0, 2), { id: 'call', label: 'بيانات المكالمة' }, ...baseTabs.slice(2)]
+      return [...baseTabs.slice(0, 2), { id: 'call', label: t('activities.meetingDrawer.tabs.call') }, ...baseTabs.slice(2)]
     }
 
     return baseTabs
-  }, [isCallType, isMeetingType])
+  }, [isCallType, isMeetingType, t])
 
   const tabHoverContent = useMemo(() => {
     const timingLines = [
-      ['بداية الموعد', formatDateTime12(meeting?.start_at)],
-      ['نهاية الموعد', formatDateTime12(meeting?.end_at)],
-      ['البداية الفعلية', formatDateTime12(meeting?.actual_start_at)],
-      ['النهاية الفعلية', formatDateTime12(meeting?.actual_end_at)],
+      [t('activities.meetingDrawer.fields.startAt'), formatDateTime12(meeting?.start_at)],
+      [t('activities.meetingDrawer.fields.endAt'), formatDateTime12(meeting?.end_at)],
+      [t('activities.meetingDrawer.fields.actualStart'), formatDateTime12(meeting?.actual_start_at)],
+      [t('activities.meetingDrawer.fields.actualEnd'), formatDateTime12(meeting?.actual_end_at)],
     ].filter(([, value]) => hasValue(value))
 
     const participantNames = participants
@@ -255,17 +260,17 @@ export function MeetingDataDrawer({
       .slice(0, 8)
 
     const noteItems = notes
-      .map((note) => fieldValue(note.note || note.body || note.text, 'ملاحظة بدون نص'))
+      .map((note) => fieldValue(note.note || note.body || note.text, t('activities.meetingDrawer.fields.noteFallback')))
       .filter(Boolean)
       .slice(0, 3)
 
     const attachmentItems = attachments
-      .map((attachment) => attachment.name || attachment.file_name || attachment.filename || attachment.path || 'مرفق')
+      .map((attachment) => attachment.name || attachment.file_name || attachment.filename || attachment.path || t('activities.meetingDrawer.attachmentFallback'))
       .filter(Boolean)
       .slice(0, 5)
 
     const reportTitles = reports
-      .map((report) => fieldValue(report.title, 'تقرير بدون عنوان'))
+      .map((report) => fieldValue(report.title, t('activities.meetingDrawer.untitledReport')))
       .filter(Boolean)
       .slice(0, 5)
 
@@ -276,7 +281,7 @@ export function MeetingDataDrawer({
       attachments: attachmentItems,
       reports: reportTitles,
     }
-  }, [attachments, meeting, notes, participants, reports])
+  }, [attachments, meeting, notes, participants, reports, t])
 
   const refresh = async () => {
     await infoQuery.refetch()
@@ -309,12 +314,12 @@ export function MeetingDataDrawer({
   const handleComplete = async () => {
     if (!resolvedMeetingId) return
 
-    const elapsedAtFinish = getElapsedDurationLabel(meeting, Date.now())
+    const elapsedAtFinish = getElapsedDurationLabel(meeting, Date.now(), t)
     await mutations.changeStatus.mutateAsync({
       meetingId: resolvedMeetingId,
       payload: buildScheduleStatusPayload('completed'),
     })
-    toast.success('تم إنهاء الاجتماع بنجاح.')
+    toast.success(t('activities.meetingDrawer.meetingFinished'))
     if (isMeetingType) {
       setFinishElapsedDuration(elapsedAtFinish)
       setOpenAfterReportDrawer(true)
@@ -341,7 +346,7 @@ export function MeetingDataDrawer({
       meetingId: resolvedMeetingId,
       payload: buildScheduleStatusPayload('in_progress'),
     })
-    toast.success('تم بدء الموعد.')
+    toast.success(t('activities.meetingDrawer.meetingStarted'))
     await refresh()
   }
 
@@ -352,7 +357,7 @@ export function MeetingDataDrawer({
       meetingId: resolvedMeetingId,
       payload: buildScheduleStatusPayload('cancelled'),
     })
-    toast.success('تم إلغاء الموعد.')
+    toast.success(t('activities.meetingDrawer.meetingCancelled'))
     await refresh()
   }
 
@@ -361,7 +366,7 @@ export function MeetingDataDrawer({
       {infoQuery.isLoading ? (
         <div className="flex items-center justify-center gap-2 rounded-xl border border-[#E5F7F8] bg-[#F8FEFF] p-5 text-xs font-bold text-[#007A80]">
           <Loader2 size={15} className="animate-spin" />
-          جاري تحميل بيانات الموعد...
+          {t('activities.meetingDrawer.loadingMeeting')}
         </div>
       ) : null}
 
@@ -373,12 +378,12 @@ export function MeetingDataDrawer({
                 {isInProgress ? (
                   <span className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 text-xs font-black text-[#0F766E]">
                     <Radio size={13} />
-                    Live
+                    {t('activities.meetingDrawer.live')}
                   </span>
                 ) : null}
-                <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-[#007A80]">{getScheduleTypeLabel(meeting.type)}</span>
+                <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-[#007A80]">{getScheduleTypeLabel(meeting.type, t)}</span>
                 <span className={`rounded-full border px-3 py-1 text-xs font-black ${getScheduleStatusBadgeClasses(meeting.status)}`}>
-                  {getScheduleStatusLabel(meeting.status)}
+                  {getScheduleStatusLabel(meeting.status, t)}
                 </span>
                 <span className="rounded-full border border-[#FDE68A] bg-[#FEF3C7] px-3 py-1 text-xs font-black text-[#92400E]">{fieldValue(meeting.priority)}</span>
               </div>
@@ -386,10 +391,10 @@ export function MeetingDataDrawer({
               {isScheduled ? (
                 <div className="flex flex-wrap items-center gap-2">
                   <Button type="button" variant="ai" size="sm" onClick={handleStart} loading={mutations.changeStatus.isPending}>
-                    بدء
+                    {t('activities.meetingDrawer.start')}
                   </Button>
                   <Button type="button" variant="danger" size="sm" onClick={handleCancel} loading={mutations.changeStatus.isPending}>
-                    إلغاء
+                    {t('actions.cancel')}
                   </Button>
                 </div>
               ) : null}
@@ -397,12 +402,12 @@ export function MeetingDataDrawer({
               {(allowComplete || isMeetingType || isCallType) && isInProgress ? (
                 <Button type="button" variant="danger" size="sm" onClick={handleComplete} loading={mutations.changeStatus.isPending}>
                   <CheckCircle2 size={14} />
-                  إنهاء
+                  {t('activities.meetingDrawer.finish')}
                 </Button>
               ) : null}
             </div>
 
-            <h3 className="mt-3 break-words text-base font-black text-[var(--text)]">{fieldValue(meeting.title, 'بدون عنوان')}</h3>
+            <h3 className="mt-3 break-words text-base font-black text-[var(--text)]">{fieldValue(meeting.title, t('activities.preMeetingReport.untitled'))}</h3>
             {hasValue(meeting.description) ? (
               <p className="mt-1 whitespace-pre-wrap break-words text-xs font-semibold text-[var(--text-muted)]">{meeting.description}</p>
             ) : null}
@@ -415,16 +420,16 @@ export function MeetingDataDrawer({
 
             {isInProgress && elapsedLabel ? (
               <div className="mt-3 rounded-lg border border-[#BBF7D0] bg-white px-3 py-2 text-xs font-black text-[#166534]">
-                الوقت منذ البدء: {elapsedLabel}
+                {t('activities.meetingDrawer.elapsedSinceStart', { value: elapsedLabel })}
               </div>
             ) : null}
 
             <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-bold">
               <span className={`rounded-full border px-2 py-1 ${reportCounts.pre ? 'border-[#BBF7D0] bg-[#ECFDF5] text-[#166534]' : 'border-[#E2E8F0] bg-white text-[#475569]'}`}>
-                تقرير قبل الاجتماع: {reportCounts.pre ? `${reportCounts.pre} متوفر` : 'غير موجود'}
+                {t('activities.preMeetingReport.title')}: {reportCounts.pre ? t('activities.meetingDrawer.available', { count: reportCounts.pre }) : t('activities.meetingDrawer.notAvailable')}
               </span>
               <span className={`rounded-full border px-2 py-1 ${reportCounts.after ? 'border-[#BFDBFE] bg-[#EFF6FF] text-[#1D4ED8]' : 'border-[#E2E8F0] bg-white text-[#475569]'}`}>
-                تقرير بعد الاجتماع: {reportCounts.after ? `${reportCounts.after} متوفر` : 'غير موجود'}
+                {t('activities.meetingDrawer.afterMeetingReportLabel')}: {reportCounts.after ? t('activities.meetingDrawer.available', { count: reportCounts.after }) : t('activities.meetingDrawer.notAvailable')}
               </span>
             </div>
           </section>
@@ -459,7 +464,7 @@ export function MeetingDataDrawer({
                       </span>
                     ) : null}
                     {(tab.id === 'notes' || tab.id === 'attachments') && count > 0 ? (
-                      <span className="h-2 w-2 rounded-full bg-[#F59E0B]" aria-label="تنبيه" title="يوجد محتوى مهم" />
+                      <span className="h-2 w-2 rounded-full bg-[#F59E0B]" aria-label={t('activities.meetingDrawer.importantContentAlert')} title={t('activities.meetingDrawer.importantContentTitle')} />
                     ) : null}
                   </button>
 
@@ -467,7 +472,7 @@ export function MeetingDataDrawer({
                     <div className="absolute left-0 top-full z-[180000] mt-2 w-72 max-w-[80vw] rounded-xl border border-[#BEEFF2] bg-white p-3 shadow-xl">
                       <div className="space-y-2">
                         {hoverItems.map((item) => {
-                          const label = Array.isArray(item) ? item[0] : 'العنصر'
+                          const label = Array.isArray(item) ? item[0] : t('activities.meetingDrawer.itemFallback')
                           const value = Array.isArray(item) ? item[1] : item
 
                           return (
@@ -490,18 +495,18 @@ export function MeetingDataDrawer({
 
           {activeTab === 'overview' ? (
             <>
-              <Section title="البيانات الأساسية" icon={CalendarClock}>
+              <Section title={t('activities.meetingDrawer.sections.basicData')} icon={CalendarClock}>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  <InfoRow label="الوضع" value={meeting.mode} />
-                  <InfoRow label="النطاق" value={meeting.scope} />
-                  {isMeetingType ? <InfoRow label="رابط الاجتماع" value={meeting.meeting_link} href={meeting.meeting_link} /> : null}
-                  {isMeetingType ? <InfoRow label="المكان" value={meeting.location} /> : null}
-                  {isMeetingType ? <InfoRow label="خط الطول" value={meeting.longitude} /> : null}
-                  {isMeetingType ? <InfoRow label="خط العرض" value={meeting.latitude} /> : null}
+                  <InfoRow label={t('activities.meetingDrawer.fields.mode')} value={meeting.mode} />
+                  <InfoRow label={t('activities.meetingDrawer.fields.scope')} value={meeting.scope} />
+                  {isMeetingType ? <InfoRow label={t('activities.meetingDrawer.fields.meetingLink')} value={meeting.meeting_link} href={meeting.meeting_link} /> : null}
+                  {isMeetingType ? <InfoRow label={t('activities.meetingDrawer.fields.location')} value={meeting.location} /> : null}
+                  {isMeetingType ? <InfoRow label={t('activities.meetingDrawer.fields.longitude')} value={meeting.longitude} /> : null}
+                  {isMeetingType ? <InfoRow label={t('activities.meetingDrawer.fields.latitude')} value={meeting.latitude} /> : null}
                 </div>
               </Section>
 
-              <Section title="منشئ الموعد" icon={UserRound}>
+              <Section title={t('activities.meetingDrawer.sections.meetingCreator')} icon={UserRound}>
                 <div className="relative">
                   <button
                     type="button"
@@ -517,8 +522,8 @@ export function MeetingDataDrawer({
                   {creatorHoverOpen ? (
                     <div className="absolute z-20 mt-2 w-72 max-w-[90vw] rounded-xl border border-[#BEEFF2] bg-white p-3 shadow-xl">
                       <div className="grid gap-2">
-                        <InfoRow label="البريد" value={meeting.creator?.email} />
-                        <InfoRow label="الهاتف" value={meeting.creator?.phone} />
+                        <InfoRow label={t('customers.email')} value={meeting.creator?.email} />
+                        <InfoRow label={t('customers.phone')} value={meeting.creator?.phone} />
                         <InfoRow label="username" value={meeting.creator?.username} />
                         <InfoRow label="team_id" value={meeting.creator?.team_id} />
                         <InfoRow label="created_by" value={meeting.created_by} />
@@ -528,12 +533,12 @@ export function MeetingDataDrawer({
                 </div>
               </Section>
 
-              <Section title="العميل/الكيان المرتبط" icon={MapPin}>
+              <Section title={t('activities.meetingDrawer.sections.linkedCustomer')} icon={MapPin}>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  <InfoRow label="الاسم" value={meeting.taskable?.name} />
-                  <InfoRow label="البريد" value={meeting.taskable?.email} />
-                  <InfoRow label="الهاتف" value={meeting.taskable?.phone} />
-                  <InfoRow label="المصدر" value={meeting.taskable?.source} />
+                  <InfoRow label={t('customers.name')} value={meeting.taskable?.name} />
+                  <InfoRow label={t('customers.email')} value={meeting.taskable?.email} />
+                  <InfoRow label={t('customers.phone')} value={meeting.taskable?.phone} />
+                  <InfoRow label={t('activities.meetingDrawer.fields.source')} value={meeting.taskable?.source} />
                   <InfoRow label="team_id" value={meeting.team_id || meeting.team?.id} />
                 </div>
               </Section>
@@ -542,43 +547,43 @@ export function MeetingDataDrawer({
 
           {activeTab === 'timing' ? (
             <>
-              <Section title="التوقيت" icon={CalendarClock}>
+              <Section title={t('activities.meetingDrawer.sections.timing')} icon={CalendarClock}>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  <InfoRow label="بداية الموعد" value={formatDateTime12(meeting.start_at)} />
-                  <InfoRow label="نهاية الموعد" value={formatDateTime12(meeting.end_at)} />
-                  <InfoRow label="البداية الفعلية" value={formatDateTime12(meeting.actual_start_at)} />
-                  <InfoRow label="النهاية الفعلية" value={formatDateTime12(meeting.actual_end_at)} />
-                  <InfoRow label="الوقت المنقضي" value={elapsedLabel} />
+                  <InfoRow label={t('activities.meetingDrawer.fields.startAt')} value={formatDateTime12(meeting.start_at)} />
+                  <InfoRow label={t('activities.meetingDrawer.fields.endAt')} value={formatDateTime12(meeting.end_at)} />
+                  <InfoRow label={t('activities.meetingDrawer.fields.actualStart')} value={formatDateTime12(meeting.actual_start_at)} />
+                  <InfoRow label={t('activities.meetingDrawer.fields.actualEnd')} value={formatDateTime12(meeting.actual_end_at)} />
+                  <InfoRow label={t('activities.meetingDrawer.fields.elapsedTime')} value={elapsedLabel} />
                 </div>
               </Section>
 
-              <Section title="التذكير" icon={CalendarClock}>
+              <Section title={t('activities.meetingDrawer.sections.reminders')} icon={CalendarClock}>
                 <div className="grid gap-2 sm:grid-cols-3">
-                  <InfoRow label="نوع التذكير" value={meeting.reminder_type} />
-                  <InfoRow label="قبل" value={meeting.reminder_before} />
-                  <InfoRow label="الوحدة" value={meeting.reminder_unit} />
-                  <InfoRow label="وقت إرسال التذكير" value={formatDateTime12(meeting.reminder_sent_at)} />
+                  <InfoRow label={t('activities.meetingDrawer.fields.reminderType')} value={meeting.reminder_type} />
+                  <InfoRow label={t('activities.meetingDrawer.fields.reminderBefore')} value={meeting.reminder_before} />
+                  <InfoRow label={t('activities.meetingDrawer.fields.reminderUnit')} value={meeting.reminder_unit} />
+                  <InfoRow label={t('activities.meetingDrawer.fields.reminderSentAt')} value={formatDateTime12(meeting.reminder_sent_at)} />
                 </div>
               </Section>
             </>
           ) : null}
 
           {activeTab === 'call' && isCallType ? (
-            <Section title="بيانات المكالمة" icon={Phone}>
+            <Section title={t('activities.meetingDrawer.sections.callData')} icon={Phone}>
               <div className="grid gap-2 sm:grid-cols-2">
-                <InfoRow label="مزود المكالمة" value={meeting.call_provider} />
-                <InfoRow label="رقم المتصل" value={meeting.caller_number} />
-                <InfoRow label="رقم العميل" value={meeting.callee_number} />
-                <InfoRow label="حالة المكالمة" value={meeting.call_status} />
-                <InfoRow label="مدة المكالمة (ثانية)" value={meeting.call_duration_seconds} />
-                <InfoRow label="معرف مكالمة خارجي" value={meeting.external_call_id} />
-                <InfoRow label="رابط التسجيل" value={meeting.recording_url} href={meeting.recording_url} />
+                <InfoRow label={t('activities.meetingDrawer.fields.callProvider')} value={meeting.call_provider} />
+                <InfoRow label={t('activities.meetingDrawer.fields.callerNumber')} value={meeting.caller_number} />
+                <InfoRow label={t('activities.meetingDrawer.fields.calleeNumber')} value={meeting.callee_number} />
+                <InfoRow label={t('activities.meetingDrawer.fields.callStatus')} value={meeting.call_status} />
+                <InfoRow label={t('activities.meetingDrawer.fields.callDurationSeconds')} value={meeting.call_duration_seconds} />
+                <InfoRow label={t('activities.meetingDrawer.fields.externalCallId')} value={meeting.external_call_id} />
+                <InfoRow label={t('activities.meetingDrawer.fields.recordingUrl')} value={meeting.recording_url} href={meeting.recording_url} />
               </div>
             </Section>
           ) : null}
 
           {activeTab === 'participants' ? (
-            <Section title={`المشاركون (${participants.length})`} icon={UsersRound}>
+            <Section title={t('activities.meetingDrawer.sections.participantsTitle', { count: participants.length })} icon={UsersRound}>
               {participants.length ? (
                 <div className="space-y-2">
                   {participants.map((participant) => {
@@ -610,13 +615,13 @@ export function MeetingDataDrawer({
                   })}
                 </div>
               ) : (
-                <p className="text-xs font-semibold text-[var(--text-muted)]">لا يوجد مشاركون.</p>
+                <p className="text-xs font-semibold text-[var(--text-muted)]">{t('activities.meetingDrawer.noParticipants')}</p>
               )}
             </Section>
           ) : null}
 
           {activeTab === 'reports' && isMeetingType ? (
-            <Section title={`التقارير (${reports.length})`} icon={FileText}>
+            <Section title={t('activities.meetingDrawer.sections.reportsTitle', { count: reports.length })} icon={FileText}>
               <ReportsSection
                 reports={reports}
                 onOpenReport={setPreviewReport}
@@ -627,7 +632,7 @@ export function MeetingDataDrawer({
           ) : null}
 
           {activeTab === 'notes' ? (
-            <Section title={`الملاحظات (${notes.length})`} icon={StickyNote}>
+            <Section title={t('activities.meetingDrawer.sections.notesTitle', { count: notes.length })} icon={StickyNote}>
               {notes.length ? (
                 <div className="space-y-2">
                   {notes.map((note) => (
@@ -637,24 +642,24 @@ export function MeetingDataDrawer({
                   ))}
                 </div>
               ) : (
-                <p className="text-xs font-semibold text-[var(--text-muted)]">لا توجد ملاحظات.</p>
+                <p className="text-xs font-semibold text-[var(--text-muted)]">{t('activities.meetingDrawer.noNotes')}</p>
               )}
             </Section>
           ) : null}
 
           {activeTab === 'attachments' ? (
-            <Section title={`المرفقات (${attachments.length})`} icon={Paperclip}>
+            <Section title={t('activities.meetingDrawer.sections.attachmentsTitle', { count: attachments.length })} icon={Paperclip}>
               {attachments.length ? (
                 <div className="space-y-2">
                   {attachments.map((attachment) => (
                     <div key={attachment.id || attachment.path || attachment.file_name} className="rounded-lg border border-[#E5F7F8] bg-white p-2 text-xs font-semibold text-[var(--text)]">
-                      <InfoRow label="الاسم" value={attachment.name || attachment.file_name || attachment.filename || attachment.path} />
-                      <InfoRow label="الرابط" value={attachment.url || attachment.file_url || attachment.path || attachment.file_path} href={attachment.url || attachment.file_url || attachment.path || attachment.file_path} />
+                      <InfoRow label={t('customers.name')} value={attachment.name || attachment.file_name || attachment.filename || attachment.path} />
+                      <InfoRow label={t('activities.meetingDrawer.fields.link')} value={attachment.url || attachment.file_url || attachment.path || attachment.file_path} href={attachment.url || attachment.file_url || attachment.path || attachment.file_path} />
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs font-semibold text-[var(--text-muted)]">لا توجد مرفقات.</p>
+                <p className="text-xs font-semibold text-[var(--text-muted)]">{t('activities.meetingDrawer.noAttachments')}</p>
               )}
             </Section>
           ) : null}
@@ -665,7 +670,7 @@ export function MeetingDataDrawer({
       <AppDrawer
         open={Boolean(previewReport)}
         onClose={() => setPreviewReport(null)}
-        title="معاينة التقرير"
+        title={t('activities.meetingDrawer.previewReportTitle')}
         description={previewReport?.title || ''}
         size="lg"
         drawerKey="meeting-report-preview"
@@ -709,7 +714,7 @@ export function MeetingDataDrawer({
       <div className="space-y-4">
         <div className="flex items-center justify-between gap-3">
           <button type="button" onClick={onBack} className="inline-flex items-center gap-2 rounded-lg border border-[#E5F7F8] bg-white px-3 py-2 text-sm font-black text-[#007A80]">
-            العودة
+            {t('activities.meetingDrawer.back')}
           </button>
         </div>
         {body}
@@ -721,8 +726,8 @@ export function MeetingDataDrawer({
     <AppDrawer
       open={open}
       onClose={handleDrawerClose}
-      title={`تفاصيل ${getScheduleTypeLabel(meeting?.type || schedule?.type)}`}
-      description={meeting?.title || (resolvedMeetingId ? `موعد رقم ${resolvedMeetingId}` : '')}
+      title={t('activities.meetingDrawer.detailsTitlePrefix', { type: getScheduleTypeLabel(meeting?.type || schedule?.type, t) })}
+      description={meeting?.title || (resolvedMeetingId ? t('activities.meetingDrawer.scheduleNumberFallback', { id: resolvedMeetingId }) : '')}
       size="xl"
       drawerKey="meeting-data-drawer"
       resizable
@@ -738,7 +743,7 @@ export function MeetingDataDrawer({
           {isMeetingType ? (
             <Button type="button" variant="outline" size="sm" onClick={openMeetingPage}>
               <ArrowUpRight size={14} />
-              فتح الصفحة
+              {t('activities.meetingDrawer.openPage')}
             </Button>
           ) : null}
           <Button
@@ -747,7 +752,7 @@ export function MeetingDataDrawer({
             size="sm"
             onClick={() => setIsDrawerLocked((current) => !current)}
           >
-            {isDrawerLocked ? 'فتح' : 'قفل'}
+            {isDrawerLocked ? t('activities.meetingDrawer.unlockAction') : t('activities.meetingDrawer.lockAction')}
           </Button>
         </div>
       )}

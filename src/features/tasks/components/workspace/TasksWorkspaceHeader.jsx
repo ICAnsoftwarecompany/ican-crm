@@ -1,10 +1,12 @@
+import { useTranslation } from 'react-i18next'
 import { CalendarDays, KanbanSquare, ListTodo, Plus, Search, Table2 } from 'lucide-react'
 
 function ViewSwitcher({ value, onChange }) {
+  const { t } = useTranslation()
   const options = [
-    { id: 'list', label: 'List', icon: Table2 },
-    { id: 'board', label: 'Board', icon: KanbanSquare },
-    { id: 'calendar', label: 'Calendar', icon: CalendarDays },
+    { id: 'list', label: t('tasks.workspace.listView'), icon: Table2 },
+    { id: 'board', label: t('tasks.workspace.boardView'), icon: KanbanSquare },
+    { id: 'calendar', label: t('tasks.workspace.calendarView'), icon: CalendarDays },
   ]
 
   return (
@@ -42,6 +44,8 @@ export function TasksWorkspaceHeader({
   filtersContent,
   extraActions,
 }) {
+  const { t } = useTranslation()
+
   return (
     <div className="rounded-2xl border border-[#D7EEF0] bg-[#F8FEFF] p-4 shadow-sm">
       <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
@@ -50,8 +54,8 @@ export function TasksWorkspaceHeader({
             <ListTodo size={18} />
           </span>
           <div className="min-w-0">
-            <h1 className="truncate text-lg font-black text-[#0F172A]">Tasks Workspace</h1>
-            <p className="text-xs font-semibold text-[#64748B]">Smart views, boards, lists, and CRM-linked work</p>
+            <h1 className="truncate text-lg font-black text-[#0F172A]">{t('tasks.workspace.headerTitle')}</h1>
+            <p className="text-xs font-semibold text-[#64748B]">{t('tasks.workspace.headerSubtitle')}</p>
           </div>
         </div>
 
@@ -61,7 +65,7 @@ export function TasksWorkspaceHeader({
             <input
               value={search}
               onChange={(event) => onSearchChange?.(event.target.value)}
-              placeholder="Search tasks"
+              placeholder={t('tasks.board.searchTasksPlaceholder')}
               className="h-9 w-full rounded-lg border border-[#D7EEF0] bg-white ps-8 pe-3 text-xs font-semibold text-[#0F172A] outline-none focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]"
             />
           </label>
@@ -72,7 +76,7 @@ export function TasksWorkspaceHeader({
             className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#007A80] px-3 text-xs font-black text-white shadow-sm transition-colors hover:bg-[#00666B]"
           >
             <Plus size={14} />
-            New Task
+            {t('tasks.page.newTask')}
           </button>
 
           <ViewSwitcher value={view} onChange={onViewChange} />

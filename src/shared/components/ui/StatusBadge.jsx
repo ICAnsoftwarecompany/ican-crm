@@ -1,23 +1,22 @@
 import { useTranslation } from 'react-i18next'
 
 const STATUS_STYLES = {
-  new:       { bg: '#EFF6FF', text: '#1D4ED8', border: '#BFDBFE' },
-  contacted: { bg: '#FFFBEB', text: '#92400E', border: '#FDE68A' },
-  qualified: { bg: '#F5F3FF', text: '#5B21B6', border: '#DDD6FE' },
-  won:       { bg: '#ECFDF5', text: '#065F46', border: '#A7F3D0' },
-  lost:      { bg: '#FEF2F2', text: '#991B1B', border: '#FECACA' },
-  active:    { bg: '#ECFDF5', text: '#065F46', border: '#A7F3D0' },
-  inactive:  { bg: '#F9FAFB', text: '#6B7280', border: '#E5E7EB' },
+  new:       'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-200 dark:border-blue-800',
+  contacted: 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950 dark:text-amber-200 dark:border-amber-800',
+  qualified: 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-200 dark:border-violet-800',
+  won:       'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-200 dark:border-emerald-800',
+  lost:      'bg-red-50 text-red-800 border-red-200 dark:bg-red-950 dark:text-red-200 dark:border-red-800',
+  active:    'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-200 dark:border-emerald-800',
+  inactive:  'bg-[var(--surface-2)] text-[var(--text-muted)] border-[var(--border)]',
 }
 
 export function StatusBadge({ statusKey }) {
   const { t } = useTranslation()
-  const colors = STATUS_STYLES[statusKey] || STATUS_STYLES.new
+  const className = STATUS_STYLES[statusKey] || STATUS_STYLES.new
 
   return (
     <span
-      style={{ background: colors.bg, color: colors.text, borderColor: colors.border }}
-      className="px-2.5 py-1 rounded-full text-xs font-medium border font-arabic"
+      className={`px-2.5 py-1 rounded-full text-xs font-medium border font-arabic ${className}`}
     >
       {t(`status.${statusKey}`, statusKey)}
     </span>

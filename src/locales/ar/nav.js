@@ -1,0 +1,32 @@
+export default {
+  "sections": {
+    "overview": "نظرة عامة",
+    "sales": "المبيعات",
+    "growth": "النمو",
+    "customerService": "خدمة العملاء",
+    "workspace": "مساحة العمل",
+    "insights": "التقارير",
+    "automation": "الأتمتة",
+    "administration": "الإدارة"
+  },
+  "dashboard": "لوحة التحكم",
+  "leads": "العملاء المحتملون",
+  "customers": "مركز العملاء المحتملين",
+  "activities": "الأنشطة",
+  "proposals": "عروض الأسعار",
+  "conversations": "المحادثات",
+  "campaigns": "الحملات",
+  "opportunities": "الفرص البيعية",
+  "opportunityCenter": "مركز الفرص",
+  "outreachCampaigns": "حملات التواصل",
+  "automation": "مركز الأتمتة",
+  "leadGeneration": "توليد العملاء المحتملين",
+  "tasks": "المهام",
+  "calendar": "التقويم",
+  "teamChat": "الشات الداخلي",
+  "products": "المنتجات والخدمات",
+  "teams": "الفرق",
+  "users": "المستخدمين",
+  "settings": "الإعدادات",
+  "templates": "القوالب"
+}

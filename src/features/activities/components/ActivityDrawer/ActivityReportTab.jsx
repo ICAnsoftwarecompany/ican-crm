@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next'
 import { useActivityReports } from '../../hooks/useActivityReports'
 import { ReportSummary } from '../ActivityReport/ReportSummary'
 
 export function ActivityReportTab({ activity, onFinish }) {
+  const { t } = useTranslation()
   const reportsQuery = useActivityReports(activity?.id)
   const reports = reportsQuery.data || []
   const currentReport = activity.report || reports[0]
@@ -14,7 +16,7 @@ export function ActivityReportTab({ activity, onFinish }) {
           onClick={onFinish}
           className="rounded-lg border border-[#A0ECF0] bg-[#E8F9FA] px-3 py-2 text-sm font-black text-[#007A80] hover:bg-[#D8F4F6]"
         >
-          إنهاء النشاط وإضافة تقرير
+          {t('activities.reportDialog.title')}
         </button>
       ) : null}
       <ReportSummary report={currentReport} activity={activity} />

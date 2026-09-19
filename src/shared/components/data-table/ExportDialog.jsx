@@ -1,5 +1,6 @@
 import { Button } from '../ui/Button'
 import { AppModal } from '../overlays/AppModal'
+import { useTranslation } from 'react-i18next'
 
 export function ExportDialog({
   isOpen,
@@ -10,26 +11,27 @@ export function ExportDialog({
   onColumnModeChange,
   hasFilteredData = true,
 }) {
+  const { t } = useTranslation()
   return (
     <AppModal
       isOpen={isOpen}
       onClose={onClose}
-      title="تصدير البيانات"
+      title={t('dataTable.export.title')}
       size="md"
       footer={
         <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button type="button" variant="outline" onClick={onClose} className="justify-center">
-            إلغاء
+            {t('actions.cancel')}
           </Button>
           <Button type="button" variant="primary" onClick={() => onExport()} className="justify-center">
-            تصدير
+            {t('actions.export')}
           </Button>
         </div>
       }
     >
       <div className="space-y-4">
         <div>
-          <h3 className="font-bold mb-2 font-arabic">تصدير</h3>
+          <h3 className="font-bold mb-2 font-arabic">{t('dataTable.export.scope')}</h3>
           <div className="space-y-2">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -40,7 +42,7 @@ export function ExportDialog({
                 onChange={(e) => onExportModeChange(e.target.value)}
                 disabled={!hasFilteredData}
               />
-              <span className="font-arabic">النتائج المصفاة الحالية</span>
+              <span className="font-arabic">{t('dataTable.export.filtered')}</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -50,13 +52,13 @@ export function ExportDialog({
                 checked={exportOptions.exportMode === 'all'}
                 onChange={(e) => onExportModeChange(e.target.value)}
               />
-              <span className="font-arabic">جميع البيانات</span>
+              <span className="font-arabic">{t('dataTable.export.allData')}</span>
             </label>
           </div>
         </div>
 
         <div>
-          <h3 className="font-bold mb-2 font-arabic">الأعمدة</h3>
+          <h3 className="font-bold mb-2 font-arabic">{t('dataTable.export.columns')}</h3>
           <div className="space-y-2">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -66,7 +68,7 @@ export function ExportDialog({
                   onColumnModeChange(e.target.checked ? 'visible' : 'all')
                 }
               />
-              <span className="font-arabic">الأعمدة المرئية فقط</span>
+              <span className="font-arabic">{t('dataTable.export.visibleColumns')}</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -76,15 +78,13 @@ export function ExportDialog({
                   onColumnModeChange(e.target.checked ? 'all' : 'visible')
                 }
               />
-              <span className="font-arabic">جميع الأعمدة</span>
+              <span className="font-arabic">{t('dataTable.export.allColumns')}</span>
             </label>
           </div>
         </div>
 
         <p className="text-xs text-gray-500 font-arabic">
-          {exportOptions.exportMode === 'filtered'
-            ? 'سيتم تصدير البيانات المصفاة الحالية فقط'
-            : 'سيتم تصدير جميع البيانات'}
+          {t(exportOptions.exportMode === 'filtered' ? 'dataTable.export.filteredNotice' : 'dataTable.export.allNotice')}
         </p>
       </div>
     </AppModal>

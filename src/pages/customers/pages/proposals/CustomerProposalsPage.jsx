@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Edit3, Eye, FileSignature, Plus, Search, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -13,6 +14,7 @@ import { formatDate, formatMoney, getProposalCustomer } from './utils/proposalPa
 import { ProposalWizard } from './components/ProposalWizard'
 
 export function CustomerProposalsPage() {
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [isWizardOpen, setIsWizardOpen] = useState(false)
   const [filters, setFilters] = useState({ search: '', status: '', assigned_to: '' })
@@ -33,23 +35,23 @@ export function CustomerProposalsPage() {
   }, [filters.search, proposals])
 
   const handleDelete = async (proposal) => {
-    if (!window.confirm(`هل تريد حذف العرض "${proposal.title || proposal.id}"؟`)) return
+    if (!window.confirm(t('proposals.page.confirmDelete', { title: proposal.title || proposal.id }))) return
     await mutations.deleteProposal.mutateAsync(proposal.id)
-    toast.success('تم حذف العرض')
+    toast.success(t('proposals.page.deletedToast'))
   }
 
   return (
-    <div className="space-y-6" dir="rtl">
-      <PageToolbar title="عروض الأسعار" description="إدارة العروض وفتح الـ Visual Builder لإنشاء Proposal احترافي بدون التعامل مع JSON.">
+    <div className="space-y-6">
+      <PageToolbar title={t('proposals.page.pageTitle')} description={t('proposals.page.pageDescription')}>
         <Link to="/LeadsCenter/proposals/templates">
           <Button variant="outline">
             <FileSignature size={16} />
-            القوالب
+            {t('proposals.page.templates')}
           </Button>
         </Link>
         <Button onClick={() => setIsWizardOpen(true)}>
           <Plus size={16} />
-          عرض جديد
+          {t('proposals.page.newProposal')}
         </Button>
       </PageToolbar>
 
@@ -58,43 +60,43 @@ export function CustomerProposalsPage() {
           <Input
             value={filters.search}
             onChange={(event) => setFilters((current) => ({ ...current, search: event.target.value }))}
-            placeholder="بحث باسم العرض أو العميل..."
+            placeholder={t('proposals.page.searchPlaceholder')}
             startIcon={<Search size={16} />}
           />
           <Select
             value={filters.status}
             onChange={(value) => setFilters((current) => ({ ...current, status: value }))}
             options={[
-              { value: 'draft', label: 'Draft' },
-              { value: 'sent', label: 'Sent' },
-              { value: 'accepted', label: 'Accepted' },
-              { value: 'rejected', label: 'Rejected' },
+              { value: 'draft', label: t('proposals.page.status.draft') },
+              { value: 'sent', label: t('proposals.page.status.sent') },
+              { value: 'accepted', label: t('proposals.page.status.accepted') },
+              { value: 'rejected', label: t('proposals.page.status.rejected') },
             ]}
-            placeholder="كل الحالات"
+            placeholder={t('customers.page.allStatuses')}
           />
           <Select
             value={filters.assigned_to}
             onChange={(value) => setFilters((current) => ({ ...current, assigned_to: value }))}
             options={users.map((user) => ({ value: String(user.id), label: user.name || user.email || `User #${user.id}` }))}
-            placeholder="كل المستخدمين"
+            placeholder={t('proposals.page.allUsers')}
           />
           <Button variant="ghost" onClick={() => setFilters({ search: '', status: '', assigned_to: '' })}>
-            إعادة
+            {t('proposals.page.resetFilters')}
           </Button>
         </div>
       </section>
 
       <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)]">
         <div className="grid grid-cols-[1.4fr_1fr_.7fr_.8fr_auto] gap-3 border-b border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-xs font-black text-[var(--text-muted)]">
-          <div>العرض</div>
-          <div>العميل</div>
-          <div>الإجمالي</div>
-          <div>الحالة</div>
-          <div>إجراءات</div>
+          <div>{t('proposals.page.columnProposal')}</div>
+          <div>{t('proposals.wizard.steps.customer')}</div>
+          <div>{t('proposals.pricing.totalLabel')}</div>
+          <div>{t('customers.table.status')}</div>
+          <div>{t('proposals.page.columnActions')}</div>
         </div>
 
         {proposalsQuery.isLoading ? (
-          <div className="p-10 text-center text-sm font-black text-[var(--text-muted)]">جاري تحميل العروض...</div>
+          <div className="p-10 text-center text-sm font-black text-[var(--text-muted)]">{t('proposals.page.loadingProposals')}</div>
         ) : null}
 
         {!proposalsQuery.isLoading && !visibleProposals.length ? (
@@ -102,8 +104,8 @@ export function CustomerProposalsPage() {
             <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#E8F9FA] text-[#007A80]">
               <FileSignature size={22} />
             </div>
-            <p className="text-sm font-black text-[var(--text)]">لا توجد عروض بعد</p>
-            <p className="mt-1 text-xs font-semibold text-[var(--text-muted)]">ابدأ من زر عرض جديد واختر العميل والقالب.</p>
+            <p className="text-sm font-black text-[var(--text)]">{t('proposals.page.noProposalsYet')}</p>
+            <p className="mt-1 text-xs font-semibold text-[var(--text-muted)]">{t('proposals.page.noProposalsHint')}</p>
           </div>
         ) : null}
 
@@ -112,8 +114,8 @@ export function CustomerProposalsPage() {
           return (
             <div key={proposal.id} className="grid grid-cols-[1.4fr_1fr_.7fr_.8fr_auto] items-center gap-3 border-b border-[var(--border)] px-4 py-3 last:border-b-0 hover:bg-[#F8FAFC]">
               <div className="min-w-0">
-                <div className="truncate text-sm font-black text-[var(--text)]">{proposal.title || `Proposal #${proposal.id}`}</div>
-                <div className="mt-1 truncate text-xs font-semibold text-[var(--text-muted)]">{proposal.description || `ينتهي: ${formatDate(proposal.expires_at)}`}</div>
+                <div className="truncate text-sm font-black text-[var(--text)]">{proposal.title || t('proposals.page.proposalFallback', { id: proposal.id })}</div>
+                <div className="mt-1 truncate text-xs font-semibold text-[var(--text-muted)]">{proposal.description || t('proposals.page.expiresPrefix', { date: formatDate(proposal.expires_at, i18n.language) })}</div>
               </div>
               <div className="min-w-0">
                 <div className="truncate text-sm font-bold text-[var(--text)]">{customer?.name || '-'}</div>
@@ -122,17 +124,17 @@ export function CustomerProposalsPage() {
               <div className="text-sm font-black text-[#162847]" dir="ltr">{formatMoney(proposal.total ?? proposal.current_version?.total, proposal.currency)}</div>
               <div>
                 <span className="rounded-full border border-[#DCE8F3] bg-[#F8FAFC] px-2 py-1 text-xs font-black text-[var(--text-muted)]">
-                  {proposal.status || 'draft'}
+                  {t(`proposals.page.status.${proposal.status || 'draft'}`, { defaultValue: proposal.status || 'draft' })}
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" onClick={() => navigate(`/LeadsCenter/proposals/${proposal.id}/builder`)} aria-label="فتح Builder">
+                <Button variant="ghost" size="icon" onClick={() => navigate(`/LeadsCenter/proposals/${proposal.id}/builder`)} aria-label={t('proposals.page.openBuilder')}>
                   <Edit3 size={16} />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => navigate(`/LeadsCenter/proposals/${proposal.id}/builder?preview=1`)} aria-label="معاينة">
+                <Button variant="ghost" size="icon" onClick={() => navigate(`/LeadsCenter/proposals/${proposal.id}/builder?preview=1`)} aria-label={t('proposals.page.preview')}>
                   <Eye size={16} />
                 </Button>
-                <Button variant="ghost" size="icon" className="text-[#EF4444]" onClick={() => handleDelete(proposal)} aria-label="حذف">
+                <Button variant="ghost" size="icon" className="text-[#EF4444]" onClick={() => handleDelete(proposal)} aria-label={t('proposals.page.delete')}>
                   <Trash2 size={16} />
                 </Button>
               </div>

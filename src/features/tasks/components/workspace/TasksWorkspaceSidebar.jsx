@@ -1,20 +1,25 @@
+import { useTranslation } from 'react-i18next'
 import { CalendarClock, ChevronLeft, ChevronRight, FolderKanban, ListTodo, Plus, Sparkles } from 'lucide-react'
 
-const SMART_VIEWS = [
-  { id: 'all', label: 'All Tasks', icon: ListTodo },
-  { id: 'today', label: 'Due Today', icon: CalendarClock },
-  { id: 'overdue', label: 'Overdue', icon: Sparkles },
-  { id: 'in_progress', label: 'In Progress', icon: FolderKanban },
-]
+function getSmartViews(t) {
+  return [
+    { id: 'all', label: t('tasks.page.allTasks'), icon: ListTodo },
+    { id: 'today', label: t('tasks.workspace.dueToday'), icon: CalendarClock },
+    { id: 'overdue', label: t('activities.derivedStates.overdue'), icon: Sparkles },
+    { id: 'in_progress', label: t('activities.status.in_progress'), icon: FolderKanban },
+  ]
+}
 
-const DEFAULT_BOARDS = [
-  { id: 'main', name: 'Main Board', accent: 'bg-[#E8F9FA] text-[#007A80]' },
-  { id: 'sales', name: 'Sales Team', accent: 'bg-[#EEF2FF] text-[#4F46E5]' },
-  { id: 'followups', name: 'Follow-ups', accent: 'bg-[#FFF7ED] text-[#C2410C]' },
-]
+function getDefaultBoards(t) {
+  return [
+    { id: 'main', name: t('tasks.page.mainBoard'), accent: 'bg-[#E8F9FA] text-[#007A80]' },
+    { id: 'sales', name: t('tasks.page.salesTeamBoard'), accent: 'bg-[#EEF2FF] text-[#4F46E5]' },
+    { id: 'followups', name: t('tasks.page.followUpsBoard'), accent: 'bg-[#FFF7ED] text-[#C2410C]' },
+  ]
+}
 
 export function TasksWorkspaceSidebar({
-  boards = DEFAULT_BOARDS,
+  boards,
   activeSmartView = 'all',
   activeBoardId = 'main',
   onSmartViewChange,
@@ -24,6 +29,9 @@ export function TasksWorkspaceSidebar({
   collapsed = false,
   metrics = {},
 }) {
+  const { t } = useTranslation()
+  const smartViews = getSmartViews(t)
+  const resolvedBoards = boards ?? getDefaultBoards(t)
   const toggleIcon = collapsed ? ChevronRight : ChevronLeft
   const ToggleIcon = toggleIcon
 
@@ -38,8 +46,8 @@ export function TasksWorkspaceSidebar({
       ].join(' ')}>
         {!collapsed && (
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#64748B]">Tasks</p>
-            <h2 className="text-base font-black text-[#0F172A]">Workspace</h2>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#64748B]">{t('nav.tasks')}</p>
+            <h2 className="text-base font-black text-[#0F172A]">{t('tasks.workspace.title')}</h2>
           </div>
         )}
 
@@ -48,7 +56,7 @@ export function TasksWorkspaceSidebar({
             type="button"
             onClick={onToggleCollapse}
             className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#D7EEF0] bg-white text-[#64748B]"
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-label={collapsed ? t('tasks.workspace.expandSidebar') : t('tasks.workspace.collapseSidebar')}
           >
             <ToggleIcon size={14} />
           </button>
@@ -60,7 +68,7 @@ export function TasksWorkspaceSidebar({
               className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#D7EEF0] bg-white px-2 text-[11px] font-black text-[#007A80]"
             >
               <Plus size={13} />
-              Add Board
+              {t('tasks.workspace.addBoard')}
             </button>
           )}
         </div>
@@ -69,9 +77,9 @@ export function TasksWorkspaceSidebar({
       {!collapsed && (
         <div className="space-y-4">
           <section>
-            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#64748B]">Smart Views</p>
+            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#64748B]">{t('tasks.workspace.smartViews')}</p>
             <div className="space-y-1.5">
-              {SMART_VIEWS.map(({ id, label, icon: Icon }) => {
+              {smartViews.map(({ id, label, icon: Icon }) => {
                 const active = activeSmartView === id
                 return (
                   <button
@@ -99,9 +107,9 @@ export function TasksWorkspaceSidebar({
           </section>
 
           <section>
-            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#64748B]">My Boards</p>
+            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#64748B]">{t('tasks.workspace.myBoards')}</p>
             <div className="space-y-1.5">
-              {boards.map((board) => {
+              {resolvedBoards.map((board) => {
                 const active = activeBoardId === board.id
                 return (
                   <button

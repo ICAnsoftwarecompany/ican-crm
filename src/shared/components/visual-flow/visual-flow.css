@@ -1,0 +1,50 @@
+/*
+ * Maps @xyflow/react's own CSS custom properties to ICAN CRM's existing
+ * design tokens, scoped under .ican-visual-flow so it never leaks into
+ * the rest of the app and never fights xyflow's base layout rules (which
+ * still come from '@xyflow/react/dist/style.css', imported once in
+ * VisualFlowCanvas.jsx). This is the ONLY place VisualFlow touches xyflow
+ * branding — see docs "Visual Node Design": no n8n colors/branding, only
+ * this app's existing CSS variables.
+ */
+.ican-visual-flow {
+  --xy-background-color: var(--surface);
+  --xy-background-pattern-dots-color: var(--border);
+
+  --xy-edge-stroke: var(--border);
+  --xy-edge-stroke-selected: #00c2cb;
+  --xy-edge-label-background-color: var(--surface);
+  --xy-edge-label-color: var(--text);
+
+  --xy-handle-background-color: var(--text-muted);
+  --xy-handle-border-color: var(--surface);
+
+  --xy-connectionline-stroke: #00c2cb;
+
+  --xy-controls-button-background-color: var(--surface);
+  --xy-controls-button-background-color-hover: var(--surface-2);
+  --xy-controls-button-color: var(--text);
+  --xy-controls-button-color-hover: var(--text);
+  --xy-controls-button-border-color: var(--border);
+  --xy-controls-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+
+  --xy-minimap-background-color: var(--surface);
+  --xy-minimap-mask-background-color: rgba(0, 194, 203, 0.08);
+  --xy-minimap-mask-stroke-color: #00c2cb;
+  --xy-minimap-node-background-color: var(--surface-2);
+
+  --vf-node-start: #10b981;
+  --vf-node-end: #64748b;
+  --vf-node-group: #8b5cf6;
+  --vf-node-data: #3b82f6;
+  --vf-edge-default: var(--border);
+  --vf-edge-conditional: #f59e0b;
+  --vf-edge-animated: #00c2cb;
+  --vf-edge-execution: #00c2cb;
+}
+
+@keyframes visual-flow-dash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}

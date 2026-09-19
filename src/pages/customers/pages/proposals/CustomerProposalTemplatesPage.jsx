@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { ArrowRight, Copy, FileSignature, Power, PowerOff } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -7,6 +8,7 @@ import { Button } from '../../../../shared/components/ui/Button'
 import { useProposalTemplateMutations, useProposalTemplates } from '../../../../features/proposals'
 
 export function CustomerProposalTemplatesPage() {
+  const { t } = useTranslation()
   const templatesQuery = useProposalTemplates()
   const mutations = useProposalTemplateMutations()
   const templates = templatesQuery.data || []
@@ -17,19 +19,19 @@ export function CustomerProposalTemplatesPage() {
   }
 
   return (
-    <div className="space-y-6" dir="rtl">
-      <PageToolbar title="قوالب عروض الأسعار" description="القوالب هي نقطة البداية للـ Proposal، والـ Builder يحولها لتجربة تحرير مرئية.">
+    <div className="space-y-6">
+      <PageToolbar title={t('proposals.templates.pageTitle')} description={t('proposals.templates.pageDescription')}>
         <Link to="/LeadsCenter/proposals">
           <Button variant="outline">
             <ArrowRight size={16} />
-            العروض
+            {t('proposals.templates.proposalsLink')}
           </Button>
         </Link>
       </PageToolbar>
 
       {templatesQuery.isLoading ? (
         <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-10 text-center text-sm font-black text-[var(--text-muted)]">
-          جاري تحميل القوالب...
+          {t('proposals.wizard.loadingTemplates')}
         </div>
       ) : null}
 
@@ -41,25 +43,25 @@ export function CustomerProposalTemplatesPage() {
                 <FileSignature size={22} />
               </span>
               <span className={`rounded-full px-2 py-1 text-xs font-black ${template.is_active ? 'bg-[#ECFDF5] text-[#047857]' : 'bg-[#FEF2F2] text-[#B91C1C]'}`}>
-                {template.is_active ? 'فعال' : 'متوقف'}
+                {template.is_active ? t('proposals.templates.active') : t('proposals.templates.inactive')}
               </span>
             </div>
-            <h2 className="text-base font-black text-[var(--text)]">{template.name || `Template #${template.id}`}</h2>
-            <p className="mt-2 line-clamp-3 min-h-12 text-sm font-semibold leading-6 text-[var(--text-muted)]">{template.description || 'بدون وصف'}</p>
+            <h2 className="text-base font-black text-[var(--text)]">{template.name || t('proposals.templates.templateFallback', { id: template.id })}</h2>
+            <p className="mt-2 line-clamp-3 min-h-12 text-sm font-semibold leading-6 text-[var(--text-muted)]">{template.description || t('proposals.renderer.noDescription')}</p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => run(mutations.duplicateTemplate.mutateAsync(template.id), 'تم نسخ القالب')}>
+              <Button variant="outline" size="sm" onClick={() => run(mutations.duplicateTemplate.mutateAsync(template.id), t('proposals.templates.templateDuplicated'))}>
                 <Copy size={15} />
-                نسخ
+                {t('proposals.templates.duplicate')}
               </Button>
               {template.is_active ? (
-                <Button variant="ghost" size="sm" onClick={() => run(mutations.deactivateTemplate.mutateAsync(template.id), 'تم إيقاف القالب')}>
+                <Button variant="ghost" size="sm" onClick={() => run(mutations.deactivateTemplate.mutateAsync(template.id), t('proposals.templates.templateDeactivated'))}>
                   <PowerOff size={15} />
-                  إيقاف
+                  {t('proposals.templates.deactivate')}
                 </Button>
               ) : (
-                <Button variant="ghost" size="sm" onClick={() => run(mutations.activateTemplate.mutateAsync(template.id), 'تم تفعيل القالب')}>
+                <Button variant="ghost" size="sm" onClick={() => run(mutations.activateTemplate.mutateAsync(template.id), t('proposals.templates.templateActivated'))}>
                   <Power size={15} />
-                  تفعيل
+                  {t('proposals.templates.activate')}
                 </Button>
               )}
             </div>

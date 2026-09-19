@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { CalendarDays, RotateCcw } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '../../../../shared/components/ui/Button'
 
@@ -8,15 +9,14 @@ const DATE_MENU_WIDTH = 256
 const DATE_MENU_HEIGHT = 236
 const VIEWPORT_PADDING = 8
 
-export const MEETING_STATUS_LABELS = {
-  scheduled: 'مجدول',
-  in_progress: 'قيد التنفيذ',
-  completed: 'مكتمل',
-  cancelled: 'ملغي',
-}
-
-export function getMeetingStatusLabel(status) {
-  return MEETING_STATUS_LABELS[String(status || '').toLowerCase()] || status || 'غير محدد'
+export function getMeetingStatusLabel(status, t) {
+  const labels = {
+    scheduled: t('activities.status.scheduled'),
+    in_progress: t('activities.status.in_progress'),
+    completed: t('activities.status.completed'),
+    cancelled: t('activities.status.cancelled'),
+  }
+  return labels[String(status || '').toLowerCase()] || status || t('activities.preMeetingReport.options.unspecified')
 }
 
 function getDateMenuPosition(buttonElement) {
@@ -35,6 +35,8 @@ function getDateMenuPosition(buttonElement) {
 }
 
 function DateFilterMenu({ position, filters, onChange, onClose }) {
+  const { t } = useTranslation()
+
   return createPortal(
     <div
       className="fixed z-[99999] w-64 rounded-xl border border-[#D9F3F5] bg-white p-3 shadow-2xl"
@@ -43,7 +45,7 @@ function DateFilterMenu({ position, filters, onChange, onClose }) {
     >
       <div className="space-y-3">
         <label className="block space-y-1 text-xs font-bold text-[var(--text)]">
-          <span>من تاريخ</span>
+          <span>{t('activities.filters.fromDate')}</span>
           <input
             type="date"
             value={filters.from}
@@ -53,7 +55,7 @@ function DateFilterMenu({ position, filters, onChange, onClose }) {
         </label>
 
         <label className="block space-y-1 text-xs font-bold text-[var(--text)]">
-          <span>إلى تاريخ</span>
+          <span>{t('activities.filters.toDate')}</span>
           <input
             type="date"
             value={filters.to}
@@ -70,10 +72,10 @@ function DateFilterMenu({ position, filters, onChange, onClose }) {
             onClick={() => onChange({ from: '', to: '' })}
             className="h-8 text-[11px]"
           >
-            مسح التاريخ
+            {t('callMeetings.filters.clearDate')}
           </Button>
           <Button type="button" size="sm" variant="ai" onClick={onClose} className="h-8 text-[11px]">
-            تطبيق
+            {t('callMeetings.filters.apply')}
           </Button>
         </div>
       </div>
@@ -83,6 +85,7 @@ function DateFilterMenu({ position, filters, onChange, onClose }) {
 }
 
 export function MeetingFilters({ filters, onChange, onReset, hasActiveFilters }) {
+  const { t } = useTranslation()
   const [isDateOpen, setIsDateOpen] = useState(false)
   const [dateMenuPosition, setDateMenuPosition] = useState({ top: VIEWPORT_PADDING, left: VIEWPORT_PADDING })
   const dateButtonRef = useRef(null)
@@ -115,7 +118,7 @@ export function MeetingFilters({ filters, onChange, onReset, hasActiveFilters })
     }
   }, [isDateOpen, updateDateMenuPosition])
 
-  const dateButtonLabel = filters.from || filters.to ? 'تاريخ محدد' : 'فلتر التاريخ'
+  const dateButtonLabel = filters.from || filters.to ? t('callMeetings.filters.specificDate') : t('callMeetings.filters.dateFilter')
 
   return (
     <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -127,7 +130,7 @@ export function MeetingFilters({ filters, onChange, onReset, hasActiveFilters })
           setIsDateOpen((value) => !value)
         }}
         className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-[#D9F3F5] bg-white px-2.5 text-[11px] font-bold text-[#007A80] shadow-sm transition hover:bg-[#F8FEFF]"
-        title="فلترة الاجتماعات بتاريخ البداية"
+        title={t('callMeetings.filters.filterMeetingsByStartDate')}
       >
         <CalendarDays size={14} />
         {dateButtonLabel}
@@ -146,13 +149,13 @@ export function MeetingFilters({ filters, onChange, onReset, hasActiveFilters })
         value={filters.status}
         onChange={(event) => onChange({ status: event.target.value })}
         className="h-8 min-w-32 rounded-lg border border-[#D9F3F5] bg-white px-2 text-[11px] font-bold text-[var(--text)] shadow-sm outline-none focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]"
-        title="فلترة حسب حالة الاجتماع"
+        title={t('callMeetings.filters.filterMeetingsByStatus')}
       >
-        <option value="">كل الحالات</option>
-        <option value="scheduled">مجدول</option>
-        <option value="in_progress">قيد التنفيذ</option>
-        <option value="completed">مكتمل</option>
-        <option value="cancelled">ملغي</option>
+        <option value="">{t('callMeetings.filters.allStatuses')}</option>
+        <option value="scheduled">{t('activities.status.scheduled')}</option>
+        <option value="in_progress">{t('activities.status.in_progress')}</option>
+        <option value="completed">{t('activities.status.completed')}</option>
+        <option value="cancelled">{t('activities.status.cancelled')}</option>
       </select>
 
       {hasActiveFilters && (
@@ -160,10 +163,10 @@ export function MeetingFilters({ filters, onChange, onReset, hasActiveFilters })
           type="button"
           onClick={onReset}
           className="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-[#E2E6F0] bg-white px-2 text-[11px] font-bold text-[var(--text-muted)] transition hover:bg-[#F8FAFF] hover:text-[var(--text)]"
-          title="مسح فلاتر الاجتماعات"
+          title={t('callMeetings.filters.clearMeetingsFilters')}
         >
           <RotateCcw size={13} />
-          مسح
+          {t('activities.filters.clear')}
         </button>
       )}
     </div>

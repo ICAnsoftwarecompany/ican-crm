@@ -8,6 +8,7 @@ import {
   UserRound,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 import { AppDrawer } from '../../../shared/components/overlays/AppDrawer'
 import { extractMessage } from '../../../shared/utils/apiResponse'
@@ -45,6 +46,7 @@ export function TaskDrawer({
   onUpdated,
   onDeleted,
 }) {
+  const { t, i18n } = useTranslation()
   const [isEditing, setIsEditing] = useState(false)
   const [noteText, setNoteText] = useState('')
   const infoQuery = useTaskInfo(taskId, undefined, { enabled: open && Boolean(taskId) })
@@ -57,10 +59,10 @@ export function TaskDrawer({
     return data
   }, [infoQuery.data])
 
-  const typeMeta = getTaskTypeMeta(task?.type)
-  const priorityMeta = getTaskPriorityMeta(task?.priority)
-  const statusMeta = getTaskStatusMeta(task?.status)
-  const dueLabel = formatTaskDateLabel(task)
+  const typeMeta = getTaskTypeMeta(task?.type, t)
+  const priorityMeta = getTaskPriorityMeta(task?.priority, t)
+  const statusMeta = getTaskStatusMeta(task?.status, t)
+  const dueLabel = formatTaskDateLabel(task, i18n.language, t)
   const overdue = isTaskOverdue(task)
   const notes = getNotes(task)
   const attachments = getAttachments(task)
@@ -74,12 +76,12 @@ export function TaskDrawer({
         taskId: task.id,
         payload: { status: getTaskQuickStatus(task) },
       })
-      toast.success('تم تحديث حالة المهمة')
+      toast.success(t('tasks.drawer.statusUpdated'))
       setIsEditing(false)
       infoQuery.refetch()
       onUpdated?.()
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر تحديث الحالة'))
+      toast.error(extractMessage(error, t('tasks.drawer.statusUpdateFailed')))
     }
   }
 
@@ -88,25 +90,25 @@ export function TaskDrawer({
 
     try {
       await mutations.markAsRead.mutateAsync(task.id)
-      toast.success('تم تعليم المهمة كمقروءة')
+      toast.success(t('tasks.drawer.markedRead'))
       onUpdated?.()
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر تعليم المهمة كمقروءة'))
+      toast.error(extractMessage(error, t('tasks.drawer.markReadFailed')))
     }
   }
 
   const handleDeleteTask = async () => {
     if (!task?.id) return
-    const confirmed = window.confirm('حذف المهمة؟ لا يمكن التراجع عن هذا الإجراء.')
+    const confirmed = window.confirm(t('tasks.drawer.deleteConfirm'))
     if (!confirmed) return
 
     try {
       await mutations.remove.mutateAsync(task.id)
-      toast.success('تم حذف المهمة')
+      toast.success(t('tasks.drawer.taskDeleted'))
       onDeleted?.(task.id)
       onClose?.()
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر حذف المهمة'))
+      toast.error(extractMessage(error, t('tasks.drawer.taskDeleteFailed')))
     }
   }
 
@@ -115,12 +117,12 @@ export function TaskDrawer({
 
     try {
       await mutations.update.mutateAsync({ taskId: task.id, payload })
-      toast.success('تم حفظ التعديلات')
+      toast.success(t('tasks.drawer.editsSaved'))
       setIsEditing(false)
       infoQuery.refetch()
       onUpdated?.()
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر حفظ التعديلات'))
+      toast.error(extractMessage(error, t('tasks.drawer.editsSaveFailed')))
     }
   }
 
@@ -133,12 +135,12 @@ export function TaskDrawer({
         taskId: task.id,
         payload: { note: value },
       })
-      toast.success('تمت إضافة الملاحظة')
+      toast.success(t('tasks.drawer.noteAdded'))
       setNoteText('')
       infoQuery.refetch()
       onUpdated?.()
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر إضافة الملاحظة'))
+      toast.error(extractMessage(error, t('tasks.drawer.noteAddFailed')))
     }
   }
 
@@ -147,11 +149,11 @@ export function TaskDrawer({
 
     try {
       await mutations.deleteNote.mutateAsync({ taskId: task.id, noteId })
-      toast.success('تم حذف الملاحظة')
+      toast.success(t('tasks.drawer.noteDeleted'))
       infoQuery.refetch()
       onUpdated?.()
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر حذف الملاحظة'))
+      toast.error(extractMessage(error, t('tasks.drawer.noteDeleteFailed')))
     }
   }
 
@@ -161,11 +163,11 @@ export function TaskDrawer({
 
     try {
       await mutations.addAttachments.mutateAsync({ taskId: task.id, payload: { attachments: files } })
-      toast.success('تم رفع المرفقات')
+      toast.success(t('tasks.drawer.attachmentsUploaded'))
       infoQuery.refetch()
       onUpdated?.()
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر رفع المرفقات'))
+      toast.error(extractMessage(error, t('tasks.drawer.attachmentsUploadFailed')))
     }
   }
 
@@ -174,11 +176,11 @@ export function TaskDrawer({
 
     try {
       await mutations.deleteAttachment.mutateAsync({ taskId: task.id, attachmentId })
-      toast.success('تم حذف المرفق')
+      toast.success(t('tasks.drawer.attachmentDeleted'))
       infoQuery.refetch()
       onUpdated?.()
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر حذف المرفق'))
+      toast.error(extractMessage(error, t('tasks.drawer.attachmentDeleteFailed')))
     }
   }
 
@@ -186,19 +188,19 @@ export function TaskDrawer({
     <AppDrawer
       open={open}
       onClose={onClose}
-      title={task ? getTaskTitle(task) : 'تفاصيل المهمة'}
+      title={task ? getTaskTitle(task, t) : t('tasks.drawer.taskDetailsTitle')}
       description={task ? typeMeta.label : '...'}
       size="xl"
     >
       {infoQuery.isLoading && (
         <div className="rounded-xl border border-[#D7EEF0] bg-[#F8FEFF] p-3 text-sm font-semibold text-[#64748B]">
-          جاري تحميل بيانات المهمة...
+          {t('tasks.drawer.loadingTask')}
         </div>
       )}
 
       {!infoQuery.isLoading && !task && (
         <div className="rounded-xl border border-dashed border-[#D7EEF0] bg-[#F8FEFF] p-3 text-sm font-semibold text-[#64748B]">
-          لا توجد بيانات لهذه المهمة.
+          {t('tasks.drawer.noTaskData')}
         </div>
       )}
 
@@ -222,26 +224,26 @@ export function TaskDrawer({
             <div className="mt-3 flex flex-wrap gap-2">
               <button type="button" onClick={() => setIsEditing((v) => !v)} className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#D7EEF0] bg-white px-2 text-[11px] font-black text-[#007A80]">
                 <Pencil size={13} />
-                {isEditing ? 'إلغاء التعديل' : 'تعديل'}
+                {isEditing ? t('tasks.drawer.cancelEdit') : t('actions.edit')}
               </button>
               <button type="button" onClick={handleStatusChange} disabled={!canTransitionTask(task)} className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#D7EEF0] bg-white px-2 text-[11px] font-black text-[#007A80] disabled:opacity-50">
                 <CheckCircle2 size={13} />
-                {getTaskQuickStatusLabel(task)}
+                {getTaskQuickStatusLabel(task, t)}
               </button>
               <button type="button" onClick={handleMarkRead} className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#D7EEF0] bg-white px-2 text-[11px] font-black text-[#007A80]">
                 <UserRound size={13} />
-                تعليم كمقروءة
+                {t('tasks.drawer.markAsRead')}
               </button>
               <button type="button" onClick={handleDeleteTask} className="inline-flex h-8 items-center gap-1 rounded-lg border border-red-200 bg-red-50 px-2 text-[11px] font-black text-red-700">
                 <Trash2 size={13} />
-                حذف
+                {t('actions.delete')}
               </button>
             </div>
           </section>
 
           {isEditing && (
             <section className="rounded-xl border border-[#D7EEF0] bg-white p-3">
-              <h3 className="mb-2 text-sm font-black text-[#0F172A]">تعديل المهمة</h3>
+              <h3 className="mb-2 text-sm font-black text-[#0F172A]">{t('tasks.drawer.editTaskTitle')}</h3>
               <TaskForm
                 initialValues={{
                   title: task.title || '',
@@ -260,22 +262,22 @@ export function TaskDrawer({
                   teams: (task.teams || []).map((item) => Number(item?.id || item)).filter(Number.isFinite),
                 }}
                 onSubmit={handleSaveEdit}
-                submitLabel="حفظ التعديلات"
+                submitLabel={t('tasks.drawer.saveChanges')}
                 isSaving={mutations.update.isPending}
               />
             </section>
           )}
 
           <section className="rounded-xl border border-[#D7EEF0] bg-white p-3">
-            <h3 className="mb-2 text-sm font-black text-[#0F172A]">الملاحظات</h3>
+            <h3 className="mb-2 text-sm font-black text-[#0F172A]">{t('tasks.drawer.notesTitle')}</h3>
             <div className="mb-2 flex gap-2">
               <input
                 value={noteText}
                 onChange={(event) => setNoteText(event.target.value)}
-                placeholder="أضف ملاحظة"
+                placeholder={t('tasks.drawer.addNotePlaceholder')}
                 className="h-9 flex-1 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-xs font-semibold"
               />
-              <button type="button" onClick={handleAddNote} className="h-9 rounded-lg bg-[#007A80] px-3 text-xs font-black text-white">إضافة</button>
+              <button type="button" onClick={handleAddNote} className="h-9 rounded-lg bg-[#007A80] px-3 text-xs font-black text-white">{t('actions.add')}</button>
             </div>
 
             <div className="space-y-2">
@@ -284,18 +286,18 @@ export function TaskDrawer({
                   <p className="text-xs font-semibold text-[#334155]">{note.note || note.content || ''}</p>
                   <div className="mt-1 flex items-center justify-between text-[10px] font-bold text-[#64748B]">
                     <span>{note.created_at || note.createdAt || ''}</span>
-                    {note.id && <button type="button" onClick={() => handleDeleteNote(note.id)} className="text-red-600">حذف</button>}
+                    {note.id && <button type="button" onClick={() => handleDeleteNote(note.id)} className="text-red-600">{t('actions.delete')}</button>}
                   </div>
                 </div>
-              )) : <div className="text-xs font-semibold text-[#64748B]">لا توجد ملاحظات بعد.</div>}
+              )) : <div className="text-xs font-semibold text-[#64748B]">{t('tasks.drawer.noNotesYet')}</div>}
             </div>
           </section>
 
           <section className="rounded-xl border border-[#D7EEF0] bg-white p-3">
-            <h3 className="mb-2 text-sm font-black text-[#0F172A]">المرفقات</h3>
+            <h3 className="mb-2 text-sm font-black text-[#0F172A]">{t('tasks.drawer.attachmentsTitle')}</h3>
             <label className="mb-2 inline-flex h-9 cursor-pointer items-center gap-1 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-xs font-black text-[#007A80]">
               <Paperclip size={13} />
-              إضافة مرفقات
+              {t('tasks.drawer.addAttachments')}
               <input type="file" multiple onChange={handleUploadAttachments} className="hidden" />
             </label>
 
@@ -308,13 +310,13 @@ export function TaskDrawer({
                     rel="noreferrer"
                     className="truncate text-xs font-semibold text-[#0F172A] underline"
                   >
-                    {attachment.name || attachment.file_name || attachment.url || 'Attachment'}
+                    {attachment.name || attachment.file_name || attachment.url || t('tasks.drawer.attachmentFallback')}
                   </a>
                   {attachment.id && (
-                    <button type="button" onClick={() => handleDeleteAttachment(attachment.id)} className="text-xs font-black text-red-600">حذف</button>
+                    <button type="button" onClick={() => handleDeleteAttachment(attachment.id)} className="text-xs font-black text-red-600">{t('actions.delete')}</button>
                   )}
                 </div>
-              )) : <div className="text-xs font-semibold text-[#64748B]">لا توجد مرفقات.</div>}
+              )) : <div className="text-xs font-semibold text-[#64748B]">{t('tasks.drawer.noAttachmentsYet')}</div>}
             </div>
           </section>
         </div>

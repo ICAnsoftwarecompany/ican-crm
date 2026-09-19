@@ -1,14 +1,17 @@
+import { useTranslation } from 'react-i18next'
 import { ProductCategoriesPage } from '../ProductsPage/ProductCategoriesPage'
 
 export function ServiceCategoriesPage() {
+  const { t } = useTranslation()
+
   return (
     <ProductCategoriesPage
       categoryType="service"
-      title="تصنيفات الخدمات"
-      description="إدارة تصنيفات الخدمات بنفس طريقة فئات المنتجات، مع إرسال النوع service عند الإضافة أو التعديل."
+      title={t('products.serviceCategories.pageTitle')}
+      description={t('products.serviceCategories.pageDescription')}
       tableId="service-categories-table"
-      emptyMessage="لا توجد تصنيفات خدمات"
-      createLabel="تصنيف خدمة جديد"
+      emptyMessage={t('products.serviceCategories.emptyMessage')}
+      createLabel={t('products.serviceCategories.createLabel')}
     />
   )
 }

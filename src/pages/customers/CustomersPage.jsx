@@ -30,12 +30,16 @@ import { MeetingDataDrawer, ScheduleActivityDialog } from '../../features/call-m
 import { buildAfterMeetingReportUrl, buildScheduleStatusPayload } from '../../features/call-meetings/utils/scheduleUiUtils'
 import { useMeetingMutations } from '../../features/meetings/hooks/useMeetings'
 
-const ACTIVITY_RANGE_OPTIONS = [
-  { value: 1, label: 'اليوم' },
-  { value: 7, label: '7 أيام' },
-  { value: 15, label: '15 يوم' },
-  { value: 30, label: '30 يوم' },
-]
+const ACTIVITY_RANGE_VALUES = [1, 7, 15, 30]
+
+function getActivityRangeOptions(t) {
+  return ACTIVITY_RANGE_VALUES.map((value) => ({
+    value,
+    label: value === 1
+      ? (t ? t('customers.table.range.today') : 'Today')
+      : (t ? t('activities.duration.day', { count: value }) : `${value} days`),
+  }))
+}
 
 function parseBackendLocalDateParts(value) {
   if (!value) return null
@@ -75,12 +79,12 @@ function parseBackendLocalTimestamp(value) {
   return Number.isNaN(time) ? Number.NaN : time
 }
 
-function formatBackendTime12(value) {
+function formatBackendTime12(value, t) {
   const parts = parseBackendLocalDateParts(value)
   if (!parts) return '-'
 
   const hour12 = parts.hour % 12 || 12
-  const period = parts.hour >= 12 ? 'م' : 'ص'
+  const period = parts.hour >= 12 ? (t ? t('common.pm') : 'PM') : (t ? t('common.am') : 'AM')
   const minutes = String(parts.minute).padStart(2, '0')
   return `${hour12}:${minutes} ${period}`
 }
@@ -200,9 +204,9 @@ function getActivitiesByTypeInRange(rows = [], type = 'meeting', nowTimestamp = 
   return list
 }
 
-function getActivityRangeLabel(rangeDays) {
-  const option = ACTIVITY_RANGE_OPTIONS.find((item) => Number(item.value) === Number(rangeDays))
-  return option?.label || `${rangeDays} يوم`
+function getActivityRangeLabel(rangeDays, t) {
+  const option = getActivityRangeOptions(t).find((item) => Number(item.value) === Number(rangeDays))
+  return option?.label || (t ? t('activities.duration.day', { count: rangeDays }) : `${rangeDays} days`)
 }
 
 function formatBackendDateShort(value) {
@@ -212,11 +216,11 @@ function formatBackendDateShort(value) {
   return `${String(parts.day).padStart(2, '0')}/${String(parts.month).padStart(2, '0')}/${parts.year}`
 }
 
-function getActivityStatusLabel(status = '') {
-  if (status === 'scheduled') return 'مجدول'
-  if (status === 'in_progress') return 'قيد التنفيذ'
-  if (status === 'completed') return 'مكتمل'
-  if (status === 'cancelled') return 'ملغي'
+function getActivityStatusLabel(status = '', t) {
+  if (status === 'scheduled') return t ? t('activities.status.scheduled') : 'Scheduled'
+  if (status === 'in_progress') return t ? t('activities.status.in_progress') : 'In Progress'
+  if (status === 'completed') return t ? t('activities.status.completed') : 'Completed'
+  if (status === 'cancelled') return t ? t('activities.status.cancelled') : 'Cancelled'
   return status || '-'
 }
 
@@ -870,13 +874,13 @@ export function CustomersPage({ defaultShowTrash = false }) {
       })
 
       if (status === 'in_progress') {
-        toast.success('تم بدء النشاط بنجاح')
+        toast.success(t('customers.page.toasts.activityStarted'))
       } else if (status === 'cancelled') {
-        toast.success('تم إلغاء النشاط بنجاح')
+        toast.success(t('customers.page.toasts.activityCancelled'))
       } else if (status === 'completed') {
-        toast.success('تم إنهاء النشاط بنجاح')
+        toast.success(t('customers.page.toasts.activityFinished'))
       } else {
-        toast.success('تم تحديث حالة النشاط')
+        toast.success(t('customers.page.toasts.activityStatusUpdated'))
       }
 
       if (status === 'completed') {
@@ -889,9 +893,9 @@ export function CustomersPage({ defaultShowTrash = false }) {
 
       await refetch()
     } catch (error) {
-      toast.error(error?.response?.data?.message || error?.message || 'تعذر تحديث حالة النشاط')
+      toast.error(error?.response?.data?.message || error?.message || t('customers.page.toasts.activityStatusUpdateFailed'))
     }
-  }, [meetingMutations.changeStatus, navigate, refetch])
+  }, [meetingMutations.changeStatus, navigate, refetch, t])
 
   useEffect(() => {
     if (showTrash) return undefined
@@ -1000,11 +1004,11 @@ export function CustomersPage({ defaultShowTrash = false }) {
     })
 
   const activityStatusOptions = [
-    { value: 'all', label: 'كل الحالات' },
-    { value: 'scheduled', label: 'مجدول' },
-    { value: 'in_progress', label: 'قيد التنفيذ' },
-    { value: 'completed', label: 'مكتمل' },
-    { value: 'cancelled', label: 'ملغي' },
+    { value: 'all', label: t('customers.page.allStatuses') },
+    { value: 'scheduled', label: t('activities.status.scheduled') },
+    { value: 'in_progress', label: t('activities.status.in_progress') },
+    { value: 'completed', label: t('activities.status.completed') },
+    { value: 'cancelled', label: t('activities.status.cancelled') },
   ]
 
   const handleToggleActivityDrawer = useCallback((type) => {
@@ -1095,11 +1099,11 @@ export function CustomersPage({ defaultShowTrash = false }) {
   }, [leadStatusTabs, selectedLeadStatusId, setSelectedLeadStatusId, setSelectedLeadTypeTab, showTrash])
 
   const handleCustomerStatusChanged = ({ customer, newStatus, actionType, activityType, activityTitle }) => {
-    const customerName = customer?.name || customer?.email || customer?.phone || 'العميل'
+    const customerName = customer?.name || customer?.email || customer?.phone || t('customers.table.theCustomer')
 
     if (actionType === 'note') {
-      toast.success('تمت إضافة المتابعة', {
-        description: `${customerName} تم تحديث بياناته.`,
+      toast.success(t('customers.page.toasts.followUpAdded'), {
+        description: t('customers.page.toasts.followUpAddedDesc', { name: customerName }),
         duration: 3200,
       })
       leadLogsQuery.refetch()
@@ -1108,10 +1112,10 @@ export function CustomersPage({ defaultShowTrash = false }) {
     }
 
     if (actionType === 'activity') {
-      const activityLabel = activityType === 'meeting' ? 'اجتماع' : 'مكالمة'
+      const activityLabel = activityType === 'meeting' ? t('activities.type.meeting') : t('activities.type.call')
 
-      toast.info(`تم حفظ ${activityLabel}`, {
-        description: `${activityTitle || activityLabel} للعميل ${customerName}.`,
+      toast.info(t('customers.page.toasts.activitySaved', { activity: activityLabel }), {
+        description: t('customers.page.toasts.activitySavedDesc', { activity: activityTitle || activityLabel, name: customerName }),
         duration: 3400,
       })
 
@@ -1119,9 +1123,9 @@ export function CustomersPage({ defaultShowTrash = false }) {
       return
     }
 
-    const statusName = newStatus?.status || newStatus?.name || 'الحالة الجديدة'
-    toast.info('تم تحديث حالة العميل', {
-      description: `${customerName} انتقل إلى ${statusName}. تم تحديث بيانات العملاء تلقائيًا.`,
+    const statusName = newStatus?.status || newStatus?.name || t('customers.page.toasts.newStatusFallback')
+    toast.info(t('customers.page.toasts.statusUpdated'), {
+      description: t('customers.page.toasts.statusUpdatedDesc', { name: customerName, status: statusName }),
       duration: 3800,
     })
 
@@ -1129,12 +1133,12 @@ export function CustomersPage({ defaultShowTrash = false }) {
   }
 
   const handleDelete = async (customer) => {
-    if (!window.confirm(`هل تريد حذف ${customer.name || 'هذا العميل'}؟`)) return
+    if (!window.confirm(t('customers.page.confirm.deleteCustomer', { name: customer.name || t('customers.page.confirm.thisCustomer') }))) return
 
     try {
       await mutations.remove.mutateAsync({ ids: [customer.id] })
     } catch (error) {
-      console.error('خطأ في الحذف:', error)
+      console.error('Delete error:', error)
     }
   }
 
@@ -1142,17 +1146,17 @@ export function CustomersPage({ defaultShowTrash = false }) {
     try {
       await mutations.restore.mutateAsync({ ids: [customer.id] })
     } catch (error) {
-      console.error('خطأ في الاسترجاع:', error)
+      console.error('Restore error:', error)
     }
   }
 
   const handleForceDelete = async (customer) => {
-    if (!window.confirm(`هل تريد حذف ${customer.name || 'هذا العميل'} نهائيًا؟ لا يمكن التراجع عن هذا الإجراء.`)) return
+    if (!window.confirm(t('customers.page.confirm.deleteCustomerPermanent', { name: customer.name || t('customers.page.confirm.thisCustomer') }))) return
 
     try {
       await mutations.forceDelete.mutateAsync({ ids: [customer.id] })
     } catch (error) {
-      console.error('خطأ في الحذف النهائي:', error)
+      console.error('Permanent delete error:', error)
     }
   }
 
@@ -1165,13 +1169,13 @@ export function CustomersPage({ defaultShowTrash = false }) {
   const handleBulkDelete = async (selectedRows, clearSelection) => {
     const ids = getSelectedCustomerIds(selectedRows)
     if (!ids.length) return
-    if (!window.confirm(`هل تريد حذف ${ids.length} عميل؟`)) return
+    if (!window.confirm(t('customers.page.confirm.deleteSelected', { count: ids.length }))) return
 
     try {
       await mutations.remove.mutateAsync({ ids })
       clearSelection?.()
     } catch (error) {
-      console.error('خطأ في حذف العملاء المحددين:', error)
+      console.error('Bulk delete error:', error)
     }
   }
 
@@ -1183,20 +1187,20 @@ export function CustomersPage({ defaultShowTrash = false }) {
       await mutations.restore.mutateAsync({ ids })
       clearSelection?.()
     } catch (error) {
-      console.error('خطأ في استرجاع العملاء المحددين:', error)
+      console.error('Bulk restore error:', error)
     }
   }
 
   const handleBulkForceDelete = async (selectedRows, clearSelection) => {
     const ids = getSelectedCustomerIds(selectedRows)
     if (!ids.length) return
-    if (!window.confirm(`هل تريد حذف ${ids.length} عميل نهائيًا؟ لا يمكن التراجع عن هذا الإجراء.`)) return
+    if (!window.confirm(t('customers.page.confirm.deleteSelectedPermanent', { count: ids.length }))) return
 
     try {
       await mutations.forceDelete.mutateAsync({ ids })
       clearSelection?.()
     } catch (error) {
-      console.error('خطأ في الحذف النهائي للعملاء المحددين:', error)
+      console.error('Bulk permanent delete error:', error)
     }
   }
 
@@ -1207,14 +1211,14 @@ export function CustomersPage({ defaultShowTrash = false }) {
       return [
         {
           id: 'restore-selected-customers',
-          label: `استرجاع المحدد (${selectedCount})`,
+          label: t('customers.page.actions.restoreSelected', { count: selectedCount }),
           icon: ArchiveRestore,
           onClick: () => handleBulkRestore(selectedRows, clearSelection),
           disabled: mutations.restore.isPending,
         },
         {
           id: 'force-delete-selected-customers',
-          label: `حذف نهائي (${selectedCount})`,
+          label: t('customers.page.actions.deletePermanent', { count: selectedCount }),
           icon: Trash2,
           variant: 'danger',
           onClick: () => handleBulkForceDelete(selectedRows, clearSelection),
@@ -1226,7 +1230,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
     return [
       {
         id: 'delete-selected-customers',
-        label: `حذف المحدد (${selectedCount})`,
+        label: t('customers.page.actions.deleteSelected', { count: selectedCount }),
         icon: Trash2,
         variant: 'danger',
         onClick: () => handleBulkDelete(selectedRows, clearSelection),
@@ -1243,43 +1247,43 @@ export function CustomersPage({ defaultShowTrash = false }) {
     return [
       {
         id: 'customers-page-table-customization',
-        label: 'تخصيص الجدول',
-        section: 'اعدادات إضافية',
+        label: t('customers.page.actions.customizeTable'),
+        section: t('customers.page.actions.additionalSettingsSection'),
         tab: 'format',
         onClick: () => setIsTableSettingsOpen(true),
       },
       {
         id: 'customers-row-add-meeting',
-        label: 'اضافة موعد اجتماع',
-        section: 'إجراءات العميل',
+        label: t('customers.page.actions.addMeeting'),
+        section: t('customers.page.actions.customerActionsSection'),
         tab: 'actions',
         onClick: () => handleOpenScheduledActivityDialog(row, 'meeting'),
       },
       {
         id: 'customers-row-add-call',
-        label: 'اضافة موعد مكالمة',
-        section: 'إجراءات العميل',
+        label: t('customers.page.actions.addCall'),
+        section: t('customers.page.actions.customerActionsSection'),
         tab: 'actions',
         onClick: () => handleOpenScheduledActivityDialog(row, 'call'),
       },
       {
         id: 'customers-row-add-follow-up',
-        label: 'اضافة متابعة علي العميل',
-        section: 'إجراءات العميل',
+        label: t('customers.page.actions.addFollowUp'),
+        section: t('customers.page.actions.customerActionsSection'),
         tab: 'actions',
         onClick: () => handleOpenLeadNoteDialog(row),
       },
       {
         id: 'customers-row-toggle-selection',
-        label: `تحديد العميل: ${customerName}`,
-        section: 'إجراءات العميل',
+        label: t('customers.page.actions.selectCustomer', { name: customerName }),
+        section: t('customers.page.actions.customerActionsSection'),
         tab: 'actions',
         onClick: (_targetRow, context) => {
           context?.toggleSelection?.()
         },
       },
     ]
-  }, [handleOpenLeadNoteDialog, handleOpenScheduledActivityDialog, setIsTableSettingsOpen, showTrash])
+  }, [handleOpenLeadNoteDialog, handleOpenScheduledActivityDialog, setIsTableSettingsOpen, showTrash, t])
 
   const { columns, serialColumnRender } = useCustomersTableColumns({
     t,
@@ -1335,7 +1339,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
         }
       `}</style>
       <CustomersPageHeader
-        title={showTrash ? 'السجلات المحذوفة' : t('customers.title')}
+        title={showTrash ? t('customers.page.deletedRecordsTitle') : t('customers.title')}
         onAdd={!showTrash ? () => setIsDialogOpen(true) : undefined}
         onImport={!showTrash ? () => navigate('/LeadsCenter/import-export') : undefined}
         onExport={() => navigate('/LeadsCenter/import-export')}
@@ -1415,7 +1419,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
             ) : null}
             emptyMessage={
               showTrash
-                ? 'لا توجد عناصر في سلة المحذوفات'
+                ? t('customers.page.emptyTrash')
                 : freshLeadActive
                   ? t('customers.noFreshLeads')
                   : true
@@ -1435,7 +1439,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
           <aside className="min-w-0 rounded-xl border border-[#D7EEF0] bg-white shadow-sm xl:sticky xl:top-16 xl:h-[calc(100vh-7rem)] xl:overflow-hidden">
             <div className="flex items-center justify-between border-b border-[#E8EEF0] px-3 py-2">
               <div className="text-sm font-black text-[var(--text)]">
-                {activeActivityDrawerType === 'meeting' ? 'اجتماعات' : 'مكالمات'} {getActivityRangeLabel(activityRangeValue)}
+                {activeActivityDrawerType === 'meeting' ? t('customers.table.meetingsGroupLabel') : t('customers.table.callsGroupLabel')} {getActivityRangeLabel(activityRangeValue, t)}
               </div>
               <div className="inline-flex items-center gap-2">
                 <span className="rounded-full bg-[#F1F5F9] px-2 py-0.5 text-xs font-black text-[#334155]">
@@ -1446,14 +1450,14 @@ export function CustomersPage({ defaultShowTrash = false }) {
                   onClick={() => setActiveActivityDrawerType(null)}
                   className="rounded-lg border border-[#E2E8F0] px-2 py-1 text-xs font-bold text-[#475569] transition-colors hover:bg-[#F8FAFC]"
                 >
-                  إغلاق
+                  {t('customers.page.close')}
                 </button>
               </div>
             </div>
 
             <div className="border-b border-[#E8EEF0] px-2 py-2">
               <div className="grid grid-cols-4 gap-1 rounded-lg bg-[#F8FAFC] p-1">
-                {ACTIVITY_RANGE_OPTIONS.map((option) => {
+                {getActivityRangeOptions(t).map((option) => {
                   const isSelected = Number(option.value) === Number(activityRangeValue)
 
                   return (
@@ -1519,11 +1523,11 @@ export function CustomersPage({ defaultShowTrash = false }) {
                       <div className="truncate text-[11px] font-semibold text-[var(--text-muted)]">{item.title}</div>
                     </div>
                     <div className={`shrink-0 text-[11px] font-black ${activeActivityDrawerType === 'meeting' ? 'text-[#0F766E]' : 'text-[#B91C1C]'}`}>
-                      {formatBackendTime12(item.startAt)}
+                      {formatBackendTime12(item.startAt, t)}
                     </div>
                   </div>
                   <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] font-bold text-[#64748B]">
-                    <span>{getActivityStatusLabel(item.status)}</span>
+                    <span>{getActivityStatusLabel(item.status, t)}</span>
                     {activityRangeValue > 1 ? (
                       <span className="rounded-full bg-white px-1.5 py-0.5 text-[#475569] ring-1 ring-[#E2E8F0]">
                         {formatBackendDateShort(item.startAt)}
@@ -1534,8 +1538,8 @@ export function CustomersPage({ defaultShowTrash = false }) {
               )) : (
                 <div className="rounded-lg border border-dashed border-[#D7EEF0] px-2 py-3 text-center text-xs font-semibold text-[var(--text-muted)]">
                   {activeActivityDrawerType === 'meeting'
-                    ? `لا توجد اجتماعات خلال ${getActivityRangeLabel(activityRangeValue)} داخل التاب الحالي`
-                    : `لا توجد مكالمات خلال ${getActivityRangeLabel(activityRangeValue)} داخل التاب الحالي`}
+                    ? t('customers.page.noMeetingsInRange', { range: getActivityRangeLabel(activityRangeValue, t) })
+                    : t('customers.page.noCallsInRange', { range: getActivityRangeLabel(activityRangeValue, t) })}
                 </div>
               )}
             </div>

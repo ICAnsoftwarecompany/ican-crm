@@ -37,6 +37,7 @@ import { buildSplitRowsLayout } from './utils/splitRowsLayout'
 import { buildSplitColumnsLayout, normalizeSplitColumnsForTable } from './utils/splitColumnsLayout'
 import { CopyButton } from './CopyButton'
 import { useDirection } from '../../hooks/useDirection'
+import { useTranslation } from 'react-i18next'
 
 function toExcelColumnLabel(index) {
   let n = index + 1
@@ -254,7 +255,7 @@ export function DataTable({
   enableAdvancedFilters = true,
   enableGlobalSearch = true,
   enableExport = true,
-  emptyMessage = 'لا توجد بيانات',
+  emptyMessage,
   toolbarActions = null,
   onExport = null,
   onFilterChange = null,
@@ -262,6 +263,7 @@ export function DataTable({
   rowContextActions = null,
   serialColumnRender = null,
 }) {
+  const { t } = useTranslation()
   const dir = useDirection()
   const tableContainerRef = useRef(null)
   const tableRef = useRef(null)
@@ -426,17 +428,17 @@ export function DataTable({
       return { color: 'bg-emerald-500', label: '' }
     }
     if (status === 'connecting' || status === 'idle') {
-      return { color: 'bg-amber-500', label: 'جاري الاتصال اللحظي' }
+      return { color: 'bg-amber-500', label: t('dataTable.realtimeConnecting') }
     }
     if (status === 'error') {
-      return { color: 'bg-red-500', label: 'فشل الاتصال اللحظي' }
+      return { color: 'bg-red-500', label: t('dataTable.realtimeError') }
     }
     if (status === 'disconnected') {
-      return { color: 'bg-slate-400', label: 'الاتصال اللحظي متوقف' }
+      return { color: 'bg-slate-400', label: t('dataTable.realtimeDisconnected') }
     }
 
     return null
-  }, [tableFormatRules.realtimeConnectionStatus])
+  }, [tableFormatRules.realtimeConnectionStatus, t])
 
   const widthClassToPx = useMemo(
     () => ({
@@ -506,7 +508,7 @@ export function DataTable({
   })
 
   const resetTableToDefault = useCallback(() => {
-    const shouldReset = window.confirm('هل تريد إعادة تهيئة الجدول والرجوع للوضع الافتراضي؟')
+    const shouldReset = window.confirm(t('dataTable.resetConfirm'))
     if (!shouldReset) return
 
     clearSelection()
@@ -541,6 +543,7 @@ export function DataTable({
     setTableZoom,
     table,
     tableFormatRules,
+    t,
   ])
 
   const autoContentWidths = useMemo(() => {
@@ -1423,15 +1426,15 @@ export function DataTable({
               type="button"
               onClick={() => setIsCompareOpen(true)}
               className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] transition-colors hover:bg-[var(--surface-2)]"
-              title="مقارنة العملاء"
-              aria-label="مقارنة العملاء"
+              title={t('dataTable.compare')}
+              aria-label={t('dataTable.compare')}
             >
               <GitCompareArrows size={16} />
             </button>
 
             {selectedRowKeys.size > 0 && (
               <div className="flex max-w-full flex-wrap items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1">
-                <span className="text-xs text-[var(--text-muted)] font-arabic">تخصيص المحدد</span>
+                <span className="text-xs text-[var(--text-muted)] font-arabic">{t('dataTable.customizeSelected')}</span>
                 {['#DBEAFE', '#DCFCE7', '#FEF3C7', '#FCE7F3', '#E2E8F0'].map((color) => (
                   <button
                     key={`bulk-bg-${color}`}
@@ -1439,7 +1442,7 @@ export function DataTable({
                     className="w-4 h-4 rounded border border-slate-300"
                     style={{ backgroundColor: color }}
                     onClick={() => applyStyleToSelectedRows({ bgColor: color })}
-                    title="لون خلفية الصفوف المحددة"
+                    title={t('dataTable.selectedBackground')}
                   />
                 ))}
                 {['#0F172A', '#1D4ED8', '#047857', '#B45309', '#BE185D'].map((color) => (
@@ -1449,7 +1452,7 @@ export function DataTable({
                     className="w-4 h-4 rounded border border-slate-300"
                     style={{ backgroundColor: color }}
                     onClick={() => applyStyleToSelectedRows({ textColor: color })}
-                    title="لون خط الصفوف المحددة"
+                    title={t('dataTable.selectedText')}
                   />
                 ))}
                 <select
@@ -1460,7 +1463,7 @@ export function DataTable({
                     applyStyleToSelectedRows({ fontSize: e.target.value })
                   }}
                 >
-                  <option value="">حجم</option>
+                  <option value="">{t('dataTable.size')}</option>
                   <option value="12px">12</option>
                   <option value="13px">13</option>
                   <option value="14px">14</option>
@@ -1475,11 +1478,11 @@ export function DataTable({
                     applyStyleToSelectedRows({ fontWeight: e.target.value })
                   }}
                 >
-                  <option value="">وزن</option>
-                  <option value="400">Normal</option>
-                  <option value="500">Medium</option>
-                  <option value="600">Semibold</option>
-                  <option value="700">Bold</option>
+                  <option value="">{t('dataTable.weight')}</option>
+                  <option value="400">{t('dataTable.normal')}</option>
+                  <option value="500">{t('dataTable.medium')}</option>
+                  <option value="600">{t('dataTable.semibold')}</option>
+                  <option value="700">{t('dataTable.bold')}</option>
                 </select>
               </div>
             )}
@@ -1491,7 +1494,7 @@ export function DataTable({
             {selectedRowKeys.size > 0 && (
               <CopyButton
                 onClick={handleCopySelected}
-                title="نسخ الصفوف المحددة"
+                title={t('dataTable.copySelected')}
               />
             )}
             {selectedRowKeys.size > 0 && (
@@ -1499,11 +1502,11 @@ export function DataTable({
                 type="button"
                 onClick={() => setShowSelectedOnly((prev) => !prev)}
                 className="px-3 py-1.5 rounded-md border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] text-xs font-arabic hover:bg-[var(--surface-2)]"
-                title="تحديد ما يتم عرضه من العملاء"
+                title={t('dataTable.showSelectionTitle')}
               >
                 {showSelectedOnly
-                  ? `عرض الكل (${table.totalRowCount})`
-                  : `عرض المحدد فقط (${selectedRowKeys.size})`}
+                  ? t('dataTable.showAll', { count: table.totalRowCount })
+                  : t('dataTable.showSelected', { count: selectedRowKeys.size })}
               </button>
             )}
             {enableExport && (
@@ -1526,7 +1529,7 @@ export function DataTable({
 
           {hasMoreOnServer && (
             <div className="text-xs text-[var(--text-muted)] font-arabic">
-              يوجد بيانات إضافية على السيرفر. التحديد الحالي يطبق على البيانات المحمّلة فقط.
+              {t('dataTable.serverSelectionNotice')}
             </div>
           )}
         </>
@@ -1573,7 +1576,7 @@ export function DataTable({
       />
 
       {table.filteredRowCount === 0 ? (
-        <EmptyState message={emptyMessage} />
+        <EmptyState message={emptyMessage ?? t('dataTable.empty')} />
       ) : shouldRenderSplitColumns ? (
         <div
           ref={tableContainerRef}
@@ -1585,7 +1588,7 @@ export function DataTable({
             <div className="grid min-w-[960px] grid-cols-2 gap-2">
               <section className="min-w-0 overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)]">
                 <div className="border-b border-[var(--border)] bg-[#E8F9FA] px-3 py-2 text-xs font-black text-[#007A80]">
-                  جدول اليمين
+                  {t('dataTable.rightTable')}
                 </div>
                 <div className="overflow-x-auto" {...horizontalDragHandlers}>
                   <table
@@ -1666,7 +1669,7 @@ export function DataTable({
 
               <section className="min-w-0 overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)]">
                 <div className="border-b border-[var(--border)] bg-white px-3 py-2 text-xs font-black text-[var(--text)]">
-                  جدول اليسار
+                  {t('dataTable.leftTable')}
                 </div>
                 <div className="overflow-x-auto" {...horizontalDragHandlers}>
                   <table
@@ -1850,7 +1853,7 @@ export function DataTable({
           {isFetchingNextPage && (
             <div className="inline-flex items-center gap-2 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs text-[var(--text-muted)]">
               <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#00C2CB] border-t-transparent" />
-              جاري تحميل المزيد...
+              {t('dataTable.loadingMore')}
             </div>
           )}
         </div>
@@ -1861,8 +1864,8 @@ export function DataTable({
           type="button"
           onClick={scrollToTop}
           className={`fixed bottom-5 ${dir === 'rtl' ? 'left-5' : 'right-5'} z-40 w-10 h-10 rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] shadow-md hover:bg-[var(--surface-2)] scroll-button-pulse`}
-          title="الصعود لأعلى"
-          aria-label="الصعود لأعلى"
+          title={t('dataTable.scrollTop')}
+          aria-label={t('dataTable.scrollTop')}
         >
           ↑
         </button>
@@ -1873,8 +1876,8 @@ export function DataTable({
           type="button"
           onClick={scrollToBottom}
           className={`fixed bottom-5 ${dir === 'rtl' ? 'left-16' : 'right-16'} z-40 w-10 h-10 rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] shadow-md hover:bg-[var(--surface-2)] scroll-button-pulse`}
-          title="النزول لأسفل"
-          aria-label="النزول لأسفل"
+          title={t('dataTable.scrollBottom')}
+          aria-label={t('dataTable.scrollBottom')}
         >
           ↓
         </button>
@@ -1888,13 +1891,13 @@ export function DataTable({
           role="menu"
         >
           <div className="mb-2 flex items-center justify-between border-b border-[var(--border)] pb-2">
-            <span className="text-xs font-medium text-[var(--text)]">المحدد: {selectedRowKeys.size}</span>
+            <span className="text-xs font-medium text-[var(--text)]">{t('dataTable.selectedCount', { count: selectedRowKeys.size })}</span>
             <button
               type="button"
               onClick={clearSelection}
               className="text-xs text-[var(--text-muted)] hover:text-[var(--text)]"
             >
-              إلغاء التحديد
+              {t('dataTable.clearSelection')}
             </button>
           </div>
 
@@ -1924,10 +1927,10 @@ export function DataTable({
           </div>
 
           <div className="mt-3 space-y-3">
-            <div className="text-xs font-medium text-[var(--text)]">تخصيص الصفوف المحددة</div>
+            <div className="text-xs font-medium text-[var(--text)]">{t('dataTable.customizeSelected')}</div>
 
             <div className="space-y-1">
-              <div className="text-[11px] text-[var(--text-muted)]">لون الصف</div>
+              <div className="text-[11px] text-[var(--text-muted)]">{t('dataTable.rowColor')}</div>
               <div className="flex flex-wrap gap-1.5">
                 {SELECTION_BG_COLORS.map((color) => (
                   <button
@@ -1936,15 +1939,15 @@ export function DataTable({
                     className="h-6 w-6 rounded-md border border-[var(--border)]"
                     style={{ backgroundColor: color }}
                     onClick={() => applyStyleToSelectedRows({ bgColor: color })}
-                    title={`لون الصف ${color}`}
-                    aria-label={`لون الصف ${color}`}
+                    title={`${t('dataTable.rowColor')} ${color}`}
+                    aria-label={`${t('dataTable.rowColor')} ${color}`}
                   />
                 ))}
               </div>
             </div>
 
             <div className="space-y-1">
-              <div className="text-[11px] text-[var(--text-muted)]">لون الخط</div>
+              <div className="text-[11px] text-[var(--text-muted)]">{t('dataTable.textColor')}</div>
               <div className="flex flex-wrap gap-1.5">
                 {SELECTION_TEXT_COLORS.map((color) => (
                   <button
@@ -1953,8 +1956,8 @@ export function DataTable({
                     className="h-6 w-6 rounded-md border border-[var(--border)]"
                     style={{ backgroundColor: color }}
                     onClick={() => applyStyleToSelectedRows({ textColor: color })}
-                    title={`لون الخط ${color}`}
-                    aria-label={`لون الخط ${color}`}
+                    title={`${t('dataTable.textColor')} ${color}`}
+                    aria-label={`${t('dataTable.textColor')} ${color}`}
                   />
                 ))}
               </div>
@@ -1962,7 +1965,7 @@ export function DataTable({
 
             <div className="grid grid-cols-2 gap-2">
               <label className="space-y-1">
-                <span className="block text-[11px] text-[var(--text-muted)]">حجم الخط</span>
+                <span className="block text-[11px] text-[var(--text-muted)]">{t('dataTable.fontSize')}</span>
                 <select
                   className="h-8 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs text-[var(--text)]"
                   defaultValue=""
@@ -1972,7 +1975,7 @@ export function DataTable({
                     event.target.value = ''
                   }}
                 >
-                  <option value="">اختيار</option>
+                  <option value="">{t('dataTable.choose')}</option>
                   {SELECTION_FONT_SIZES.map((size) => (
                     <option key={size} value={size}>{size.replace('px', '')}</option>
                   ))}
@@ -1980,7 +1983,7 @@ export function DataTable({
               </label>
 
               <label className="space-y-1">
-                <span className="block text-[11px] text-[var(--text-muted)]">غلاظة الخط</span>
+                <span className="block text-[11px] text-[var(--text-muted)]">{t('dataTable.fontWeight')}</span>
                 <select
                   className="h-8 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs text-[var(--text)]"
                   defaultValue=""
@@ -1990,16 +1993,16 @@ export function DataTable({
                     event.target.value = ''
                   }}
                 >
-                  <option value="">اختيار</option>
+                  <option value="">{t('dataTable.choose')}</option>
                   {SELECTION_FONT_WEIGHTS.map((weight) => (
-                    <option key={weight.value} value={weight.value}>{weight.label}</option>
+                    <option key={weight.value} value={weight.value}>{t(`dataTable.${weight.label.toLowerCase()}`)}</option>
                   ))}
                 </select>
               </label>
             </div>
 
             <label className="block space-y-1">
-              <span className="block text-[11px] text-[var(--text-muted)]">نوع الخط</span>
+              <span className="block text-[11px] text-[var(--text-muted)]">{t('dataTable.fontFamily')}</span>
               <select
                 className="h-8 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs text-[var(--text)]"
                 defaultValue=""
@@ -2008,9 +2011,11 @@ export function DataTable({
                   event.target.value = ''
                 }}
               >
-                <option value="">اختيار</option>
+                <option value="">{t('dataTable.choose')}</option>
                 {SELECTION_FONT_FAMILIES.map((font) => (
-                  <option key={font.label} value={font.value}>{font.label}</option>
+                  <option key={font.label} value={font.value}>
+                    {font.label === 'Default' ? t('dataTable.defaultFont') : font.label === 'Monospace' ? t('dataTable.monospace') : font.label}
+                  </option>
                 ))}
               </select>
             </label>
@@ -2020,7 +2025,7 @@ export function DataTable({
               className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-xs text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
               onClick={clearStyleFromSelectedRows}
             >
-              مسح تخصيص الصفوف المحددة
+              {t('dataTable.clearSelectedStyle')}
             </button>
           </div>
         </div>,

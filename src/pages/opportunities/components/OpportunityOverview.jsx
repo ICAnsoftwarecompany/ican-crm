@@ -1,9 +1,10 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Sparkles, Bell, Eye, Rocket, Target, Wallet } from 'lucide-react'
 import { ResourceState } from '../../../shared/components/data/ResourceState'
 import { useOpportunities } from '../../../features/opportunities/hooks/useOpportunities'
 import { useOpportunityDrawerStore } from '../../../features/opportunities/store/opportunityDrawerStore'
-import { OPPORTUNITY_SOURCES } from '../../../features/opportunities/constants/opportunityTypes'
+import { getOpportunitySources } from '../../../features/opportunities/constants/opportunityTypes'
 import {
   formatCurrency,
   getOpportunitySourceMeta,
@@ -26,6 +27,7 @@ function StatCard({ label, value, icon: Icon, color }) {
 }
 
 export function OpportunityOverview() {
+  const { t, i18n } = useTranslation()
   const opportunitiesQuery = useOpportunities()
   const openDrawer = useOpportunityDrawerStore((state) => state.open)
   const rows = opportunitiesQuery.data || []
@@ -53,14 +55,14 @@ export function OpportunityOverview() {
 
   const sourceDistribution = useMemo(() => {
     const total = rows.length || 1
-    return OPPORTUNITY_SOURCES
+    return getOpportunitySources(t)
       .map((source) => {
         const count = rows.filter((row) => row.source?.type === source.value).length
         return { ...source, count, percent: Math.round((count / total) * 100) }
       })
       .filter((source) => source.count > 0)
       .sort((a, b) => b.count - a.count)
-  }, [rows])
+  }, [rows, t])
 
   return (
     <ResourceState
@@ -68,15 +70,15 @@ export function OpportunityOverview() {
       error={opportunitiesQuery.error}
       empty={rows.length === 0}
       emptyIcon={<Target size={24} />}
-      emptyTitle="لا توجد فرص بيعية بعد"
+      emptyTitle={t('opportunities.noOpportunities')}
       onRetry={opportunitiesQuery.refetch}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 mb-6">
-        <StatCard label="جديدة" value={stats.new} icon={Sparkles} color="#3B82F6" />
-        <StatCard label="إمكانية عالية" value={stats.highPotential} icon={Target} color="#EF4444" />
-        <StatCard label="تحتاج متابعة" value={stats.needsAttention} icon={Bell} color="#F59E0B" />
-        <StatCard label="تحت المراقبة" value={stats.watching} icon={Eye} color="#8B5CF6" />
-        <StatCard label="مفعّلة" value={stats.activated} icon={Rocket} color="#10B981" />
+        <StatCard label={t('opportunities.statuses.new')} value={stats.new} icon={Sparkles} color="#3B82F6" />
+        <StatCard label={t('opportunities.highPotential')} value={stats.highPotential} icon={Target} color="#EF4444" />
+        <StatCard label={t('opportunities.needsAttention')} value={stats.needsAttention} icon={Bell} color="#F59E0B" />
+        <StatCard label={t('opportunities.statuses.watching')} value={stats.watching} icon={Eye} color="#8B5CF6" />
+        <StatCard label={t('opportunities.statuses.activated')} value={stats.activated} icon={Rocket} color="#10B981" />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[280px_minmax(0,1fr)] gap-4 mb-6">
@@ -85,13 +87,13 @@ export function OpportunityOverview() {
             <Wallet size={22} />
           </div>
           <div>
-            <p className="text-2xl font-bold font-latin text-[var(--text)]" dir="ltr">{formatCurrency(stats.potentialRevenue)}</p>
-            <p className="text-sm text-[var(--text-muted)] font-arabic">القيمة المحتملة الإجمالية</p>
+            <p className="text-2xl font-bold font-latin text-[var(--text)]" dir="ltr">{formatCurrency(stats.potentialRevenue, 'EGP', i18n.language)}</p>
+            <p className="text-sm text-[var(--text-muted)] font-arabic">{t('opportunities.potentialRevenue')}</p>
           </div>
         </div>
 
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-5">
-          <h2 className="font-bold text-[var(--text)] mb-3">توزيع المصادر</h2>
+          <h2 className="font-bold text-[var(--text)] mb-3">{t('opportunities.sourceDistribution')}</h2>
           <div className="grid gap-2.5">
             {sourceDistribution.map((source) => (
               <div key={source.value} className="flex items-center gap-3">
@@ -107,10 +109,10 @@ export function OpportunityOverview() {
       </div>
 
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-5">
-        <h2 className="font-bold text-[var(--text)] mb-3">أعلى الفرص إمكانية</h2>
+        <h2 className="font-bold text-[var(--text)] mb-3">{t('opportunities.topOpportunities')}</h2>
         <div className="grid gap-2">
           {topOpportunities.map((opportunity) => {
-            const sourceMeta = getOpportunitySourceMeta(opportunity.source?.type)
+            const sourceMeta = getOpportunitySourceMeta(opportunity.source?.type, t)
             const SourceIcon = sourceMeta.icon
 
             return (
@@ -131,7 +133,7 @@ export function OpportunityOverview() {
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
                   <span className="text-xs font-semibold text-[var(--text-muted)] font-latin" dir="ltr">
-                    {formatCurrency(opportunity.estimated_value, opportunity.currency)}
+                    {formatCurrency(opportunity.estimated_value, opportunity.currency, i18n.language)}
                   </span>
                   <span className="inline-flex items-center justify-center h-8 min-w-8 px-2 rounded-full bg-[#00C2CB] text-white text-xs font-black font-latin">
                     {opportunity.score?.total}

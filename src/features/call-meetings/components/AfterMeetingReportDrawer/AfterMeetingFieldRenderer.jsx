@@ -1,7 +1,10 @@
+import { useTranslation } from 'react-i18next'
+
 const inputClassName = 'h-10 w-full min-w-0 rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold text-[var(--text)] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]'
 const textareaClassName = 'min-h-24 w-full min-w-0 resize-none rounded-lg border border-[var(--border)] bg-white px-3 py-2 text-xs font-semibold leading-6 text-[var(--text)] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]'
 
 export function AfterMeetingFieldRenderer({ field, value, onChange }) {
+  const { t } = useTranslation()
   const label = (
     <span>
       {field.label}
@@ -27,7 +30,7 @@ export function AfterMeetingFieldRenderer({ field, value, onChange }) {
           onChange={(event) => onChange(event.target.value)}
           className={inputClassName}
         >
-          <option value="">اختر</option>
+          <option value="">{t('activities.afterMeetingReport.chooseOption')}</option>
           {(field.options || []).map((option) => (
             <option key={option} value={option}>
               {option}

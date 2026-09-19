@@ -3,10 +3,10 @@ import { cn } from '../../utils/cn'
 const variants = {
   primary:   'bg-[#162847] hover:bg-[#1D3461] text-white',
   accent:    'bg-[#00C2CB] hover:bg-[#00a8b0] text-white',
-  outline:   'border border-[#E2E6F0] dark:border-[#1E2D4A] bg-transparent hover:bg-[#F8FAFF] dark:hover:bg-[#111827] text-[var(--text)]',
-  ghost:     'bg-transparent hover:bg-[#F0F4FC] dark:hover:bg-[#111827] text-[var(--text)]',
+  outline:   'border border-[var(--border)] bg-transparent hover:bg-[var(--surface-2)] text-[var(--text)]',
+  ghost:     'bg-transparent hover:bg-[var(--surface-2)] text-[var(--text)]',
   danger:    'bg-[#EF4444] hover:bg-[#DC2626] text-white',
-  ai:        'bg-[#E8F9FA] hover:bg-[#d0f4f6] text-[#007A80] border border-[#A0ECF0]',
+  ai:        'bg-[var(--ai-bg)] hover:opacity-85 text-[var(--ai-text)] border border-[var(--ai-border)]',
 }
 
 const sizes = {

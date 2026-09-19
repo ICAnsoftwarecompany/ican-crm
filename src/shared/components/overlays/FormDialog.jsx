@@ -2,6 +2,7 @@ import { AppModal } from './AppModal'
 import { Button } from '../ui/Button'
 import { Spinner } from '../ui/Spinner'
 import { cn } from '../../utils/cn'
+import { useTranslation } from 'react-i18next'
 
 export function FormDialog({
   open,
@@ -10,8 +11,8 @@ export function FormDialog({
   description,
   children,
   onSubmit,
-  submitText = 'حفظ',
-  cancelText = 'إلغاء',
+  submitText,
+  cancelText,
   loading = false,
   submitDisabled = false,
   size = 'md',
@@ -20,6 +21,7 @@ export function FormDialog({
   className,
   contentClassName,
 }) {
+  const { t } = useTranslation()
   const handleSubmit = (e) => {
     e.preventDefault()
     if (loading || submitDisabled) return
@@ -43,7 +45,7 @@ export function FormDialog({
               onClick={onClose}
               disabled={loading}
             >
-              {cancelText}
+              {cancelText ?? t('actions.cancel')}
             </Button>
           )}
           <Button
@@ -52,7 +54,7 @@ export function FormDialog({
             loading={loading}
             disabled={submitDisabled || loading}
           >
-            {submitText}
+            {submitText ?? t('actions.save')}
           </Button>
         </div>
       }

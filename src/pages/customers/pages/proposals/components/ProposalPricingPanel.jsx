@@ -1,5 +1,6 @@
 import { Check, PackagePlus, Star, Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { Button } from '../../../../../shared/components/ui/Button'
@@ -35,6 +36,7 @@ function toNumber(value, fallback = undefined) {
 }
 
 export function ProposalPricingPanel({ proposal, options = [], selectedOptionId, onSelectOption }) {
+  const { t } = useTranslation()
   const [optionForm, setOptionForm] = useState(EMPTY_OPTION)
   const [itemForm, setItemForm] = useState(EMPTY_ITEM)
   const mutations = useProposalMutations()
@@ -46,8 +48,8 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
 
   const productOptions = useMemo(() => products.map((product) => ({
     value: String(product.id),
-    label: product.name || `منتج #${product.id}`,
-  })), [products])
+    label: product.name || t('proposals.pricing.productFallback', { id: product.id }),
+  })), [products, t])
 
   const updateOptionForm = (key, value) => setOptionForm((form) => ({ ...form, [key]: value }))
   const updateItemForm = (key, value) => setItemForm((form) => ({ ...form, [key]: value }))
@@ -55,7 +57,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
   const handleCreateOption = async (event) => {
     event.preventDefault()
     if (!optionForm.name.trim()) {
-      toast.error('اكتب اسم خيار السعر')
+      toast.error(t('proposals.pricing.writeOptionNameFirst'))
       return
     }
 
@@ -82,13 +84,13 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
     const created = response?.data?.data || response?.data || response
     onSelectOption?.(created?.id)
     setOptionForm(EMPTY_OPTION)
-    toast.success('تم إضافة خيار السعر')
+    toast.success(t('proposals.pricing.optionAdded'))
   }
 
   const handleCreateItem = async (event) => {
     event.preventDefault()
     if (!selectedOption?.id) {
-      toast.error('اختر خيار السعر أولا')
+      toast.error(t('proposals.pricing.chooseOptionFirst'))
       return
     }
 
@@ -109,13 +111,13 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
       },
     })
     setItemForm(EMPTY_ITEM)
-    toast.success('تم إضافة بند السعر')
+    toast.success(t('proposals.pricing.itemAdded'))
   }
 
   return (
     <div className="space-y-5">
       <section className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
-        <div className="mb-3 text-xs font-black text-[var(--text-muted)]">خيارات الأسعار</div>
+        <div className="mb-3 text-xs font-black text-[var(--text-muted)]">{t('proposals.builder.defaults.pricingTitle')}</div>
         <div className="space-y-2">
           {options.map((option) => (
             <button
@@ -135,24 +137,24 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
               <div className="mt-1 text-xs font-bold" dir="ltr">{formatMoney(option.total ?? option.subtotal, proposal?.currency)}</div>
             </button>
           ))}
-          {!options.length ? <p className="text-xs font-semibold text-[var(--text-muted)]">لا توجد خيارات أسعار بعد.</p> : null}
+          {!options.length ? <p className="text-xs font-semibold text-[var(--text-muted)]">{t('proposals.pricing.noPricingOptionsYet')}</p> : null}
         </div>
       </section>
 
       <form onSubmit={handleCreateOption} className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
-        <div className="mb-3 text-xs font-black text-[var(--text-muted)]">إضافة خيار سعر</div>
+        <div className="mb-3 text-xs font-black text-[var(--text-muted)]">{t('proposals.pricing.addPricingOptionTitle')}</div>
         <div className="space-y-3">
-          <Input label="اسم الخيار" value={optionForm.name} onChange={(event) => updateOptionForm('name', event.target.value)} />
-          <Input label="وصف مختصر" value={optionForm.description} onChange={(event) => updateOptionForm('description', event.target.value)} />
+          <Input label={t('proposals.pricing.optionNameLabel')} value={optionForm.name} onChange={(event) => updateOptionForm('name', event.target.value)} />
+          <Input label={t('proposals.wizard.shortDescriptionLabel')} value={optionForm.description} onChange={(event) => updateOptionForm('description', event.target.value)} />
           <div className="grid grid-cols-2 gap-2">
-            <Input label="الإجمالي الفرعي" type="number" value={optionForm.subtotal} onChange={(event) => updateOptionForm('subtotal', event.target.value)} />
-            <Input label="الخصم" type="number" value={optionForm.discount} onChange={(event) => updateOptionForm('discount', event.target.value)} />
-            <Input label="الضريبة" type="number" value={optionForm.tax} onChange={(event) => updateOptionForm('tax', event.target.value)} />
-            <Input label="الإجمالي" type="number" value={optionForm.total} onChange={(event) => updateOptionForm('total', event.target.value)} />
+            <Input label={t('proposals.pricing.subtotalLabel')} type="number" value={optionForm.subtotal} onChange={(event) => updateOptionForm('subtotal', event.target.value)} />
+            <Input label={t('proposals.pricing.discountLabel')} type="number" value={optionForm.discount} onChange={(event) => updateOptionForm('discount', event.target.value)} />
+            <Input label={t('proposals.pricing.taxLabel')} type="number" value={optionForm.tax} onChange={(event) => updateOptionForm('tax', event.target.value)} />
+            <Input label={t('proposals.pricing.totalLabel')} type="number" value={optionForm.total} onChange={(event) => updateOptionForm('total', event.target.value)} />
           </div>
           <Button type="submit" variant="accent" size="sm" className="w-full" loading={mutations.createProposalOption.isPending}>
             <Check size={15} />
-            حفظ خيار السعر
+            {t('proposals.pricing.savePricingOption')}
           </Button>
         </div>
       </form>
@@ -160,13 +162,13 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
       {selectedOption ? (
         <section className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
           <div className="mb-3 flex items-center justify-between gap-2">
-            <div className="text-xs font-black text-[var(--text-muted)]">بنود {selectedOption.name}</div>
+            <div className="text-xs font-black text-[var(--text-muted)]">{t('proposals.pricing.itemsOf', { name: selectedOption.name })}</div>
             <Button
               variant="ghost"
               size="icon"
               className="h-8 w-8 text-[#EF4444]"
               onClick={() => mutations.deleteProposalOption.mutate({ proposalId: proposal.id, optionId: selectedOption.id })}
-              aria-label="حذف الخيار"
+              aria-label={t('proposals.pricing.deleteOption')}
             >
               <Trash2 size={15} />
             </Button>
@@ -175,7 +177,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
           <div className="mb-4 space-y-2">
             {(itemsQuery.data || []).map((item) => (
               <div key={item.id || item.name} className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2">
-                <div className="font-black text-[var(--text)]">{item.name || item.product?.name || `بند #${item.id}`}</div>
+                <div className="font-black text-[var(--text)]">{item.name || item.product?.name || t('proposals.pricing.itemFallback', { id: item.id })}</div>
                 <div className="mt-1 text-xs font-bold text-[var(--text-muted)]" dir="ltr">
                   {item.quantity || 1} x {formatMoney(item.unit_price, proposal?.currency)}
                 </div>
@@ -184,16 +186,16 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
           </div>
 
           <form onSubmit={handleCreateItem} className="space-y-3">
-            <Select label="منتج من النظام" value={itemForm.product_id} onChange={(value) => updateItemForm('product_id', value)} options={productOptions} placeholder="اختياري" />
-            <Input label="اسم البند" value={itemForm.name} onChange={(event) => updateItemForm('name', event.target.value)} />
-            <Input label="وصف البند" value={itemForm.description} onChange={(event) => updateItemForm('description', event.target.value)} />
+            <Select label={t('proposals.pricing.productFromSystem')} value={itemForm.product_id} onChange={(value) => updateItemForm('product_id', value)} options={productOptions} placeholder={t('customers.followUp.optionalPlaceholder')} />
+            <Input label={t('proposals.pricing.itemNameLabel')} value={itemForm.name} onChange={(event) => updateItemForm('name', event.target.value)} />
+            <Input label={t('proposals.pricing.itemDescLabel')} value={itemForm.description} onChange={(event) => updateItemForm('description', event.target.value)} />
             <div className="grid grid-cols-2 gap-2">
-              <Input label="الكمية" type="number" value={itemForm.quantity} onChange={(event) => updateItemForm('quantity', event.target.value)} />
-              <Input label="سعر الوحدة" type="number" value={itemForm.unit_price} onChange={(event) => updateItemForm('unit_price', event.target.value)} />
+              <Input label={t('proposals.pricing.quantityLabel')} type="number" value={itemForm.quantity} onChange={(event) => updateItemForm('quantity', event.target.value)} />
+              <Input label={t('proposals.pricing.unitPriceLabel')} type="number" value={itemForm.unit_price} onChange={(event) => updateItemForm('unit_price', event.target.value)} />
             </div>
             <Button type="submit" variant="primary" size="sm" className="w-full" loading={mutations.createProposalOptionItem.isPending}>
               <PackagePlus size={15} />
-              إضافة بند
+              {t('proposals.pricing.addItem')}
             </Button>
           </form>
         </section>

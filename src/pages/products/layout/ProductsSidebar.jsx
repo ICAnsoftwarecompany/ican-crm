@@ -1,7 +1,8 @@
 import { NavLink } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Package, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { cn } from '../../../shared/utils/cn'
-import { productNavigationGroups } from '../constants/productNavigation'
+import { getProductNavigationGroups } from '../constants/productNavigation'
 
 function ProductsNavItem({ item, onNavigate, collapsed }) {
   const Icon = item.icon
@@ -54,6 +55,8 @@ export function ProductsSidebar({
   collapsed = false,
   onToggleCollapse,
 }) {
+  const { t } = useTranslation()
+  const productNavigationGroups = getProductNavigationGroups(t)
   const ToggleIcon = collapsed ? PanelLeftOpen : PanelLeftClose
 
   return (
@@ -65,7 +68,7 @@ export function ProductsSidebar({
         collapsed ? 'w-16' : 'w-[240px]',
         className
       )}
-      aria-label="قائمة المنتجات"
+      aria-label={t('products.sidebar.ariaLabel')}
     >
       <div className={cn('border-b border-[var(--border)] p-3', collapsed && 'px-2')}>
         <div className={cn('flex items-center gap-3', collapsed && 'flex-col justify-center gap-2')}>
@@ -75,9 +78,9 @@ export function ProductsSidebar({
 
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <h2 className="truncate text-sm font-bold text-[var(--text)]">إدارة المنتجات والخدمات</h2>
+              <h2 className="truncate text-sm font-bold text-[var(--text)]">{t('products.sidebar.title')}</h2>
               <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">
-                المنتجات، الخدمات والتصنيفات
+                {t('products.sidebar.subtitle')}
               </p>
             </div>
           )}
@@ -91,8 +94,8 @@ export function ProductsSidebar({
                 'text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text)]',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00C2CB]'
               )}
-              aria-label={collapsed ? 'فتح قائمة المنتجات' : 'غلق قائمة المنتجات'}
-              title={collapsed ? 'فتح قائمة المنتجات' : 'غلق قائمة المنتجات'}
+              aria-label={collapsed ? t('products.sidebar.openMenu') : t('products.sidebar.closeMenu')}
+              title={collapsed ? t('products.sidebar.openMenu') : t('products.sidebar.closeMenu')}
             >
               <ToggleIcon size={16} />
             </button>

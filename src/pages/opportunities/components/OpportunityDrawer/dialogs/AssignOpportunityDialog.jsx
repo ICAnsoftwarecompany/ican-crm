@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { FormDialog } from '../../../../../shared/components/overlays/FormDialog'
 import { Select } from '../../../../../shared/components/ui/Select'
 import { useUsers, useTeams } from '../../../../../features/teams/hooks/useTeams'
@@ -7,6 +8,7 @@ import { useOpportunityMutations } from '../../../../../features/opportunities/h
 import { extractMessage } from '../../../../../shared/utils/apiResponse'
 
 export function AssignOpportunityDialog({ opportunity, onClose }) {
+  const { t } = useTranslation()
   const usersQuery = useUsers()
   const teamsQuery = useTeams()
   const mutations = useOpportunityMutations()
@@ -30,10 +32,10 @@ export function AssignOpportunityDialog({ opportunity, onClose }) {
           assigned_team: selectedTeam ? { id: selectedTeam.id, name: selectedTeam.name } : null,
         },
       })
-      toast.success('تم إسناد الفرصة')
+      toast.success(t('opportunities.dialogs.assign.successMsg'))
       onClose()
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر إسناد الفرصة'))
+      toast.error(extractMessage(error, t('opportunities.dialogs.assign.errorMsg')))
     }
   }
 
@@ -41,20 +43,20 @@ export function AssignOpportunityDialog({ opportunity, onClose }) {
     <FormDialog
       open
       onClose={onClose}
-      title="إسناد الفرصة"
+      title={t('opportunities.dialogs.assign.title')}
       description={opportunity.customer?.name}
-      submitText="إسناد"
+      submitText={t('opportunities.dialogs.assign.submit')}
       loading={mutations.assign.isPending}
       onSubmit={handleSubmit}
     >
       <Select
-        label="المستخدم المسؤول"
+        label={t('opportunities.dialogs.assign.userLabel')}
         value={form.assigned_user_id}
         onChange={(value) => updateField('assigned_user_id', value)}
         options={(usersQuery.data || []).map((user) => ({ value: String(user.id), label: user.name || user.username || `#${user.id}` }))}
       />
       <Select
-        label="الفريق"
+        label={t('opportunities.dialogs.assign.teamLabel')}
         value={form.assigned_team_id}
         onChange={(value) => updateField('assigned_team_id', value)}
         options={(teamsQuery.data || []).map((team) => ({ value: String(team.id), label: team.name || `#${team.id}` }))}

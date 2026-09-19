@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bell, CalendarClock, CalendarDays, Check, FileAudio, FileUp, MapPin, PhoneCall, Radio, Search, UsersRound, UserRound, Video } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 import { useMeetingMutations } from '../../../meetings/hooks/useMeetings'
 import { useTeams } from '../../../teams/hooks/useTeams'
@@ -10,51 +11,57 @@ import { AppDrawer } from '../../../../shared/components/overlays/AppDrawer'
 import { AppModal } from '../../../../shared/components/overlays/AppModal'
 import { Button } from '../../../../shared/components/ui/Button'
 
-const PRIORITY_OPTIONS = [
-  { value: 'low', label: 'منخفضة', color: '#22C55E' },
-  { value: 'medium', label: 'متوسطة', color: '#F59E0B' },
-  { value: 'high', label: 'عالية', color: '#EF4444' },
-  { value: 'urgent', label: 'عاجلة', color: '#7C3AED' },
-]
+function getPriorityOptions(t) {
+  return [
+    { value: 'low', label: t('activities.scheduleDialog.priorityOptions.low'), color: '#22C55E' },
+    { value: 'medium', label: t('activities.scheduleDialog.priorityOptions.medium'), color: '#F59E0B' },
+    { value: 'high', label: t('activities.scheduleDialog.priorityOptions.high'), color: '#EF4444' },
+    { value: 'urgent', label: t('activities.scheduleDialog.priorityOptions.urgent'), color: '#7C3AED' },
+  ]
+}
 
-const REMINDER_OPTIONS = [
-  { value: 'system', label: 'System' },
-  { value: 'email', label: 'Email' },
-]
+function getReminderOptions(t) {
+  return [
+    { value: 'system', label: t('activities.scheduleDialog.reminderOptions.system') },
+    { value: 'email', label: t('activities.scheduleDialog.reminderOptions.email') },
+  ]
+}
 
-const SCHEDULE_CONFIG = {
-  call: {
-    formId: 'call-schedule-form',
-    icon: PhoneCall,
-    modalTitle: 'إضافة موعد مكالمة',
-    description: 'حدد بيانات المكالمة وسيتم حفظها كموعد مرتبط بالعميل أو الليد.',
-    titleLabel: 'عنوان المكالمة',
-    titlePlaceholder: 'مثال: متابعة العرض',
-    notesLabel: 'وصف أو ملاحظات',
-    notesPlaceholder: 'اكتب تفاصيل المكالمة أو سبب المتابعة...',
-    defaultTitle: 'مكالمة مع',
-    successMessage: 'تم إنشاء موعد المكالمة.',
-    actionTitle: 'موعد مكالمة',
-    saveLabel: 'حفظ موعد المكالمة',
-    updateLabel: 'تحديث موعد المكالمة',
-    defaultStartOffset: 15,
-  },
-  meeting: {
-    formId: 'meeting-schedule-form',
-    icon: CalendarDays,
-    modalTitle: 'إضافة موعد اجتماع',
-    description: 'حدد بيانات الاجتماع وسيتم حفظه كموعد مرتبط بالعميل أو الليد.',
-    titleLabel: 'عنوان الاجتماع',
-    titlePlaceholder: 'مثال: اجتماع متابعة العرض',
-    notesLabel: 'وصف أو ملاحظات',
-    notesPlaceholder: 'اكتب تفاصيل الاجتماع أو نقاط المتابعة...',
-    defaultTitle: 'اجتماع مع',
-    successMessage: 'تم إنشاء موعد الاجتماع.',
-    actionTitle: 'موعد اجتماع',
-    saveLabel: 'حفظ موعد الاجتماع',
-    updateLabel: 'تحديث موعد الاجتماع',
-    defaultStartOffset: 30,
-  },
+function getScheduleConfig(t) {
+  return {
+    call: {
+      formId: 'call-schedule-form',
+      icon: PhoneCall,
+      modalTitle: t('activities.scheduleDialog.call.modalTitle'),
+      description: t('activities.scheduleDialog.call.description'),
+      titleLabel: t('activities.scheduleDialog.call.titleLabel'),
+      titlePlaceholder: t('activities.scheduleDialog.call.titlePlaceholder'),
+      notesLabel: t('activities.scheduleDialog.call.notesLabel'),
+      notesPlaceholder: t('activities.scheduleDialog.call.notesPlaceholder'),
+      defaultTitle: t('activities.scheduleDialog.call.defaultTitle'),
+      successMessage: t('activities.scheduleDialog.call.successMessage'),
+      actionTitle: t('activities.scheduleDialog.call.actionTitle'),
+      saveLabel: t('activities.scheduleDialog.call.saveLabel'),
+      updateLabel: t('activities.scheduleDialog.call.updateLabel'),
+      defaultStartOffset: 15,
+    },
+    meeting: {
+      formId: 'meeting-schedule-form',
+      icon: CalendarDays,
+      modalTitle: t('activities.scheduleDialog.meeting.modalTitle'),
+      description: t('activities.scheduleDialog.meeting.description'),
+      titleLabel: t('activities.scheduleDialog.meeting.titleLabel'),
+      titlePlaceholder: t('activities.scheduleDialog.meeting.titlePlaceholder'),
+      notesLabel: t('activities.scheduleDialog.meeting.notesLabel'),
+      notesPlaceholder: t('activities.scheduleDialog.meeting.notesPlaceholder'),
+      defaultTitle: t('activities.scheduleDialog.meeting.defaultTitle'),
+      successMessage: t('activities.scheduleDialog.meeting.successMessage'),
+      actionTitle: t('activities.scheduleDialog.meeting.actionTitle'),
+      saveLabel: t('activities.scheduleDialog.meeting.saveLabel'),
+      updateLabel: t('activities.scheduleDialog.meeting.updateLabel'),
+      defaultStartOffset: 30,
+    },
+  }
 }
 
 function fieldValue(value, fallback = '-') {
@@ -215,11 +222,15 @@ export function ScheduleActivityDialog({
   onUpdated,
   onSaved,
 }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const usersQuery = useUsers()
   const teamsQuery = useTeams()
   const isEdit = Boolean(activity?.id)
   const scheduleType = String(activity?.type || type || '').toLowerCase() === 'call' ? 'call' : 'meeting'
+  const PRIORITY_OPTIONS = useMemo(() => getPriorityOptions(t), [t])
+  const REMINDER_OPTIONS = useMemo(() => getReminderOptions(t), [t])
+  const SCHEDULE_CONFIG = useMemo(() => getScheduleConfig(t), [t])
   const config = SCHEDULE_CONFIG[scheduleType]
   const Icon = config.icon
   const resolvedTaskableId = resolveTaskableId({ customer, leadId, taskableId, relatedType })
@@ -369,7 +380,7 @@ export function ScheduleActivityDialog({
     if (isVoiceRecording || typeof window === 'undefined') return
 
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
-      toast.error('المتصفح لا يدعم تسجيل الرسالة الصوتية هنا.')
+      toast.error(t('activities.scheduleDialog.micNotSupported'))
       return
     }
 
@@ -410,7 +421,7 @@ export function ScheduleActivityDialog({
       }, 1000)
     } catch (error) {
       console.error('[ScheduleActivityDialog] voice recording failed', error)
-      toast.error('تعذر الوصول إلى الميكروفون. تأكد من السماح بالإذن.')
+      toast.error(t('activities.scheduleDialog.micPermissionError'))
     }
   }
 
@@ -442,24 +453,24 @@ export function ScheduleActivityDialog({
     event.preventDefault()
 
     if (!effectiveTaskableId) {
-      toast.error('لا يوجد Lead أو Customer مرتبط بهذا الموعد.')
+      toast.error(t('activities.scheduleDialog.noEntityLinkedError'))
       return
     }
     if (!startAt || !endAt) {
-      toast.error(`اختر بداية ونهاية ${config.actionTitle}.`)
+      toast.error(t('activities.scheduleDialog.chooseStartEndError', { action: config.actionTitle }))
       return
     }
     if (scope === 'participants' && selectedUserIds.length === 0) {
-      toast.error('اختر مشارك واحد على الأقل.')
+      toast.error(t('activities.scheduleDialog.chooseParticipantError'))
       return
     }
     if (scope === 'team' && !selectedTeamId) {
-      toast.error('اختر الفريق المسؤول.')
+      toast.error(t('activities.scheduleDialog.chooseTeamError'))
       return
     }
 
     const payload = {
-      title: title.trim() || `${config.defaultTitle} ${fieldValue(getCustomerName(customer), 'العميل')}`,
+      title: title.trim() || `${config.defaultTitle} ${fieldValue(getCustomerName(customer), t('activities.scheduleDialog.customerFallback'))}`,
       description: description.trim(),
       type: scheduleType,
       mode,
@@ -492,7 +503,7 @@ export function ScheduleActivityDialog({
       : await mutations.create.mutateAsync(payload)
 
     const createdMeetingId = extractMeetingId(result)
-    toast.success(isEdit ? 'تم تحديث الموعد.' : config.successMessage)
+    toast.success(isEdit ? t('activities.scheduleDialog.updatedToast') : config.successMessage)
     onSaved?.(result, payload)
     if (isEdit) onUpdated?.(result, payload)
     else onCreated?.(result, payload)
@@ -502,17 +513,17 @@ export function ScheduleActivityDialog({
       const leadPageId = getLeadPageId(customer, effectiveTaskableId)
       navigate(`/lead/${leadPageId}?tab=meetings&preMeetingReport=1&meetingId=${createdMeetingId}`)
     } else if (openPreMeetingReport && scheduleType === 'meeting') {
-      toast.error('تم حفظ الاجتماع لكن لم يتم استلام رقم الاجتماع لفتح تقرير قبل الاجتماع.')
+      toast.error(t('activities.scheduleDialog.preMeetingReportPendingError'))
     }
   }
 
-  const titleText = isEdit ? `تعديل ${config.actionTitle}` : config.modalTitle
+  const titleText = isEdit ? t('activities.scheduleDialog.editPrefix', { action: config.actionTitle }) : config.modalTitle
   const saveLabel = isEdit ? config.updateLabel : config.saveLabel
-  const customerDisplayName = fieldValue(getCustomerName(customer), 'العميل')
+  const customerDisplayName = fieldValue(getCustomerName(customer), t('activities.scheduleDialog.customerFallback'))
   const customerDisplayPhone = getCustomerPhone(customer)
   const actions = (
     <>
-      <Button type="button" variant="outline" onClick={onClose}>إلغاء</Button>
+      <Button type="button" variant="outline" onClick={onClose}>{t('actions.cancel')}</Button>
       <Button type="submit" form={config.formId} variant="ai" loading={isPending} className="min-w-32">
         <Icon size={15} />
         {saveLabel}
@@ -528,7 +539,7 @@ export function ScheduleActivityDialog({
             <UserRound size={18} />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-[11px] font-bold text-[var(--text-muted)]">العميل</div>
+            <div className="text-[11px] font-bold text-[var(--text-muted)]">{t('activities.scheduleDialog.customerLabel')}</div>
             <div className="truncate text-sm font-black text-[var(--text)]">{customerDisplayName}</div>
           </div>
           {customerDisplayPhone ? (
@@ -540,20 +551,20 @@ export function ScheduleActivityDialog({
       </div>
 
       {allowEntityBinding && !resolvedTaskableId ? (
-        <Section title="ربط الموعد" icon={MapPin}>
+        <Section title={t('activities.scheduleDialog.linkEntityTitle')} icon={MapPin}>
           <div className="grid gap-3 sm:grid-cols-2">
-            <FormField label="نوع الكيان">
+            <FormField label={t('activities.scheduleDialog.entityTypeLabel')}>
               <select value={manualRelatedType} onChange={(event) => setManualRelatedType(event.target.value)} className={inputClassName}>
                 <option value="lead">Lead</option>
                 <option value="customer">Customer</option>
               </select>
             </FormField>
-            <FormField label="رقم الكيان">
+            <FormField label={t('activities.scheduleDialog.entityIdLabel')}>
               <input
                 type="text"
                 value={manualTaskableId}
                 onChange={(event) => setManualTaskableId(event.target.value)}
-                placeholder="اكتب ID"
+                placeholder={t('activities.scheduleDialog.entityIdPlaceholder')}
                 className={inputClassName}
               />
             </FormField>
@@ -561,13 +572,13 @@ export function ScheduleActivityDialog({
         </Section>
       ) : null}
 
-      <Section title="بيانات الموعد" icon={CalendarClock}>
+      <Section title={t('activities.scheduleDialog.appointmentDataTitle')} icon={CalendarClock}>
         <div className="grid gap-3 sm:grid-cols-2">
           <FormField label={config.titleLabel}>
             <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder={config.titlePlaceholder} className={inputClassName} />
           </FormField>
           <div className="space-y-2">
-            <div className="text-xs font-bold text-[var(--text)]">الأولوية</div>
+            <div className="text-xs font-bold text-[var(--text)]">{t('activities.scheduleDialog.priorityLabel')}</div>
             <div className="grid grid-cols-4 gap-2">
               {PRIORITY_OPTIONS.map((option) => (
                 <button
@@ -582,25 +593,25 @@ export function ScheduleActivityDialog({
               ))}
             </div>
           </div>
-          <FormField label="بداية الموعد">
+          <FormField label={t('activities.scheduleDialog.startLabel')}>
             <input type="datetime-local" value={startAt} onChange={(event) => handleStartChange(event.target.value)} className={inputClassName} />
           </FormField>
-          <FormField label="نهاية الموعد">
+          <FormField label={t('activities.scheduleDialog.endLabel')}>
             <input type="datetime-local" value={endAt} onChange={(event) => setEndAt(event.target.value)} className={inputClassName} />
           </FormField>
         </div>
       </Section>
 
-      <Section title={scheduleType === 'call' ? 'إعدادات المكالمة' : 'طريقة الاجتماع'} icon={scheduleType === 'call' ? PhoneCall : Video}>
+      <Section title={scheduleType === 'call' ? t('activities.scheduleDialog.callSettingsTitle') : t('activities.scheduleDialog.meetingModeTitle')} icon={scheduleType === 'call' ? PhoneCall : Video}>
         <div className="grid gap-3 sm:grid-cols-2">
-          <FormField label={scheduleType === 'call' ? 'طريقة المكالمة' : 'طريقة الاجتماع'}>
+          <FormField label={scheduleType === 'call' ? t('activities.scheduleDialog.callModeLabel') : t('activities.scheduleDialog.meetingModeLabel')}>
             <select value={mode} onChange={(event) => setMode(event.target.value)} className={inputClassName}>
               <option value="online">Online</option>
               <option value="offline">Offline</option>
             </select>
           </FormField>
           {scheduleType === 'call' ? (
-            <FormField label="مزود المكالمة">
+            <FormField label={t('activities.scheduleDialog.callProviderLabel')}>
               <select value={callProvider} onChange={(event) => setCallProvider(event.target.value)} className={inputClassName}>
                 <option value="manual">Manual</option>
                 <option value="cloud_call_center">Cloud Call Center</option>
@@ -609,58 +620,58 @@ export function ScheduleActivityDialog({
           ) : null}
           {scheduleType === 'call' ? (
             <>
-              <FormField label="رقم المتصل">
-                <input value={callerNumber} onChange={(event) => setCallerNumber(event.target.value)} placeholder="اختياري" className={inputClassName} />
+              <FormField label={t('activities.scheduleDialog.callerNumberLabel')}>
+                <input value={callerNumber} onChange={(event) => setCallerNumber(event.target.value)} placeholder={t('activities.scheduleDialog.optionalPlaceholder')} className={inputClassName} />
               </FormField>
-              <FormField label="رقم العميل">
-                <input value={calleeNumber} onChange={(event) => setCalleeNumber(event.target.value)} placeholder="رقم العميل" className={inputClassName} />
+              <FormField label={t('activities.scheduleDialog.calleeNumberLabel')}>
+                <input value={calleeNumber} onChange={(event) => setCalleeNumber(event.target.value)} placeholder={t('activities.scheduleDialog.calleeNumberLabel')} className={inputClassName} />
               </FormField>
             </>
           ) : null}
           {mode === 'online' ? (
-            <FormField label={scheduleType === 'call' ? 'رابط المكالمة' : 'رابط الاجتماع'}>
+            <FormField label={scheduleType === 'call' ? t('activities.scheduleDialog.callLinkLabel') : t('activities.scheduleDialog.meetingLinkLabel')}>
               <input value={meetingLink} onChange={(event) => setMeetingLink(event.target.value)} placeholder="https://..." className={inputClassName} />
             </FormField>
           ) : (
-            <FormField label={scheduleType === 'call' ? 'عنوان المكالمة الحضورية' : 'عنوان الاجتماع'}>
-              <input value={location} onChange={(event) => setLocation(event.target.value)} placeholder="اكتب العنوان" className={inputClassName} />
+            <FormField label={scheduleType === 'call' ? t('activities.scheduleDialog.callLocationLabel') : t('activities.scheduleDialog.meetingLocationLabel')}>
+              <input value={location} onChange={(event) => setLocation(event.target.value)} placeholder={t('activities.scheduleDialog.addressPlaceholder')} className={inputClassName} />
             </FormField>
           )}
         </div>
       </Section>
 
-      <Section title="المشاركون والنطاق" icon={UsersRound}>
+      <Section title={t('activities.scheduleDialog.participantsScopeTitle')} icon={UsersRound}>
         <div className="grid gap-3 sm:grid-cols-2">
-          <FormField label="النطاق">
+          <FormField label={t('activities.scheduleDialog.scopeLabel')}>
             <select value={scope} onChange={(event) => setScope(event.target.value)} className={inputClassName}>
               <option value="participants">Participants</option>
               <option value="team">Team</option>
             </select>
           </FormField>
           {scope === 'team' ? (
-            <FormField label="الفريق">
+            <FormField label={t('activities.scheduleDialog.teamLabel')}>
               <select value={selectedTeamId} onChange={(event) => setSelectedTeamId(event.target.value)} className={inputClassName}>
-                <option value="">اختر الفريق</option>
+                <option value="">{t('activities.scheduleDialog.chooseTeamPlaceholder')}</option>
                 {teams.map((team) => <option key={getEntityId(team)} value={getEntityId(team)}>{getTeamLabel(team)}</option>)}
               </select>
             </FormField>
           ) : (
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-2">
-                <div className="text-xs font-bold text-[var(--text)]">المستخدمون المشاركون</div>
+                <div className="text-xs font-bold text-[var(--text)]">{t('activities.scheduleDialog.participatingUsersLabel')}</div>
                 <button
                   type="button"
                   onClick={() => setIsParticipantsDialogOpen(true)}
                   className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] px-2 text-[11px] font-black text-[#007A80]"
                 >
                   <UsersRound size={12} />
-                  اختيار المستخدمين
+                  {t('activities.scheduleDialog.chooseUsersButton')}
                 </button>
               </div>
 
               <div className="rounded-lg border border-[var(--border)] bg-white p-2">
                 <div className="text-[11px] font-semibold text-[var(--text-muted)]">
-                  عدد المشاركين: <span className="font-black text-[var(--text)]">{selectedUserIds.length}</span>
+                  {t('activities.scheduleDialog.participantsCountLabel')} <span className="font-black text-[var(--text)]">{selectedUserIds.length}</span>
                 </div>
                 {selectedUsersPreview.length ? (
                   <div className="mt-2 flex flex-wrap gap-1.5">
@@ -677,7 +688,7 @@ export function ScheduleActivityDialog({
                   </div>
                 ) : (
                   <div className="mt-2 rounded-lg border border-dashed border-[#E5F7F8] bg-[#F8FEFF] p-2 text-[11px] font-semibold text-[var(--text-muted)]">
-                    لم يتم اختيار مشاركين بعد.
+                    {t('activities.scheduleDialog.noParticipantsSelected')}
                   </div>
                 )}
               </div>
@@ -690,7 +701,7 @@ export function ScheduleActivityDialog({
         <textarea value={description} onChange={(event) => setDescription(event.target.value)} placeholder={config.notesPlaceholder} className={textareaClassName} />
       </FormField>
 
-      <Section title="التذكير" icon={Bell}>
+      <Section title={t('activities.scheduleDialog.remindersTitle')} icon={Bell}>
         <div className="flex flex-wrap gap-2">
           {REMINDER_OPTIONS.map((option) => {
             const checked = reminderChannels.includes(option.value)
@@ -706,29 +717,29 @@ export function ScheduleActivityDialog({
         </div>
         {reminderChannels.length ? (
           <div className="grid gap-3 sm:grid-cols-2">
-            <FormField label="الوحدة">
+            <FormField label={t('activities.scheduleDialog.reminderUnitLabel')}>
               <select value={reminderUnit} onChange={(event) => setReminderUnit(event.target.value)} className={inputClassName}>
-                <option value="minutes">دقائق</option>
-                <option value="hours">ساعات</option>
-                <option value="days">أيام</option>
+                <option value="minutes">{t('activities.scheduleDialog.minutesOption')}</option>
+                <option value="hours">{t('activities.scheduleDialog.hoursOption')}</option>
+                <option value="days">{t('activities.scheduleDialog.daysOption')}</option>
               </select>
             </FormField>
-            <FormField label="العدد">
+            <FormField label={t('activities.scheduleDialog.reminderCountLabel')}>
               <input type="number" min="0" value={reminderBefore} onChange={(event) => setReminderBefore(event.target.value)} className={inputClassName} />
             </FormField>
           </div>
         ) : null}
       </Section>
 
-      <Section title="المرفقات" icon={FileUp}>
+      <Section title={t('activities.scheduleDialog.attachmentsTitle')} icon={FileUp}>
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={() => setAttachmentMode('files')} className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-xs font-black ${attachmentMode === 'files' ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]' : 'border-[var(--border)] bg-white text-[var(--text-muted)]'}`}>
             <FileUp size={14} />
-            ملفات
+            {t('activities.scheduleDialog.filesTabLabel')}
           </button>
           <button type="button" onClick={() => setAttachmentMode('voice_note')} className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-xs font-black ${attachmentMode === 'voice_note' ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]' : 'border-[var(--border)] bg-white text-[var(--text-muted)]'}`}>
             <FileAudio size={14} />
-            Voice note
+            {t('activities.scheduleDialog.voiceNoteTabLabel')}
           </button>
         </div>
 
@@ -736,14 +747,14 @@ export function ScheduleActivityDialog({
           <div className="space-y-3 rounded-xl border border-dashed border-[#BEEFF2] bg-[#F8FEFF] p-3">
             <div className="flex items-center justify-between gap-3">
               <div className="text-[11px] font-black text-[var(--text)]">
-                {isVoiceRecording ? `جارٍ التسجيل (${recordingSeconds}ث)` : 'تسجيل نص صوتي'}
+                {isVoiceRecording ? t('activities.scheduleDialog.recordingInProgress', { seconds: recordingSeconds }) : t('activities.scheduleDialog.recordVoiceNote')}
               </div>
               <button
                 type="button"
                 onClick={isVoiceRecording ? handleVoiceRecordingStop : startVoiceRecording}
                 className={`inline-flex h-9 items-center justify-center rounded-lg px-3 text-[11px] font-black ${isVoiceRecording ? 'bg-[#FEE2E2] text-[#991B1B]' : 'bg-[#E8F9FA] text-[#007A80]'}`}
               >
-                {isVoiceRecording ? 'إيقاف التسجيل' : 'تسجيل'}
+                {isVoiceRecording ? t('activities.scheduleDialog.stopRecording') : t('activities.scheduleDialog.recordButton')}
               </button>
             </div>
           </div>
@@ -765,9 +776,9 @@ export function ScheduleActivityDialog({
       </Section>
 
       {scheduleType === 'meeting' ? (
-        <Section title="قبل الاجتماع" icon={Radio}>
+        <Section title={t('activities.scheduleDialog.preMeetingSectionTitle')} icon={Radio}>
           <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-[#E5F7F8] bg-[#F8FEFF] p-3">
-            <span className="text-xs font-black text-[var(--text)]">فتح تقرير قبل الاجتماع بعد الحفظ</span>
+            <span className="text-xs font-black text-[var(--text)]">{t('activities.scheduleDialog.openPreMeetingAfterSave')}</span>
             <input type="checkbox" checked={openPreMeetingReport} onChange={(event) => setOpenPreMeetingReport(event.target.checked)} className="h-4 w-4 accent-[#00AEB8]" />
           </label>
         </Section>
@@ -775,7 +786,7 @@ export function ScheduleActivityDialog({
 
       <div className="inline-flex items-center gap-2 rounded-full bg-[#E8F9FA] px-3 py-1 text-[11px] font-bold text-[#007A80]">
         <MapPin size={13} />
-        سيتم ربط الموعد برقم {fieldValue(effectiveTaskableId)}
+        {t('activities.scheduleDialog.linkedToEntity', { id: fieldValue(effectiveTaskableId) })}
       </div>
     </form>
   )
@@ -784,14 +795,14 @@ export function ScheduleActivityDialog({
     <AppModal
       isOpen={isParticipantsDialogOpen}
       onClose={() => setIsParticipantsDialogOpen(false)}
-      title="اختيار المستخدمين المشاركين"
-      description="ابحث وحدد المستخدمين المشاركين في هذا الموعد"
+      title={t('activities.scheduleDialog.chooseParticipantsTitle')}
+      description={t('activities.scheduleDialog.chooseParticipantsDesc')}
       size="md"
       className="max-w-xl"
       closeOnBackdrop={false}
       footer={(
         <Button type="button" variant="ai" onClick={() => setIsParticipantsDialogOpen(false)}>
-          تم
+          {t('activities.scheduleDialog.done')}
         </Button>
       )}
     >
@@ -801,7 +812,7 @@ export function ScheduleActivityDialog({
           <input
             value={userSearchText}
             onChange={(event) => setUserSearchText(event.target.value)}
-            placeholder="بحث عن مستخدم..."
+            placeholder={t('activities.scheduleDialog.searchUserPlaceholder')}
             className="w-full bg-transparent text-xs font-semibold text-[var(--text)] outline-none placeholder:text-[var(--text-muted)]"
           />
         </div>
@@ -823,7 +834,7 @@ export function ScheduleActivityDialog({
             )
           }) : (
             <div className="rounded-lg border border-dashed border-[#E5F7F8] bg-[#F8FEFF] p-2 text-[11px] font-semibold text-[var(--text-muted)]">
-              لا يوجد مستخدم مطابق للبحث.
+              {t('activities.scheduleDialog.noMatchingUser')}
             </div>
           )}
         </div>

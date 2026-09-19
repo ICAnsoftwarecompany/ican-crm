@@ -13,7 +13,7 @@ import { getModules } from '../registry/workflowRegistry'
 import { validateWorkflow } from '../utils/workflowGraph'
 import { setStepAtAnchor, removeStepById, updateStepConfig } from '../utils/workflowTreeEditor'
 import { useWorkflowStore } from '../hooks/useWorkflowStore'
-import { WorkflowCanvas } from './WorkflowCanvas'
+import { WorkflowVisualCanvas } from './WorkflowVisualCanvas'
 import { WorkflowNodeLibrary } from './WorkflowNodeLibrary'
 import { WorkflowNodeProperties } from './WorkflowNodeProperties'
 import { WorkflowLocalStorageNotice } from './WorkflowLocalStorageNotice'
@@ -181,12 +181,11 @@ export function WorkflowBuilder({ mode = 'context', context, initialWorkflow, al
   }
 
   const canvas = (
-    <WorkflowCanvas
+    <WorkflowVisualCanvas
       workflow={workflow}
       selection={selection}
       onSelect={handleSelect}
       onAddStep={openLibraryForStep}
-      onRemoveStep={handleRemoveStepRequest}
     />
   )
 

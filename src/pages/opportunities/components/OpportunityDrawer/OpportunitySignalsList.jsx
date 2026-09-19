@@ -1,22 +1,24 @@
 import { Radar } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { formatRelativeTime, getSignalTypeMeta } from '../../../../features/opportunities/utils/opportunityFormatters'
 
 export function OpportunitySignalsList({ opportunity }) {
+  const { t, i18n } = useTranslation()
   const signals = Array.isArray(opportunity.signals) ? opportunity.signals : []
 
   return (
     <section>
       <div className="flex items-center gap-2 mb-3">
         <Radar size={16} className="text-[var(--text-muted)]" />
-        <h4 className="font-bold text-[var(--text)]">الإشارات ({signals.length})</h4>
+        <h4 className="font-bold text-[var(--text)]">{t('opportunities.signals')} ({signals.length})</h4>
       </div>
 
       {signals.length === 0 ? (
-        <p className="text-sm text-[var(--text-muted)]">لا توجد إشارات مسجلة لهذه الفرصة.</p>
+        <p className="text-sm text-[var(--text-muted)]">{t('opportunities.noSignals')}</p>
       ) : (
         <div className="grid gap-2.5">
           {signals.map((signal) => {
-            const meta = getSignalTypeMeta(signal.type)
+            const meta = getSignalTypeMeta(signal.type, t)
             const Icon = meta.icon
 
             return (
@@ -31,7 +33,7 @@ export function OpportunitySignalsList({ opportunity }) {
                       {signal.evidence && (
                         <p className="text-xs text-[var(--text-muted)] mt-0.5">{signal.evidence}</p>
                       )}
-                      <p className="text-[11px] text-[var(--text-light)] mt-1">{formatRelativeTime(signal.detected_at)}</p>
+                      <p className="text-[11px] text-[var(--text-light)] mt-1">{formatRelativeTime(signal.detected_at, Date.now(), i18n.language, t)}</p>
                     </div>
                   </div>
 

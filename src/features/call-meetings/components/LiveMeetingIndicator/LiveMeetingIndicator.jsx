@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { CalendarClock, Radio, UserRound } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 import { useMeetingInfo, useMeetings } from '../../../meetings/hooks/useMeetings'
 import { fieldValue, formatDateTime12 } from '../../utils/scheduleUiUtils'
@@ -25,23 +26,24 @@ function getCustomerName(meeting) {
 }
 
 function LiveMeetingPreview({ meeting, count, canOpenMeeting }) {
+  const { t } = useTranslation()
   if (!meeting) return null
 
   return (
     <div className="w-80 max-w-[calc(100vw-1rem)] space-y-2 rounded-xl border border-[#BEEFF2] bg-white p-3 text-xs shadow-2xl">
       <div className="flex items-center gap-2 text-sm font-black text-[#0F766E]">
         <Radio size={15} />
-        اجتماع مباشر شغال
+        {t('callMeetings.liveIndicator.liveMeetingRunning')}
         {count > 1 ? <span className="rounded-full bg-[#EAFBFC] px-2 py-0.5 text-[10px] text-[#007A80]">+{count - 1}</span> : null}
       </div>
-      <div className="break-words font-black text-[var(--text)]">{fieldValue(meeting.title, 'بدون عنوان')}</div>
+      <div className="break-words font-black text-[var(--text)]">{fieldValue(meeting.title, t('callMeetings.liveIndicator.untitled'))}</div>
       <div className="flex items-center gap-2 text-[11px] font-bold text-[var(--text-muted)]">
         <UserRound size={12} />
         {getCustomerName(meeting)}
       </div>
       <div className="flex items-center gap-2 text-[11px] font-bold text-[var(--text-muted)]">
         <CalendarClock size={12} />
-        البداية الفعلية: {formatDateTime12(meeting.actual_start_at || meeting.start_at)}
+        {t('callMeetings.liveIndicator.actualStartLabel', { value: formatDateTime12(meeting.actual_start_at || meeting.start_at) })}
       </div>
       {canOpenMeeting && meeting.meeting_link ? (
         <div className="break-all rounded-lg bg-[#F8FEFF] px-2 py-1 text-[11px] font-semibold text-[#007A80]">
@@ -50,7 +52,7 @@ function LiveMeetingPreview({ meeting, count, canOpenMeeting }) {
       ) : null}
       {!canOpenMeeting ? (
         <div className="rounded-lg border border-[#FECACA] bg-[#FEF2F2] px-2 py-1 text-[11px] font-semibold text-[#991B1B]">
-          غير مسموح لك بعرض رابط هذا الاجتماع لأنك لست ضمن المشاركين.
+          {t('callMeetings.liveIndicator.noPermissionToViewLink')}
         </div>
       ) : null}
     </div>
@@ -58,6 +60,7 @@ function LiveMeetingPreview({ meeting, count, canOpenMeeting }) {
 }
 
 export function LiveMeetingIndicator() {
+  const { t } = useTranslation()
   const [previewPosition, setPreviewPosition] = useState(null)
   const [drawerMeetingId, setDrawerMeetingId] = useState(null)
   const currentUser = useAuthStore((state) => state.user)
@@ -106,22 +109,22 @@ export function LiveMeetingIndicator() {
     if (!activeMeetingId) return
 
     if (!currentUserId) {
-      toast.error('تعذر تحديد المستخدم الحالي، يرجى إعادة تسجيل الدخول.')
+      toast.error(t('callMeetings.liveIndicator.userIdentifyError'))
       return
     }
 
     if (activeMeetingInfoQuery.isLoading) {
-      toast.info('جاري التحقق من صلاحية عرض الاجتماع...')
+      toast.info(t('callMeetings.liveIndicator.checkingPermission'))
       return
     }
 
     if (activeMeetingInfoQuery.isError) {
-      toast.error('تعذر التحقق من المشاركين لهذا الاجتماع.')
+      toast.error(t('callMeetings.liveIndicator.checkParticipantsFailed'))
       return
     }
 
     if (!isCurrentUserParticipant) {
-      toast.error('لا يمكنك فتح هذا الاجتماع لأنك لست من المشاركين.')
+      toast.error(t('callMeetings.liveIndicator.notParticipantError'))
       return
     }
 
@@ -138,13 +141,13 @@ export function LiveMeetingIndicator() {
         onBlur={() => setPreviewPosition(null)}
         onClick={handleOpenLiveMeetingDrawer}
         className="relative inline-flex h-8 items-center gap-1.5 rounded-lg border border-[#7FDDE1] bg-[#F3FDFF] px-2 text-xs font-black text-[#007A80] transition-colors hover:bg-[#E8F9FA]"
-        aria-label="Live meeting"
+        aria-label={t('callMeetings.liveIndicator.ariaLabel')}
       >
         <span className="relative flex size-4 items-center justify-center">
           <span className="absolute inline-flex size-4 animate-ping rounded-full bg-[#00C2CB] opacity-40" />
           <Radio size={15} className="relative" />
         </span>
-        <span className="hidden lg:inline">Live</span>
+        <span className="hidden lg:inline">{t('callMeetings.liveIndicator.live')}</span>
         {liveMeetings.length > 1 ? (
           <span className="rounded-full bg-white px-1.5 py-0.5 text-[10px] text-[#0F766E]">
             {liveMeetings.length}

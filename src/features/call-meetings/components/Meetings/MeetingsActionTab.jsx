@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AlarmClockCheck, CalendarDays, Clock3, Link as LinkIcon, Loader2, MapPin, Plus, UserRound, Video } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { useLeadCallsMeetings } from '../../../meetings/hooks/useMeetings'
 import { Button } from '../../../../shared/components/ui/Button'
@@ -113,6 +114,7 @@ function getStatusStyle(status) {
 }
 
 function MeetingCard({ meeting, onOpenDetails }) {
+  const { t } = useTranslation()
   const creatorName = meeting?.creator?.name || meeting?.creator?.username
   const participants = Array.isArray(meeting?.participants) ? meeting.participants : []
   const hasMeetingLink = Boolean(meeting?.meeting_link)
@@ -138,15 +140,15 @@ function MeetingCard({ meeting, onOpenDetails }) {
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <h4 className="min-w-0 truncate text-sm font-black text-[var(--text)]">
-              {fieldValue(meeting?.title, 'اجتماع بدون عنوان')}
+              {fieldValue(meeting?.title, t('activities.untitledMeeting'))}
             </h4>
             <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${statusStyle.badge}`}>
-              {getMeetingStatusLabel(meeting?.status)}
+              {getMeetingStatusLabel(meeting?.status, t)}
             </span>
             {showAlarm ? (
               <span className="inline-flex items-center gap-1 rounded-full bg-[#FEE2E2] px-2 py-0.5 text-[10px] font-black text-[#B91C1C]">
                 <AlarmClockCheck size={11} />
-                Alarm
+                {t('callMeetings.actionTab.alarmLabel')}
               </span>
             ) : null}
             {meeting?.priority && (
@@ -166,13 +168,13 @@ function MeetingCard({ meeting, onOpenDetails }) {
             {meeting?.start_at && (
               <span className="inline-flex items-center gap-1 rounded-full bg-[#F8FEFF] px-2 py-1">
                 <Clock3 size={12} />
-                يبدأ: {formatDateTime12(meeting.start_at)}
+                {t('callMeetings.actionTab.startsAt', { value: formatDateTime12(meeting.start_at) })}
               </span>
             )}
             {meeting?.end_at && (
               <span className="inline-flex items-center gap-1 rounded-full bg-[#F8FEFF] px-2 py-1">
                 <Clock3 size={12} />
-                ينتهي: {formatDateTime12(meeting.end_at)}
+                {t('callMeetings.actionTab.endsAt', { value: formatDateTime12(meeting.end_at) })}
               </span>
             )}
             {meeting?.mode && (
@@ -200,7 +202,7 @@ function MeetingCard({ meeting, onOpenDetails }) {
                   className="inline-flex max-w-full items-center gap-1 rounded-full bg-[#E8F9FA] px-2 py-1 text-[#007A80] hover:underline"
                 >
                   <LinkIcon size={12} />
-                  <span className="truncate">رابط الاجتماع</span>
+                  <span className="truncate">{t('activities.scheduleDialog.meetingLinkLabel')}</span>
                 </a>
               )}
               {hasLocation && (
@@ -214,9 +216,11 @@ function MeetingCard({ meeting, onOpenDetails }) {
 
           {participants.length > 0 && (
             <div className="mt-2 text-[11px] font-semibold text-[var(--text-muted)]">
-              المشاركون: {participants.map((participant) => (
-                participant?.user?.name || participant?.user?.username || `#${participant?.user_id}`
-              )).filter(Boolean).join('، ')}
+              {t('callMeetings.actionTab.participantsLabel', {
+                names: participants.map((participant) => (
+                  participant?.user?.name || participant?.user?.username || `#${participant?.user_id}`
+                )).filter(Boolean).join(t('common.listSeparator')),
+              })}
             </div>
           )}
         </div>
@@ -226,6 +230,7 @@ function MeetingCard({ meeting, onOpenDetails }) {
 }
 
 export function MeetingsActionTab({ customer, onChanged, actionRequest, layoutMode = 'compact' }) {
+  const { t } = useTranslation()
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false)
   const [selectedMeeting, setSelectedMeeting] = useState(null)
   const [filters, setFilters] = useState({
@@ -283,7 +288,7 @@ export function MeetingsActionTab({ customer, onChanged, actionRequest, layoutMo
       customer,
       actionType: 'activity',
       activityType: 'meeting',
-      activityTitle: payload?.title || result?.data?.title || 'موعد اجتماع',
+      activityTitle: payload?.title || result?.data?.title || t('activities.scheduleDialog.meeting.actionTitle'),
     })
   }
 
@@ -293,14 +298,14 @@ export function MeetingsActionTab({ customer, onChanged, actionRequest, layoutMo
       customer,
       actionType: 'activity',
       activityType: 'meeting',
-      activityTitle: 'تحديث بيانات الاجتماع',
+      activityTitle: t('callMeetings.actionTab.meetingDataUpdated'),
     })
   }
 
   if (!leadId) {
     return (
       <div className="rounded-lg border border-[#E5F7F8] bg-white px-3 py-2 text-xs font-semibold text-[var(--text-muted)]">
-        لا يوجد Lead مرتبط بهذا العميل.
+        {t('callMeetings.actionTab.noLeadLinked')}
       </div>
     )
   }
@@ -323,7 +328,7 @@ export function MeetingsActionTab({ customer, onChanged, actionRequest, layoutMo
           className="shrink-0 justify-center gap-2"
         >
           <Plus size={14} />
-          إضافة موعد اجتماع
+          {t('callMeetings.actionTab.addMeetingAppointment')}
         </Button>
       </div>
 
@@ -331,7 +336,7 @@ export function MeetingsActionTab({ customer, onChanged, actionRequest, layoutMo
 
       <div className="space-y-2 border-t border-[#E5F7F8] pt-3">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="text-sm font-black text-[var(--text)]">الاجتماعات المسجلة</h3>
+          <h3 className="text-sm font-black text-[var(--text)]">{t('callMeetings.actionTab.recordedMeetingsTitle')}</h3>
           <span className="rounded-full bg-[#F8FEFF] px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">
             {hasActiveFilters ? `${filteredMeetings.length} / ${meetings.length}` : meetings.length}
           </span>
@@ -340,19 +345,19 @@ export function MeetingsActionTab({ customer, onChanged, actionRequest, layoutMo
         {meetingsQuery.isLoading && (
           <div className="flex items-center justify-center gap-2 rounded-xl border border-[#E5F7F8] bg-white p-4 text-xs font-bold text-[#007A80]">
             <Loader2 size={15} className="animate-spin" />
-            جاري تحميل الاجتماعات...
+            {t('callMeetings.actionTab.loadingMeetings')}
           </div>
         )}
 
         {meetingsQuery.isError && (
           <div className="rounded-xl border border-red-100 bg-red-50 p-3 text-xs font-bold text-red-700">
-            تعذر تحميل الاجتماعات.
+            {t('callMeetings.actionTab.loadMeetingsFailed')}
           </div>
         )}
 
         {!meetingsQuery.isLoading && !meetingsQuery.isError && filteredMeetings.length === 0 && (
           <div className="rounded-xl border border-[#E5F7F8] bg-[#F8FEFF] p-4 text-center text-xs font-semibold text-[var(--text-muted)]">
-            لا توجد اجتماعات مطابقة للفلاتر الحالية.
+            {t('callMeetings.actionTab.noMatchingMeetings')}
           </div>
         )}
 

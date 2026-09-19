@@ -1,13 +1,16 @@
+import { useTranslation } from 'react-i18next'
 import { Input } from '../../../../shared/components/ui/Input'
 
 export function FollowUpScheduleSection({ form, updateForm }) {
+  const { t } = useTranslation()
+
   return (
     <div className="min-h-0 overflow-y-auto rounded-xl border border-[#D7EEF0] bg-[#F8FEFF] p-3">
       <label className="flex cursor-pointer items-center justify-between gap-3">
         <span className="min-w-0">
-          <span className="block text-sm font-black text-[#111827]">إضافة موعد/اجتماع مرتبط</span>
+          <span className="block text-sm font-black text-[#111827]">{t('customers.followUp.schedule.enableLabel')}</span>
           <span className="mt-0.5 block text-xs font-bold text-[#64748B]">
-            فعّل هذا الجزء لإدخال بيانات المكالمة أو الاجتماع.
+            {t('customers.followUp.schedule.enableHint')}
           </span>
         </span>
         <input
@@ -27,15 +30,15 @@ export function FollowUpScheduleSection({ form, updateForm }) {
       {form.schedule_enabled ? (
         <div className="mt-3 grid gap-2">
           <label className="grid gap-1.5">
-            <span className="text-sm font-black text-[#111827]">موعد مرتبط بالمتابعة</span>
+            <span className="text-sm font-black text-[#111827]">{t('customers.followUp.schedule.typeLabel')}</span>
             <select
               value={form.schedule_type}
               onChange={(event) => updateForm('schedule_type', event.target.value)}
               className="h-10 rounded-lg border border-[var(--border)] bg-white px-3 text-sm font-arabic text-[var(--text)] outline-none transition-colors focus:border-transparent focus:ring-2 focus:ring-[#00C2CB]"
             >
-              <option value="none">بدون موعد</option>
-              <option value="call">إنشاء موعد مكالمة</option>
-              <option value="meeting">إنشاء موعد ميتنج</option>
+              <option value="none">{t('customers.followUp.schedule.typeNone')}</option>
+              <option value="call">{t('customers.followUp.schedule.typeCall')}</option>
+              <option value="meeting">{t('customers.followUp.schedule.typeMeeting')}</option>
             </select>
           </label>
 
@@ -44,38 +47,38 @@ export function FollowUpScheduleSection({ form, updateForm }) {
             <div className="grid gap-3 sm:grid-cols-2">
               <Input
                 type="text"
-                label="عنوان الموعد"
+                label={t('customers.followUp.schedule.titleLabel')}
                 value={form.schedule_title}
                 onChange={(event) => updateForm('schedule_title', event.target.value)}
-                placeholder="اختياري"
+                placeholder={t('customers.followUp.optionalPlaceholder')}
               />
               <label className="grid gap-1.5">
-                <span className="text-sm font-medium font-arabic text-[var(--text)]">الأولوية</span>
+                <span className="text-sm font-medium font-arabic text-[var(--text)]">{t('customers.table.hover.priority')}</span>
                 <select
                   value={form.schedule_priority}
                   onChange={(event) => updateForm('schedule_priority', event.target.value)}
                   className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-arabic text-[var(--text)] outline-none transition-colors focus:border-transparent focus:ring-2 focus:ring-[#00C2CB]"
                 >
-                  <option value="low">منخفضة</option>
-                  <option value="medium">متوسطة</option>
-                  <option value="high">عالية</option>
-                  <option value="urgent">عاجلة</option>
+                  <option value="low">{t('customers.followUp.schedule.priorityLow')}</option>
+                  <option value="medium">{t('customers.followUp.schedule.priorityMedium')}</option>
+                  <option value="high">{t('customers.followUp.schedule.priorityHigh')}</option>
+                  <option value="urgent">{t('customers.followUp.schedule.priorityUrgent')}</option>
                 </select>
               </label>
               <Input
                 type="datetime-local"
-                label="بداية الموعد"
+                label={t('customers.followUp.schedule.startLabel')}
                 value={form.schedule_start_at}
                 onChange={(event) => updateForm('schedule_start_at', event.target.value)}
               />
               <Input
                 type="datetime-local"
-                label="نهاية الموعد"
+                label={t('customers.followUp.schedule.endLabel')}
                 value={form.schedule_end_at}
                 onChange={(event) => updateForm('schedule_end_at', event.target.value)}
               />
               <label className="grid gap-1.5">
-                <span className="text-sm font-medium font-arabic text-[var(--text)]">الوضع</span>
+                <span className="text-sm font-medium font-arabic text-[var(--text)]">{t('customers.followUp.schedule.modeLabel')}</span>
                 <select
                   value={form.schedule_mode}
                   onChange={(event) => updateForm('schedule_mode', event.target.value)}
@@ -87,24 +90,24 @@ export function FollowUpScheduleSection({ form, updateForm }) {
               </label>
               <Input
                 type="text"
-                label="الرابط"
+                label={t('customers.followUp.schedule.linkLabel')}
                 value={form.schedule_meeting_link}
                 onChange={(event) => updateForm('schedule_meeting_link', event.target.value)}
-                placeholder="اختياري"
+                placeholder={t('customers.followUp.optionalPlaceholder')}
               />
               <Input
                 type="text"
-                label="المكان"
+                label={t('customers.followUp.schedule.locationLabel')}
                 value={form.schedule_location}
                 onChange={(event) => updateForm('schedule_location', event.target.value)}
-                placeholder="اختياري"
+                placeholder={t('customers.followUp.optionalPlaceholder')}
               />
             </div>
 
             {form.schedule_type === 'call' ? (
               <div className="grid gap-3 sm:grid-cols-3">
                 <label className="grid gap-1.5">
-                  <span className="text-sm font-medium font-arabic text-[var(--text)]">مزود المكالمة</span>
+                  <span className="text-sm font-medium font-arabic text-[var(--text)]">{t('customers.followUp.schedule.callProviderLabel')}</span>
                   <select
                     value={form.schedule_call_provider}
                     onChange={(event) => updateForm('schedule_call_provider', event.target.value)}
@@ -116,24 +119,24 @@ export function FollowUpScheduleSection({ form, updateForm }) {
                 </label>
                 <Input
                   type="text"
-                  label="رقم المتصل"
+                  label={t('customers.followUp.schedule.callerNumberLabel')}
                   value={form.schedule_caller_number}
                   onChange={(event) => updateForm('schedule_caller_number', event.target.value)}
-                  placeholder="اختياري"
+                  placeholder={t('customers.followUp.optionalPlaceholder')}
                 />
                 <Input
                   type="text"
-                  label="رقم العميل"
+                  label={t('customers.followUp.schedule.calleeNumberLabel')}
                   value={form.schedule_callee_number}
                   onChange={(event) => updateForm('schedule_callee_number', event.target.value)}
-                  placeholder="رقم العميل"
+                  placeholder={t('customers.followUp.schedule.calleeNumberLabel')}
                 />
               </div>
             ) : null}
 
             <div className="grid gap-3 sm:grid-cols-3">
               <label className="grid gap-1.5">
-                <span className="text-sm font-medium font-arabic text-[var(--text)]">نوع التذكير</span>
+                <span className="text-sm font-medium font-arabic text-[var(--text)]">{t('customers.followUp.schedule.reminderTypeLabel')}</span>
                 <select
                   value={form.schedule_reminder_type}
                   onChange={(event) => updateForm('schedule_reminder_type', event.target.value)}
@@ -147,12 +150,12 @@ export function FollowUpScheduleSection({ form, updateForm }) {
               <Input
                 type="number"
                 min="0"
-                label="قبل الموعد"
+                label={t('customers.followUp.schedule.reminderBeforeLabel')}
                 value={form.schedule_reminder_before}
                 onChange={(event) => updateForm('schedule_reminder_before', event.target.value)}
               />
               <label className="grid gap-1.5">
-                <span className="text-sm font-medium font-arabic text-[var(--text)]">الوحدة</span>
+                <span className="text-sm font-medium font-arabic text-[var(--text)]">{t('customers.followUp.schedule.reminderUnitLabel')}</span>
                 <select
                   value={form.schedule_reminder_unit}
                   onChange={(event) => updateForm('schedule_reminder_unit', event.target.value)}
@@ -166,13 +169,13 @@ export function FollowUpScheduleSection({ form, updateForm }) {
             </div>
 
             <label className="block">
-              <span className="mb-1.5 block text-sm font-black text-[#111827]">وصف الموعد</span>
+              <span className="mb-1.5 block text-sm font-black text-[#111827]">{t('customers.followUp.schedule.descriptionLabel')}</span>
               <textarea
                 value={form.schedule_description}
                 onChange={(event) => updateForm('schedule_description', event.target.value)}
                 rows={3}
                 className="w-full resize-y rounded-xl border border-[#D8E7EA] bg-white px-3 py-2 text-sm font-bold text-[#111827] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]"
-                placeholder="اختياري"
+                placeholder={t('customers.followUp.optionalPlaceholder')}
               />
             </label>
           </>

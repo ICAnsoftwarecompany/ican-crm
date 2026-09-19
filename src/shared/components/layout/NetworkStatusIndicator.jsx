@@ -1,4 +1,5 @@
 import { Activity, Loader2, Wifi, WifiOff } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useNetworkQuality } from '../../hooks/useNetworkQuality'
 
 const QUALITY_META = {
@@ -60,17 +61,20 @@ function SignalBars({ activeBars }) {
 }
 
 export function NetworkStatusIndicator() {
+  const { t } = useTranslation()
   const network = useNetworkQuality()
   const meta = QUALITY_META[network.quality] || QUALITY_META.unknown
   const details = getNetworkDetails(network)
   const Icon = network.online ? Wifi : WifiOff
-  const title = details ? `${meta.label} - ${details}` : meta.label
+  const quality = Object.hasOwn(QUALITY_META, network.quality) ? network.quality : 'unknown'
+  const label = t(`app.network.${quality}`)
+  const title = details ? `${label} - ${details}` : label
 
   return (
     <div
-      className={`h-8 min-w-8 inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#E5E7EB] bg-white px-2 ${meta.color}`}
-      title={network.checking ? 'جاري فحص الشبكة' : title}
-      aria-label={network.checking ? 'جاري فحص الشبكة' : title}
+      className={`h-8 min-w-8 inline-flex items-center justify-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 ${meta.color}`}
+      title={network.checking ? t('app.network.checking') : title}
+      aria-label={network.checking ? t('app.network.checking') : title}
       role="status"
     >
       {network.checking ? (

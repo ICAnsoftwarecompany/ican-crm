@@ -13,9 +13,9 @@ export function EmptyState({ icon, title, description, action, aiSuggestion }) {
         <p className="text-sm text-[var(--text-muted)] max-w-xs mb-5 font-arabic">{description}</p>
       )}
       {aiSuggestion && (
-        <div className="bg-[#E8F9FA] border border-[#A0ECF0] rounded-lg p-3 mb-4 max-w-sm flex items-start gap-2">
+        <div className="bg-[var(--ai-bg)] border border-[var(--ai-border)] rounded-lg p-3 mb-4 max-w-sm flex items-start gap-2">
           <Sparkles size={16} className="text-[#00C2CB] mt-0.5 shrink-0" />
-          <p className="text-sm text-[#007A80] font-arabic text-start">{aiSuggestion}</p>
+          <p className="text-sm text-[var(--ai-text)] font-arabic text-start">{aiSuggestion}</p>
         </div>
       )}
       {action}

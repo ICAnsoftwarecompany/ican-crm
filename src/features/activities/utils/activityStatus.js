@@ -1,8 +1,9 @@
-import { ACTIVITY_STATUSES } from '../constants/activityConstants'
+import { getActivityStatuses } from '../constants/activityConstants'
 import { getDerivedActivityState, isOverdueActivity, isToday } from './activityDateHelpers'
 
-export function getActivityStatusMeta(status) {
-  return ACTIVITY_STATUSES[status] || ACTIVITY_STATUSES.scheduled
+export function getActivityStatusMeta(status, t) {
+  const statuses = getActivityStatuses(t)
+  return statuses[status] || statuses.scheduled
 }
 
 export function canStartActivity(activity) {

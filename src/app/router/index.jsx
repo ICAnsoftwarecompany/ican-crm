@@ -1,4 +1,5 @@
 import { Link, createBrowserRouter } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { PrivateRoute } from './PrivateRoute'
 import { MainLayout } from '../../shared/components/layout/MainLayout'
 import { LoginPage } from '../../pages/auth/LoginPage'
@@ -32,6 +33,7 @@ import { OpportunityCenterPage } from '../../pages/opportunities/OpportunityCent
 import { AutomationCenterPage } from '../../pages/automation/AutomationCenterPage'
 import { FacebookCallbackPage } from '../../pages/integrations/FacebookCallbackPage'
 import { TasksPage } from '../../pages/tasks/TasksPage'
+import { CalendarPage } from '../../pages/calendar/CalendarPage'
 import { ProductsLayout } from '../../pages/products/layout/ProductsLayout'
 import { ProductsPage } from '../../pages/products/ProductsPage/ProductsPage'
 import { ProductCategoriesPage } from '../../pages/products/ProductsPage/ProductCategoriesPage'
@@ -45,21 +47,23 @@ import { UsersSettingsPage } from '../../pages/settings/pages/users/UsersSetting
 import { IntegrationsSettingsPage } from '../../pages/settings/pages/integrations/IntegrationsSettingsPage'
 import { TemplatesPage } from '../../pages/templates/TemplatesPage'
 import { DataTableDemo } from '../../pages/playground/DataTableDemo'
+import { VisualFlowDemo } from '../../pages/playground/VisualFlowDemo'
 import { InternalChatPage } from '../../pages/chat/InternalChatPage'
 
 function NotFoundPage() {
+  const { t } = useTranslation()
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-xl flex-col items-center justify-center px-4 text-center">
       <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#E8F9FA] text-2xl font-black text-[#007A80]">
         404
       </div>
-      <h1 className="text-2xl font-black text-[var(--text)]">الصفحة غير موجودة</h1>
-      <p className="mt-2 text-sm font-semibold text-[var(--text-muted)]">الرابط الذي تحاول فتحه غير متاح أو تم تغييره.</p>
+      <h1 className="text-2xl font-black text-[var(--text)]">{t('app.notFoundTitle')}</h1>
+      <p className="mt-2 text-sm font-semibold text-[var(--text-muted)]">{t('app.notFoundDescription')}</p>
       <Link
         to="/LeadsCenter"
         className="mt-5 inline-flex items-center rounded-xl bg-[#00C2CB] px-4 py-2 text-sm font-black text-white shadow-sm transition-colors hover:bg-[#007A80]"
       >
-        الرجوع إلى مركز العملاء المحتملين
+        {t('app.backToLeads')}
       </Link>
     </div>
   )
@@ -117,6 +121,7 @@ export const router = createBrowserRouter([
       { path: 'opportunities', element: <OpportunityCenterPage /> },
       { path: 'automation', element: <AutomationCenterPage /> },
       { path: 'tasks', element: <TasksPage /> },
+      { path: 'calendar', element: <CalendarPage /> },
       { path: 'team-chat', element: <InternalChatPage /> },
       {
         path: 'products',
@@ -143,6 +148,7 @@ export const router = createBrowserRouter([
       },
       { path: 'integrations/facebook/callback', element: <FacebookCallbackPage /> },
       { path: 'playground/datatable', element: <DataTableDemo /> },
+      { path: 'playground/visual-flow', element: <VisualFlowDemo /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

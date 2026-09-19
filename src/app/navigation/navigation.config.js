@@ -36,6 +36,7 @@ import {
   Users,
   UserCheck,
   CalendarClock,
+  CalendarDays,
   FileSignature,
   Megaphone,
   Send,
@@ -171,6 +172,12 @@ export const navigationConfig = [
         labelKey: 'nav.tasks',
         icon: CheckSquare,
         path: '/tasks',
+      },
+      {
+        id: 'calendar',
+        labelKey: 'nav.calendar',
+        icon: CalendarDays,
+        path: '/calendar',
       },
       {
         id: 'team-chat',

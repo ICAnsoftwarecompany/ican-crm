@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { ArrowRight, Eye, Save, Settings, WalletCards } from 'lucide-react'
 
 import { Button } from '../../../../../shared/components/ui/Button'
@@ -13,17 +14,19 @@ export function ProposalBuilderHeader({
   onSaveNow,
   creatingVersion,
 }) {
+  const { t } = useTranslation()
+
   return (
     <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={onBack} aria-label="رجوع">
+          <Button variant="ghost" size="icon" onClick={onBack} aria-label={t('proposals.header.back')}>
             <ArrowRight size={18} />
           </Button>
           <div className="min-w-0">
-            <div className="truncate text-base font-black text-[var(--text)]">{proposal?.title || 'عرض سعر'}</div>
+            <div className="truncate text-base font-black text-[var(--text)]">{proposal?.title || t('proposals.builder.defaults.coverEyebrow')}</div>
             <div className="mt-1 flex flex-wrap items-center gap-2 text-xs font-bold text-[var(--text-muted)]">
-              <span>{currentVersion?.name || 'بدون نسخة'}</span>
+              <span>{currentVersion?.name || t('proposals.header.noVersion')}</span>
               <span>•</span>
               <span>{saveState}</span>
             </div>
@@ -38,17 +41,17 @@ export function ProposalBuilderHeader({
           {currentVersion ? (
             <Button variant="outline" size="sm" onClick={onSaveNow}>
               <Save size={16} />
-              حفظ الآن
+              {t('proposals.header.saveNow')}
             </Button>
           ) : (
             <Button variant="accent" size="sm" onClick={onCreateVersion} loading={creatingVersion}>
               <Settings size={16} />
-              إنشاء نسخة
+              {t('proposals.header.createVersion')}
             </Button>
           )}
           <Button variant="primary" size="sm" onClick={onPreview}>
             <Eye size={16} />
-            معاينة
+            {t('proposals.page.preview')}
           </Button>
         </div>
       </div>

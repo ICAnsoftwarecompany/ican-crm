@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { createPortal } from 'react-dom'
 import { Check, Lock, RotateCcw, SlidersHorizontal, Unlock } from 'lucide-react'
 import { cn } from '../../utils/cn'
@@ -21,6 +22,7 @@ export function TableStyleCustomizer({
   onToggleVisibility,
   isSaving = false,
 }) {
+  const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const triggerRef = useRef(null)
   const panelRef = useRef(null)
@@ -86,9 +88,9 @@ export function TableStyleCustomizer({
       >
         <div className="mb-3 flex items-center justify-between gap-2">
           <div>
-            <div className="text-sm font-bold text-[var(--text)]">تخصيص الجدول</div>
+            <div className="text-sm font-bold text-[var(--text)]">{t('dataTable.style.title')}</div>
             <div className="text-xs text-[var(--text-muted)]">
-              {isPersonal ? 'الوضع الشخصي' : 'الوضع العام'}
+              {isPersonal ? t('dataTable.style.personalMode') : t('dataTable.style.sharedMode')}
             </div>
           </div>
           <span
@@ -97,13 +99,13 @@ export function TableStyleCustomizer({
               isPersonal ? 'bg-[#E8F9FA] text-[#007A80]' : 'bg-blue-50 text-blue-700'
             )}
           >
-            {isPersonal ? 'Personal' : 'Shared'}
+            {isPersonal ? t('dataTable.style.personal') : t('dataTable.style.shared')}
           </span>
         </div>
 
         <div className="space-y-3">
           <label className="grid gap-1 text-xs font-medium text-[var(--text)]">
-            حجم الخط
+            {t('dataTable.fontSize')}
             <select
               className="h-9 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-sm"
               value={style.fontSize || '14px'}
@@ -118,34 +120,34 @@ export function TableStyleCustomizer({
           </label>
 
           <label className="grid gap-1 text-xs font-medium text-[var(--text)]">
-            غلاظة الخط
+            {t('dataTable.fontWeight')}
             <select
               className="h-9 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-sm"
               value={style.fontWeight || '500'}
               onChange={(event) => updateStyle({ fontWeight: event.target.value })}
             >
-              <option value="400">Normal</option>
-              <option value="500">Medium</option>
-              <option value="600">Semibold</option>
-              <option value="700">Bold</option>
+              <option value="400">{t('dataTable.normal')}</option>
+              <option value="500">{t('dataTable.medium')}</option>
+              <option value="600">{t('dataTable.semibold')}</option>
+              <option value="700">{t('dataTable.bold')}</option>
             </select>
           </label>
 
           <label className="grid gap-1 text-xs font-medium text-[var(--text)]">
-            نوع الخط
+            {t('dataTable.fontFamily')}
             <select
               className="h-9 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-sm"
               value={style.fontFamily || 'inherit'}
               onChange={(event) => updateStyle({ fontFamily: event.target.value })}
             >
               {FONT_FAMILIES.map((font) => (
-                <option key={font.label} value={font.value}>{font.label}</option>
+                <option key={font.label} value={font.value}>{font.label === 'Default' ? t('dataTable.defaultFont') : font.label === 'Monospace' ? t('dataTable.monospace') : font.label}</option>
               ))}
             </select>
           </label>
 
           <div className="grid gap-1">
-            <div className="text-xs font-medium text-[var(--text)]">لون الصف</div>
+            <div className="text-xs font-medium text-[var(--text)]">{t('dataTable.rowColor')}</div>
             <div className="flex flex-wrap gap-1.5">
               {BG_COLORS.map((color) => (
                 <button
@@ -164,7 +166,7 @@ export function TableStyleCustomizer({
           </div>
 
           <div className="grid gap-1">
-            <div className="text-xs font-medium text-[var(--text)]">لون الخط</div>
+            <div className="text-xs font-medium text-[var(--text)]">{t('dataTable.textColor')}</div>
             <div className="flex flex-wrap gap-1.5">
               {TEXT_COLORS.map((color) => (
                 <button
@@ -189,7 +191,7 @@ export function TableStyleCustomizer({
             className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-lg bg-[#162847] px-3 text-sm font-semibold text-white hover:bg-[#1D3461] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Check size={16} />
-            {isSaving ? 'جاري الحفظ...' : `حفظ ${isPersonal ? 'الشخصي' : 'العام'}`}
+            {isSaving ? t('dataTable.style.saving') : t('dataTable.style.save', { mode: isPersonal ? t('dataTable.style.personal') : t('dataTable.style.shared') })}
           </button>
 
           <button
@@ -197,10 +199,10 @@ export function TableStyleCustomizer({
             onClick={onReset}
             disabled={isSaving}
             className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 text-sm font-semibold text-red-700 transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
-            title="إعادة تهيئة الجدول للوضع الافتراضي مع ضبط الأعمدة حسب البيانات"
+            title={t('dataTable.style.resetHint')}
           >
             <RotateCcw size={16} />
-            إعادة تهيئة الجدول
+            {t('dataTable.style.reset')}
           </button>
         </div>
       </div>,
@@ -214,8 +216,8 @@ export function TableStyleCustomizer({
         type="button"
         onClick={() => setIsOpen((value) => !value)}
         className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-2)]"
-        title="تخصيص شكل الجدول"
-        aria-label="تخصيص شكل الجدول"
+        title={t('dataTable.style.customize')}
+        aria-label={t('dataTable.style.customize')}
       >
         <SlidersHorizontal size={16} />
       </button>
@@ -229,8 +231,8 @@ export function TableStyleCustomizer({
             ? 'border-[#00C2CB] bg-[#E8F9FA]'
             : 'border-[var(--border)] bg-[var(--surface)]'
         )}
-        title={isPersonal ? 'قفل: عرض التخصيص الشخصي فقط' : 'فتح: عرض التخصيص العام'}
-        aria-label={isPersonal ? 'عرض التخصيص الشخصي' : 'عرض التخصيص العام'}
+        title={isPersonal ? t('dataTable.style.personalHint') : t('dataTable.style.sharedHint')}
+        aria-label={isPersonal ? t('dataTable.style.personalMode') : t('dataTable.style.sharedMode')}
       >
         {isPersonal ? <Lock size={16} /> : <Unlock size={16} />}
       </button>

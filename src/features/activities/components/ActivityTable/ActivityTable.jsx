@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { DataTable } from '../../../../shared/components/data-table'
 import { buildActivityColumns } from './activityColumns.jsx'
@@ -25,6 +26,7 @@ export function ActivityTable({
   onFollowUp,
   onOpenRelated,
 }) {
+  const { t } = useTranslation()
   const columns = useMemo(() => buildActivityColumns({
     onView,
     onEdit,
@@ -36,7 +38,8 @@ export function ActivityTable({
     onOpenRelated,
     customerDataLookup,
     nowTimestamp,
-  }), [customerDataLookup, nowTimestamp, onCancel, onDelete, onEdit, onFinish, onFollowUp, onOpenRelated, onStart, onView])
+    t,
+  }), [customerDataLookup, nowTimestamp, onCancel, onDelete, onEdit, onFinish, onFollowUp, onOpenRelated, onStart, onView, t])
 
   return (
     <DataTable
@@ -52,7 +55,7 @@ export function ActivityTable({
       hasNextPage={hasMore}
       isFetchingNextPage={isLoadingMore}
       onLoadMore={onLoadMore}
-      emptyMessage="لا توجد مكالمات أو اجتماعات مطابقة."
+      emptyMessage={t('activities.table.emptyMessage')}
       sortFirstDirection="desc"
       enableGlobalSearch
       enableAdvancedFilters

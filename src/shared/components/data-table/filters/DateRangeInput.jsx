@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const getDatePreset = (preset) => {
   const today = new Date()
@@ -36,6 +37,7 @@ const getDatePreset = (preset) => {
 }
 
 export const DateRangeInput = ({ column, value, onChange }) => {
+  const { t } = useTranslation()
   const [from, setFrom] = useState(value?.value?.from || '')
   const [to, setTo] = useState(value?.value?.to || '')
   const [operator, setOperator] = useState(value?.operator || 'between')
@@ -88,12 +90,12 @@ export const DateRangeInput = ({ column, value, onChange }) => {
         value={operator}
         onChange={handleOperatorChange}
         className="h-8 px-2 rounded border border-gray-300 text-xs bg-white"
-        title={`Filter operator for ${column.header}`}
+        title={t('dataTable.dateFilter.operatorFor', { column: column.header })}
       >
-        <option value="equals">يساوي</option>
-        <option value="before">قبل</option>
-        <option value="after">بعد</option>
-        <option value="between">بين</option>
+        <option value="equals">{t('dataTable.operators.equals')}</option>
+        <option value="before">{t('dataTable.operators.before')}</option>
+        <option value="after">{t('dataTable.operators.after')}</option>
+        <option value="between">{t('dataTable.operators.between')}</option>
       </select>
       {operator === 'between' ? (
         <>
@@ -103,52 +105,52 @@ export const DateRangeInput = ({ column, value, onChange }) => {
               value={from}
               onChange={handleFromChange}
               className="h-8 px-2 text-xs flex-1 rounded border border-gray-300"
-              title="Start date"
+              title={t('dataTable.dateFilter.startDate')}
             />
             <input
               type="date"
               value={to}
               onChange={handleToChange}
               className="h-8 px-2 text-xs flex-1 rounded border border-gray-300"
-              title="End date"
+              title={t('dataTable.dateFilter.endDate')}
             />
           </div>
           <div className="flex flex-wrap gap-1">
             <button
               onClick={() => handlePreset('today')}
               className="px-1 py-0.5 text-xs bg-gray-100 hover:bg-gray-200 rounded"
-              title="Today"
+              title={t('dataTable.dateFilter.today')}
             >
-              اليوم
+              {t('dataTable.dateFilter.today')}
             </button>
             <button
               onClick={() => handlePreset('this_week')}
               className="px-1 py-0.5 text-xs bg-gray-100 hover:bg-gray-200 rounded"
-              title="This week"
+              title={t('dataTable.dateFilter.thisWeek')}
             >
-              هذا الأسبوع
+              {t('dataTable.dateFilter.thisWeek')}
             </button>
             <button
               onClick={() => handlePreset('this_month')}
               className="px-1 py-0.5 text-xs bg-gray-100 hover:bg-gray-200 rounded"
-              title="This month"
+              title={t('dataTable.dateFilter.thisMonth')}
             >
-              هذا الشهر
+              {t('dataTable.dateFilter.thisMonth')}
             </button>
             <button
               onClick={() => handlePreset('this_year')}
               className="px-1 py-0.5 text-xs bg-gray-100 hover:bg-gray-200 rounded"
-              title="This year"
+              title={t('dataTable.dateFilter.thisYear')}
             >
-              هذا العام
+              {t('dataTable.dateFilter.thisYear')}
             </button>
             {(from || to) && (
               <button
                 onClick={handleClear}
                 className="px-1 py-0.5 text-xs font-bold text-red-600 hover:bg-red-50 rounded"
-                title="Clear filter"
+                title={t('dataTable.clearAll')}
               >
-                مسح
+                {t('dataTable.dateFilter.clear')}
               </button>
             )}
           </div>
@@ -160,15 +162,15 @@ export const DateRangeInput = ({ column, value, onChange }) => {
             value={from}
             onChange={handleFromChange}
             className="h-8 px-2 text-xs flex-1 rounded border border-gray-300"
-            title={`Select date for ${column.header}`}
+            title={t('dataTable.dateFilter.selectDateFor', { column: column.header })}
           />
           {from && (
             <button
               onClick={handleClear}
               className="px-2 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded"
-              title="Clear filter"
+              title={t('dataTable.clearAll')}
             >
-              مسح
+              {t('dataTable.dateFilter.clear')}
             </button>
           )}
         </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { ListTodo } from 'lucide-react'
 
 import { cn } from '../../../shared/utils/cn'
@@ -5,6 +6,7 @@ import { useTasks } from '../hooks/useTasks'
 import { getTaskSummaryMetrics } from '../utils/taskMeta'
 
 export function TasksNavbarButton({ active = false, onClick }) {
+  const { t } = useTranslation()
   const tasksQuery = useTasks({ per_page: 40 })
   const tasks = Array.isArray(tasksQuery.data) ? tasksQuery.data : []
   const unreadCount = getTaskSummaryMetrics(tasks).unread
@@ -19,8 +21,8 @@ export function TasksNavbarButton({ active = false, onClick }) {
           ? 'border-[#00C2CB] bg-[#E8F9FA]'
           : 'border-[#E5E7EB] bg-white hover:bg-[#E8F9FA]'
       )}
-      aria-label="المهام"
-      title="فتح لوحة المهام السريعة"
+      aria-label={t('tasks.navbarButton.ariaLabel')}
+      title={t('tasks.navbarButton.title')}
     >
       <ListTodo size={16} className="text-[#0F172A]" />
       {unreadCount > 0 && (

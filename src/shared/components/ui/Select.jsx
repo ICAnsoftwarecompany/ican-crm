@@ -1,6 +1,7 @@
 import { forwardRef } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '../../utils/cn'
+import { useTranslation } from 'react-i18next'
 
 export const Select = forwardRef(function Select(
   {
@@ -10,12 +11,13 @@ export const Select = forwardRef(function Select(
     onChange,
     error,
     disabled = false,
-    placeholder = 'اختر...',
+    placeholder,
     className,
     ...props
   },
   ref
 ) {
+  const { t } = useTranslation()
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
@@ -42,7 +44,7 @@ export const Select = forwardRef(function Select(
           )}
           {...props}
         >
-          <option value="">{placeholder}</option>
+          <option value="">{placeholder ?? t('common.choose')}</option>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

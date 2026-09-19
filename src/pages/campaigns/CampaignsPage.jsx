@@ -31,16 +31,16 @@ export function CampaignsPage() {
     event.preventDefault()
     setFeedback('')
     if (!form.name.trim()) {
-      setFeedback('اسم الحملة مطلوب')
+      setFeedback(t('campaigns.nameRequired'))
       return
     }
 
     try {
       await mutations.saveCampaign.mutateAsync(form)
       setForm({ name: '', description: '', status: 'active' })
-      setFeedback('تم حفظ الحملة')
+      setFeedback(t('campaigns.saveSuccess'))
     } catch (error) {
-      setFeedback(extractMessage(error, 'فشل حفظ الحملة'))
+      setFeedback(extractMessage(error, t('campaigns.saveError')))
     }
   }
 
@@ -58,24 +58,24 @@ export function CampaignsPage() {
 
   return (
     <div>
-      <PageToolbar title={t('nav.campaigns')} description="إدارة حملات CRM والإعلانات والنماذج المرتبطة." />
+      <PageToolbar title={t('nav.campaigns')} description={t('campaigns.description')} />
       {feedback && <div className="mb-4 rounded-lg bg-[#E8F9FA] text-[#007A80] text-sm p-3">{feedback}</div>}
 
       <div className="grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)] gap-4">
         <form onSubmit={handleCreate} className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4 grid gap-3 h-fit">
-          <h2 className="font-bold">حملة جديدة</h2>
-          <Input label="اسم الحملة" name="name" value={form.name} onChange={handleChange} />
-          <Input label="الوصف" name="description" value={form.description} onChange={handleChange} />
+          <h2 className="font-bold">{t('campaigns.newCampaign')}</h2>
+          <Input label={t('campaigns.nameLabel')} name="name" value={form.name} onChange={handleChange} />
+          <Input label={t('campaigns.descriptionLabel')} name="description" value={form.description} onChange={handleChange} />
           <label className="grid gap-1.5 text-sm font-medium font-arabic text-[var(--text)]">
-            الحالة
+            {t('campaigns.statusLabel')}
             <select name="status" value={form.status} onChange={handleChange} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3">
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
+              <option value="active">{t('campaigns.statusActive')}</option>
+              <option value="inactive">{t('campaigns.statusInactive')}</option>
             </select>
           </label>
           <Button type="submit" loading={mutations.saveCampaign.isPending}>
             <Plus size={16} />
-            حفظ الحملة
+            {t('campaigns.saveCampaign')}
           </Button>
         </form>
 
@@ -85,7 +85,7 @@ export function CampaignsPage() {
             error={campaigns.error}
             empty={activeCampaigns.length + inactiveCampaigns.length === 0}
             emptyIcon={<Megaphone size={24} />}
-            emptyTitle="لا توجد حملات"
+            emptyTitle={t('campaigns.noCampaigns')}
             onRetry={() => {
               campaigns.active.refetch()
               campaigns.inactive.refetch()
@@ -99,12 +99,12 @@ export function CampaignsPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4">
-              <h2 className="font-bold mb-3">الإعلانات النشطة</h2>
-              <p className="text-sm text-[var(--text-muted)]">{activeAds.length} إعلان</p>
+              <h2 className="font-bold mb-3">{t('campaigns.activeAds')}</h2>
+              <p className="text-sm text-[var(--text-muted)]">{t('campaigns.adsCount', { count: activeAds.length })}</p>
             </div>
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4">
-              <h2 className="font-bold mb-3">نماذج الإعلانات</h2>
-              <p className="text-sm text-[var(--text-muted)]">{activeForms.length} نموذج</p>
+              <h2 className="font-bold mb-3">{t('campaigns.adForms')}</h2>
+              <p className="text-sm text-[var(--text-muted)]">{t('campaigns.formsCount', { count: activeForms.length })}</p>
             </div>
           </div>
         </section>

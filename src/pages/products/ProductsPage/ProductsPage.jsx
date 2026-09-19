@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Edit3, Plus, RefreshCw } from 'lucide-react'
 import { Button } from '../../../shared/components/ui/Button'
 import { Badge } from '../../../shared/components/ui/Badge'
@@ -8,19 +9,13 @@ import { AppModal } from '../../../shared/components/overlays/AppModal'
 import { useProductCategories, useProductMutations, useProducts } from '../../../features/products/hooks/useProducts'
 import { displayValue, extractMessage } from '../../../shared/utils/apiResponse'
 import { resolveApiBaseURL } from '../../../services/apiBaseUrl'
+import { formatDate as formatDateWithLocale } from '../../../shared/utils/dateTime'
 import { ProductFormDrawer } from './ProductFormDrawer'
 import { filterCategoryTreeByType, flattenCategoryTree, getCategoryChildren, getCategoryLabel } from './categoryTree'
 
 function normalizeId(value) {
   if (value === null || value === undefined || value === '') return ''
   return String(value)
-}
-
-function formatDate(value) {
-  if (!value) return ''
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return String(value)
-  return date.toLocaleDateString('ar-EG')
 }
 
 function getProductCategoryId(product) {
@@ -145,6 +140,7 @@ function buildProductImageUrl(imagePath) {
 }
 
 function ProductImage({ product, onPreview }) {
+  const { t } = useTranslation()
   const imageUrl = buildProductImageUrl(product.image)
 
   if (!imageUrl) {
@@ -158,13 +154,13 @@ function ProductImage({ product, onPreview }) {
   return (
     <button
       type="button"
-      onClick={() => onPreview?.({ src: imageUrl, title: product.name || 'صورة المنتج' })}
+      onClick={() => onPreview?.({ src: imageUrl, title: product.name || t('products.list.productImageFallbackTitle') })}
       className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-2)] transition hover:ring-2 hover:ring-[#00C2CB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00C2CB]"
-      title="عرض الصورة"
+      title={t('products.list.viewImage')}
     >
       <img
         src={imageUrl}
-        alt={product.name || 'صورة المنتج'}
+        alt={product.name || t('products.list.productImageFallbackTitle')}
         className="h-full w-full object-cover"
         loading="lazy"
         onError={(event) => {
@@ -176,11 +172,13 @@ function ProductImage({ product, onPreview }) {
 }
 
 function ProductImagePreviewModal({ image, onClose }) {
+  const { t } = useTranslation()
+
   return (
     <AppModal
       isOpen={Boolean(image)}
       onClose={onClose}
-      title={image?.title || 'صورة المنتج'}
+      title={image?.title || t('products.list.productImageFallbackTitle')}
       size="lg"
       className="max-w-4xl"
     >
@@ -188,7 +186,7 @@ function ProductImagePreviewModal({ image, onClose }) {
         {image?.src && (
           <img
             src={image.src}
-            alt={image.title || 'صورة المنتج'}
+            alt={image.title || t('products.list.productImageFallbackTitle')}
             className="max-h-[75vh] w-auto max-w-full rounded-lg object-contain"
           />
         )}
@@ -199,13 +197,19 @@ function ProductImagePreviewModal({ image, onClose }) {
 
 export function ProductsPage({
   productType = 'product',
-  title = 'المنتجات',
-  description = 'إدارة المنتجات وربطها بالفئات المناسبة.',
-  entityLabel = 'منتج',
+  title,
+  description,
+  entityLabel,
   tableId = 'products',
-  emptyMessage = 'لا توجد منتجات',
-  createLabel = 'منتج جديد',
+  emptyMessage,
+  createLabel,
 } = {}) {
+  const { t, i18n } = useTranslation()
+  const resolvedTitle = title ?? t('products.list.pageTitle')
+  const resolvedDescription = description ?? t('products.list.pageDescription')
+  const resolvedEntityLabel = entityLabel ?? t('products.list.entityLabel')
+  const resolvedEmptyMessage = emptyMessage ?? t('products.list.emptyMessage')
+  const resolvedCreateLabel = createLabel ?? t('products.list.createLabel')
   const categoriesQuery = useProductCategories()
   const productsQuery = useProducts()
   const mutations = useProductMutations()
@@ -237,13 +241,13 @@ export function ProductsPage({
         _index: index,
         _categoryLabel: category ? getCategoryLabel(category) : '',
         _active: active,
-        _statusLabel: active ? 'نشط' : 'معطل',
+        _statusLabel: active ? t('products.list.activeStatus') : t('products.list.inactiveStatus'),
         _dataFields: productDataToObject(product.data),
-        _createdAtDisplay: formatDate(product.created_at),
-        _updatedAtDisplay: formatDate(product.updated_at),
+        _createdAtDisplay: formatDateWithLocale(product.created_at, i18n.language, { dateStyle: 'medium' }),
+        _updatedAtDisplay: formatDateWithLocale(product.updated_at, i18n.language, { dateStyle: 'medium' }),
       }
     })
-  }, [categoryById, products])
+  }, [categoryById, products, t, i18n.language])
 
   const openCreateProduct = () => {
     setProductDrawerMode('create')
@@ -274,7 +278,7 @@ export function ProductsPage({
       }
       closeProductDrawer()
     } catch (error) {
-      setFormError(extractMessage(error, 'تعذر حفظ بيانات المنتج'))
+      setFormError(extractMessage(error, t('products.list.saveFailed')))
     }
   }
 
@@ -302,7 +306,7 @@ export function ProductsPage({
   const productColumns = useMemo(() => [
     {
       id: 'image',
-      header: 'الصورة',
+      header: t('products.list.columns.image'),
       accessor: 'image',
       searchable: false,
       sortable: false,
@@ -312,7 +316,7 @@ export function ProductsPage({
     },
     {
       id: 'name',
-      header: 'اسم المنتج',
+      header: t('products.list.columns.name'),
       accessor: 'name',
       searchable: true,
       sortable: true,
@@ -326,7 +330,7 @@ export function ProductsPage({
     },
     {
       id: 'desc',
-      header: 'الوصف',
+      header: t('products.list.columns.description'),
       accessor: 'desc',
       searchable: true,
       sortable: false,
@@ -336,7 +340,7 @@ export function ProductsPage({
     },
     {
       id: 'price',
-      header: 'السعر',
+      header: t('products.list.columns.price'),
       accessor: 'price',
       searchable: false,
       sortable: true,
@@ -344,13 +348,13 @@ export function ProductsPage({
       width: 'w-24',
       render: (row) => (
         <span className="font-bold text-[#1D4ED8]">
-          {displayValue(row.price, 'غير محدد')}
+          {displayValue(row.price, t('products.list.notSpecified'))}
         </span>
       ),
     },
     {
       id: 'category',
-      header: 'الفئة',
+      header: t('products.list.columns.category'),
       accessor: '_categoryLabel',
       searchable: true,
       sortable: true,
@@ -361,7 +365,7 @@ export function ProductsPage({
     ...additionalDataColumns,
     {
       id: 'status',
-      header: 'الحالة',
+      header: t('products.list.columns.status'),
       accessor: '_statusLabel',
       searchable: true,
       sortable: true,
@@ -375,7 +379,7 @@ export function ProductsPage({
     },
     {
       id: 'createdAt',
-      header: 'تاريخ الإنشاء',
+      header: t('products.list.columns.createdAt'),
       accessor: '_createdAtDisplay',
       searchable: false,
       sortable: true,
@@ -385,7 +389,7 @@ export function ProductsPage({
     },
     {
       id: 'actions',
-      header: 'الإجراءات',
+      header: t('activities.table.actions'),
       accessor: 'id',
       searchable: false,
       sortable: false,
@@ -394,17 +398,17 @@ export function ProductsPage({
       render: (row) => (
         <Button variant="outline" size="sm" onClick={() => openEditProduct(row)}>
           <Edit3 size={14} />
-          تعديل
+          {t('actions.edit')}
         </Button>
       ),
     },
-  ], [additionalDataColumns])
+  ], [additionalDataColumns, t])
 
   return (
     <div className="space-y-4">
       <PageToolbar
-        title={title}
-        description={description}
+        title={resolvedTitle}
+        description={resolvedDescription}
       >
         <Button
           variant="outline"
@@ -415,25 +419,25 @@ export function ProductsPage({
           disabled={productsQuery.isFetching || categoriesQuery.isFetching}
         >
           <RefreshCw size={16} className={productsQuery.isFetching || categoriesQuery.isFetching ? 'animate-spin' : ''} />
-          تحديث
+          {t('products.list.refresh')}
         </Button>
         <Button onClick={openCreateProduct}>
           <Plus size={16} />
-          {createLabel}
+          {resolvedCreateLabel}
         </Button>
       </PageToolbar>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
-          <div className="text-xs font-semibold text-[var(--text-muted)]">إجمالي {title}</div>
+          <div className="text-xs font-semibold text-[var(--text-muted)]">{t('products.list.totalPrefix', { title: resolvedTitle })}</div>
           <div className="mt-1 text-xl font-bold text-[var(--text)]">{products.length}</div>
         </div>
         <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
-          <div className="text-xs font-semibold text-[var(--text-muted)]">الفئات</div>
+          <div className="text-xs font-semibold text-[var(--text-muted)]">{t('products.list.categoriesStat')}</div>
           <div className="mt-1 text-xl font-bold text-[var(--text)]">{productCategories.length}</div>
         </div>
         <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
-          <div className="text-xs font-semibold text-[var(--text-muted)]">{title} نشطة</div>
+          <div className="text-xs font-semibold text-[var(--text-muted)]">{t('products.list.activeSuffix', { title: resolvedTitle })}</div>
           <div className="mt-1 text-xl font-bold text-[var(--text)]">
             {products.filter(getProductStatus).length}
           </div>
@@ -450,7 +454,7 @@ export function ProductsPage({
           productsQuery.refetch()
           categoriesQuery.refetch()
         }}
-        emptyMessage={emptyMessage}
+        emptyMessage={resolvedEmptyMessage}
         enableSorting={true}
         enableFiltering={true}
         enablePagination={true}
@@ -469,7 +473,7 @@ export function ProductsPage({
         categories={flatCategories}
         productFieldNames={additionalDataKeys}
         productType={productType}
-        entityLabel={entityLabel}
+        entityLabel={resolvedEntityLabel}
         loading={isSavingProduct}
         error={formError}
         onClose={closeProductDrawer}

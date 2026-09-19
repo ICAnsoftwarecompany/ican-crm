@@ -1,4 +1,5 @@
 import { CalendarClock, History, PhoneCall } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { useLeadCallsMeetings } from '../../../meetings/hooks/useMeetings'
 import { QuickActionMenu } from '../../../../pages/customers/components/CustomerDetailsDrawer/quick-actions/QuickActionMenu'
@@ -31,6 +32,7 @@ function hasCallTimingAlert(calls) {
 }
 
 export function CallQuickAction({ customer, onTimelineAction }) {
+  const { t } = useTranslation()
   const phone = normalizePhoneForUrl(getCustomerPhone(customer))
   const leadId = getLeadId(customer)
   const callsQuery = useLeadCallsMeetings(leadId, undefined, {
@@ -46,23 +48,23 @@ export function CallQuickAction({ customer, onTimelineAction }) {
       label=""
       accentClassName="text-[#047857]"
       alert={hasAlert}
-      alertTitle={hasAlert ? 'يوجد مكالمة قريبة أو متأخرة لهذا العميل' : undefined}
+      alertTitle={hasAlert ? t('callMeetings.quickAction.upcomingOrOverdueCall') : undefined}
       options={[
         {
           id: 'call-now',
-          label: 'مكالمة الآن',
+          label: t('callMeetings.quickAction.callNow'),
           icon: PhoneCall,
-          onClick: () => openExternalAction(phone ? `tel:${phone}` : '', 'لا يوجد رقم هاتف لهذا العميل.'),
+          onClick: () => openExternalAction(phone ? `tel:${phone}` : '', t('callMeetings.quickAction.noPhoneNumber')),
         },
         {
           id: 'schedule-call',
-          label: 'إضافة موعد مكالمة',
+          label: t('callMeetings.actionTab.addCallAppointment'),
           icon: CalendarClock,
           onClick: () => onTimelineAction?.('call', { intent: 'schedule' }),
         },
         {
           id: 'call-history',
-          label: 'عرض سجل المكالمات',
+          label: t('callMeetings.quickAction.viewCallHistory'),
           icon: History,
           onClick: () => onTimelineAction?.('call', { intent: 'history' }),
         },

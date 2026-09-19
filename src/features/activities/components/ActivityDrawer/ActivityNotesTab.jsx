@@ -1,11 +1,13 @@
+import { useTranslation } from 'react-i18next'
 import { formatActivityDateTime } from '../../utils/activityDateHelpers'
 import { activityText } from '../../utils/activityHelpers'
 
 export function ActivityNotesTab({ activity }) {
+  const { t } = useTranslation()
   const notes = activity.notes || []
 
   if (!notes.length) {
-    return <p className="rounded-lg border border-dashed border-[var(--border)] p-4 text-sm font-semibold text-[var(--text-muted)]">لا توجد ملاحظات على هذا النشاط.</p>
+    return <p className="rounded-lg border border-dashed border-[var(--border)] p-4 text-sm font-semibold text-[var(--text-muted)]">{t('activities.drawer.noNotesYet')}</p>
   }
 
   return (

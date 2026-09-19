@@ -28,7 +28,7 @@ export function formatDateTimeForApi(value = new Date()) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 }
 
-export function formatElapsedDuration(diffMs, { includeSeconds = false } = {}) {
+export function formatElapsedDuration(diffMs, { includeSeconds = false } = {}, t) {
   const totalSeconds = Math.max(0, Math.floor(Number(diffMs || 0) / 1000))
   const days = Math.floor(totalSeconds / 86400)
   const hours = Math.floor((totalSeconds % 86400) / 3600)
@@ -36,19 +36,27 @@ export function formatElapsedDuration(diffMs, { includeSeconds = false } = {}) {
   const seconds = totalSeconds % 60
   const parts = []
 
-  if (days) parts.push(`${days} يوم`)
-  if (days || hours) parts.push(`${hours} ساعة`)
-  if (days || hours || minutes) parts.push(`${minutes} دقيقة`)
-  if (includeSeconds || !parts.length) parts.push(`${seconds} ثانية`)
+  if (!t) {
+    if (days) parts.push(`${days} يوم`)
+    if (days || hours) parts.push(`${hours} ساعة`)
+    if (days || hours || minutes) parts.push(`${minutes} دقيقة`)
+    if (includeSeconds || !parts.length) parts.push(`${seconds} ثانية`)
+    return parts.join(' و ')
+  }
 
-  return parts.join(' و ')
+  if (days) parts.push(t('activities.duration.day', { count: days }))
+  if (days || hours) parts.push(t('activities.duration.hour', { count: hours }))
+  if (days || hours || minutes) parts.push(t('activities.duration.minute', { count: minutes }))
+  if (includeSeconds || !parts.length) parts.push(t('activities.duration.second', { count: seconds }))
+
+  return parts.join(t('activities.duration.and'))
 }
 
-export function formatElapsedSince(value, nowTimestamp = Date.now(), options) {
+export function formatElapsedSince(value, nowTimestamp = Date.now(), options, t) {
   if (!value) return ''
   const startedAt = new Date(value).getTime()
   if (Number.isNaN(startedAt) || nowTimestamp < startedAt) return ''
-  return formatElapsedDuration(nowTimestamp - startedAt, options)
+  return formatElapsedDuration(nowTimestamp - startedAt, options, t)
 }
 
 export function buildScheduleStatusPayload(status, now = new Date()) {
@@ -115,9 +123,9 @@ export function openExternalAction(url, missingMessage) {
   window.open(url, '_blank', 'noopener,noreferrer')
 }
 
-export function notifySoon(label) {
+export function notifySoon(label, t) {
   toast.info(label, {
-    description: 'تم تجهيز الاختيار، ويمكن ربطه لاحقا بتكامل مباشر.',
+    description: t ? t('callMeetings.selectionReadyDescription') : 'تم تجهيز الاختيار، ويمكن ربطه لاحقا بتكامل مباشر.',
     duration: 2800,
   })
 }

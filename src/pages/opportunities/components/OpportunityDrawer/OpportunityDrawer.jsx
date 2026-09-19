@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { AppDrawer } from '../../../../shared/components/overlays/AppDrawer'
 import { useOpportunityDrawerStore } from '../../../../features/opportunities/store/opportunityDrawerStore'
 import { useOpportunityInfo } from '../../../../features/opportunities/hooks/useOpportunities'
@@ -10,6 +11,7 @@ import { OpportunityScoreBreakdown } from './OpportunityScoreBreakdown'
 import { OpportunityActionsBar } from './OpportunityActionsBar'
 
 export function OpportunityDrawer() {
+  const { t } = useTranslation()
   const openOpportunityId = useOpportunityDrawerStore((state) => state.openOpportunityId)
   const closeDrawer = useOpportunityDrawerStore((state) => state.close)
   const opportunityQuery = useOpportunityInfo(openOpportunityId, { enabled: Boolean(openOpportunityId) })
@@ -19,7 +21,7 @@ export function OpportunityDrawer() {
     <AppDrawer
       open={Boolean(openOpportunityId)}
       onClose={closeDrawer}
-      title="تفاصيل الفرصة"
+      title={t('opportunities.drawer.title')}
       size="lg"
       drawerKey="opportunity-drawer"
     >
@@ -34,7 +36,7 @@ export function OpportunityDrawer() {
           <OpportunityActionsBar opportunity={opportunity} />
         </div>
       ) : (
-        <p className="text-sm text-[var(--text-muted)]">تعذر العثور على بيانات هذه الفرصة.</p>
+        <p className="text-sm text-[var(--text-muted)]">{t('opportunities.drawer.notFound')}</p>
       )}
     </AppDrawer>
   )

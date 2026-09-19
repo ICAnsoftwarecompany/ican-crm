@@ -1,15 +1,18 @@
+import { useTranslation } from 'react-i18next'
 import { ProductsPage } from '../ProductsPage/ProductsPage'
 
 export function ServicesPage() {
+  const { t } = useTranslation()
+
   return (
     <ProductsPage
       productType="service"
-      title="الخدمات"
-      description="إدارة الخدمات وربطها بتصنيفات الخدمات المناسبة."
-      entityLabel="خدمة"
+      title={t('products.services.pageTitle')}
+      description={t('products.services.pageDescription')}
+      entityLabel={t('products.services.entityLabel')}
       tableId="services"
-      emptyMessage="لا توجد خدمات"
-      createLabel="خدمة جديدة"
+      emptyMessage={t('products.services.emptyMessage')}
+      createLabel={t('products.services.createLabel')}
     />
   )
 }

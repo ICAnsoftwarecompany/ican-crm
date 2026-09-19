@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Keyboard, MousePointerClick } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const shortcuts = [
-  { keys: ['Ctrl', 'A'], label: 'تحديد كل الصفوف المفلترة / إلغاء تحديد الكل' },
-  { keys: ['Ctrl', 'Click'], label: 'تحديد صف واحد أو إلغاء تحديده' },
-  { keys: ['Double Click'], label: 'فتح تفاصيل الصف عند توفرها' },
-  { keys: ['Right Click'], label: 'فتح إجراءات الصفوف المحددة' },
-  { keys: ['Click Text'], label: 'نسخ قيمة النص داخل الخلية' },
-  { keys: ['Drag Header'], label: 'تغيير ترتيب الأعمدة يمينا ويسارا' },
-  { keys: ['Resize'], label: 'تغيير عرض العمود من حافة العنوان' },
+  { keys: ['Ctrl', 'A'], labelKey: 'selectAll' },
+  { keys: ['Ctrl', 'Click'], labelKey: 'selectRow' },
+  { keys: ['Double Click'], labelKey: 'openRow' },
+  { keys: ['Right Click'], labelKey: 'actions' },
+  { keys: ['Click Text'], labelKey: 'copyCell' },
+  { keys: ['Drag Header'], labelKey: 'moveColumn' },
+  { keys: ['Resize'], labelKey: 'resizeColumn' },
 ]
 
 function ShortcutKeys({ keys }) {
@@ -28,6 +29,7 @@ function ShortcutKeys({ keys }) {
 }
 
 export function DataTableShortcuts() {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 })
   const wrapperRef = useRef(null)
@@ -80,8 +82,8 @@ export function DataTableShortcuts() {
           setOpen((value) => !value)
         }}
         className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] transition-colors hover:bg-[var(--surface-2)]"
-        title="اختصارات الجدول"
-        aria-label="اختصارات الجدول"
+        title={t('dataTable.shortcuts.title')}
+        aria-label={t('dataTable.shortcuts.title')}
       >
         <Keyboard size={16} />
       </button>
@@ -97,18 +99,18 @@ export function DataTableShortcuts() {
               <MousePointerClick size={16} />
             </span>
             <div>
-              <h3 className="text-sm font-black text-[var(--text)]">اختصارات الجدول</h3>
-              <p className="text-xs text-[var(--text-muted)]">أوامر سريعة أثناء العمل على البيانات.</p>
+              <h3 className="text-sm font-black text-[var(--text)]">{t('dataTable.shortcuts.title')}</h3>
+              <p className="text-xs text-[var(--text-muted)]">{t('dataTable.shortcuts.description')}</p>
             </div>
           </div>
 
           <div className="space-y-1.5">
             {shortcuts.map((shortcut) => (
               <div
-                key={`${shortcut.keys.join('-')}-${shortcut.label}`}
+                key={shortcut.labelKey}
                 className="flex min-w-0 items-center justify-between gap-3 rounded-lg px-2 py-1.5 hover:bg-[var(--surface-2)]"
               >
-                <span className="min-w-0 text-xs font-semibold text-[var(--text-muted)]">{shortcut.label}</span>
+                <span className="min-w-0 text-xs font-semibold text-[var(--text-muted)]">{t(`dataTable.shortcuts.${shortcut.labelKey}`)}</span>
                 <ShortcutKeys keys={shortcut.keys} />
               </div>
             ))}

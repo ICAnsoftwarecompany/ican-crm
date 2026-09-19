@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Check, ChevronDown, RefreshCw } from 'lucide-react'
 import { Button } from '../../../../../../shared/components/ui/Button'
 import { cn } from '../../../../../../shared/utils/cn'
@@ -12,6 +13,7 @@ export function ChangeStatusBulkAction({
   onChange,
   onSubmit,
 }) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const containerRef = useRef(null)
 
@@ -49,14 +51,14 @@ export function ChangeStatusBulkAction({
           onClick={() => setOpen((current) => !current)}
           className="flex h-9 w-full items-center justify-between rounded-lg border border-[#D7EEF0] bg-white px-2 text-xs font-bold text-[var(--text)]"
           disabled={selectDisabled || !statuses.length}
-          title={selectedStatus?.status || selectedStatus?.name || 'اختر حالة'}
+          title={selectedStatus?.status || selectedStatus?.name || t('customers.statusChange.chooseStatus')}
         >
           <span className="inline-flex min-w-0 items-center gap-1.5">
             {selectedStatus ? (
               <span className="h-2.5 w-2.5 shrink-0 rounded-full border border-[#E2E8F0]" style={{ backgroundColor: selectedStatus.color || '#94A3B8' }} />
             ) : null}
             <span className="truncate">
-              {selectedStatus ? (selectedStatus.status || selectedStatus.name) : 'اختر حالة'}
+              {selectedStatus ? (selectedStatus.status || selectedStatus.name) : t('customers.statusChange.chooseStatus')}
             </span>
           </span>
           <ChevronDown size={14} className={cn('shrink-0 text-[#64748B] transition-transform', open && 'rotate-180')} />
@@ -104,7 +106,7 @@ export function ChangeStatusBulkAction({
         onClick={onSubmit}
         disabled={disabled}
         loading={loading}
-        title="تغيير حالة العملاء المحتملين المحددين"
+        title={t('customers.statusChange.changeSelectedCustomersStatus')}
       >
         <RefreshCw size={15} />
       </Button>

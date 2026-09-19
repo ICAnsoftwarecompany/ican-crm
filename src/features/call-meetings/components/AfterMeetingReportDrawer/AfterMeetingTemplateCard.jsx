@@ -1,6 +1,8 @@
+import { useTranslation } from 'react-i18next'
 import { getAfterMeetingCategoryLabel } from './afterMeetingTemplates'
 
 export function AfterMeetingTemplateCard({ template, selected, onSelect }) {
+  const { t } = useTranslation()
   const Icon = template.icon
 
   return (
@@ -25,7 +27,7 @@ export function AfterMeetingTemplateCard({ template, selected, onSelect }) {
             {template.description}
           </div>
           <div className="mt-2 inline-flex rounded-full bg-white px-2 py-1 text-[11px] font-black text-[#007A80]">
-            {getAfterMeetingCategoryLabel(template.category)}
+            {getAfterMeetingCategoryLabel(template.category, t)}
           </div>
         </div>
       </div>

@@ -105,8 +105,15 @@ export function AutomationCenterPage() {
         ]}
       />
 
-      <AppModal isOpen={builderState.open} onClose={closeBuilder} size="lg" className="max-w-6xl" contentClassName="p-0">
-        <div className="h-[80vh]">
+      <AppModal
+        isOpen={builderState.open}
+        onClose={closeBuilder}
+        title={builderState.workflow?.name || t('workflow.center.createWorkflow')}
+        size="lg"
+        className="max-w-[calc(100vw-1rem)] 2xl:max-w-[1440px]"
+        contentClassName="p-0"
+      >
+        <div className="h-[min(84vh,900px)]">
           <WorkflowBuilder
             mode={builderState.context?.module ? 'context' : 'full'}
             context={builderState.context || {}}

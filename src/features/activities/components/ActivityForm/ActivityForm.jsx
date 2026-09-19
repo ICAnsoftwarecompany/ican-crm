@@ -1,9 +1,10 @@
 import { useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslation } from 'react-i18next'
 
-import { ACTIVITY_PRIORITIES, ACTIVITY_TYPES } from '../../constants/activityConstants'
-import { activitySchema } from '../../schemas/activitySchema'
+import { getActivityPriorities, getActivityTypes } from '../../constants/activityConstants'
+import { getActivitySchema } from '../../schemas/activitySchema'
 import { addMinutes, formatDateTimeForApi, toDateTimeLocalValue } from '../../utils/activityDateHelpers'
 import { AssignmentFields } from './AssignmentFields'
 import { CallFields } from './CallFields'
@@ -17,6 +18,9 @@ function modelTypeForRelatedType(relatedType) {
 }
 
 export function ActivityForm({ formId, activity, initialType = 'call', onSubmit }) {
+  const { t } = useTranslation()
+  const activityTypes = getActivityTypes(t)
+  const activityPriorities = getActivityPriorities(t)
   const defaults = useMemo(() => {
     const start = activity?.startAt ? new Date(activity.startAt) : addMinutes(new Date(), initialType === 'call' ? 15 : 30)
     const end = activity?.endAt ? new Date(activity.endAt) : addMinutes(start, 60)
@@ -50,7 +54,7 @@ export function ActivityForm({ formId, activity, initialType = 'call', onSubmit 
     watch,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(activitySchema),
+    resolver: zodResolver(getActivitySchema(t)),
     defaultValues: defaults,
   })
 
@@ -97,33 +101,33 @@ export function ActivityForm({ formId, activity, initialType = 'call', onSubmit 
   return (
     <form id={formId} className="space-y-4" onSubmit={handleSubmit(submit)}>
       <div className="grid gap-3 sm:grid-cols-2">
-        <FormField label="نوع النشاط" error={errors.type?.message}>
+        <FormField label={t('activities.form.typeLabel')} error={errors.type?.message}>
           <select {...register('type')} className={inputClassName}>
-            <option value="call">{ACTIVITY_TYPES.call.label}</option>
-            <option value="meeting">{ACTIVITY_TYPES.meeting.label}</option>
+            <option value="call">{activityTypes.call.label}</option>
+            <option value="meeting">{activityTypes.meeting.label}</option>
           </select>
         </FormField>
 
-        <FormField label="العنوان" error={errors.title?.message}>
-          <input {...register('title')} className={inputClassName} placeholder="عنوان النشاط" />
+        <FormField label={t('activities.form.titleLabel')} error={errors.title?.message}>
+          <input {...register('title')} className={inputClassName} placeholder={t('activities.form.titlePlaceholder')} />
         </FormField>
 
         <RelatedEntityFields register={register} errors={errors} />
         <AssignmentFields register={register} />
 
-        <FormField label="الأولوية" error={errors.priority?.message}>
+        <FormField label={t('activities.scheduleDialog.priorityLabel')} error={errors.priority?.message}>
           <select {...register('priority')} className={inputClassName}>
-            {Object.values(ACTIVITY_PRIORITIES).map((priority) => (
+            {Object.values(activityPriorities).map((priority) => (
               <option key={priority.value} value={priority.value}>{priority.label}</option>
             ))}
           </select>
         </FormField>
 
-        <FormField label="بداية النشاط" error={errors.start_at?.message}>
+        <FormField label={t('activities.form.startLabel')} error={errors.start_at?.message}>
           <input {...register('start_at')} type="datetime-local" className={inputClassName} />
         </FormField>
 
-        <FormField label="نهاية النشاط" error={errors.end_at?.message}>
+        <FormField label={t('activities.form.endLabel')} error={errors.end_at?.message}>
           <input {...register('end_at')} type="datetime-local" className={inputClassName} />
         </FormField>
 
@@ -131,8 +135,8 @@ export function ActivityForm({ formId, activity, initialType = 'call', onSubmit 
         {type === 'meeting' ? <MeetingFields register={register} watch={watch} errors={errors} /> : null}
       </div>
 
-      <FormField label="الوصف">
-        <textarea {...register('description')} className={textareaClassName} placeholder="اكتب أي ملاحظات أو هدف النشاط..." />
+      <FormField label={t('activities.form.descriptionLabel')}>
+        <textarea {...register('description')} className={textareaClassName} placeholder={t('activities.form.descriptionPlaceholder')} />
       </FormField>
 
       <ReminderFields register={register} />

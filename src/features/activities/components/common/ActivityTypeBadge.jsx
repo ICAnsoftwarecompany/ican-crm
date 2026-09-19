@@ -1,7 +1,10 @@
-import { ACTIVITY_TYPES } from '../../constants/activityConstants'
+import { useTranslation } from 'react-i18next'
+import { getActivityTypes } from '../../constants/activityConstants'
 
 export function ActivityTypeBadge({ type }) {
-  const meta = ACTIVITY_TYPES[type] || ACTIVITY_TYPES.meeting
+  const { t } = useTranslation()
+  const types = getActivityTypes(t)
+  const meta = types[type] || types.meeting
   const Icon = meta.icon
 
   return (

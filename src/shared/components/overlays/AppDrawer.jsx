@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '../../utils/cn'
+import { useTranslation } from 'react-i18next'
 
 const sizes = {
   sm: 320,
@@ -34,6 +35,7 @@ export function AppDrawer({
   inlineEndOffset,
   offsetCssVariable,
 }) {
+  const { t } = useTranslation()
   const panelRef = useRef(null)
   const defaultWidth = sizes[size] || sizes.md
   const storageKey = useMemo(
@@ -215,8 +217,8 @@ export function AppDrawer({
             type="button"
             onMouseDown={handleResizeStart}
             className="absolute inset-y-0 -start-1 z-10 w-2 cursor-ew-resize bg-transparent"
-            aria-label="Resize drawer"
-            title="Resize drawer"
+            aria-label={t('common.resizeDrawer')}
+            title={t('common.resizeDrawer')}
           />
         ) : null}
 
@@ -243,13 +245,13 @@ export function AppDrawer({
           ) : null}
           <button
             onClick={onClose}
-            title="Close - Esc"
+            title={`${t('actions.close')} - Esc`}
             className={cn(
               'p-1 hover:bg-[var(--surface-2)] rounded-lg',
               'transition-colors focus-visible:outline-none focus-visible:ring-2',
               'focus-visible:ring-[#00C2CB] ms-2 flex-shrink-0'
             )}
-            aria-label="إغلاق"
+            aria-label={t('actions.close')}
           >
             <X size={20} className="text-[var(--text)]" />
           </button>

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   CheckCircle2,
   ExternalLink,
@@ -31,22 +32,24 @@ import {
 } from '../utils/taskMeta'
 
 function HeaderActions({ onOpenPage, onClose }) {
+  const { t } = useTranslation()
+
   return (
     <div className="flex shrink-0 items-center gap-1.5">
       <button
         type="button"
         onClick={onOpenPage}
         className="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-[#D8E7EA] bg-white px-2 text-xs font-black text-[#00878D] transition-colors hover:bg-[#E8F9FA]"
-        title="فتح صفحة المهام"
+        title={t('tasks.sidebarPanel.openPage')}
       >
         <ExternalLink size={13} />
-        فتح
+        {t('tasks.sidebarPanel.openButton')}
       </button>
       <button
         type="button"
         onClick={onClose}
         className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#E5E7EB] bg-white text-[#64748B] transition-colors hover:bg-[#F8FAFC] hover:text-[#111827]"
-        title="إغلاق"
+        title={t('tasks.sidebarPanel.close')}
       >
         <X size={15} />
       </button>
@@ -55,10 +58,11 @@ function HeaderActions({ onOpenPage, onClose }) {
 }
 
 function TaskRow({ task, active = false, onClick }) {
-  const typeMeta = getTaskTypeMeta(task?.type)
-  const priorityMeta = getTaskPriorityMeta(task?.priority)
-  const statusMeta = getTaskStatusMeta(task?.status)
-  const dueLabel = formatTaskDateLabel(task)
+  const { t, i18n } = useTranslation()
+  const typeMeta = getTaskTypeMeta(task?.type, t)
+  const priorityMeta = getTaskPriorityMeta(task?.priority, t)
+  const statusMeta = getTaskStatusMeta(task?.status, t)
+  const dueLabel = formatTaskDateLabel(task, i18n.language, t)
   const overdue = isTaskOverdue(task)
   const TypeIcon = typeMeta.icon
 
@@ -75,9 +79,9 @@ function TaskRow({ task, active = false, onClick }) {
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <TypeIcon size={14} className="shrink-0 text-[#007A80]" />
-            <h4 className="truncate text-xs font-black text-[#0F172A]">{getTaskTitle(task)}</h4>
+            <h4 className="truncate text-xs font-black text-[#0F172A]">{getTaskTitle(task, t)}</h4>
           </div>
-          <p className="mt-1 truncate text-[11px] font-semibold text-[#64748B]">{getTaskAssigneeLabel(task)}</p>
+          <p className="mt-1 truncate text-[11px] font-semibold text-[#64748B]">{getTaskAssigneeLabel(task, t)}</p>
         </div>
 
         <span className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[10px] font-black ${priorityMeta.className}`}>
@@ -94,6 +98,7 @@ function TaskRow({ task, active = false, onClick }) {
 }
 
 export function TasksSidebarPanel({ open, onClose }) {
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [selectedTaskId, setSelectedTaskId] = useState('')
@@ -124,10 +129,10 @@ export function TasksSidebarPanel({ open, onClose }) {
 
     try {
       await mutations.markAsRead.mutateAsync(taskDetails.id)
-      toast.success('تم تعليم المهمة كمقروءة')
+      toast.success(t('tasks.drawer.markedRead'))
       tasksQuery.refetch()
     } catch (error) {
-      toast.error(error?.response?.data?.message || error?.message || 'تعذر تحديث حالة القراءة')
+      toast.error(error?.response?.data?.message || error?.message || t('tasks.sidebarPanel.markReadFailed'))
     }
   }
 
@@ -141,11 +146,11 @@ export function TasksSidebarPanel({ open, onClose }) {
         taskId: taskDetails.id,
         payload: { status: nextStatus },
       })
-      toast.success('تم تحديث حالة المهمة')
+      toast.success(t('tasks.drawer.statusUpdated'))
       tasksQuery.refetch()
       selectedTaskInfoQuery.refetch()
     } catch (error) {
-      toast.error(error?.response?.data?.message || error?.message || 'تعذر تحديث الحالة')
+      toast.error(error?.response?.data?.message || error?.message || t('tasks.sidebarPanel.statusUpdateFailed'))
     }
   }
 
@@ -153,16 +158,16 @@ export function TasksSidebarPanel({ open, onClose }) {
     if (!selectedTask) {
       return (
         <div className="flex h-full min-h-52 items-center justify-center rounded-xl border border-dashed border-[#D7EEF0] bg-[#F8FEFF] text-center text-xs font-semibold text-[#64748B]">
-          اختر مهمة من القائمة لعرض التفاصيل.
+          {t('tasks.sidebarPanel.selectTaskHint')}
         </div>
       )
     }
 
-    const typeMeta = getTaskTypeMeta(taskDetails?.type)
+    const typeMeta = getTaskTypeMeta(taskDetails?.type, t)
     const TypeIcon = typeMeta.icon
-    const statusMeta = getTaskStatusMeta(taskDetails?.status)
-    const priorityMeta = getTaskPriorityMeta(taskDetails?.priority)
-    const dueDate = formatTaskDateLabel(taskDetails)
+    const statusMeta = getTaskStatusMeta(taskDetails?.status, t)
+    const priorityMeta = getTaskPriorityMeta(taskDetails?.priority, t)
+    const dueDate = formatTaskDateLabel(taskDetails, i18n.language, t)
     const overdue = isTaskOverdue(taskDetails)
     const quickIcon = getTaskQuickStatusIcon(taskDetails)
     const QuickIcon = quickIcon
@@ -174,7 +179,7 @@ export function TasksSidebarPanel({ open, onClose }) {
             <TypeIcon size={16} />
           </span>
           <div className="min-w-0">
-            <h3 className="truncate text-sm font-black text-[#0F172A]">{getTaskTitle(taskDetails)}</h3>
+            <h3 className="truncate text-sm font-black text-[#0F172A]">{getTaskTitle(taskDetails, t)}</h3>
             <p className="truncate text-xs font-semibold text-[#64748B]">{typeMeta.label}</p>
           </div>
         </div>
@@ -198,7 +203,7 @@ export function TasksSidebarPanel({ open, onClose }) {
             className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#D7EEF0] bg-white px-2 text-[11px] font-black text-[#007A80]"
           >
             <CheckCircle2 size={13} />
-            تعليم كمقروءة
+            {t('tasks.drawer.markAsRead')}
           </button>
 
           <button
@@ -208,7 +213,7 @@ export function TasksSidebarPanel({ open, onClose }) {
             className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#D7EEF0] bg-white px-2 text-[11px] font-black text-[#007A80] disabled:opacity-40"
           >
             <QuickIcon size={13} />
-            {getTaskQuickStatusLabel(taskDetails)}
+            {getTaskQuickStatusLabel(taskDetails, t)}
           </button>
         </div>
       </div>
@@ -229,8 +234,8 @@ export function TasksSidebarPanel({ open, onClose }) {
                 <ListTodo size={18} />
               </span>
               <div className="min-w-0">
-                <h2 className="truncate text-sm font-black text-[#111827]">المهام السريعة</h2>
-                <p className="truncate text-xs font-semibold text-[#64748B]">إجمالي {metrics.total} • اليوم {metrics.today}</p>
+                <h2 className="truncate text-sm font-black text-[#111827]">{t('tasks.sidebarPanel.title')}</h2>
+                <p className="truncate text-xs font-semibold text-[#64748B]">{t('tasks.sidebarPanel.totalTodaySummary', { total: metrics.total, today: metrics.today })}</p>
               </div>
             </div>
             <HeaderActions onOpenPage={handleOpenPage} onClose={onClose} />
@@ -243,16 +248,16 @@ export function TasksSidebarPanel({ open, onClose }) {
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="ابحث في المهام..."
+              placeholder={t('tasks.sidebarPanel.searchPlaceholder')}
               className="h-9 w-full rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] ps-8 pe-3 text-xs font-semibold text-[#0F172A] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]"
             />
           </label>
 
           <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] font-black">
-            <span className="rounded-full bg-[#EEF8FF] px-2 py-1 text-[#2563EB]">قيد التنفيذ {metrics.inProgress}</span>
-            <span className="rounded-full bg-[#FFF4E5] px-2 py-1 text-[#B45309]">متأخرة {metrics.overdue}</span>
-            <span className="rounded-full bg-[#ECFDF3] px-2 py-1 text-[#047857]">مكتملة {metrics.completed}</span>
-            <span className="rounded-full bg-[#FEE2E2] px-2 py-1 text-[#B91C1C]">عاجلة {metrics.urgent}</span>
+            <span className="rounded-full bg-[#EEF8FF] px-2 py-1 text-[#2563EB]">{t('tasks.sidebarPanel.inProgressChip', { count: metrics.inProgress })}</span>
+            <span className="rounded-full bg-[#FFF4E5] px-2 py-1 text-[#B45309]">{t('tasks.sidebarPanel.overdueChip', { count: metrics.overdue })}</span>
+            <span className="rounded-full bg-[#ECFDF3] px-2 py-1 text-[#047857]">{t('tasks.sidebarPanel.completedChip', { count: metrics.completed })}</span>
+            <span className="rounded-full bg-[#FEE2E2] px-2 py-1 text-[#B91C1C]">{t('tasks.sidebarPanel.urgentChip', { count: metrics.urgent })}</span>
           </div>
         </div>
 
@@ -261,7 +266,7 @@ export function TasksSidebarPanel({ open, onClose }) {
             {tasksQuery.isLoading ? (
               <div className="rounded-xl border border-[#E5EEF0] bg-white p-3 text-center text-xs font-semibold text-[#64748B]">
                 <Loader2 size={16} className="mx-auto mb-2 animate-spin text-[#007A80]" />
-                جاري تحميل المهام...
+                {t('tasks.sidebarPanel.loadingTasks')}
               </div>
             ) : filteredTasks.length ? (
               <div className="space-y-2">
@@ -276,7 +281,7 @@ export function TasksSidebarPanel({ open, onClose }) {
               </div>
             ) : (
               <div className="rounded-xl border border-dashed border-[#D7EEF0] bg-[#F8FEFF] p-3 text-center text-xs font-semibold text-[#64748B]">
-                لا توجد مهام مطابقة.
+                {t('tasks.sidebarPanel.noMatchingTasks')}
               </div>
             )}
 
@@ -286,7 +291,7 @@ export function TasksSidebarPanel({ open, onClose }) {
               className="mt-2 inline-flex h-8 items-center gap-1 rounded-lg border border-[#D7EEF0] bg-white px-2 text-[11px] font-black text-[#007A80]"
             >
               <RefreshCcw size={13} className={tasksQuery.isFetching ? 'animate-spin' : ''} />
-              تحديث
+              {t('tasks.sidebarPanel.refresh')}
             </button>
           </div>
 

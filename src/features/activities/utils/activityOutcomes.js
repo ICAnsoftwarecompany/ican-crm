@@ -1,23 +1,27 @@
-export const CALL_OUTCOMES = [
-  { value: 'connected', label: 'تم التواصل' },
-  { value: 'no_answer', label: 'لا يوجد رد' },
-  { value: 'interested', label: 'مهتم' },
-  { value: 'not_interested', label: 'غير مهتم' },
-  { value: 'wrong_number', label: 'رقم غير صحيح' },
-]
-
-export const MEETING_OUTCOMES = [
-  { value: 'completed', label: 'تم الاجتماع' },
-  { value: 'proposal_requested', label: 'طلب عرض سعر' },
-  { value: 'deal_possible', label: 'فرصة بيع' },
-  { value: 'postponed', label: 'تم التأجيل' },
-  { value: 'no_show', label: 'لم يحضر' },
-]
-
-export function getOutcomeOptions(type) {
-  return type === 'call' ? CALL_OUTCOMES : MEETING_OUTCOMES
+function getCallOutcomes(t) {
+  return [
+    { value: 'connected', label: t('activities.outcomes.call.connected') },
+    { value: 'no_answer', label: t('activities.outcomes.call.no_answer') },
+    { value: 'interested', label: t('activities.outcomes.call.interested') },
+    { value: 'not_interested', label: t('activities.outcomes.call.not_interested') },
+    { value: 'wrong_number', label: t('activities.outcomes.call.wrong_number') },
+  ]
 }
 
-export function getOutcomeLabel(value, type) {
-  return getOutcomeOptions(type).find((item) => item.value === value)?.label || value || '-'
+function getMeetingOutcomes(t) {
+  return [
+    { value: 'completed', label: t('activities.outcomes.meeting.completed') },
+    { value: 'proposal_requested', label: t('activities.outcomes.meeting.proposal_requested') },
+    { value: 'deal_possible', label: t('activities.outcomes.meeting.deal_possible') },
+    { value: 'postponed', label: t('activities.outcomes.meeting.postponed') },
+    { value: 'no_show', label: t('activities.outcomes.meeting.no_show') },
+  ]
+}
+
+export function getOutcomeOptions(type, t) {
+  return type === 'call' ? getCallOutcomes(t) : getMeetingOutcomes(t)
+}
+
+export function getOutcomeLabel(value, type, t) {
+  return getOutcomeOptions(type, t).find((item) => item.value === value)?.label || value || '-'
 }
