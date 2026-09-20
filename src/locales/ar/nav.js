@@ -15,6 +15,7 @@ export default {
   "activities": "الأنشطة",
   "proposals": "عروض الأسعار",
   "conversations": "المحادثات",
+  "socialMedia": "التواصل الاجتماعي",
   "campaigns": "الحملات",
   "opportunities": "الفرص البيعية",
   "opportunityCenter": "مركز الفرص",

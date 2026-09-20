@@ -15,6 +15,7 @@ import dashboard from './dashboard.js'
 import opportunities from './opportunities.js'
 import outreachCampaigns from './outreachCampaigns.js'
 import campaigns from './campaigns.js'
+import socialMedia from './socialMedia.js'
 import products from './products.js'
 import tasks from './tasks.js'
 import workflow from './workflow.js'
@@ -40,6 +41,7 @@ export default {
   opportunities,
   outreachCampaigns,
   campaigns,
+  socialMedia,
   products,
   tasks,
   workflow,

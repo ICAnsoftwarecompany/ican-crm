@@ -15,6 +15,7 @@ export default {
   "activities": "Activities",
   "proposals": "Proposals",
   "conversations": "Conversations",
+  "socialMedia": "Social Media",
   "campaigns": "Campaigns",
   "opportunities": "Opportunities",
   "opportunityCenter": "Opportunity Center",

@@ -1,114 +1,95 @@
-import { useState } from 'react'
-import { Megaphone, Plus } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { Navigate, Outlet, useLocation, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Button } from '../../shared/components/ui/Button'
-import { Input } from '../../shared/components/ui/Input'
-import { Badge } from '../../shared/components/ui/Badge'
-import { PageToolbar } from '../../shared/components/data/PageToolbar'
+import { useAuthStore } from '../../store/authStore'
+import { resolveTenantId } from '../../services/tenantResolver'
+import { useFacebookIntegrations } from '../../features/meta-integrations/hooks/useFacebookIntegrations'
+import { CAMPAIGN_NAV_ITEMS, CampaignCenterProvider, getCampaignPlatform, getVisibleCampaignPlatforms, platformHasCapability, userHasCampaignPermission } from '../../features/campaigns'
+import { AppDrawer } from '../../shared/components/overlays/AppDrawer'
 import { ResourceState } from '../../shared/components/data/ResourceState'
-import { useAdsLists, useCampaignLists, useCampaignMutations } from '../../features/campaigns/hooks/useCampaigns'
-import { displayValue, extractMessage } from '../../shared/utils/apiResponse'
+import { cn } from '../../shared/utils/cn'
+import { CampaignSubSidebar } from './components/CampaignSubSidebar'
+import { CampaignCenterHeader } from './components/CampaignCenterHeader'
+import { CampaignUnavailableState } from './components/CampaignUnavailableState'
+
+const LAST_PLATFORM_KEY = 'ican-campaign-center-platform'
 
 export function CampaignsPage() {
   const { t } = useTranslation()
-  const [form, setForm] = useState({ name: '', description: '', status: 'active' })
-  const [feedback, setFeedback] = useState('')
-  const campaigns = useCampaignLists()
-  const ads = useAdsLists()
-  const mutations = useCampaignMutations()
+  const { platform: platformId } = useParams()
+  const location = useLocation()
+  const user = useAuthStore((state) => state.user)
+  const tenantId = resolveTenantId(user)
+  const platforms = useMemo(() => getVisibleCampaignPlatforms(user?.modules), [user?.modules])
+  const platform = getCampaignPlatform(platformId)
+  const [mobileNavigationOpen, setMobileNavigationOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const integrationsQuery = useFacebookIntegrations(tenantId, { enabled: platformId === 'meta' })
+  const integrations = integrationsQuery.data || {}
+  const accounts = platformId === 'meta' ? integrations.ad_accounts || [] : []
+  const [accountId, setAccountId] = useState('')
 
-  const activeCampaigns = campaigns.active.data || []
-  const inactiveCampaigns = campaigns.inactive.data || []
-  const activeAds = ads.active.data || []
-  const activeForms = ads.forms.data || []
+  useEffect(() => {
+    if (platformId) localStorage.setItem(LAST_PLATFORM_KEY, platformId)
+  }, [platformId])
 
-  const handleChange = (event) => {
-    const { name, value } = event.target
-    setForm((current) => ({ ...current, [name]: value }))
+  useEffect(() => {
+    const firstAccount = accounts[0]?.account_id || accounts[0]?.id || ''
+    setAccountId((current) => current && accounts.some((account) => String(account.account_id || account.id) === String(current)) ? current : String(firstAccount))
+  }, [accounts])
+
+  if (!platformId) {
+    const remembered = localStorage.getItem(LAST_PLATFORM_KEY)
+    const target = platforms.some((entry) => entry.id === remembered) ? remembered : platforms[0]?.id
+    return target ? <Navigate to={`/campaigns/${target}`} replace /> : <CampaignUnavailableState reason="package" />
   }
 
-  const handleCreate = async (event) => {
-    event.preventDefault()
-    setFeedback('')
-    if (!form.name.trim()) {
-      setFeedback(t('campaigns.nameRequired'))
-      return
-    }
+  if (!platform || !platforms.some((entry) => entry.id === platform.id)) return <CampaignUnavailableState reason="package" />
 
-    try {
-      await mutations.saveCampaign.mutateAsync(form)
-      setForm({ name: '', description: '', status: 'active' })
-      setFeedback(t('campaigns.saveSuccess'))
-    } catch (error) {
-      setFeedback(extractMessage(error, t('campaigns.saveError')))
-    }
-  }
+  const connectionStatus = platform.id === 'meta'
+    ? integrationsQuery.isError ? 'needsAttention' : integrations.is_connected ? 'connected' : 'disconnected'
+    : 'disconnected'
+  const connectionByPlatform = Object.fromEntries(platforms.map((entry) => [entry.id, entry.id === platform.id ? connectionStatus : 'disconnected']))
+  const context = { tenantId, platform, provider: platform.provider, accountId, accounts, connectionStatus, integrations, permissions: user?.permissions }
+  const pageSegment = location.pathname.split('/').filter(Boolean)[2] || 'overview'
+  const requestedNavItem = CAMPAIGN_NAV_ITEMS.find((item) => (item.path || 'overview') === pageSegment)
+    || (pageSegment && !['create', 'list', 'analytics', 'billing'].includes(pageSegment) ? CAMPAIGN_NAV_ITEMS.find((item) => item.id === 'list') : null)
+  const accessDenied = requestedNavItem && (!platformHasCapability(platform, requestedNavItem.capability) || !userHasCampaignPermission(requestedNavItem.permission, user?.permissions))
 
-  const renderCampaign = (campaign, index, status) => (
-    <article key={campaign.id || index} className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h3 className="font-bold">{displayValue(campaign.name || campaign.title, `Campaign #${campaign.id || index + 1}`)}</h3>
-          <p className="text-sm text-[var(--text-muted)]">{displayValue(campaign.description || campaign.objective)}</p>
-        </div>
-        <Badge variant={status === 'active' ? 'success' : 'default'}>{status}</Badge>
-      </div>
-    </article>
+  const desktopNavigation = (
+    <CampaignSubSidebar
+      platforms={platforms}
+      activePlatformId={platform.id}
+      permissions={user?.permissions}
+      connectionByPlatform={connectionByPlatform}
+      onNavigate={() => setMobileNavigationOpen(false)}
+      collapsed={sidebarCollapsed}
+      onToggleCollapse={() => setSidebarCollapsed((current) => !current)}
+    />
   )
+  const mobileNavigation = <CampaignSubSidebar platforms={platforms} activePlatformId={platform.id} permissions={user?.permissions} connectionByPlatform={connectionByPlatform} onNavigate={() => setMobileNavigationOpen(false)} />
 
   return (
-    <div>
-      <PageToolbar title={t('nav.campaigns')} description={t('campaigns.description')} />
-      {feedback && <div className="mb-4 rounded-lg bg-[#E8F9FA] text-[#007A80] text-sm p-3">{feedback}</div>}
-
-      <div className="grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)] gap-4">
-        <form onSubmit={handleCreate} className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4 grid gap-3 h-fit">
-          <h2 className="font-bold">{t('campaigns.newCampaign')}</h2>
-          <Input label={t('campaigns.nameLabel')} name="name" value={form.name} onChange={handleChange} />
-          <Input label={t('campaigns.descriptionLabel')} name="description" value={form.description} onChange={handleChange} />
-          <label className="grid gap-1.5 text-sm font-medium font-arabic text-[var(--text)]">
-            {t('campaigns.statusLabel')}
-            <select name="status" value={form.status} onChange={handleChange} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3">
-              <option value="active">{t('campaigns.statusActive')}</option>
-              <option value="inactive">{t('campaigns.statusInactive')}</option>
-            </select>
-          </label>
-          <Button type="submit" loading={mutations.saveCampaign.isPending}>
-            <Plus size={16} />
-            {t('campaigns.saveCampaign')}
-          </Button>
-        </form>
-
-        <section className="grid gap-4">
-          <ResourceState
-            isLoading={campaigns.isLoading}
-            error={campaigns.error}
-            empty={activeCampaigns.length + inactiveCampaigns.length === 0}
-            emptyIcon={<Megaphone size={24} />}
-            emptyTitle={t('campaigns.noCampaigns')}
-            onRetry={() => {
-              campaigns.active.refetch()
-              campaigns.inactive.refetch()
-            }}
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-              {activeCampaigns.map((campaign, index) => renderCampaign(campaign, index, 'active'))}
-              {inactiveCampaigns.map((campaign, index) => renderCampaign(campaign, index, 'inactive'))}
-            </div>
-          </ResourceState>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4">
-              <h2 className="font-bold mb-3">{t('campaigns.activeAds')}</h2>
-              <p className="text-sm text-[var(--text-muted)]">{t('campaigns.adsCount', { count: activeAds.length })}</p>
-            </div>
-            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4">
-              <h2 className="font-bold mb-3">{t('campaigns.adForms')}</h2>
-              <p className="text-sm text-[var(--text-muted)]">{t('campaigns.formsCount', { count: activeForms.length })}</p>
-            </div>
-          </div>
+    <CampaignCenterProvider value={context}>
+      <div className={cn('-m-3 min-h-[calc(100vh-4rem)] overflow-hidden border-t border-[var(--border)] bg-[var(--surface-2)] sm:-m-4 lg:grid', sidebarCollapsed ? 'lg:grid-cols-[64px_minmax(0,1fr)]' : 'lg:grid-cols-[260px_minmax(0,1fr)]')}>
+        <aside className="hidden min-h-0 lg:block">{desktopNavigation}</aside>
+        <section className="min-w-0 bg-[var(--surface-2)]">
+          <CampaignCenterHeader
+            platform={platform}
+            accounts={accounts}
+            accountId={accountId}
+            onAccountChange={setAccountId}
+            connectionStatus={connectionStatus}
+            onOpenNavigation={() => setMobileNavigationOpen(true)}
+          />
+          <main className="min-w-0 p-3 sm:p-4">
+            {platform.id === 'meta' && integrationsQuery.isLoading
+              ? <ResourceState isLoading />
+              : accessDenied ? <CampaignUnavailableState reason="permission" /> : <Outlet context={context} />}
+          </main>
         </section>
       </div>
-    </div>
+      <AppDrawer open={mobileNavigationOpen} onClose={() => setMobileNavigationOpen(false)} title={t('campaigns.center.title')} size="sm">{mobileNavigation}</AppDrawer>
+    </CampaignCenterProvider>
   )
 }

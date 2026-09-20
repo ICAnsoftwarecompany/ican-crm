@@ -401,21 +401,13 @@ export default {
     "executionsNotAvailableDescription": "لا يوجد محرك أتمتة متصل بالباك إند بعد، لذلك الـ Workflows لا تعمل فعليا — راجع WORKFLOW_ENGINE_BACKEND_REQUIREMENTS.md.",
     "logsNotAvailableTitle": "لا توجد سجلات بعد",
     "logsNotAvailableDescription": "ستظهر سجلات التنفيذ هنا بمجرد توفر محرك أتمتة متصل بالباك إند.",
+    "selectPromptTitle": "اختر Workflow للبدء",
+    "selectPromptDescription": "اختر Workflow من القائمة الجانبية، أو أنشئ واحدًا جديدًا لفتحه في Visual Workflow Builder.",
     "tabs": {
       "workflows": "Workflows",
       "templates": "القوالب",
       "executions": "التنفيذات",
       "logs": "السجلات"
-    },
-    "columns": {
-      "workflow": "Workflow",
-      "module": "Module",
-      "trigger": "Trigger",
-      "status": "الحالة",
-      "lastRun": "آخر تشغيل",
-      "executions": "مرات التنفيذ",
-      "updated": "آخر تحديث",
-      "actions": "إجراءات"
     }
   }
 }

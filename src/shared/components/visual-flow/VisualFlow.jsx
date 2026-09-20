@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ListTree, PanelRightOpen } from 'lucide-react'
+import { ListTree, PanelRightOpen, PanelLeftClose, PanelLeftOpen, PanelRightClose } from 'lucide-react'
 import { AppDrawer } from '../overlays/AppDrawer'
 import { Button } from '../ui/Button'
 import { VisualFlowProvider } from './VisualFlowProvider'
@@ -100,6 +100,8 @@ export function VisualFlow({
   const [minimapVisible, setMinimapVisible] = useState(showMiniMap)
   const [isDesktop, setIsDesktop] = useState(() => (typeof window !== 'undefined' ? window.matchMedia('(min-width: 1024px)').matches : true))
   const [mobilePane, setMobilePane] = useState(null)
+  const [leftPanelCollapsed, setLeftPanelCollapsed] = useState(false)
+  const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false)
 
   useEffect(() => {
     const query = window.matchMedia('(min-width: 1024px)')
@@ -241,9 +243,22 @@ export function VisualFlow({
 
           <div
             className="grid min-h-0 flex-1 grid-cols-1"
-            style={isDesktop ? { gridTemplateColumns: buildDesktopColumns(resolvedLeftPanel, resolvedRightPanel) } : undefined}
+            style={isDesktop ? { gridTemplateColumns: buildDesktopColumns(resolvedLeftPanel, resolvedRightPanel, leftPanelCollapsed, rightPanelCollapsed) } : undefined}
           >
-            {isDesktop && resolvedLeftPanel && <aside className="overflow-y-auto border-e border-[var(--border)] bg-[var(--surface-2)]">{resolvedLeftPanel}</aside>}
+            {isDesktop && resolvedLeftPanel && (
+              <aside className="flex min-h-0 flex-col border-e border-[var(--border)] bg-[var(--surface-2)]">
+                <button
+                  type="button"
+                  onClick={() => setLeftPanelCollapsed((value) => !value)}
+                  aria-label={t(leftPanelCollapsed ? 'visualFlow.panels.expand' : 'visualFlow.panels.collapse')}
+                  title={t(leftPanelCollapsed ? 'visualFlow.panels.expand' : 'visualFlow.panels.collapse')}
+                  className={`flex h-8 shrink-0 items-center border-b border-[var(--border)] text-[var(--text-muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--text)] ${leftPanelCollapsed ? 'w-full justify-center' : 'w-full justify-end px-2'}`}
+                >
+                  {leftPanelCollapsed ? <PanelLeftOpen size={15} /> : <PanelLeftClose size={15} />}
+                </button>
+                {!leftPanelCollapsed && <div className="min-h-0 flex-1 overflow-y-auto">{resolvedLeftPanel}</div>}
+              </aside>
+            )}
 
             <main className="relative min-h-0">
               <VisualFlowCanvas
@@ -275,7 +290,20 @@ export function VisualFlow({
               />
             </main>
 
-            {isDesktop && resolvedRightPanel && <aside className="overflow-y-auto border-s border-[var(--border)] bg-[var(--surface-2)]">{resolvedRightPanel}</aside>}
+            {isDesktop && resolvedRightPanel && (
+              <aside className="flex min-h-0 flex-col border-s border-[var(--border)] bg-[var(--surface-2)]">
+                <button
+                  type="button"
+                  onClick={() => setRightPanelCollapsed((value) => !value)}
+                  aria-label={t(rightPanelCollapsed ? 'visualFlow.panels.expand' : 'visualFlow.panels.collapse')}
+                  title={t(rightPanelCollapsed ? 'visualFlow.panels.expand' : 'visualFlow.panels.collapse')}
+                  className={`flex h-8 shrink-0 items-center border-b border-[var(--border)] text-[var(--text-muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--text)] ${rightPanelCollapsed ? 'w-full justify-center' : 'w-full justify-start px-2'}`}
+                >
+                  {rightPanelCollapsed ? <PanelRightOpen size={15} /> : <PanelRightClose size={15} />}
+                </button>
+                {!rightPanelCollapsed && <div className="min-h-0 flex-1 overflow-y-auto">{resolvedRightPanel}</div>}
+              </aside>
+            )}
           </div>
 
           {bottomPanel && <div className="border-t border-[var(--border)]">{bottomPanel}</div>}
@@ -309,8 +337,8 @@ export function VisualFlow({
   )
 }
 
-function buildDesktopColumns(left, right) {
-  const leftCol = left ? '260px ' : ''
-  const rightCol = right ? ' 300px' : ''
+function buildDesktopColumns(left, right, leftCollapsed, rightCollapsed) {
+  const leftCol = left ? `${leftCollapsed ? '32px' : '260px'} ` : ''
+  const rightCol = right ? ` ${rightCollapsed ? '32px' : '300px'}` : ''
   return `${leftCol}minmax(0,1fr)${rightCol}`
 }

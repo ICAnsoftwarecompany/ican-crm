@@ -13,6 +13,7 @@ export { VisualFlowEmptyState } from './VisualFlowEmptyState'
 export { VisualFlowLoadingState } from './VisualFlowLoadingState'
 export { VisualFlowErrorState } from './VisualFlowErrorState'
 export { VisualFlowErrorBoundary } from './VisualFlowErrorBoundary'
+export { VisualFlowSidebar } from './VisualFlowSidebar'
 
 export { BaseNode, StartNode, EndNode, UnknownNode, defaultNodeComponents } from './nodes'
 export { BaseEdge, defaultEdgeComponents } from './edges'

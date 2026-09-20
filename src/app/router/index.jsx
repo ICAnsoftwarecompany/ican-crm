@@ -27,9 +27,26 @@ import { CustomerProposalTemplatesPage } from '../../pages/customers/pages/propo
 import { ActivitiesPage } from '../../features/activities'
 import { ConversationsPage } from '../../pages/conversations/ConversationsPage'
 import { CampaignsPage } from '../../pages/campaigns/CampaignsPage'
+import { CampaignOverviewPage } from '../../pages/campaigns/pages/CampaignOverviewPage'
+import { CampaignCreatePage } from '../../pages/campaigns/pages/CampaignCreatePage'
+import { CampaignListPage } from '../../pages/campaigns/pages/CampaignListPage'
+import { CampaignAnalyticsPage } from '../../pages/campaigns/pages/CampaignAnalyticsPage'
+import { CampaignBillingPage } from '../../pages/campaigns/pages/CampaignBillingPage'
+import { CampaignDetailsPage } from '../../pages/campaigns/pages/CampaignDetailsPage'
 import { OutreachCampaignsPage } from '../../pages/outreach-campaigns/OutreachCampaignsPage'
 import { OutreachCampaignDetailsPage } from '../../pages/outreach-campaigns/OutreachCampaignDetailsPage'
 import { OpportunityCenterPage } from '../../pages/opportunities/OpportunityCenterPage'
+import { SocialMediaPage } from '../../pages/social-media/SocialMediaPage'
+import { SocialOverviewPage } from '../../pages/social-media/pages/SocialOverviewPage'
+import { SocialProfilesPage } from '../../pages/social-media/pages/SocialProfilesPage'
+import { SocialContentPage } from '../../pages/social-media/pages/SocialContentPage'
+import { SocialPlannerPage } from '../../pages/social-media/pages/SocialPlannerPage'
+import { SocialAnalyticsPage } from '../../pages/social-media/pages/SocialAnalyticsPage'
+import { FacebookPage as SocialFacebookPage } from '../../pages/social-media/pages/platforms/FacebookPage'
+import { FacebookProfilePage } from '../../pages/social-media/pages/platforms/FacebookProfilePage'
+import { InstagramPage } from '../../pages/social-media/pages/platforms/InstagramPage'
+import { TikTokPage } from '../../pages/social-media/pages/platforms/TikTokPage'
+import { SnapchatPage } from '../../pages/social-media/pages/platforms/SnapchatPage'
 import { AutomationCenterPage } from '../../pages/automation/AutomationCenterPage'
 import { FacebookCallbackPage } from '../../pages/integrations/FacebookCallbackPage'
 import { TasksPage } from '../../pages/tasks/TasksPage'
@@ -115,10 +132,38 @@ export const router = createBrowserRouter([
       { path: 'activities/meetings', element: <ActivitiesPage defaultType="meeting" /> },
       { path: 'activities/calendar', element: <ActivitiesPage defaultView="calendar" /> },
       { path: 'conversations', element: <ConversationsPage /> },
-      { path: 'campaigns', element: <CampaignsPage /> },
+      {
+        path: 'campaigns',
+        element: <CampaignsPage />,
+        children: [
+          { index: true, element: null },
+          { path: ':platform', element: <CampaignOverviewPage /> },
+          { path: ':platform/create', element: <CampaignCreatePage /> },
+          { path: ':platform/list', element: <CampaignListPage /> },
+          { path: ':platform/analytics', element: <CampaignAnalyticsPage /> },
+          { path: ':platform/billing', element: <CampaignBillingPage /> },
+          { path: ':platform/:campaignId', element: <CampaignDetailsPage /> },
+        ],
+      },
       { path: 'outreach-campaigns', element: <OutreachCampaignsPage /> },
       { path: 'outreach-campaigns/:campaignId', element: <OutreachCampaignDetailsPage /> },
       { path: 'opportunities', element: <OpportunityCenterPage /> },
+      {
+        path: 'social-media',
+        element: <SocialMediaPage />,
+        children: [
+          { index: true, element: <SocialOverviewPage /> },
+          { path: 'profiles', element: <SocialProfilesPage /> },
+          { path: 'content', element: <SocialContentPage /> },
+          { path: 'planner', element: <SocialPlannerPage /> },
+          { path: 'analytics', element: <SocialAnalyticsPage /> },
+          { path: 'facebook', element: <SocialFacebookPage /> },
+          { path: 'facebook/:pageId', element: <FacebookProfilePage /> },
+          { path: 'instagram', element: <InstagramPage /> },
+          { path: 'tiktok', element: <TikTokPage /> },
+          { path: 'snapchat', element: <SnapchatPage /> },
+        ],
+      },
       { path: 'automation', element: <AutomationCenterPage /> },
       { path: 'tasks', element: <TasksPage /> },
       { path: 'calendar', element: <CalendarPage /> },

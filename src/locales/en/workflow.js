@@ -401,21 +401,13 @@ export default {
     "executionsNotAvailableDescription": "There is no backend automation engine connected yet, so workflows don't actually run — see WORKFLOW_ENGINE_BACKEND_REQUIREMENTS.md.",
     "logsNotAvailableTitle": "No logs yet",
     "logsNotAvailableDescription": "Execution logs will appear here once a backend automation engine exists.",
+    "selectPromptTitle": "Select a workflow to get started",
+    "selectPromptDescription": "Pick a workflow from the sidebar, or create a new one to open it in the Visual Workflow Builder.",
     "tabs": {
       "workflows": "Workflows",
       "templates": "Templates",
       "executions": "Executions",
       "logs": "Logs"
-    },
-    "columns": {
-      "workflow": "Workflow",
-      "module": "Module",
-      "trigger": "Trigger",
-      "status": "Status",
-      "lastRun": "Last Run",
-      "executions": "Executions",
-      "updated": "Updated",
-      "actions": "Actions"
     }
   }
 }

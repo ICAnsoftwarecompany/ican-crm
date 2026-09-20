@@ -50,6 +50,7 @@ import {
   LayoutTemplate,
   Settings,
   Workflow,
+  Share2,
 } from 'lucide-react'
 
 /** @type {NavigationSection[]} */
@@ -125,10 +126,19 @@ export const navigationConfig = [
     module: 'growth',
     items: [
       {
+        id: 'social-media',
+        labelKey: 'nav.socialMedia',
+        icon: Share2,
+        path: '/social-media',
+        permission: 'social.view',
+        activePatterns: ['/social-media', '/social-media/*'],
+      },
+      {
         id: 'campaigns',
         labelKey: 'nav.campaigns',
         icon: Megaphone,
         path: '/campaigns',
+        activePatterns: ['/campaigns', '/campaigns/*'],
       },
       {
         id: 'outreach-campaigns',

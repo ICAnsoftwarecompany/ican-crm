@@ -37,6 +37,20 @@ export default {
     "search": "بحث عن عنصر...",
     "noResults": "لا توجد عناصر"
   },
+  "panels": {
+    "collapse": "طي اللوحة",
+    "expand": "فتح اللوحة"
+  },
+  "sidebar": {
+    "collapse": "طي القائمة الجانبية",
+    "expand": "فتح القائمة الجانبية",
+    "searchPlaceholder": "بحث...",
+    "create": "جديد",
+    "emptyTitle": "لا يوجد شيء هنا بعد",
+    "emptyDescription": "العناصر التي تنشئها ستظهر هنا.",
+    "noResults": "لا توجد نتائج مطابقة",
+    "errorTitle": "تعذر تحميل العناصر"
+  },
   "properties": {
     "title": "الإعدادات",
     "emptyHint": "اختر عنصرا لإعداده.",

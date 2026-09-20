@@ -37,6 +37,20 @@ export default {
     "search": "Search nodes...",
     "noResults": "No nodes found"
   },
+  "panels": {
+    "collapse": "Collapse panel",
+    "expand": "Expand panel"
+  },
+  "sidebar": {
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar",
+    "searchPlaceholder": "Search...",
+    "create": "New",
+    "emptyTitle": "Nothing here yet",
+    "emptyDescription": "Items you create will appear here.",
+    "noResults": "No matches found",
+    "errorTitle": "Couldn't load items"
+  },
   "properties": {
     "title": "Properties",
     "emptyHint": "Select a node to configure it.",
