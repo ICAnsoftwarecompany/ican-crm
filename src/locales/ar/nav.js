@@ -1,4 +1,8 @@
 export default {
+  favorites: 'المفضلة',
+  pinPage: 'تثبيت في المفضلة',
+  unpinPage: 'إزالة من المفضلة',
+  deals: 'الصفقات',
   "sections": {
     "overview": "نظرة عامة",
     "sales": "المبيعات",

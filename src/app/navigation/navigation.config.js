@@ -51,6 +51,7 @@ import {
   Settings,
   Workflow,
   Share2,
+  Handshake,
 } from 'lucide-react'
 
 /** @type {NavigationSection[]} */
@@ -103,6 +104,13 @@ export const navigationConfig = [
         icon: CalendarClock,
         path: '/activities',
         activePatterns: ['/activities', '/activities/*'],
+      },
+      {
+        id: 'deals',
+        labelKey: 'nav.deals',
+        icon: Handshake,
+        path: '/deals',
+        activePatterns: ['/deals', '/deals/*'],
       },
       {
         id: 'proposals',

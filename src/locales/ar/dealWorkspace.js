@@ -1,0 +1,15 @@
+export default {
+  title: 'مساحة الصفقات',
+  createDeal: 'إنشاء صفقة',
+  empty: 'لا توجد صفقات بعد.',
+  loading: 'جار تحميل مساحة الصفقة...',
+  back: 'العودة إلى الصفقات',
+  unavailable: 'يحتاج هذا القسم إلى عقد API من الباك إند قبل عرض بيانات حقيقية.',
+  tabs: { overview: 'نظرة عامة', board: 'اللوحة', team: 'الفريق', products: 'المنتجات', contracts: 'العقود', analytics: 'التحليلات' },
+  viewToggle: { kanban: 'لوحة', table: 'جدول' },
+  actions: { calendar: 'التقويم', workflow: 'سير العمل', ai: 'مساعد الصفقة' },
+  fields: { name: 'اسم الصفقة', description: 'الوصف', pipeline: 'مسار البيع', type: 'النوع', status: 'الحالة', owner: 'المسؤول', team: 'الفريق', leads: 'العملاء المحتملون', revenue: 'الإيراد المستهدف', startDate: 'تاريخ البداية', endDate: 'تاريخ النهاية', phone: 'الهاتف', stage: 'المرحلة', source: 'المصدر' },
+  statuses: { draft: 'مسودة', active: 'نشطة', paused: 'متوقفة', completed: 'مكتملة', cancelled: 'ملغاة' },
+  form: { title: 'إنشاء صفقة', save: 'إنشاء', cancel: 'إلغاء', required: 'اسم الصفقة ومسار البيع مطلوبان.' },
+  board: { empty: 'لا يوجد عملاء محتملون في هذه المرحلة.' },
+}

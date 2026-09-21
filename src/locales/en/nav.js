@@ -1,4 +1,8 @@
 export default {
+  favorites: 'Favorites',
+  pinPage: 'Pin to favorites',
+  unpinPage: 'Remove from favorites',
+  deals: 'Deals',
   "sections": {
     "overview": "Overview",
     "sales": "Sales",

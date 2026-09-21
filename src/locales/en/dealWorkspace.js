@@ -1,0 +1,15 @@
+export default {
+  title: 'Deals Workspace',
+  createDeal: 'Create deal',
+  empty: 'No deals yet.',
+  loading: 'Loading deal workspace...',
+  back: 'Back to deals',
+  unavailable: 'This section needs a backend API contract before it can display real data.',
+  tabs: { overview: 'Overview', board: 'Board', team: 'Team', products: 'Products', contracts: 'Contracts', analytics: 'Analytics' },
+  viewToggle: { kanban: 'Board', table: 'Table' },
+  actions: { calendar: 'Calendar', workflow: 'Workflow', ai: 'Deal assistant' },
+  fields: { name: 'Deal name', description: 'Description', pipeline: 'Pipeline', type: 'Type', status: 'Status', owner: 'Owner', team: 'Team', leads: 'Leads', revenue: 'Target revenue', startDate: 'Start date', endDate: 'End date', phone: 'Phone', stage: 'Stage', source: 'Source' },
+  statuses: { draft: 'Draft', active: 'Active', paused: 'Paused', completed: 'Completed', cancelled: 'Cancelled' },
+  form: { title: 'Create deal', save: 'Create', cancel: 'Cancel', required: 'Deal name and pipeline are required.' },
+  board: { empty: 'No leads in this stage.' },
+}
