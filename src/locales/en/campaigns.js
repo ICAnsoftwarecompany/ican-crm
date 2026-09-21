@@ -36,13 +36,86 @@ export default {
   "create": {
     "title": "Create campaign", "description": "Create a campaign using the selected platform account.", "name": "Campaign name", "page": "Facebook page", "selectPage": "Select page", "objective": "Objective", "submit": "Create campaign", "required": "Campaign name and page are required", "success": "Campaign created successfully", "error": "Failed to create campaign",
     "saveDraft": "Save Draft", "continue": "Continue",
-    "steps": { "campaign": "Campaign", "adSet": "Ad Set", "audience": "Audience", "creative": "Creative", "review": "Review" },
+    "steps": { "objective": "Objective", "campaignSetup": "Campaign Setup", "adSets": "Ad Sets", "ads": "Ads", "review": "Review" },
+    "objectiveStep": {
+      "intro": "Choose the outcome that matters most for this campaign. You can't change it once the campaign is created.",
+      "useWhen": {
+        "OUTCOME_AWARENESS": "You want as many people as possible to see the ad, and don't have enough conversion data yet",
+        "OUTCOME_TRAFFIC": "You want visits to your website or page, or you're still collecting Pixel data",
+        "OUTCOME_ENGAGEMENT": "You want likes, comments, shares, or Messenger conversations",
+        "OUTCOME_LEADS": "You want to collect contact details (name, email, phone) directly",
+        "OUTCOME_APP_PROMOTION": "You want app installs or in-app events",
+        "OUTCOME_SALES": "You want purchases — requires a working Pixel or Conversions API"
+      },
+      "lockedNote": "You can't change the objective after the campaign is created — duplicate the campaign with a new objective instead."
+    },
+    "campaignSetup": {
+      "specialAdCategory": {
+        "label": "Special ad category",
+        "options": { "NONE": "None", "CREDIT": "Credit", "EMPLOYMENT": "Employment", "HOUSING": "Housing" }
+      },
+      "budgetLevel": {
+        "label": "How do you want to control the budget?",
+        "campaign": { "title": "One budget for the whole campaign", "description": "Recommended — Meta automatically shifts spend to whichever ad set performs best." },
+        "adSet": { "title": "Separate budget per ad set", "description": "Full control — each ad set gets its fixed amount regardless of performance." },
+        "adSetNote": "You'll set each ad set's budget in the next stage."
+      },
+      "budget": {
+        "type": { "label": "Budget type", "daily": "Daily", "lifetime": "Lifetime" },
+        "amount": "Budget amount",
+        "startType": { "label": "Start", "now": "Start now", "scheduled": "Start at a scheduled time" },
+        "startTime": "Start time",
+        "endType": { "label": "End", "never": "Never", "scheduled": "End at a scheduled time" },
+        "endTime": "End time",
+        "bidStrategy": { "label": "Bid strategy", "highest_volume": "Highest volume", "cost_cap": "Cost cap", "bid_cap": "Bid cap" },
+        "bidAmount": "Bid amount"
+      }
+    },
+    "guide": {
+      "title": "Guide",
+      "empty": "Hover or focus a field to see guidance here.",
+      "objective": {
+        "default": { "title": "Pick what result matters most", "body": "Your objective decides which optimization goals and destinations are available in later stages." },
+        "OUTCOME_AWARENESS": { "title": "Awareness", "body": "Choose this when you want as many people as possible to see the ad and you don't have enough conversion data yet." },
+        "OUTCOME_TRAFFIC": { "title": "Traffic", "body": "Choose this when you want visits to your website or page, or you're still building up Pixel data." },
+        "OUTCOME_ENGAGEMENT": { "title": "Engagement", "body": "Choose this for likes, comments, shares, or Messenger conversations." },
+        "OUTCOME_LEADS": { "title": "Leads", "body": "Choose this when you want to collect contact details directly — the most relevant objective for CRM-driven campaigns." },
+        "OUTCOME_APP_PROMOTION": { "title": "App promotion", "body": "Choose this when you want app installs or in-app events." },
+        "OUTCOME_SALES": { "title": "Sales", "body": "Choose this when you want purchases — a working Pixel or Conversions API is required." }
+      },
+      "campaignSetup": {
+        "default": { "title": "Set up the basics", "body": "Name your campaign and decide who controls the budget: the campaign as a whole, or each ad set individually." },
+        "name": { "title": "Campaign name", "body": "Used internally to identify this campaign — customers never see it." },
+        "pageId": { "title": "Facebook Page", "body": "The Page your ads will be published from." },
+        "specialAdCategories": { "title": "Special ad category", "body": "Credit, employment and housing ads have legally required targeting restrictions in many places — selecting one here locks certain targeting fields in a later stage." },
+        "budgetLevel": { "title": "Campaign vs. ad set budget", "body": "Use campaign budget if you have more than one audience and want the algorithm to pick the best one. Use a separate budget per ad set if you want every audience to get an equal chance — useful for a fair A/B test." },
+        "budget": {
+          "type": { "title": "Budget type", "body": "Daily spends up to this amount every day. Lifetime spends this total across the whole schedule." },
+          "amount": { "title": "Budget amount", "body": "The amount Meta can spend, in your ad account's currency." },
+          "schedule": { "title": "Schedule", "body": "Start now or pick a future start time, and optionally set an end date." },
+          "bidStrategy": { "title": "Bid strategy", "body": "Highest volume lets Meta spend your full budget for the most results. Cost cap and bid cap give you more control over your average or maximum cost per result." }
+        }
+      }
+    },
+    "draft": {
+      "savedAt": "Saved {{time}}",
+      "resumePrompt": "You have a saved draft from {{time}}. Resume it?",
+      "resume": "Resume draft",
+      "startFresh": "Start fresh"
+    },
     "review": {
       "intro": "Review the campaign details below before creating it.",
-      "note": "Ad set, audience and creative setup aren't connected to a provider API yet, so this campaign will be created with just the details below."
+      "note": "Ad set, ad and lead-form details you set up are saved to this draft, but aren't connected to a provider API yet — this campaign will be created with just the details below."
     }
   },
-  "objectives": { "OUTCOME_LEADS": "Leads", "OUTCOME_TRAFFIC": "Traffic" },
+  "objectives": {
+    "OUTCOME_AWARENESS": "Awareness",
+    "OUTCOME_TRAFFIC": "Traffic",
+    "OUTCOME_ENGAGEMENT": "Engagement",
+    "OUTCOME_LEADS": "Leads",
+    "OUTCOME_APP_PROMOTION": "App Promotion",
+    "OUTCOME_SALES": "Sales"
+  },
   "analytics": { "title": "Campaign analytics", "description": "Performance and CRM attribution workspace for the selected account." },
   "billing": { "title": "Billing & Wallet", "description": "Billing accounts, balances, transactions and invoices supported by the platform." },
   "details": {

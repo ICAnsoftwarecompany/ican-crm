@@ -103,22 +103,38 @@ Endpoint فتح Sub Login موجود على main server وليس tenant server؛
 
 صفحة Create عامة وتستخدم provider capabilities. النسخة المتصلة حاليًا هي Meta بالحقول الموثقة فقط: `ad_account_id`, `page_id`, `campaign_name`, `objective`. القيم `OUTCOME_LEADS` و`OUTCOME_TRAFFIC` تظل backend enums بينما labels مترجمة. إضافة steps مستقبلية تكون config في provider (`steps`, fields, validation, payload mapper)، وليس حقول Meta داخل builder عام.
 
-الصفحة الآن wizard من 5 مراحل (`pages/campaigns/pages/CampaignCreatePage/`):
+الصفحة wizard من 5 مراحل، أُعيد تصميمها (سبتمبر 2026، Phase 1 من إعادة تصميم أوسع مبنية على مواصفة UX محلية-أولًا مستقلة عن جاهزية الباك إند) لتقترب من سلوك Meta Ads Manager الحقيقي: هدف ODAX كامل (6 قيم)، تبديل Campaign Budget/Ad Set Budget، ودليل سياقي حي جنب الفورم. الشكل الحالي (`pages/campaigns/pages/CampaignCreatePage/`):
 
 ```text
 CampaignCreatePage/
 ├── index.js                     تصدير barrel
-├── CampaignCreatePage.jsx       state الـwizard (form + activeStep) + استدعاء create API
-├── CreateWizardHeader.jsx       زر رجوع + اسم المنصة + Save Draft
-├── CreateWizardStepper.jsx      شريط المراحل الخمس (Campaign → Ad Set → Audience → Creative → Review)
-├── CreateWizardFooter.jsx       Cancel / Save Draft / Continue
+├── CampaignCreatePage.jsx       يركّب useCampaignWizardState() + الـshell، وينادي create API عند النشر فقط
+├── CreateWizardHeader.jsx       زر رجوع + اسم المنصة + Save Draft (محلي) + "تم الحفظ HH:mm"
+├── CreateWizardStepper.jsx      شريط المراحل الخمس، يقرأ STAGES من state/wizardStages.js
+├── CreateWizardFooter.jsx       Cancel / Save Draft / Continue أو Publish
+├── state/                       طبقة الـstate المحلي بالكامل (useReducer، لا تعتمد على API)
+│   ├── initialWizardState.js    الشكل الافتراضي الكامل (objective, campaign, adSets[], meta) — متوافق مسبقًا مع مراحل Phase 2/3
+│   ├── wizardReducer.js         reducer نقي + أنواع الأكشن المستخدمة فعليًا في Phase 1 فقط
+│   ├── wizardLocalStorage.js    حفظ/تحميل/مسح مسودة localStorage مُنسّخة بـtenant+platform+account، بنفس نمط _version في useLocalStorage
+│   └── useCampaignWizardState.js الـhook: reducer + autosave مُؤجّل + منطق "عندك مسودة، تكمل ولا تبدأ من جديد؟"
+├── components/                  مكوّنات محلية للـwizard فقط (مش shared/ ومش features/)
+│   ├── CardOption.jsx           بطاقة اختيار واحدة (عمّمت نمط CampaignChannelStep الموجود في outreach-campaigns)
+│   ├── ToggleMode.jsx           تبديل Advantage/يدوي كصفوف radio (نفس نمط ExportDialog.jsx)
+│   ├── CampaignBudgetFields.jsx حقول الميزانية/الجدولة/الـBid، بـscope قابل لإعادة الاستخدام على مستوى الحملة أو الـAd Set لاحقًا
+│   ├── GuidePanel.jsx           لوحة الدليل الدائمة (مش AppDrawer قابل للإغلاق) — تتغيّر حسب meta.focusedField
+│   └── guideContent.js          خريطة صغيرة لحقول "الافتراضي" لكل مرحلة فقط؛ نصوص الدليل نفسها في campaigns.create.guide.* في الترجمة
 └── steps/
-    ├── CampaignStep.jsx         الحقول الحقيقية الموثقة (name, page, objective)
-    ├── NotConfiguredStep.jsx    placeholder مشترك لمراحل Ad Set/Audience/Creative — لا عقد API لها بعد
-    └── ReviewStep.jsx           ملخص قراءة فقط قبل الإرسال
+    ├── ObjectiveStep.jsx        المرحلة 1 — 6 بطاقات ODAX (بدل 2 فقط قديمًا)
+    ├── CampaignSetupStep.jsx    المرحلة 2 — الاسم، الصفحة (مؤقتًا هنا، انظر ملاحظة أدناه)، فئة الإعلان الخاصة، تبديل مستوى الميزانية
+    ├── NotConfiguredStep.jsx    placeholder مشترك لمرحلتي Ad Sets/Ads — لسه بينتظر Phase 2/3
+    └── ReviewStep.jsx           ملخص قراءة فقط، مُحدَّث ليقرأ من الـstate الجديد المتداخل
 ```
 
-هذا تطبيق حرفي للقاعدة أعلاه: فقط مرحلة "Campaign" مربوطة بحقول حقيقية، باقي المراحل تعرض نفس حالة `campaigns.states.notConfigured` بدل حقول وهمية. **لا يوجد عقد API منفصل لحفظ مسودة** — زر `Save Draft` (في الـheader والـfooter) ينادي نفس mutation الإنشاء الحقيقية `mutations.create`، وليس تخزينًا محليًا أو endpoint منفصل. عند توفر عقد Ad Set/Audience/Creative فعلي من الباك إند، تُستبدل `NotConfiguredStep` بمكون خطوة حقيقي لكل مرحلة دون تغيير الـwizard shell.
+**ملاحظة مؤقتة (Phase 1):** حقل اختيار الصفحة (`page_id`) لسه موجود في `CampaignSetupStep` رغم إن التصميم المستهدف بيحطه على مستوى كل إعلان (Ad) في مرحلة `ads` — لأن مرحلة `ads` لسه مش موجودة، ومرحلة النشر (Publish) محتاجة `page_id` عشان تنادي `mutations.create` الحالية. هينقل لمكانه الصحيح لما مرحلة Ads تتبني (Phase 3).
+
+**Save Draft بقى تخزين محلي حقيقي** (`localStorage`، مفتاح `ican-campaign-wizard-draft:{tenantId}:{platformId}:{accountId}`) — مش نداء API زي قبل كده. **Publish Now** لسه بينادي نفس `mutations.create` الموثقة (`ad_account_id`, `campaign_name`, `page_id`, `objective`) — أي بيانات Ad Set/Ad/Lead Form اللي الـwizard بيجمعها في مراحل لاحقة (Phase 2/3) بتتحفظ في المسودة المحلية بس، ومفيش عقد API لإرسالها لـMeta لحد دلوقتي؛ هذا موضّح صراحة في نص المراجعة (`campaigns.create.review.note`) عشان محدش يفتكر إن "تم النشر" يعني إن الـAd Sets والإعلانات اتبنت فعليًا.
+
+مراحل تالية موثقة (لسه مبنيتش): Phase 2 = مرحلة Ad Sets الحقيقية (جمهور/مواضع)، Phase 3 = مرحلة Ads الحقيقية + Lead Form Builder الكامل، Phase 4 = إعادة بناء المراجعة (شجرة قابلة للطي + قائمة تحقق) وزر Schedule (هيبقى معطّل لحد ما عقد الجدولة يتأكد من الباك إند).
 
 ## صفحة تفاصيل الحملة (Campaign Details)
 
@@ -210,7 +226,7 @@ Billing shell عامة. `billing`, `wallet`, و`invoices` capabilities مستق�
 - Google/TikTok/Snapchat providers وعقود connection/account.
 - Meta analytics, billing, pause/activate/edit/duplicate endpoint.
 - ~~Campaign details~~ — أصبحت متاحة جزئيًا: بيانات الحملة + Ad Sets + أداء (insights/actions/cost/video) عبر `CampaignDetailsPage/`. المتبقي فعليًا: عقد creatives حقيقي (صور/فيديو الإعلان نفسه)، leads/conversions المرتبطة بـCRM، وsync log.
-- عقود Ad Set/Audience/Creative الحقيقية لصفحة Create — الـwizard shell جاهز (`CampaignCreatePage/steps/`)، فقط `NotConfiguredStep` يحتاج استبدالًا بمكون فعلي لكل مرحلة عند توفر العقد.
+- إعادة تصميم صفحة Create — Phase 1 (state layer + shell + Objective/Campaign Setup) مكتملة. Phase 2 (Ad Sets: جمهور/مواضع)، Phase 3 (Ads: creative + Lead Form Builder)، وPhase 4 (Review tree + validation + Schedule) لسه مبنيينش؛ `NotConfiguredStep` لسه بيغطي مرحلتي `adSets`/`ads` مؤقتًا. عقود Ad Set/Ad/Lead Form الحقيقية من الباك إند لسه مطلوبة عشان Publish يقدر يبعت بيانات المسودة الكاملة (مش الحملة بس).
 - Visual QA مصادق عليه لكل أوضاع اللغة والثيم والموبايل.
 
 ## ملاحظة تشغيلية: تحويل ملف إلى فولدر أثناء عمل dev server

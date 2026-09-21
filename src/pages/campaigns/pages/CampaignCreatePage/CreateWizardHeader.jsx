@@ -1,7 +1,8 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
+import { formatDate } from '../../utils/campaignFormatters'
 
-export function CreateWizardHeader({ t, i18n, platform, onBack, onSaveDraft, savingDraft }) {
+export function CreateWizardHeader({ t, i18n, platform, onBack, onSaveDraft, lastSavedAt }) {
   const isRtl = i18n.dir() === 'rtl'
   const BackIcon = isRtl ? ChevronRight : ChevronLeft
 
@@ -17,9 +18,16 @@ export function CreateWizardHeader({ t, i18n, platform, onBack, onSaveDraft, sav
           <BackIcon size={16} />
           {t(platform.labelKey)}
         </button>
-        <Button variant="outline" size="sm" onClick={onSaveDraft} loading={savingDraft}>
-          {t('campaigns.create.saveDraft')}
-        </Button>
+        <div className="flex items-center gap-2">
+          {lastSavedAt && (
+            <span className="text-xs text-[var(--text-muted)]">
+              {t('campaigns.create.draft.savedAt', { time: formatDate(lastSavedAt, i18n.language) })}
+            </span>
+          )}
+          <Button variant="outline" size="sm" onClick={onSaveDraft}>
+            {t('campaigns.create.saveDraft')}
+          </Button>
+        </div>
       </div>
       <h2 className="mt-2 text-xl font-bold text-[var(--text)]">{t('campaigns.create.title')}</h2>
     </div>

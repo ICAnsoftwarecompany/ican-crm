@@ -1,11 +1,11 @@
-const STEPS = ['campaign', 'adSet', 'audience', 'creative', 'review']
+import { STAGES } from './state/wizardStages'
 
 export function CreateWizardStepper({ t, activeStep, onSelect }) {
-  const activeIndex = STEPS.indexOf(activeStep)
+  const activeIndex = STAGES.indexOf(activeStep)
 
   return (
     <div className="mb-4 flex flex-wrap items-center gap-2 overflow-x-auto">
-      {STEPS.map((step, index) => {
+      {STAGES.map((step, index) => {
         const isActive = step === activeStep
         const isReached = index <= activeIndex
 
@@ -28,12 +28,10 @@ export function CreateWizardStepper({ t, activeStep, onSelect }) {
               </span>
               {t(`campaigns.create.steps.${step}`)}
             </button>
-            {index < STEPS.length - 1 && <div className="h-px w-6 shrink-0 bg-[var(--border)]" />}
+            {index < STAGES.length - 1 && <div className="h-px w-6 shrink-0 bg-[var(--border)]" />}
           </div>
         )
       })}
     </div>
   )
 }
-
-export { STEPS }
