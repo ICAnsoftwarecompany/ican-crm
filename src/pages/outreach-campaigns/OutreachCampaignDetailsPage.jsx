@@ -10,8 +10,8 @@ import { ConfirmDialog } from '../../shared/components/overlays/ConfirmDialog'
 import { useOutreachCampaign, useOutreachCampaignMutations } from '../../features/outreach-campaigns/hooks/useOutreachCampaigns'
 import { getCampaignStatusConfig } from '../../features/outreach-campaigns/constants/campaignStatus'
 import { extractMessage } from '../../shared/utils/apiResponse'
-import { CampaignChannelBadge } from './components/CampaignChannelBadge'
-import { CampaignStatusBadge } from './components/CampaignStatusBadge'
+import { CampaignChannelBadge } from '../../features/outreach-campaigns/components/CampaignChannelBadge'
+import { CampaignStatusBadge } from '../../features/outreach-campaigns/components/CampaignStatusBadge'
 import { CampaignDetailsOverview } from './components/CampaignDetailsOverview'
 import { CampaignDetailsAudience } from './components/CampaignDetailsAudience'
 import { CampaignDetailsContent } from './components/CampaignDetailsContent'
@@ -41,7 +41,7 @@ export function OutreachCampaignDetailsPage() {
       } else if (confirmType === 'delete') {
         await mutations.deleteCampaign.mutateAsync(campaignId)
         toast.success(t('outreachCampaigns.actions.deleteSuccess'))
-        navigate('/outreach-campaigns')
+        navigate('/outreach-campaigns/all')
         return
       }
       setConfirmType(null)
@@ -52,7 +52,7 @@ export function OutreachCampaignDetailsPage() {
 
   return (
     <div className="space-y-6">
-      <Button variant="ghost" size="sm" onClick={() => navigate('/outreach-campaigns')}>
+      <Button variant="ghost" size="sm" onClick={() => navigate('/outreach-campaigns/all')}>
         <ArrowRight size={16} />
         {t('outreachCampaigns.details.back')}
       </Button>

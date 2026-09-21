@@ -18,6 +18,31 @@ const FONT_FAMILIES = [
 
 const noop = () => {}
 
+const THEME_BACKGROUND_COLORS = new Map([
+  ['#fff', 'var(--surface)'],
+  ['#ffffff', 'var(--surface)'],
+  ['white', 'var(--surface)'],
+  ['#f8fafc', 'var(--surface-2)'],
+  ['#f9fafb', 'var(--surface-2)'],
+  ['#f3f4f6', 'var(--surface-2)'],
+  ['#e2e8f0', 'var(--surface-2)'],
+])
+
+const THEME_TEXT_COLORS = new Map([
+  ['#0f172a', 'var(--text)'],
+  ['#111827', 'var(--text)'],
+])
+
+function resolveThemeBackground(color, fallback) {
+  if (!color) return fallback
+  return THEME_BACKGROUND_COLORS.get(String(color).trim().toLowerCase()) || color
+}
+
+function resolveThemeText(color) {
+  if (!color) return undefined
+  return THEME_TEXT_COLORS.get(String(color).trim().toLowerCase()) || color
+}
+
 function getFormatRowKey(row, index) {
   if (row?.__rowKey !== undefined && row?.__rowKey !== null) return String(row.__rowKey)
   if (row?.id !== undefined && row?.id !== null) return String(row.id)
@@ -83,7 +108,7 @@ export function DataTableBody({
       position: 'sticky',
       insetInlineStart: `${Number(col._stickyOffset) || 0}px`,
       zIndex: 10,
-      backgroundColor: backgroundColor || 'var(--surface)',
+      backgroundColor: resolveThemeBackground(backgroundColor, 'var(--surface)'),
       boxShadow: '1px 0 0 var(--border)',
     }
   }
@@ -356,8 +381,11 @@ export function DataTableBody({
     <td
       key={col.id}
       rowSpan={rowSpan}
-      className={cn('border-e border-[#D7E2E6] px-2 py-3 text-center align-middle', col._isPinned && 'sticky')}
-      style={getStickyCellStyle(col, rowStyle.bgColor || (isSelected ? '#EAF6FF' : 'var(--surface)'))}
+      className={cn('border-e border-[var(--border)] px-2 py-3 text-center align-middle', col._isPinned && 'sticky')}
+      style={getStickyCellStyle(
+        col,
+        resolveThemeBackground(rowStyle.bgColor || tableStyle.bgColor, isSelected ? 'var(--brand-accent-soft)' : 'var(--surface)')
+      )}
     >
       <input
         type="checkbox"
@@ -372,18 +400,18 @@ export function DataTableBody({
 
   const renderSplitPlaceholderCell = (slotId, rowKey, slot, isSelected, rowStyle, isSubRow = false) => {
     const fallbackBg = isSubRow
-      ? (isSelected ? '#F3FAFF' : '#F8FAFC')
-      : (isSelected ? '#EAF6FF' : '#FFFFFF')
+      ? (isSelected ? 'var(--brand-accent-soft)' : 'var(--surface-2)')
+      : (isSelected ? 'var(--brand-accent-soft)' : 'var(--surface)')
 
     return (
       <td
         key={`split-empty-${rowKey}-${slot}-${slotId}`}
         className={cn(
-          'border-e border-[#D7E2E6] px-3 py-2.5 align-middle',
-          isSubRow ? 'border-t bg-[#F8FAFC]' : 'bg-white'
+          'border-e border-[var(--border)] px-3 py-2.5 align-middle',
+          isSubRow ? 'border-t border-[var(--border)] bg-[var(--surface-2)]' : 'bg-[var(--surface)]'
         )}
         style={{
-          backgroundColor: rowStyle.bgColor || fallbackBg,
+          backgroundColor: resolveThemeBackground(rowStyle.bgColor || tableStyle.bgColor, fallbackBg),
         }}
         aria-hidden="true"
       />
@@ -411,8 +439,11 @@ export function DataTableBody({
     const colStyle = remoteFormatRules.columnStyles[col.id] || {}
     const excelLabel = col._excelLabel || ''
     const hoverHint = `${excelLabel}${serialNumber} - ${col.header}`
-    const resolvedTextColor = cellStyle.textColor || rowStyle.textColor || colStyle.textColor || tableStyle.textColor || undefined
-    const resolvedBgColor = cellStyle.bgColor || rowStyle.bgColor || colStyle.bgColor || tableStyle.bgColor || undefined
+    const resolvedTextColor = resolveThemeText(cellStyle.textColor || rowStyle.textColor || colStyle.textColor || tableStyle.textColor)
+    const resolvedBgColor = resolveThemeBackground(
+      cellStyle.bgColor || rowStyle.bgColor || colStyle.bgColor || tableStyle.bgColor,
+      undefined
+    )
     const resolvedFontSize =
       cellStyle.fontSize || rowStyle.fontSize || colStyle.fontSize || tableStyle.fontSize || tableTypography?.fontSize || undefined
     const resolvedFontFamily =
@@ -420,8 +451,10 @@ export function DataTableBody({
     const resolvedFontWeight =
       cellStyle.fontWeight || rowStyle.fontWeight || colStyle.fontWeight || tableStyle.fontWeight || tableTypography?.fontWeight || undefined
     const canStickCell = col._isPinned && (!shouldUseSplitRows || ['__select', '__serial'].includes(col.id))
-    const stickyBackground = resolvedBgColor || (isSelected ? '#EAF6FF' : 'var(--surface)')
-    const fallbackBackground = isSubRow ? (isSelected ? '#F3FAFF' : '#F8FAFC') : undefined
+    const stickyBackground = resolvedBgColor || (isSelected ? 'var(--brand-accent-soft)' : 'var(--surface)')
+    const fallbackBackground = isSubRow
+      ? (isSelected ? 'var(--brand-accent-soft)' : 'var(--surface-2)')
+      : 'var(--surface)'
     const contentClassName = cn(
       'dt-cell-content',
       shouldUseSplitRows
@@ -444,11 +477,11 @@ export function DataTableBody({
         colSpan={colSpan}
         rowSpan={rowSpan}
         className={cn(
-          'border-e border-[#D7E2E6] px-3 py-2.5 text-sm text-[var(--text)] text-start relative group align-top',
+          'border-e border-[var(--border)] px-3 py-2.5 text-sm text-[var(--text)] text-start relative group align-top',
           canStickCell && 'sticky',
           resolvedTextColor && 'dt-text-override',
           shouldUseSplitRows && !['__select', '__serial'].includes(col.id) && 'min-w-0',
-          isSubRow && 'border-t border-[#DDECEF]'
+          isSubRow && 'border-t border-[var(--border)]'
         )}
         style={{
           ...getStickyCellStyle(canStickCell ? col : { ...col, _isPinned: false }, stickyBackground),
@@ -482,7 +515,7 @@ export function DataTableBody({
       >
         {shouldUseSplitRows && !['__select', '__serial'].includes(col.id) ? (
           <div className="flex min-w-0 items-start gap-2">
-            <div className="mt-0.5 max-w-[34%] shrink-0 whitespace-normal break-words rounded-full bg-white/75 px-2 py-0.5 text-[10px] font-black text-[#007A80] ring-1 ring-[#D7EEF0]">
+            <div className="mt-0.5 max-w-[34%] shrink-0 whitespace-normal break-words rounded-full bg-[var(--surface)] px-2 py-0.5 text-[10px] font-black text-[var(--brand-accent)] ring-1 ring-[var(--border)]">
               {col.header}
             </div>
             {contentNode}
@@ -531,32 +564,32 @@ export function DataTableBody({
           white-space: normal !important;
         }
         .dt-split-record-main > td {
-          border-top: 1px solid #8FE4EA;
+          border-top: 1px solid var(--border);
           background-clip: padding-box;
         }
         .dt-split-record-main > td[rowspan] {
-          border-bottom: 3px solid #E8F3F5;
+          border-bottom: 3px solid var(--border);
         }
         .dt-split-record-main > td:first-child {
-          border-inline-start: 1px solid #8FE4EA;
+          border-inline-start: 1px solid var(--border);
           border-start-start-radius: 8px;
           border-end-start-radius: 8px;
           box-shadow: inset 3px 0 0 #00AEB8;
         }
         .dt-split-record-main > td:last-child {
-          border-inline-end: 1px solid #8FE4EA;
+          border-inline-end: 1px solid var(--border);
           border-start-end-radius: 8px;
         }
         .dt-split-record-sub > td {
-          border-bottom: 3px solid #E8F3F5;
+          border-bottom: 3px solid var(--border);
           background-clip: padding-box;
         }
         .dt-split-record-sub > td:last-child {
-          border-inline-end: 1px solid #8FE4EA;
+          border-inline-end: 1px solid var(--border);
           border-end-end-radius: 8px;
         }
       `}</style>
-      <tbody className="bg-white">
+      <tbody className="bg-[var(--surface)] text-[var(--text)]">
       {rows.map((row, rowIndex) => {
           const rowKey = row.__rowKey || String(row.id || rowIndex)
           const isSelected = selectedRowKeys?.has(rowKey)
@@ -575,12 +608,17 @@ export function DataTableBody({
                 <tr
                   key={`${rowKey}-main`}
                   className={cn(
-                    'dt-split-record-main border-b-0 transition-colors hover:bg-[var(--surface-2)]',
-                    isSelected && 'bg-[#EAF6FF]',
+                    'dt-split-record-main border-b-0 bg-[var(--surface)] text-[var(--text)] transition-colors hover:bg-[var(--surface-2)]',
+                    isSelected && 'bg-[var(--brand-accent-soft)]',
                     (onRowClick || onRowDoubleClick) && 'cursor-pointer',
                     rowClassName?.(row)
                   )}
-                  style={{ backgroundColor: rowStyle.bgColor || undefined }}
+                  style={{
+                    backgroundColor: resolveThemeBackground(
+                      rowStyle.bgColor || tableStyle.bgColor,
+                      isSelected ? 'var(--brand-accent-soft)' : 'var(--surface)'
+                    ),
+                  }}
                   {...sharedRowProps}
                 >
                   {splitLayout.fixedColumns.map((col) => renderDataCell({
@@ -608,12 +646,17 @@ export function DataTableBody({
                 <tr
                   key={`${rowKey}-sub`}
                   className={cn(
-                    'dt-split-record-sub transition-colors hover:bg-[#F1FAFB]',
-                    isSelected && 'bg-[#F3FAFF]',
+                    'dt-split-record-sub bg-[var(--surface-2)] text-[var(--text)] transition-colors hover:bg-[var(--surface)]',
+                    isSelected && 'bg-[var(--brand-accent-soft)]',
                     (onRowClick || onRowDoubleClick) && 'cursor-pointer',
                     rowClassName?.(row)
                   )}
-                  style={{ backgroundColor: rowStyle.bgColor || undefined }}
+                  style={{
+                    backgroundColor: resolveThemeBackground(
+                      rowStyle.bgColor || tableStyle.bgColor,
+                      isSelected ? 'var(--brand-accent-soft)' : 'var(--surface-2)'
+                    ),
+                  }}
                   {...sharedRowProps}
                 >
                   {splitLayout.slots.map((slot) => (
@@ -638,13 +681,16 @@ export function DataTableBody({
             <tr
               key={rowKey}
               className={cn(
-                'border-b border-[var(--border)] hover:bg-[var(--surface-2)] transition-colors',
-                isSelected && 'bg-[#EAF6FF]',
+                'border-b border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors',
+                isSelected && 'bg-[var(--brand-accent-soft)]',
                 (onRowClick || onRowDoubleClick) && 'cursor-pointer',
                 rowClassName?.(row)
               )}
               style={{
-                backgroundColor: rowStyle.bgColor || undefined,
+                backgroundColor: resolveThemeBackground(
+                  rowStyle.bgColor || tableStyle.bgColor,
+                  isSelected ? 'var(--brand-accent-soft)' : 'var(--surface)'
+                ),
               }}
               onClickCapture={(event) => handleRowClickCapture(event, rowKey, Boolean(isSelected))}
               onClick={() => onRowClick?.(row)}
@@ -655,8 +701,14 @@ export function DataTableBody({
               return (
                 <td
                   key={col.id}
-                  className={cn('border-e border-[#D7E2E6] px-2 py-3 text-center', col._isPinned && 'sticky')}
-                  style={getStickyCellStyle(col, rowStyle.bgColor || (isSelected ? '#EAF6FF' : 'var(--surface)'))}
+                  className={cn('border-e border-[var(--border)] px-2 py-3 text-center', col._isPinned && 'sticky')}
+                  style={getStickyCellStyle(
+                    col,
+                    resolveThemeBackground(
+                      rowStyle.bgColor || tableStyle.bgColor,
+                      isSelected ? 'var(--brand-accent-soft)' : 'var(--surface)'
+                    )
+                  )}
                 >
                   <input
                     type="checkbox"
@@ -676,8 +728,11 @@ export function DataTableBody({
             const colStyle = remoteFormatRules.columnStyles[col.id] || {}
             const excelLabel = col._excelLabel || ''
             const hoverHint = `${excelLabel}${serialNumber} - ${col.header}`
-            const resolvedTextColor = cellStyle.textColor || rowStyle.textColor || colStyle.textColor || tableStyle.textColor || undefined
-            const resolvedBgColor = cellStyle.bgColor || rowStyle.bgColor || colStyle.bgColor || tableStyle.bgColor || undefined
+            const resolvedTextColor = resolveThemeText(cellStyle.textColor || rowStyle.textColor || colStyle.textColor || tableStyle.textColor)
+            const resolvedBgColor = resolveThemeBackground(
+              cellStyle.bgColor || rowStyle.bgColor || colStyle.bgColor || tableStyle.bgColor,
+              undefined
+            )
             const resolvedFontSize =
               cellStyle.fontSize || rowStyle.fontSize || colStyle.fontSize || tableStyle.fontSize || tableTypography?.fontSize || undefined
             const resolvedFontFamily =
@@ -685,13 +740,13 @@ export function DataTableBody({
             const resolvedFontWeight =
               cellStyle.fontWeight || rowStyle.fontWeight || colStyle.fontWeight || tableStyle.fontWeight || tableTypography?.fontWeight || undefined
 
-            const stickyBackground = resolvedBgColor || (isSelected ? '#EAF6FF' : 'var(--surface)')
+            const stickyBackground = resolvedBgColor || (isSelected ? 'var(--brand-accent-soft)' : 'var(--surface)')
 
             return (
               <td
                 key={col.id}
                 className={cn(
-                  'border-e border-[#D7E2E6] px-3 py-2.5 text-sm text-[var(--text)] text-start relative group',
+                  'border-e border-[var(--border)] px-3 py-2.5 text-sm text-[var(--text)] text-start relative group',
                   col._isPinned && 'sticky',
                   resolvedTextColor && 'dt-text-override'
                 )}
@@ -759,20 +814,20 @@ export function DataTableBody({
 
       {contextMenu && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed z-[100] max-h-[min(520px,calc(100vh-1rem))] w-72 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-xl border border-slate-200 bg-white p-3 shadow-2xl"
+          className="fixed z-[100] max-h-[min(520px,calc(100vh-1rem))] w-72 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-[var(--text)] shadow-2xl"
           style={{ left: contextMenu.x, top: contextMenu.y }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="text-xs text-slate-500 font-medium">{t('dataTable.customizeScope')}</div>
+          <div className="text-xs font-medium text-[var(--text-muted)]">{t('dataTable.customizeScope')}</div>
 
-          <div className="flex gap-1 bg-slate-50 p-1 rounded-lg">
+          <div className="flex gap-1 rounded-lg bg-[var(--surface-2)] p-1">
             {['cell', 'row', 'column'].map((scope) => (
               <button
                 key={scope}
                 type="button"
                 className={cn(
                   'flex-1 text-xs px-2 py-1 rounded',
-                  contextMenu.scope === scope ? 'bg-white shadow text-slate-800' : 'text-slate-500 hover:text-slate-700'
+                  contextMenu.scope === scope ? 'bg-[var(--surface)] text-[var(--text)] shadow' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
                 )}
                 onClick={() => setContextMenu((prev) => ({ ...prev, scope }))}
               >
@@ -782,7 +837,7 @@ export function DataTableBody({
           </div>
 
           <div className="space-y-1">
-            <div className="text-[11px] text-slate-600">{t('dataTable.background')}</div>
+            <div className="text-[11px] text-[var(--text-muted)]">{t('dataTable.background')}</div>
             <div className="flex flex-wrap gap-1">
               {BG_COLORS.map((color) => (
                 <button
@@ -797,7 +852,7 @@ export function DataTableBody({
           </div>
 
           <div className="space-y-1">
-            <div className="text-[11px] text-slate-600">{t('dataTable.textColor')}</div>
+            <div className="text-[11px] text-[var(--text-muted)]">{t('dataTable.textColor')}</div>
             <div className="flex flex-wrap gap-1">
               {TEXT_COLORS.map((color) => (
                 <button
@@ -812,7 +867,7 @@ export function DataTableBody({
           </div>
 
           <div className="space-y-1">
-            <div className="text-[11px] text-slate-600">{t('dataTable.fontSize')}</div>
+            <div className="text-[11px] text-[var(--text-muted)]">{t('dataTable.fontSize')}</div>
             <div className="flex flex-wrap gap-1">
               {FONT_SIZES.map((size) => (
                 <button
@@ -828,9 +883,9 @@ export function DataTableBody({
           </div>
 
           <div className="space-y-1">
-            <div className="text-[11px] text-slate-600">{t('dataTable.fontFamily')}</div>
+            <div className="text-[11px] text-[var(--text-muted)]">{t('dataTable.fontFamily')}</div>
             <select
-              className="w-full h-8 rounded border border-slate-300 text-xs px-2"
+              className="h-8 w-full rounded border border-[var(--border)] bg-[var(--surface)] px-2 text-xs text-[var(--text)]"
               onChange={(e) => applyStyleByScope(contextMenu.scope, contextMenu.rowKey, contextMenu.colId, { fontFamily: e.target.value || undefined })}
               value=""
             >
@@ -842,7 +897,7 @@ export function DataTableBody({
           </div>
 
           <div className="space-y-1">
-            <div className="text-[11px] text-slate-600">{t('dataTable.fontWeight')}</div>
+            <div className="text-[11px] text-[var(--text-muted)]">{t('dataTable.fontWeight')}</div>
             <div className="flex flex-wrap gap-1">
               {[
                 { label: 'N', value: '400' },
@@ -877,18 +932,18 @@ export function DataTableBody({
 
       {rowContextMenu && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed z-[110] max-h-[min(520px,calc(100vh-1rem))] w-72 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-xl border border-slate-200 bg-white p-2 shadow-2xl"
+          className="fixed z-[110] max-h-[min(520px,calc(100vh-1rem))] w-72 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 text-[var(--text)] shadow-2xl"
           style={{ left: rowContextMenu.x, top: rowContextMenu.y }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="mb-2 flex gap-1 rounded-lg bg-slate-50 p-1">
+          <div className="mb-2 flex gap-1 rounded-lg bg-[var(--surface-2)] p-1">
             <button
               type="button"
               className={cn(
                 'flex-1 rounded-md px-2 py-1.5 text-xs font-black transition-colors',
                 rowContextMenu.activeTab === 'actions'
-                  ? 'bg-white text-slate-800 shadow'
-                  : 'text-slate-500 hover:text-slate-700'
+                  ? 'bg-[var(--surface)] text-[var(--text)] shadow'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text)]'
               )}
               onClick={() => setRowContextMenu((prev) => ({ ...prev, activeTab: 'actions' }))}
             >
@@ -899,8 +954,8 @@ export function DataTableBody({
               className={cn(
                 'flex-1 rounded-md px-2 py-1.5 text-xs font-black transition-colors',
                 rowContextMenu.activeTab === 'format'
-                  ? 'bg-white text-slate-800 shadow'
-                  : 'text-slate-500 hover:text-slate-700'
+                  ? 'bg-[var(--surface)] text-[var(--text)] shadow'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text)]'
               )}
               onClick={() => setRowContextMenu((prev) => ({ ...prev, activeTab: 'format' }))}
             >

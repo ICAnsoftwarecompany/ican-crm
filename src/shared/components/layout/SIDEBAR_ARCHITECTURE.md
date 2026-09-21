@@ -373,7 +373,7 @@ This distinction is important enough to call out on its own:
 Another same-word collision, introduced when Outreach Campaigns shipped:
 
 - **Campaigns** (`/campaigns`, under **Growth**) is the pre-existing Meta/Facebook **Ads** campaigns feature (`src/features/campaigns/`, `src/pages/campaigns/CampaignsPage.jsx`) — creating/managing ad campaigns, ad sets, ads, and lead forms against Meta's ad platform. Nothing to do with messaging your own CRM contacts.
-- **Outreach Campaigns** (`/outreach-campaigns`, under **Growth**) is the messaging feature this section documents: sending WhatsApp/Gmail/Messenger campaigns to existing leads/customers. Backed by `src/features/MessegeCampaign/` (kept as-is; note the folder name is a pre-existing typo, not a mistake to silently rename) via the `src/features/outreach-campaigns/` domain layer. See `src/features/outreach-campaigns/docs/OUTREACH_CAMPAIGNS_ARCHITECTURE_AR.md` for the full domain model.
+- **Outreach Campaigns** (`/outreach-campaigns`, under **Growth**) sends WhatsApp/Gmail/Messenger campaigns to leads/customers. Its API, hooks, and domain logic live in `src/features/outreach-campaigns/`; `src/features/MessegeCampaign/index.js` only re-exports for compatibility. The section has its own sidebar for overview, live/all campaigns, channels, calendar, and workflow. See `src/features/outreach-campaigns/docs/OUTREACH_CAMPAIGNS_ARCHITECTURE_AR.md`.
 
 Never repoint one route/nav item to the other's page, and never collapse them into a single "Campaigns" concept — they have different backends, different data models, and different audiences (ad platform vs. CRM contacts).
 

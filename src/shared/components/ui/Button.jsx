@@ -1,8 +1,8 @@
 import { cn } from '../../utils/cn'
 
 const variants = {
-  primary:   'bg-[#162847] hover:bg-[#1D3461] text-white',
-  accent:    'bg-[#00C2CB] hover:bg-[#00a8b0] text-white',
+  primary:   'bg-brand-primary hover:bg-brand-primary-l text-white',
+  accent:    'bg-brand-accent hover:opacity-85 text-white',
   outline:   'border border-[var(--border)] bg-transparent hover:bg-[var(--surface-2)] text-[var(--text)]',
   ghost:     'bg-transparent hover:bg-[var(--surface-2)] text-[var(--text)]',
   danger:    'bg-[#EF4444] hover:bg-[#DC2626] text-white',
@@ -36,7 +36,7 @@ export function Button({
       className={cn(
         'inline-flex items-center justify-center gap-2 rounded-lg font-arabic font-medium',
         'transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2',
-        'focus-visible:ring-[#00C2CB] disabled:opacity-50 disabled:cursor-not-allowed',
+        'focus-visible:ring-brand-accent disabled:opacity-50 disabled:cursor-not-allowed',
         variants[variant],
         sizes[size],
         className

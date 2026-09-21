@@ -5,7 +5,7 @@
  * WhatsApp/Gmail/Messenger code is rebuilt here, only registry
  * descriptions pointing at real APIs already used elsewhere in this
  * feature (`features/integrations/whatsapp`, `features/conversations/api/
- * gmailApi.js`) or at features/MessegeCampaign's real customer-removal
+ * gmailApi.js`) or at outreach-campaigns' customer-removal
  * endpoint.
  *
  * Per OUTREACH_CAMPAIGNS_ARCHITECTURE_AR.md, Sequence/Automation/Campaign

@@ -1,8 +1,10 @@
 import { Copy, Check } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Button } from '../ui/Button'
+import { useTranslation } from 'react-i18next'
 
-export function CopyButton({ onClick, disabled = false, title = 'Copy to Clipboard' }) {
+export function CopyButton({ onClick, disabled = false, title }) {
+  const { t } = useTranslation()
   const [isCopied, setIsCopied] = useState(false)
 
   const handleClick = async () => {
@@ -18,10 +20,10 @@ export function CopyButton({ onClick, disabled = false, title = 'Copy to Clipboa
       onClick={handleClick}
       disabled={disabled}
       className="gap-2"
-      title={title}
+      title={title || t('dataTable.copy')}
     >
       {isCopied ? <Check size={16} /> : <Copy size={16} />}
-      {isCopied ? 'تم النسخ' : 'نسخ'}
+      {isCopied ? t('dataTable.copied') : t('dataTable.copy')}
     </Button>
   )
 }

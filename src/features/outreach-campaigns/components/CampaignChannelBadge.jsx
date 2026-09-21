@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { getChannelDefinition, UNKNOWN_CHANNEL_ICON } from '../../../features/outreach-campaigns/config/campaignChannels'
+import { getChannelDefinition, UNKNOWN_CHANNEL_ICON } from '../config/campaignChannels'
 
 /**
  * Channel identification MUST NOT rely on color alone (accessibility

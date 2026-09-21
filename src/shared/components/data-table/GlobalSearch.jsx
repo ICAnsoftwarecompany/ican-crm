@@ -2,8 +2,10 @@ import { Clock, Search, X } from 'lucide-react'
 import { Input } from '../ui/Input'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export function GlobalSearch({ value, onChange, tableId = 'default' }) {
+  const { t } = useTranslation()
   const [history, setHistory] = useLocalStorage(`search-history-${tableId}`, [])
   const [isOpen, setIsOpen] = useState(false)
 
@@ -26,7 +28,7 @@ export function GlobalSearch({ value, onChange, tableId = 'default' }) {
   return (
     <div className="relative">
       <Input
-        placeholder="بحث عام..."
+        placeholder={t('dataTable.searchPlaceholder')}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onFocus={() => setIsOpen(true)}
@@ -46,7 +48,7 @@ export function GlobalSearch({ value, onChange, tableId = 'default' }) {
             <button
               onClick={() => onChange('')}
               className="p-1 hover:bg-[var(--surface-2)] rounded transition-colors"
-              aria-label="Clear search"
+              aria-label={t('dataTable.clearSearch')}
             >
               <X size={16} />
             </button>
@@ -57,7 +59,7 @@ export function GlobalSearch({ value, onChange, tableId = 'default' }) {
       {isOpen && history.length > 0 && (
         <div className="absolute top-11 inset-x-0 z-50 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 shadow-xl">
           <div className="px-2 py-1.5 text-[11px] font-semibold text-[var(--text-muted)]">
-            آخر عمليات البحث
+            {t('dataTable.recentSearches')}
           </div>
           {history.map((term) => (
             <button

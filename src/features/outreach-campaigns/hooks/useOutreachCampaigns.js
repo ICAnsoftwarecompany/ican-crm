@@ -9,12 +9,12 @@ import {
   useWhatsappTemplateImages,
   useWhatsappTemplateImagesData,
   useWhatsappTemplateImageMutations,
-} from '../../MessegeCampaign/hooks/useMessegeCampaign'
+} from './useMessegeCampaign'
 import { normalizeCampaign, normalizeCampaignList } from '../utils/normalizeCampaign'
 
 /**
- * Outreach-Campaigns-facing hook layer. Wraps features/MessegeCampaign's
- * existing hooks (kept untouched — they already correctly implement every
+ * Outreach-Campaigns-facing hook layer. Wraps the local API hooks, which
+ * implement the documented campaign endpoints,
  * documented endpoint) and adds response normalization via
  * utils/normalizeCampaign.js, since the backend's real response shape is
  * unconfirmed and pages should never read raw API fields directly.

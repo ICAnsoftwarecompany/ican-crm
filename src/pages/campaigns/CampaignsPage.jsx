@@ -71,9 +71,9 @@ export function CampaignsPage() {
 
   return (
     <CampaignCenterProvider value={context}>
-      <div className={cn('-m-3 min-h-[calc(100vh-4rem)] overflow-hidden border-t border-[var(--border)] bg-[var(--surface-2)] sm:-m-4 lg:grid', sidebarCollapsed ? 'lg:grid-cols-[64px_minmax(0,1fr)]' : 'lg:grid-cols-[260px_minmax(0,1fr)]')}>
-        <aside className="hidden min-h-0 lg:block">{desktopNavigation}</aside>
-        <section className="min-w-0 bg-[var(--surface-2)]">
+      <div className={cn('-m-3 h-[calc(100vh-4rem)] overflow-hidden border-t border-[var(--border)] bg-[var(--surface-2)] sm:-m-4 lg:grid', sidebarCollapsed ? 'lg:grid-cols-[64px_minmax(0,1fr)]' : 'lg:grid-cols-[260px_minmax(0,1fr)]')}>
+        <aside className="hidden h-full min-h-0 overflow-hidden lg:block">{desktopNavigation}</aside>
+        <section className="flex min-h-0 min-w-0 flex-col bg-[var(--surface-2)]">
           <CampaignCenterHeader
             platform={platform}
             accounts={accounts}
@@ -82,7 +82,7 @@ export function CampaignsPage() {
             connectionStatus={connectionStatus}
             onOpenNavigation={() => setMobileNavigationOpen(true)}
           />
-          <main className="min-w-0 p-3 sm:p-4">
+          <main className="min-h-0 min-w-0 flex-1 overflow-y-auto p-3 sm:p-4">
             {platform.id === 'meta' && integrationsQuery.isLoading
               ? <ResourceState isLoading />
               : accessDenied ? <CampaignUnavailableState reason="permission" /> : <Outlet context={context} />}

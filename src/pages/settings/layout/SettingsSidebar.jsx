@@ -1,17 +1,22 @@
 import { NavLink } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { PanelLeftClose, PanelLeftOpen, Settings } from 'lucide-react'
 import { cn } from '../../../shared/utils/cn'
 import { settingsNavigationGroups } from '../constants/settingsNavigation'
 
 function SettingsNavItem({ item, onNavigate, collapsed }) {
+  const { t } = useTranslation()
   const Icon = item.icon
+  // Existing entries are Arabic-hardcoded (item.label); new entries can opt
+  // into full AR/EN via item.labelKey without touching the older siblings.
+  const label = item.labelKey ? t(item.labelKey) : item.label
 
   return (
     <NavLink
       to={item.to}
       end={item.end}
       onClick={onNavigate}
-      title={collapsed ? item.label : undefined}
+      title={collapsed ? label : undefined}
       className={({ isActive }) =>
         cn(
           'group relative flex items-center rounded-md text-sm font-arabic transition-colors duration-150',
@@ -22,13 +27,13 @@ function SettingsNavItem({ item, onNavigate, collapsed }) {
             : 'text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
         )
       }
-      aria-label={item.label}
+      aria-label={label}
     >
       {({ isActive }) => (
         <>
           <span
             className={cn(
-              'absolute inset-y-2 w-0.5 rounded-full bg-[#00C2CB] opacity-0 transition-opacity',
+              'absolute inset-y-2 w-0.5 rounded-full bg-brand-accent opacity-0 transition-opacity',
               'start-0',
               isActive && 'opacity-100'
             )}
@@ -38,10 +43,10 @@ function SettingsNavItem({ item, onNavigate, collapsed }) {
             size={16}
             className={cn(
               'shrink-0',
-              isActive ? 'text-[#00A8B0]' : 'text-[var(--text-muted)]'
+              isActive ? 'text-brand-accent' : 'text-[var(--text-muted)]'
             )}
           />
-          {!collapsed && <span className="truncate">{item.label}</span>}
+          {!collapsed && <span className="truncate">{label}</span>}
         </>
       )}
     </NavLink>

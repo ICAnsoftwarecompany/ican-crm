@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { AlertTriangle } from 'lucide-react'
-import { CampaignChannelBadge } from '../../CampaignChannelBadge'
+import { CampaignChannelBadge } from '../../../../../features/outreach-campaigns/components/CampaignChannelBadge'
 import { getChannelDefinition } from '../../../../../features/outreach-campaigns/config/campaignChannels'
 import { evaluateAudienceEligibility, getCustomerName } from '../../../../../features/outreach-campaigns/utils/campaignAudience'
 import { useFacebookIntegrations } from '../../../../../features/meta-integrations/hooks/useFacebookIntegrations'

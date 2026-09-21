@@ -14,7 +14,7 @@ export const campaignFormSchema = z
       errorMap: () => ({ message: 'outreachCampaigns.validation.channelRequired' }),
     }),
     audience: z.object({
-      customerIds: z.array(z.union([z.string(), z.number()])).min(1, 'outreachCampaigns.validation.audienceRequired'),
+      customers: z.array(z.unknown()).min(1, 'outreachCampaigns.validation.audienceRequired'),
     }),
     content: z.object({
       message: z.string().trim().optional(),

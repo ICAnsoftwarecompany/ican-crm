@@ -3,6 +3,26 @@ export default {
   "pageDescription": "Send WhatsApp, Gmail and Messenger campaigns to your leads and customers from one place.",
   "createCampaign": "Create Campaign",
   "emptyTable": "No outreach campaigns yet.",
+  "navigation": {
+    "overview": "Overview",
+    "live": "Live campaigns",
+    "all": "All campaigns",
+    "create": "Create campaign",
+    "createForChannel": "Create {{channel}} campaign",
+    "channels": "Sending channels",
+    "tools": "Tools",
+    "tiktok": "TikTok",
+    "telegram": "Telegram",
+    "snapchat": "Snapchat",
+    "calendar": "Calendar",
+    "workflow": "Workflow",
+    "viewAll": "View all",
+    "noLive": "No campaigns are running now.",
+    "comingSoon": "More channels coming soon",
+    "openNavigation": "Open campaign navigation",
+    "collapseNavigation": "Collapse campaign navigation",
+    "expandNavigation": "Expand campaign navigation"
+  },
   "channels": {
     "whatsapp": {
       "label": "WhatsApp",

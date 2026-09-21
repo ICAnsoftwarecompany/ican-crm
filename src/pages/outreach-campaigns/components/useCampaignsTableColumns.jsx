@@ -6,8 +6,8 @@ import { Button } from '../../../shared/components/ui/Button'
 import { useUsers } from '../../../features/users/hooks/useUsers'
 import { CAMPAIGN_CHANNEL_LIST } from '../../../features/outreach-campaigns/config/campaignChannels'
 import { CAMPAIGN_STATUS_FILTER_OPTIONS, getCampaignStatusConfig } from '../../../features/outreach-campaigns/constants/campaignStatus'
-import { CampaignChannelBadge } from './CampaignChannelBadge'
-import { CampaignStatusBadge } from './CampaignStatusBadge'
+import { CampaignChannelBadge } from '../../../features/outreach-campaigns/components/CampaignChannelBadge'
+import { CampaignStatusBadge } from '../../../features/outreach-campaigns/components/CampaignStatusBadge'
 
 function findUserName(users, userId) {
   const user = users.find((item) => String(item.id) === String(userId))

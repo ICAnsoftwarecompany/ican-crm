@@ -27,7 +27,7 @@ Audience → Campaign → Channel → Message → Schedule → Send → Engageme
 | | **Campaigns** (`/campaigns`) | **Outreach Campaigns** (`/outreach-campaigns`) |
 |---|---|---|
 | الغرض | إعلانات Meta/Facebook Ads (حملات، Ad Sets، إعلانات، Lead Forms) | التواصل مع عملاء الـ CRM الحاليين عبر WhatsApp/Gmail/Messenger |
-| الملفات | `src/features/campaigns/`, `src/pages/campaigns/CampaignsPage.jsx` | `src/features/outreach-campaigns/`, `src/features/MessegeCampaign/`, `src/pages/outreach-campaigns/` |
+| الملفات | `src/features/campaigns/`, `src/pages/campaigns/CampaignsPage.jsx` | `src/features/outreach-campaigns/`, `src/pages/outreach-campaigns/` |
 | الـ Backend | `/api/tenant/campaigns/save/campaign`, `/active`, `/inactive`, `/details/{id}`, `/api/facebook/*` | `/api/tenant/campaigns/create`, `/edite`, إلخ (راجع القسم 20) |
 
 **لا تدمج الاثنين ولا تعيد استخدام اسم "Campaigns" لأي منهم بدون توضيح.** الاسمين بيشتركوا في كلمة "campaigns" فقط بالصدفة التاريخية، ومفيش أي علاقة بين الـ backend بتاعهم.
@@ -35,19 +35,16 @@ Audience → Campaign → Channel → Message → Schedule → Send → Engageme
 ## 3. مكان الوحدة في ICAN CRM
 
 - الـ Sidebar: **Growth** ← "حملات التواصل" (`nav.outreachCampaigns`)، بجانب "Campaigns" (إعلانات) و"Opportunity Center".
-- الراوت: `/outreach-campaigns` (القائمة) و `/outreach-campaigns/:campaignId` (التفاصيل).
+- الراوت: `/outreach-campaigns` (نظرة عامة) و`/outreach-campaigns/all` (القائمة) و`/outreach-campaigns/:campaignId` (التفاصيل).
 - راجع `src/shared/components/layout/SIDEBAR_ARCHITECTURE.md` → قسم "Outreach Campaigns vs Campaigns" لنفس التوضيح من ناحية الـ Navigation.
 
 ## 4. Folder Structure
 
 ```
-src/features/MessegeCampaign/            ← طبقة الـ API الأصلية (لم تُعدَّل، تعمل بالفعل)
+src/features/outreach-campaigns/         ← API + hooks + domain في وحدة واحدة
   api/messegeCampaignApi.js
   api/whatsappTemplateImagesApi.js
   hooks/useMessegeCampaign.js
-  index.js
-
-src/features/outreach-campaigns/         ← طبقة الـ Domain الجديدة (هذه الوحدة)
   config/campaignChannels.js             ← Channel Registry (القسم 9)
   constants/campaignStatus.js            ← campaignStatusConfig (القسم 6)
   constants/campaignObjectives.js        ← قائمة "الغرض" المحلية فقط (القسم 8)
@@ -55,18 +52,31 @@ src/features/outreach-campaigns/         ← طبقة الـ Domain الجديد
   utils/buildCampaignPayload.js          ← Adapter: form state → backend payload
   utils/campaignAudience.js              ← فحص أهلية الجمهور لكل قناة
   utils/campaignDateTime.js              ← تنسيق starts_at
+  utils/campaignCalendar.js              ← تحويل startsAt إلى أحداث التقويم
   schemas/campaignSchema.js              ← Zod validation حسب القناة
-  hooks/useOutreachCampaigns.js          ← يغلف hooks الـ MessegeCampaign + التطبيع
+  hooks/useOutreachCampaigns.js          ← يطبع استجابات الـ hooks المحلية
+  components/OutreachSidebar.jsx         ← قائمة التنقل الداخلية
+  components/CampaignStageNavigation.jsx ← مراحل الإنشاء والتنقل للخلف
+  components/OutreachOverviewContent.jsx ← إحصائيات ونشاط Live
+  components/OutreachCampaignListContent.jsx ← جدول كل الحملات والقنوات وLive
+  components/OutreachCalendarContent.jsx ← تقويم الحملات
+  components/OutreachWorkflowContent.jsx ← محرر سير العمل
+  components/OutreachCreateContent.jsx   ← مساحة صفحة الإنشاء
+  components/Campaign{Channel,Status}Badge.jsx ← شارات مشتركة
+  components/CampaignStatsCards.jsx      ← بطاقات الإحصائيات
+  docs/CodeA1_API_BackEndDocumentation.md ← مرجع الـ endpoints
   docs/OUTREACH_CAMPAIGNS_ARCHITECTURE_AR.md ← هذا الملف
   index.js                               ← الـ barrel
 
 src/pages/outreach-campaigns/
-  OutreachCampaignsPage.jsx              ← صفحة القائمة (Workspace)
+  OutreachCampaignsLayout.jsx            ← التخطيط والـ sidebar للكمبيوتر والموبايل
+  OutreachOverviewPage.jsx               ← الإحصائيات والحملات الجارية
+  OutreachCampaignsPage.jsx              ← القائمة: الكل/Live/القناة
+  OutreachCreatePage.jsx                 ← إنشاء الحملة في صفحة كاملة
+  OutreachCalendarPage.jsx               ← تقويم الحملات فقط
+  OutreachWorkflowPage.jsx               ← WorkflowBuilder على visual-flow
   OutreachCampaignDetailsPage.jsx        ← صفحة التفاصيل
   components/
-    CampaignStatusBadge.jsx
-    CampaignChannelBadge.jsx
-    CampaignStatsCards.jsx
     useCampaignsTableColumns.jsx
     CampaignAttachments.jsx
     CampaignDetailsOverview.jsx
@@ -96,14 +106,22 @@ src/pages/outreach-campaigns/
         MessengerCampaignContent.jsx
 ```
 
-**ليه فيه مجلدين (`MessegeCampaign` و`outreach-campaigns`)؟** `features/MessegeCampaign/` كان موجود بالفعل قبل هذه الوحدة، وبيطبق كل الـ 19 endpoint الموثقة بشكل صحيح ومطابق تمامًا لتوثيق الباك إند (حتى الأخطاء الإملائية زي `edite`). تركناه **من غير أي تعديل** حسب قاعدة "متعملش rewrite لحاجة شغالة"، وبنيت طبقة `outreach-campaigns/` فوقه للـ domain logic (التطبيع، الـ payload builder، الـ channel registry) اللي الميزة الجديدة محتاجاها.
+تم نقل API والـ hooks وتوثيق CodeA1 إلى `outreach-campaigns`. مجلد `MessegeCampaign` القديم يحتفظ فقط بـ `index.js` كواجهة إعادة تصدير للتوافق مع أي مستهلك خارجي قديم؛ لا يحتوي منطقاً مستقلاً.
 
 ## 5. Routes
 
 | Route | الصفحة | ملاحظات |
 |---|---|---|
-| `/outreach-campaigns` | `OutreachCampaignsPage` | القائمة + الإحصائيات + Wizard الإنشاء |
+| `/outreach-campaigns` | `OutreachOverviewPage` | إحصائيات الحملات المحملة والحملات الجارية |
+| `/outreach-campaigns/live` | `OutreachCampaignsPage` | الحملات بحالة `running` |
+| `/outreach-campaigns/all` | `OutreachCampaignsPage` | كل الحملات |
+| `/outreach-campaigns/create` | `OutreachCreatePage` | Wizard الإنشاء في صفحة كاملة؛ `?channel=whatsapp|gmail|messenger` يختار القناة مسبقاً |
+| `/outreach-campaigns/channels/{messenger,whatsapp,gmail}` | `OutreachCampaignsPage` | قائمة مفلترة محلياً حسب القناة، مع إنشاء/تعديل/حذف |
+| `/outreach-campaigns/calendar` | `OutreachCalendarPage` | محرك التقويم المشترك مع أحداث الحملات المحملة فقط |
+| `/outreach-campaigns/workflow` | `OutreachWorkflowPage` | `WorkflowBuilder` بسياق outreach مبني على visual-flow؛ التخزين محلي حسب وحدة workflow-engine |
 | `/outreach-campaigns/:campaignId` | `OutreachCampaignDetailsPage` | التفاصيل + التبويبات الخمسة |
+
+الشريط الجانبي قابل للطيّ على الكمبيوتر ويحفظ الحالة محلياً، ويُعرض في درج على الموبايل. «الأدوات» قسم مستقل يضم التقويم وسير العمل. زر الإنشاء العلوي يظهر فقط في `/all` وصفحات القنوات الثلاث؛ من صفحة قناة يضيف `channel` للرابط. صفحة الإنشاء نفسها تملأ عرض وارتفاع مساحة العمل، بلا وصف أسفل العنوان. المراحل مرتبة، ويمكن الضغط على مرحلة سابقة للرجوع والتعديل دون فقد البيانات. المرحلة التالية مباشرة تصبح قابلة للنقر فقط بعد اكتمال متطلبات المرحلة الحالية، بنفس شروط زر «التالي»، بينما المراحل الأبعد تبقى مغلقة. شروط المحتوى تعتمد على القناة المختارة. منطق الإنشاء والحفظ هو نفسه المستخدم في مودال التعديل. قنوات TikTok وTelegram وSnapchat ظاهرة بوضع غير مفعّل حتى يتوفر API الإرسال والـ wizard. الإحصائيات وLive والتقويم تعتمد على نتيجة `getCampaigns` المحملة، وقد لا تشمل كل الحملات عند تصفح الخادم. التقويم يستخدم محرك `shared/components/calendar` لكنه يعرض الحملات ذات `startsAt` صالح فقط، ولا يجلب مهاماً أو مكالمات أو اجتماعات.
 
 مسجلين في `src/app/router/index.jsx` بنفس نمط الـ routes التاني الموجودة (بدون lazy loading، مطابقة لباقي المشروع).
 
@@ -118,7 +136,7 @@ OutreachCampaignsPage / OutreachCampaignDetailsPage
 useOutreachCampaigns() / useOutreachCampaign() / useOutreachCampaignMutations()   ← hooks/useOutreachCampaigns.js
         │ (يغلف)
         ▼
-useMessegeCampaigns() / useMessegeCampaignMutations() ...                        ← features/MessegeCampaign (ثابت، غير معدّل)
+useMessegeCampaigns() / useMessegeCampaignMutations() ...                        ← hooks/useMessegeCampaign.js داخل نفس الوحدة
         │
         ▼
 messegeCampaignApi.js ──▶ httpClient (api_password + Bearer يتحقنوا تلقائيًا)
@@ -221,11 +239,11 @@ Wizard من 7 خطوات (`CampaignWizardModal.jsx` + `CampaignWizardSteps.js`):
 
 ## 19. WhatsApp Template Images
 
-الـ endpoints الأربعة (`create/template/images`, `template/images`, `template/{template}/images`, `change/.../image/status`) موجودة فعليًا وشغالة في `features/MessegeCampaign/api/whatsappTemplateImagesApi.js` وhooks بتاعتها — **لم تُستخدم مباشرة في هذا الإصدار من الواجهة** لأن اختيار القالب في خطوة WhatsApp بيعتمد على نظام القوالب الفعلي المُستخدم بالفعل في التطبيق (`features/integrations/whatsapp`، هو نفسه المستخدم في `/templates`). الـ hooks (`useWhatsappTemplateImages`, `useWhatsappTemplateImagesData`, `useWhatsappTemplateImageMutations`) مُصدَّرة من `features/outreach-campaigns/index.js` جاهزة لو حبيت تبني `WhatsAppTemplateMediaManager` مستقبلًا (معرض صور لكل قالب) بدون أي عمل إضافي في طبقة الـ API.
+الـ endpoints الأربعة (`create/template/images`, `template/images`, `template/{template}/images`, `change/.../image/status`) موجودة في `features/outreach-campaigns/api/whatsappTemplateImagesApi.js` وhooks بتاعتها. اختيار القالب في خطوة WhatsApp يعتمد حالياً على `features/integrations/whatsapp`. Hooks الصور مُصدَّرة من `features/outreach-campaigns/index.js` للاستخدام المستقبلي.
 
 ## 20. API Endpoints (المتاحة فعليًا)
 
-كل هذه الـ 19 endpoint شغالين من خلال `features/MessegeCampaign/`:
+كل هذه الـ 19 endpoint شغالين من خلال `features/outreach-campaigns/api/`:
 
 ```
 POST GET   /api/tenant/campaigns/create
@@ -257,7 +275,7 @@ POST       /api/tenant/whatsapp/change/template/{template}/image/status
 
 ## 22. API Service
 
-`hooks/useOutreachCampaigns.js` بيغلف `features/MessegeCampaign/hooks/useMessegeCampaign.js` (بدون تعديله) ويضيف تطبيع (`normalizeCampaign`) عبر `useMemo`. أي استدعاء API مباشر لازم يعدي من `messegeCampaignApi`/`whatsappTemplateImagesApi` — ممنوع استدعاء `httpClient` مباشرة من مكوّن واجهة.
+`hooks/useOutreachCampaigns.js` بيغلف `hooks/useMessegeCampaign.js` داخل نفس الوحدة ويضيف تطبيع (`normalizeCampaign`) عبر `useMemo`. أي استدعاء API مباشر لازم يعدي من `messegeCampaignApi`/`whatsappTemplateImagesApi` — ممنوع استدعاء `httpClient` مباشرة من مكوّن واجهة.
 
 ## 23. TanStack Query Strategy
 
@@ -297,7 +315,7 @@ POST       /api/tenant/whatsapp/change/template/{template}/image/status
 
 ## 30. Responsive Behavior
 
-القائمة الرئيسية تستخدم `DataTable` المشترك (بيتعامل مع mobile تلقائيًا بنفس آليته في باقي الصفحات). الويزارد Modal بعرض `max-w-3xl` مع scroll داخلي، خطوات القناة تتحول لعمود واحد على الموبايل (`grid md:grid-cols-3`).
+القائمة الرئيسية تستخدم `DataTable` المشترك. إنشاء الحملة يتم في صفحة كاملة ويستخدم نفس `CampaignWizardModal` بوضع `variant="page"`، بينما التعديل يبقى مودال ويستخدم نفس الخطوات والمنطق. خطوات القناة تتحول لعمود واحد على الموبايل (`grid md:grid-cols-3`).
 
 ## 31. Campaign Lifecycle
 

@@ -3,6 +3,26 @@ export default {
   "pageDescription": "أرسل حملات واتساب وجيميل وماسنجر لعملائك المحتملين والحاليين من مكان واحد.",
   "createCampaign": "إنشاء حملة",
   "emptyTable": "لا توجد حملات تواصل بعد.",
+  "navigation": {
+    "overview": "نظرة عامة",
+    "live": "الحملات المباشرة",
+    "all": "كل الحملات",
+    "create": "إنشاء حملة",
+    "createForChannel": "إنشاء حملة {{channel}}",
+    "channels": "قنوات الإرسال",
+    "tools": "الأدوات",
+    "tiktok": "تيك توك",
+    "telegram": "تليجرام",
+    "snapchat": "سناب شات",
+    "calendar": "التقويم",
+    "workflow": "سير العمل",
+    "viewAll": "عرض الكل",
+    "noLive": "لا توجد حملات جارية الآن.",
+    "comingSoon": "قنوات أخرى قريباً",
+    "openNavigation": "فتح قائمة الحملات",
+    "collapseNavigation": "طي قائمة الحملات",
+    "expandNavigation": "توسيع قائمة الحملات"
+  },
   "channels": {
     "whatsapp": {
       "label": "واتساب",

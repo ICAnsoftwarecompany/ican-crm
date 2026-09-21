@@ -1,13 +1,15 @@
 import { memo, useMemo } from 'react'
 import { cn } from '../../utils/cn'
+import { useTranslation } from 'react-i18next'
 
 function getNestedValue(row, accessor) {
   return accessor.split('.').reduce((current, prop) => current?.[prop], row)
 }
 
 function DataTableFilterRowComponent({ columns, rows = [], filters, onFilterChange }) {
-  const language = typeof document !== 'undefined' ? document.documentElement.lang || 'ar' : 'ar'
-  const allLabel = language.startsWith('ar') ? 'الكل' : 'All'
+  const { t, i18n } = useTranslation()
+  const language = i18n.language
+  const allLabel = t('dataTable.all')
 
   const getStickyFilterStyle = (col) => {
     if (!col._isPinned) return undefined
@@ -16,7 +18,7 @@ function DataTableFilterRowComponent({ columns, rows = [], filters, onFilterChan
       position: 'sticky',
       insetInlineStart: `${Number(col._stickyOffset) || 0}px`,
       zIndex: 20,
-      backgroundColor: '#F9FAFB',
+      backgroundColor: 'var(--surface-2)',
       boxShadow: '1px 0 0 var(--border)',
     }
   }
@@ -52,7 +54,7 @@ function DataTableFilterRowComponent({ columns, rows = [], filters, onFilterChan
   }, [columns, rows, language])
 
   return (
-    <tr className="bg-gray-50 border-b border-gray-200 hover:bg-gray-100">
+    <tr className="border-b border-[var(--border)] bg-[var(--surface-2)] hover:bg-[var(--surface)]">
       {columns.map((col) => {
         const currentValue = filters[col.id]?.value || ''
         const options = optionsByColumn[col.id] || []
@@ -60,7 +62,7 @@ function DataTableFilterRowComponent({ columns, rows = [], filters, onFilterChan
         return (
           <td
             key={col.id}
-            className={cn('border-e border-[#D7E2E6] px-1.5 py-2 text-sm', col._isPinned && 'sticky')}
+            className={cn('border-e border-[var(--border)] px-1.5 py-2 text-sm', col._isPinned && 'sticky')}
             style={getStickyFilterStyle(col)}
           >
             {col.accessor && col.enableFilter !== false ? (
@@ -79,8 +81,8 @@ function DataTableFilterRowComponent({ columns, rows = [], filters, onFilterChan
                     value: selected,
                   })
                 }}
-                className="h-9 w-full min-w-0 rounded-lg border border-gray-300 bg-white px-2 text-sm"
-                title={`فلترة حسب ${col.header}`}
+                className="h-9 w-full min-w-0 rounded-md border border-[var(--border)] bg-[var(--surface)] px-2 text-sm text-[var(--text)]"
+                title={t('dataTable.filterBy', { column: col.header })}
               >
                 <option value="">{allLabel}</option>
                 {options.map((opt) => (

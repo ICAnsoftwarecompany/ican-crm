@@ -1,4 +1,4 @@
-import { Tags, UserPlus, Workflow } from 'lucide-react'
+import { Palette, Tags, UserPlus, Workflow } from 'lucide-react'
 
 export const SETTINGS_ROUTE = '/settings'
 
@@ -10,6 +10,11 @@ export const settingsNavigationGroups = [
       { to: `${SETTINGS_ROUTE}/definitions`, label: 'التعريفات', icon: Tags },
       { to: `${SETTINGS_ROUTE}/users`, label: 'المستخدمون', icon: UserPlus },
       { to: `${SETTINGS_ROUTE}/integrations`, label: 'التكاملات', icon: Workflow },
+      {
+        to: `${SETTINGS_ROUTE}/appearance`,
+        labelKey: 'branding.appearance.nav.title',
+        icon: Palette,
+      },
     ],
   },
 ]

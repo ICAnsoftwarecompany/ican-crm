@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Badge } from '../../../shared/components/ui/Badge'
-import { getCampaignStatusConfig } from '../../../features/outreach-campaigns'
+import { getCampaignStatusConfig } from '../constants/campaignStatus'
 
 const TONE_TO_BADGE_VARIANT = {
   neutral: 'default',

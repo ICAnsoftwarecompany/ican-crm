@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { GripVertical, Settings } from 'lucide-react'
 import { Button } from '../ui/Button'
+import { useTranslation } from 'react-i18next'
 
 export function ColumnVisibilityToggle({
   columns,
@@ -9,6 +10,7 @@ export function ColumnVisibilityToggle({
   onToggle,
   onReorder,
 }) {
+  const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [draggedColumnId, setDraggedColumnId] = useState('')
   const [dragOverColumnId, setDragOverColumnId] = useState('')
@@ -142,7 +144,7 @@ export function ColumnVisibilityToggle({
         style={panelStyle || { position: 'fixed', top: 0, left: 0, width: 340, maxHeight: 560, zIndex: 9999 }}
       >
         <div className="border-b border-[var(--border)] px-3 py-2 text-xs font-bold text-[var(--text-muted)] font-arabic">
-          إظهار / إخفاء وترتيب الأعمدة
+          {t('dataTable.columns.manage')}
         </div>
 
         {canReorder ? (
@@ -208,7 +210,7 @@ export function ColumnVisibilityToggle({
         className="max-w-full gap-2"
       >
         <Settings size={16} />
-        الأعمدة ({visibleCount})
+        {t('dataTable.columns.button', { count: visibleCount })}
       </Button>
       {panel}
     </div>

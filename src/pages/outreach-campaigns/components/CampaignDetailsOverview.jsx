@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useUsers } from '../../../features/users/hooks/useUsers'
 import { Avatar } from '../../../shared/components/ui/Avatar'
-import { CampaignChannelBadge } from './CampaignChannelBadge'
+import { CampaignChannelBadge } from '../../../features/outreach-campaigns/components/CampaignChannelBadge'
 
 function findUserName(users, userId) {
   const user = users.find((item) => String(item.id) === String(userId))

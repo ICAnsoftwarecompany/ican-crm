@@ -35,6 +35,11 @@ import { CampaignBillingPage } from '../../pages/campaigns/pages/CampaignBilling
 import { CampaignDetailsPage } from '../../pages/campaigns/pages/CampaignDetailsPage'
 import { OutreachCampaignsPage } from '../../pages/outreach-campaigns/OutreachCampaignsPage'
 import { OutreachCampaignDetailsPage } from '../../pages/outreach-campaigns/OutreachCampaignDetailsPage'
+import { OutreachCampaignsLayout } from '../../pages/outreach-campaigns/OutreachCampaignsLayout'
+import { OutreachOverviewPage } from '../../pages/outreach-campaigns/OutreachOverviewPage'
+import { OutreachWorkflowPage } from '../../pages/outreach-campaigns/OutreachWorkflowPage'
+import { OutreachCalendarPage } from '../../pages/outreach-campaigns/OutreachCalendarPage'
+import { OutreachCreatePage } from '../../pages/outreach-campaigns/OutreachCreatePage'
 import { OpportunityCenterPage } from '../../pages/opportunities/OpportunityCenterPage'
 import { SocialMediaPage } from '../../pages/social-media/SocialMediaPage'
 import { SocialOverviewPage } from '../../pages/social-media/pages/SocialOverviewPage'
@@ -62,6 +67,7 @@ import { SettingsLayout } from '../../pages/settings/layout/SettingsLayout'
 import { DefinitionsSettingsPage } from '../../pages/settings/pages/definitions/DefinitionsSettingsPage'
 import { UsersSettingsPage } from '../../pages/settings/pages/users/UsersSettingsPage'
 import { IntegrationsSettingsPage } from '../../pages/settings/pages/integrations/IntegrationsSettingsPage'
+import { AppearanceSettingsPage } from '../../pages/settings/pages/appearance/AppearanceSettingsPage'
 import { TemplatesPage } from '../../pages/templates/TemplatesPage'
 import { DataTableDemo } from '../../pages/playground/DataTableDemo'
 import { VisualFlowDemo } from '../../pages/playground/VisualFlowDemo'
@@ -145,8 +151,21 @@ export const router = createBrowserRouter([
           { path: ':platform/:campaignId', element: <CampaignDetailsPage /> },
         ],
       },
-      { path: 'outreach-campaigns', element: <OutreachCampaignsPage /> },
-      { path: 'outreach-campaigns/:campaignId', element: <OutreachCampaignDetailsPage /> },
+      {
+        path: 'outreach-campaigns', element: <OutreachCampaignsLayout />,
+        children: [
+          { index: true, element: <OutreachOverviewPage /> },
+          { path: 'live', element: <OutreachCampaignsPage view="live" /> },
+          { path: 'all', element: <OutreachCampaignsPage /> },
+          { path: 'create', element: <OutreachCreatePage /> },
+          { path: 'channels/messenger', element: <OutreachCampaignsPage channel="messenger" /> },
+          { path: 'channels/whatsapp', element: <OutreachCampaignsPage channel="whatsapp" /> },
+          { path: 'channels/gmail', element: <OutreachCampaignsPage channel="gmail" /> },
+          { path: 'calendar', element: <OutreachCalendarPage /> },
+          { path: 'workflow', element: <OutreachWorkflowPage /> },
+          { path: ':campaignId', element: <OutreachCampaignDetailsPage /> },
+        ],
+      },
       { path: 'opportunities', element: <OpportunityCenterPage /> },
       {
         path: 'social-media',
@@ -189,6 +208,7 @@ export const router = createBrowserRouter([
           { path: 'definitions', element: <DefinitionsSettingsPage /> },
           { path: 'users', element: <UsersSettingsPage /> },
           { path: 'integrations', element: <IntegrationsSettingsPage /> },
+          { path: 'appearance', element: <AppearanceSettingsPage /> },
         ],
       },
       { path: 'integrations/facebook/callback', element: <FacebookCallbackPage /> },

@@ -15,6 +15,47 @@ export default {
   "enterText": "أدخل نصًا",
   "apply": "تطبيق",
   "clearAll": "مسح كل الفلاتر",
+  "all": "الكل",
+  "done": "تم",
+  "remove": "إزالة",
+  "searchPlaceholder": "بحث في الجدول...",
+  "clearSearch": "مسح البحث",
+  "recentSearches": "عمليات البحث الأخيرة",
+  "filterBy": "فلترة حسب {{column}}",
+  "savedFilters": {
+    "button": "الفلاتر",
+    "title": "الفلاتر المحفوظة",
+    "saved": "الفلاتر المحفوظة لهذا الجدول",
+    "none": "لا توجد فلاتر محفوظة بعد.",
+    "chooseColumn": "اختر العمود",
+    "chooseValue": "اختر القيمة",
+    "addCondition": "إضافة شرط",
+    "namePlaceholder": "اسم الفلتر",
+    "save": "حفظ الفلتر",
+    "delete": "حذف الفلتر المحفوظ"
+  },
+  "zoom": {
+    "title": "تكبير أو تصغير الجدول فقط",
+    "out": "تصغير الجدول",
+    "in": "تكبير الجدول",
+    "level": "نسبة تكبير الجدول"
+  },
+  "rowSplit": {
+    "button": "تقسيم الصفوف",
+    "enabled": "تقسيم الصفوف مفعل",
+    "enableTitle": "عرض كل سجل على صفين",
+    "disableTitle": "إيقاف تقسيم الصفوف"
+  },
+  "columnSplit": {
+    "button": "تقسيم الأعمدة",
+    "enabled": "تقسيم الأعمدة مفعل",
+    "enableTitle": "تقسيم الجدول إلى جزأين",
+    "configureTitle": "تعديل تقسيم الأعمدة"
+  },
+  "columns": {
+    "manage": "إظهار وإخفاء وترتيب الأعمدة",
+    "button": "الأعمدة ({{count}})"
+  },
   "selectPage": "تحديد الصفحة الحالية",
   "selectionOptions": "خيارات التحديد",
   "selectAll": "تحديد كل العملاء",
@@ -23,6 +64,11 @@ export default {
   "clearAllSelection": "إلغاء تحديد الكل",
   "clearLoaded": "إلغاء تحديد العملاء المحمّلين",
   "empty": "لا توجد بيانات",
+  "emptyHint": "جرّب تغيير معايير البحث أو التصفية.",
+  "loadError": "تعذر تحميل البيانات",
+  "loadErrorMessage": "حدث خطأ أثناء تحميل البيانات.",
+  "copy": "نسخ",
+  "copied": "تم النسخ",
   "realtimeConnecting": "جاري الاتصال اللحظي",
   "realtimeError": "فشل الاتصال اللحظي",
   "realtimeDisconnected": "الاتصال اللحظي متوقف",
@@ -120,6 +166,12 @@ export default {
     "selectedColumns": "الأعمدة المختارة: {{count}}"
   },
   "dateFilter": {
+    "title": "فلتر التاريخ",
+    "button": "فلتر التاريخ",
+    "description": "اختر عمود التاريخ ثم حدد الفترة المطلوبة.",
+    "column": "عمود التاريخ",
+    "instantApply": "يتم تطبيق الفلتر فور اختيار العمود والفترة.",
+    "noColumns": "لا توجد أعمدة تاريخ في هذا الجدول",
     "operatorFor": "مشغّل الفلتر للعمود {{column}}",
     "startDate": "تاريخ البداية",
     "endDate": "تاريخ النهاية",

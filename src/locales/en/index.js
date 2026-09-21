@@ -22,6 +22,7 @@ import workflow from './workflow.js'
 import visualFlow from './visualFlow.js'
 import visualFlowDemo from './visualFlowDemo.js'
 import calendar from './calendar.js'
+import branding from './branding.js'
 
 export default {
   app,
@@ -48,4 +49,5 @@ export default {
   visualFlow,
   visualFlowDemo,
   calendar,
+  branding,
 }

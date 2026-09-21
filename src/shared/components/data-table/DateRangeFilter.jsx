@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { CalendarRange, ChevronDown, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const EMPTY_VALUE = { columnId: '', from: '', to: '' }
 
@@ -12,6 +13,7 @@ function getColumnLabel(column) {
 }
 
 export function DateRangeFilter({ dateColumns = [], value = EMPTY_VALUE, onChange }) {
+  const { t } = useTranslation()
   const wrapperRef = useRef(null)
   const menuRef = useRef(null)
   const [isOpen, setIsOpen] = useState(false)
@@ -90,9 +92,9 @@ export function DateRangeFilter({ dateColumns = [], value = EMPTY_VALUE, onChang
       >
         <div className="mb-3 flex items-center justify-between gap-2 border-b border-[var(--border)] pb-2">
           <div>
-            <div className="text-sm font-bold text-[var(--text)]">فلترة بالتاريخ</div>
+            <div className="text-sm font-bold text-[var(--text)]">{t('dataTable.dateFilter.title')}</div>
             <div className="text-[11px] text-[var(--text-muted)]">
-              اختر عمود التاريخ ثم حدد الفترة المطلوبة.
+              {t('dataTable.dateFilter.description')}
             </div>
           </div>
           {hasActiveFilter && (
@@ -100,8 +102,8 @@ export function DateRangeFilter({ dateColumns = [], value = EMPTY_VALUE, onChang
               type="button"
               onClick={clearFilter}
               className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
-              title="مسح فلتر التاريخ"
-              aria-label="مسح فلتر التاريخ"
+              title={t('dataTable.dateFilter.clear')}
+              aria-label={t('dataTable.dateFilter.clear')}
             >
               <X size={15} />
             </button>
@@ -109,13 +111,13 @@ export function DateRangeFilter({ dateColumns = [], value = EMPTY_VALUE, onChang
         </div>
 
         <label className="block space-y-1">
-          <span className="text-[11px] font-semibold text-[var(--text-muted)]">عمود التاريخ</span>
+          <span className="text-[11px] font-semibold text-[var(--text-muted)]">{t('dataTable.dateFilter.column')}</span>
           <select
             value={value?.columnId || ''}
             onChange={(event) => updateValue({ columnId: event.target.value })}
             className="h-10 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm text-[var(--text)] outline-none transition-colors focus:border-[#00A8B0] focus:ring-2 focus:ring-[#00A8B0]/15"
           >
-            <option value="">اختر العمود</option>
+            <option value="">{t('dataTable.savedFilters.chooseColumn')}</option>
             {dateColumns.map((column) => (
               <option key={column.id} value={column.id}>
                 {getColumnLabel(column)}
@@ -126,7 +128,7 @@ export function DateRangeFilter({ dateColumns = [], value = EMPTY_VALUE, onChang
 
         <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
           <label className="space-y-1">
-            <span className="text-[11px] font-semibold text-[var(--text-muted)]">من تاريخ</span>
+            <span className="text-[11px] font-semibold text-[var(--text-muted)]">{t('dataTable.dateFilter.startDate')}</span>
             <input
               type="date"
               value={value?.from || ''}
@@ -136,7 +138,7 @@ export function DateRangeFilter({ dateColumns = [], value = EMPTY_VALUE, onChang
           </label>
 
           <label className="space-y-1">
-            <span className="text-[11px] font-semibold text-[var(--text-muted)]">إلى تاريخ</span>
+            <span className="text-[11px] font-semibold text-[var(--text-muted)]">{t('dataTable.dateFilter.endDate')}</span>
             <input
               type="date"
               value={value?.to || ''}
@@ -148,14 +150,14 @@ export function DateRangeFilter({ dateColumns = [], value = EMPTY_VALUE, onChang
 
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
           <span className="text-[11px] text-[var(--text-muted)]">
-            يتم تطبيق الفلتر فور اختيار العمود والفترة.
+            {t('dataTable.dateFilter.instantApply')}
           </span>
           <button
             type="button"
             onClick={() => setIsOpen(false)}
             className="h-8 rounded-lg bg-[#00A8B0] px-3 text-xs font-bold text-white transition-colors hover:bg-[#008E95]"
           >
-            تم
+            {t('dataTable.done')}
           </button>
         </div>
       </div>,
@@ -174,12 +176,12 @@ export function DateRangeFilter({ dateColumns = [], value = EMPTY_VALUE, onChang
             ? 'border-[#00A8B0] bg-[#E8F9FA] text-[#007A80]'
             : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-2)]'
         }`}
-        title={isDisabled ? 'لا توجد أعمدة تاريخ في الجدول' : 'فلترة التاريخ من / إلى'}
+        title={isDisabled ? t('dataTable.dateFilter.noColumns') : t('dataTable.dateFilter.title')}
         aria-expanded={isOpen}
       >
         <CalendarRange size={16} />
         <span className="hidden xl:inline">
-          {hasActiveFilter ? getColumnLabel(activeColumn) : 'فلتر التاريخ'}
+          {hasActiveFilter ? getColumnLabel(activeColumn) : t('dataTable.dateFilter.button')}
         </span>
         <ChevronDown size={14} />
       </button>

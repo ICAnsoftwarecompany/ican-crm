@@ -15,6 +15,7 @@ import { campaignFormSchema } from '../../../../features/outreach-campaigns/sche
 import { buildCampaignPayload } from '../../../../features/outreach-campaigns/utils/buildCampaignPayload'
 import { useOutreachCampaignMutations } from '../../../../features/outreach-campaigns/hooks/useOutreachCampaigns'
 import { extractMessage } from '../../../../shared/utils/apiResponse'
+import { CampaignStageNavigation } from '../../../../features/outreach-campaigns/components/CampaignStageNavigation'
 
 function getFieldError(zodError, path) {
   const issue = zodError?.issues?.find((item) => item.path.join('.') === path)
@@ -27,21 +28,21 @@ function getFieldError(zodError, path) {
  * navigation never discards entered data (all state lives in `form` for
  * the whole modal lifetime, reset only when the modal is freshly opened).
  */
-export function CampaignWizardModal({ open, onClose, mode = 'create', campaign = null, onSuccess }) {
+export function CampaignWizardModal({ open, onClose, mode = 'create', campaign = null, onSuccess, variant = 'modal', initialChannel = '' }) {
   const { t } = useTranslation()
   const [stepIndex, setStepIndex] = useState(0)
-  const [form, setForm] = useState(() => createInitialCampaignForm(campaign))
+  const [form, setForm] = useState(() => ({ ...createInitialCampaignForm(campaign), channel: campaign?.channel || initialChannel }))
   const [fieldErrors, setFieldErrors] = useState(null)
   const mutations = useOutreachCampaignMutations()
 
   useEffect(() => {
     if (open) {
-      setForm(createInitialCampaignForm(campaign))
+      setForm({ ...createInitialCampaignForm(campaign), channel: campaign?.channel || initialChannel })
       setStepIndex(0)
       setFieldErrors(null)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, campaign?.id])
+  }, [open, campaign?.id, initialChannel])
 
   const updateForm = (patch) => setForm((current) => ({ ...current, ...patch }))
 
@@ -51,9 +52,21 @@ export function CampaignWizardModal({ open, onClose, mode = 'create', campaign =
     if (currentStepId === 'setup') return Boolean(form.name.trim())
     if (currentStepId === 'audience') return form.audience.customers.length > 0
     if (currentStepId === 'channel') return Boolean(form.channel)
+    if (currentStepId === 'content' && form.channel === 'whatsapp') {
+      return Boolean(form.content.whatsapp.phoneNumberId && form.content.whatsapp.templateId)
+    }
+    if (currentStepId === 'content' && form.channel === 'gmail') {
+      return Boolean(form.content.gmail.mailboxEmail && form.content.subject.trim() && form.content.message.trim())
+    }
+    if (currentStepId === 'content' && form.channel === 'messenger') {
+      return Boolean(form.content.messenger.externalId && form.content.message.trim())
+    }
+    if (currentStepId === 'content') return false
     if (currentStepId === 'schedule') return Boolean(form.schedule.date && form.schedule.time)
     return true
   }
+
+  const canAdvance = canMoveNext()
 
   const handleClose = () => {
     if (mutations.createCampaign.isPending || mutations.updateCampaign.isPending) return
@@ -96,7 +109,7 @@ export function CampaignWizardModal({ open, onClose, mode = 'create', campaign =
 
       toast.success(mode === 'edit' ? t('outreachCampaigns.wizard.updateSuccess') : t('outreachCampaigns.wizard.createSuccess'))
       onSuccess?.(campaignId)
-      onClose()
+      if (variant !== 'page') onClose()
     } catch (error) {
       toast.error(extractMessage(error, t('outreachCampaigns.wizard.submitError')))
     }
@@ -118,7 +131,7 @@ export function CampaignWizardModal({ open, onClose, mode = 'create', campaign =
         {stepIndex === 0 ? t('actions.cancel') : t('actions.back')}
       </Button>
       {stepIndex < CAMPAIGN_WIZARD_STEPS.length - 1 ? (
-        <Button disabled={!canMoveNext()} onClick={() => setStepIndex((index) => index + 1)}>
+        <Button disabled={!canAdvance} onClick={() => setStepIndex((index) => index + 1)}>
           {t('actions.next')}
         </Button>
       ) : (
@@ -129,6 +142,23 @@ export function CampaignWizardModal({ open, onClose, mode = 'create', campaign =
     </div>
   )
 
+  const content = (
+    <>
+      <CampaignStageNavigation steps={CAMPAIGN_WIZARD_STEPS} activeIndex={stepIndex} onSelect={setStepIndex} canAdvance={canAdvance} disabled={isSubmitting} />
+      {currentStepId === 'setup' && <CampaignSetupStep form={form} onChange={updateForm} errors={errors} />}
+      {currentStepId === 'audience' && <CampaignAudienceStep form={form} onChange={updateForm} />}
+      {currentStepId === 'channel' && <CampaignChannelStep form={form} onChange={updateForm} />}
+      {currentStepId === 'content' && <CampaignContentStep form={form} onChange={updateForm} />}
+      {currentStepId === 'schedule' && <CampaignScheduleStep form={form} onChange={updateForm} errors={errors} />}
+      {currentStepId === 'team' && <CampaignTeamStep form={form} onChange={updateForm} />}
+      {currentStepId === 'review' && <CampaignReviewStep form={form} />}
+    </>
+  )
+
+  if (variant === 'page') {
+    return <div className="flex min-h-[calc(100vh-11rem)] w-full flex-col bg-[var(--surface-2)] p-4 sm:p-6"><div className="space-y-6 bg-[var(--surface)] p-4 sm:p-6">{content}</div><div className="mt-auto border-t border-[var(--border)] bg-[var(--surface)] p-4">{footer}</div></div>
+  }
+
   return (
     <AppModal
       isOpen={open}
@@ -138,26 +168,7 @@ export function CampaignWizardModal({ open, onClose, mode = 'create', campaign =
       className="max-w-3xl"
       footer={footer}
     >
-      <div className="mb-6 grid grid-cols-7 gap-1">
-        {CAMPAIGN_WIZARD_STEPS.map((step, index) => (
-          <div
-            key={step.id}
-            className={`rounded-lg border px-2 py-2 text-center text-[11px] font-black ${
-              index <= stepIndex ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]' : 'border-[var(--border)] text-[var(--text-muted)]'
-            }`}
-          >
-            {t(step.labelKey)}
-          </div>
-        ))}
-      </div>
-
-      {currentStepId === 'setup' && <CampaignSetupStep form={form} onChange={updateForm} errors={errors} />}
-      {currentStepId === 'audience' && <CampaignAudienceStep form={form} onChange={updateForm} />}
-      {currentStepId === 'channel' && <CampaignChannelStep form={form} onChange={updateForm} />}
-      {currentStepId === 'content' && <CampaignContentStep form={form} onChange={updateForm} />}
-      {currentStepId === 'schedule' && <CampaignScheduleStep form={form} onChange={updateForm} errors={errors} />}
-      {currentStepId === 'team' && <CampaignTeamStep form={form} onChange={updateForm} />}
-      {currentStepId === 'review' && <CampaignReviewStep form={form} />}
+      {content}
     </AppModal>
   )
 }

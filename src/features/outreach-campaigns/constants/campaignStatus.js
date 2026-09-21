@@ -1,7 +1,7 @@
 /**
  * Central status → UI mapping for outreach campaigns.
  *
- * The current backend (see features/MessegeCampaign/CodeA1_API_BackEndDocumentation.md)
+ * The current backend (see outreach-campaigns/docs/CodeA1_API_BackEndDocumentation.md)
  * documents no response examples, so the real set of status strings it
  * returns is unconfirmed. This map covers the conceptual statuses named in
  * the product spec (draft/scheduled/running/completed/cancelled/failed) and

@@ -2,27 +2,27 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { Plus } from 'lucide-react'
 import { PageToolbar } from '../../shared/components/data/PageToolbar'
-import { DataTable } from '../../shared/components/data-table'
 import { ConfirmDialog } from '../../shared/components/overlays/ConfirmDialog'
 import { useOutreachCampaigns, useOutreachCampaignMutations } from '../../features/outreach-campaigns/hooks/useOutreachCampaigns'
+import { OutreachCampaignListContent } from '../../features/outreach-campaigns/components/OutreachCampaignListContent'
 import { extractMessage } from '../../shared/utils/apiResponse'
-import { CampaignStatsCards } from './components/CampaignStatsCards'
 import { useCampaignsTableColumns } from './components/useCampaignsTableColumns'
 import { CampaignWizardModal } from './components/wizard/CampaignWizardModal'
 
-export function OutreachCampaignsPage() {
+export function OutreachCampaignsPage({ view = 'all', channel = null }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const campaignsQuery = useOutreachCampaigns()
+  const campaigns = (campaignsQuery.campaigns || []).filter((campaign) =>
+    (!channel || campaign.channel === channel) && (view !== 'live' || campaign.status === 'running')
+  )
   const mutations = useOutreachCampaignMutations()
 
-  const [wizardState, setWizardState] = useState({ open: false, mode: 'create', campaign: null })
+  const [wizardState, setWizardState] = useState({ open: false, campaign: null })
   const [confirmState, setConfirmState] = useState({ open: false, type: null, campaign: null })
 
-  const openCreateWizard = () => setWizardState({ open: true, mode: 'create', campaign: null })
-  const openEditWizard = (campaign) => setWizardState({ open: true, mode: 'edit', campaign })
+  const openEditWizard = (campaign) => setWizardState({ open: true, campaign })
   const closeWizard = () => setWizardState((current) => ({ ...current, open: false }))
 
   const columns = useCampaignsTableColumns({
@@ -53,37 +53,15 @@ export function OutreachCampaignsPage() {
   return (
     <div className="space-y-6">
       <PageToolbar
-        title={t('outreachCampaigns.pageTitle')}
+        title={channel ? t(`outreachCampaigns.channels.${channel}.label`) : t(view === 'live' ? 'outreachCampaigns.navigation.live' : 'outreachCampaigns.navigation.all')}
         description={t('outreachCampaigns.pageDescription')}
-        actionLabel={t('outreachCampaigns.createCampaign')}
-        actionIcon={<Plus size={16} />}
-        onAction={openCreateWizard}
       />
 
-      <CampaignStatsCards campaigns={campaignsQuery.campaigns} />
-
-      <DataTable
-        data={campaignsQuery.campaigns}
-        columns={columns}
-        tableId="outreach-campaigns"
-        isLoading={campaignsQuery.isLoading}
-        error={campaignsQuery.error}
-        onRetry={campaignsQuery.refetch}
-        onRowDoubleClick={(row) => navigate(`/outreach-campaigns/${row.id}`)}
-        emptyMessage={t('outreachCampaigns.emptyTable')}
-        enableSorting
-        enableFiltering
-        enableGlobalSearch
-        enablePagination
-        enableColumnVisibility
-        enableExport
-        showToolbar
-        showFooter
-      />
+      <OutreachCampaignListContent campaigns={campaigns} columns={columns} query={campaignsQuery} onView={(row) => navigate(`/outreach-campaigns/${row.id}`)} />
 
       <CampaignWizardModal
         open={wizardState.open}
-        mode={wizardState.mode}
+        mode="edit"
         campaign={wizardState.campaign}
         onClose={closeWizard}
         onSuccess={() => campaignsQuery.refetch()}

@@ -48,6 +48,10 @@ export function useAdvancedFilters(tableId = 'default', columns = []) {
     setFilters({})
   }, [updateFilters])
 
+  const replaceFilters = useCallback((nextFilters = {}) => {
+    updateFilters(nextFilters)
+  }, [updateFilters])
+
   // Count active filters
   const activeFilterCount = useMemo(() => {
     return Object.keys(filters).length
@@ -70,6 +74,7 @@ export function useAdvancedFilters(tableId = 'default', columns = []) {
     setFilter,
     removeFilter,
     clearFilters,
+    replaceFilters,
     activeFilterCount,
     activeFilters,
     hasActiveFilters: activeFilterCount > 0,

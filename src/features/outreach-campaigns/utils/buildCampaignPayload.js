@@ -3,7 +3,7 @@ import { formatCampaignStartsAt } from './campaignDateTime'
 /**
  * Transforms the Campaign Wizard's shared form state into the exact,
  * channel-specific payload shape documented in
- * features/MessegeCampaign/CodeA1_API_BackEndDocumentation.md.
+ * features/outreach-campaigns/docs/CodeA1_API_BackEndDocumentation.md.
  *
  * This is the ONLY place backend payload shape knowledge should live —
  * wizard step components must never build request bodies themselves.

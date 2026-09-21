@@ -11,6 +11,8 @@ export {
   getTenantTimezoneLabel,
 } from './utils/campaignDateTime'
 export { campaignFormSchema } from './schemas/campaignSchema'
+export { messegeCampaignApi } from './api/messegeCampaignApi'
+export { whatsappTemplateImagesApi } from './api/whatsappTemplateImagesApi'
 export {
   useOutreachCampaigns,
   useOutreachCampaign,

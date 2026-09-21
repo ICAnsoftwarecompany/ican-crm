@@ -27,11 +27,11 @@ export function SocialMediaPage() {
   return (
     <div
       className={cn(
-        '-m-6 grid min-h-[calc(100vh-var(--layout-header-height,48px))] overflow-hidden border-t border-[var(--border)] bg-[var(--surface-2)] lg:grid',
+        '-m-6 grid h-[calc(100vh-var(--layout-header-height,48px))] overflow-hidden border-t border-[var(--border)] bg-[var(--surface-2)] lg:grid',
         sidebarCollapsed ? 'lg:grid-cols-[64px_minmax(0,1fr)]' : 'lg:grid-cols-[260px_minmax(0,1fr)]'
       )}
     >
-      <aside className="hidden min-h-0 lg:block">
+      <aside className="hidden h-full min-h-0 overflow-hidden lg:block">
         <SocialMediaSubSidebar
           enabledModules={user?.modules}
           collapsed={sidebarCollapsed}

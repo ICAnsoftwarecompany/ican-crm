@@ -1,4 +1,5 @@
 import { ZoomIn, ZoomOut } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export const DATA_TABLE_ZOOM_OPTIONS = [50, 70, 90, 100, 125, 150, 200]
 
@@ -22,6 +23,7 @@ function getClosestZoomIndex(value) {
 }
 
 export function DataTableZoomControl({ value = 100, onChange }) {
+  const { t } = useTranslation()
   const currentIndex = getClosestZoomIndex(value)
   const canZoomOut = currentIndex > 0
   const canZoomIn = currentIndex < DATA_TABLE_ZOOM_OPTIONS.length - 1
@@ -33,15 +35,15 @@ export function DataTableZoomControl({ value = 100, onChange }) {
   return (
     <div
       className="inline-flex h-9 items-center overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text)]"
-      title="تكبير أو تصغير عرض الجدول فقط"
+      title={t('dataTable.zoom.title')}
     >
       <button
         type="button"
         onClick={() => updateZoom(DATA_TABLE_ZOOM_OPTIONS[currentIndex - 1])}
         disabled={!canZoomOut}
         className="inline-flex h-9 w-9 items-center justify-center border-e border-[var(--border)] transition-colors hover:bg-[var(--surface-2)] disabled:cursor-not-allowed disabled:opacity-40"
-        aria-label="تصغير الجدول"
-        title="تصغير الجدول"
+        aria-label={t('dataTable.zoom.out')}
+        title={t('dataTable.zoom.out')}
       >
         <ZoomOut size={16} />
       </button>
@@ -50,8 +52,8 @@ export function DataTableZoomControl({ value = 100, onChange }) {
         value={DATA_TABLE_ZOOM_OPTIONS[currentIndex]}
         onChange={(event) => updateZoom(event.target.value)}
         className="h-9 min-w-20 bg-transparent px-2 text-center text-xs font-bold outline-none"
-        aria-label="نسبة تكبير الجدول"
-        title="نسبة تكبير الجدول"
+        aria-label={t('dataTable.zoom.level')}
+        title={t('dataTable.zoom.level')}
       >
         {DATA_TABLE_ZOOM_OPTIONS.map((option) => (
           <option key={option} value={option}>
@@ -65,8 +67,8 @@ export function DataTableZoomControl({ value = 100, onChange }) {
         onClick={() => updateZoom(DATA_TABLE_ZOOM_OPTIONS[currentIndex + 1])}
         disabled={!canZoomIn}
         className="inline-flex h-9 w-9 items-center justify-center border-s border-[var(--border)] transition-colors hover:bg-[var(--surface-2)] disabled:cursor-not-allowed disabled:opacity-40"
-        aria-label="تكبير الجدول"
-        title="تكبير الجدول"
+        aria-label={t('dataTable.zoom.in')}
+        title={t('dataTable.zoom.in')}
       >
         <ZoomIn size={16} />
       </button>

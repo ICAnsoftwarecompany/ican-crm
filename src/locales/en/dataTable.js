@@ -15,6 +15,47 @@ export default {
   "enterText": "Enter text",
   "apply": "Apply",
   "clearAll": "Clear all filters",
+  "all": "All",
+  "done": "Done",
+  "remove": "Remove",
+  "searchPlaceholder": "Search table...",
+  "clearSearch": "Clear search",
+  "recentSearches": "Recent searches",
+  "filterBy": "Filter by {{column}}",
+  "savedFilters": {
+    "button": "Filters",
+    "title": "Saved filters",
+    "saved": "Saved filters for this table",
+    "none": "No saved filters yet.",
+    "chooseColumn": "Choose column",
+    "chooseValue": "Choose value",
+    "addCondition": "Add condition",
+    "namePlaceholder": "Filter name",
+    "save": "Save filter",
+    "delete": "Delete saved filter"
+  },
+  "zoom": {
+    "title": "Zoom table only",
+    "out": "Zoom out",
+    "in": "Zoom in",
+    "level": "Table zoom level"
+  },
+  "rowSplit": {
+    "button": "Split rows",
+    "enabled": "Split rows enabled",
+    "enableTitle": "Show each record across two rows",
+    "disableTitle": "Disable split rows"
+  },
+  "columnSplit": {
+    "button": "Split columns",
+    "enabled": "Split columns enabled",
+    "enableTitle": "Split the table into two panes",
+    "configureTitle": "Configure split columns"
+  },
+  "columns": {
+    "manage": "Show, hide and reorder columns",
+    "button": "Columns ({{count}})"
+  },
   "selectPage": "Select current page",
   "selectionOptions": "Selection options",
   "selectAll": "Select all customers",
@@ -23,6 +64,11 @@ export default {
   "clearAllSelection": "Clear all selection",
   "clearLoaded": "Clear loaded selection",
   "empty": "No data available",
+  "emptyHint": "Try changing the search or filter criteria.",
+  "loadError": "Could not load data",
+  "loadErrorMessage": "An error occurred while loading data.",
+  "copy": "Copy",
+  "copied": "Copied",
   "realtimeConnecting": "Connecting to live updates",
   "realtimeError": "Live connection failed",
   "realtimeDisconnected": "Live updates disconnected",
@@ -120,6 +166,12 @@ export default {
     "selectedColumns": "Selected columns: {{count}}"
   },
   "dateFilter": {
+    "title": "Date filter",
+    "button": "Date filter",
+    "description": "Choose a date column and the required range.",
+    "column": "Date column",
+    "instantApply": "The filter is applied as soon as the column and range are selected.",
+    "noColumns": "This table has no date columns",
     "operatorFor": "Filter operator for {{column}}",
     "startDate": "Start date",
     "endDate": "End date",
