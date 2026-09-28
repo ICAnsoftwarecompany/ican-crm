@@ -3,6 +3,12 @@ import { useCallback, useMemo } from 'react'
 import { useNotificationCenterStore } from '../../features/notifications'
 import { buildWhatsappMessageNotification } from '../../features/notifications/utils/notificationPayloads'
 import { playWhatsappNotificationSound } from '../../features/conversations/utils/whatsappNotificationSound'
+import {
+  isNewIncomingWhatsappMessage,
+  resolveWhatsappConversation,
+  resolveWhatsappConversationId,
+  resolveWhatsappMessage,
+} from '../../features/conversations/channels/whatsapp/realtimeEvents'
 import { useRealtimeChannel } from './useRealtimeChannel'
 
 const DEFAULT_WHATSAPP_CONVERSATION_EVENTS = [
@@ -19,44 +25,6 @@ const DEFAULT_WHATSAPP_CONVERSATION_EVENTS = [
   '.whatsapp.message.reaction.deleted',
   '.whatsapp.conversation.updated',
 ]
-
-function resolveWhatsappMessage(payload = {}) {
-  const data = payload.data && typeof payload.data === 'object' ? payload.data : {}
-  return payload.message || data.message || payload.whatsapp_message || data.whatsapp_message || null
-}
-
-function resolveWhatsappConversation(payload = {}) {
-  const data = payload.data && typeof payload.data === 'object' ? payload.data : {}
-  return payload.conversation || data.conversation || null
-}
-
-function resolveWhatsappConversationId(payload = {}, fallback = '') {
-  const data = payload.data && typeof payload.data === 'object' ? payload.data : {}
-  const conversation = resolveWhatsappConversation(payload)
-  return (
-    payload.conversation_id ||
-    data.conversation_id ||
-    payload.whatsapp_conversation_id ||
-    data.whatsapp_conversation_id ||
-    conversation?.id ||
-    fallback ||
-    ''
-  )
-}
-
-function isNewIncomingWhatsappMessage(message = {}, eventName = '') {
-  const normalizedEvent = String(eventName || '').toLowerCase()
-  const direction = String(message?.direction || '').toLowerCase()
-  const status = String(message?.status || '').toLowerCase()
-
-  if (normalizedEvent.includes('reaction')) return false
-  if (normalizedEvent.includes('read') || normalizedEvent.includes('seen') || normalizedEvent.includes('delivered')) return false
-  if (normalizedEvent.includes('status')) return false
-  if (direction === 'outbound' || direction === 'outgoing' || direction === 'sent') return false
-  if (status === 'read' || status === 'seen' || status === 'delivered') return false
-
-  return Boolean(message?.id || message?.message_id || message?.whatsapp_message_id || message?.body || message?.text || message?.attachments)
-}
 
 export function useWhatsappRealtime({
   conversationId = '',

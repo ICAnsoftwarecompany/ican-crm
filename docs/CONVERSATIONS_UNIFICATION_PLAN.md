@@ -1,6 +1,6 @@
 # Conversations Unification Plan (Step 2)
 
-Status: **APPROVED 2026-09-28** (D1–D4 as recommended). Phase 1 in progress.
+Status: **APPROVED 2026-09-28** (D1–D4 as recommended). Phase 1 DONE (see §9); Phase 2 awaiting review.
 Date: 2026-09-28. Policy: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 Goal: WhatsApp, Messenger and Gmail share one normalized data model and one set of UI
@@ -221,3 +221,28 @@ Verification per phase: `npm run lint`, `npm run check:i18n`, `npm run check:arc
 - `normalizeRealtimeEvent` → cache update reducer shared by all consumers (today each consumer owns its `setQueryData` logic).
 - Enforce the 24h messaging window in the composer using `capabilities.messagingWindowHours`.
 - Move the Messenger/WhatsApp/Gmail navbar buttons and sidebar panels used by `shared/components/layout` into `src/app` (existing app-shell exception).
+
+---
+
+## 9. Progress log
+
+### Phase 1 — done (2026-09-28)
+
+Created (all under `src/features/conversations`):
+- `model/conversationModel.js` — JSDoc typedefs: Conversation, Message, Attachment, Contact, RealtimeEvent, ChannelCapabilities.
+- `channels/{whatsapp,messenger,gmail}/adapter.js`, `channels/registry.js` (`getChannelAdapter`, `hasChannelAdapter`, `CONVERSATION_CHANNELS`).
+- `channels/conversationFields.js` — shared pickers for unreadCount / updatedAt / status / linked ids / assignedUser.
+- `channels/{whatsapp,gmail}/realtimeEvents.js` — D3: resolvers moved verbatim from the realtime hooks.
+- `utils/conversationHelpers.js` — `sortMessagesByTime`, `upsertMessageById`, `filterConversations`.
+- Tests: 3 adapter suites, registry, helper equivalence (`channels/__fixtures__/conversationFixtures.js`).
+
+Changed: `realtime/hooks/useWhatsappRealtime.js` and `useGmailRealtime.js` now import the moved resolvers (no logic change). No other consumer changed; adapters are not yet used by the app.
+
+Deviations from §4, decided while implementing:
+- WhatsApp: `isNewIncomingWhatsappMessage` was moved with the resolvers too (pure, needed for `normalizeRealtimeEvent.isNewIncomingMessage`).
+- Gmail: the conversation-id expression inside `useGmailRealtime` became `resolveGmailConversationId(payload, fallback)` (same expression). `getMessageId` returns `normalizeGmailMessage(message).id` instead of copying the expression.
+- Messenger: no `extractMessengerEntity` exists in the feature; `extractEntity` uses the same expression as `messengerChatUtils.getConversationInfoFromResponse` (which moves in Phase 2). `queryKeys.workspace.conversations` is a function returning the legacy constant array for a uniform interface.
+- `Contact.name` = the channel title for WhatsApp/Messenger (contact-first fallbacks); for Gmail it is `participant_name || customer.name || lead.name`. `Conversation.status` defaults to `'open'` when the API sends none (the UI already treats anything but `closed` as open).
+- Capabilities verified against the current UI: only Messenger removes reactions; no channel assigns users in the UI (`messengerApi.assignUser` has no caller), so `assign: false` everywhere; Gmail supports attachments, not replies/reactions.
+- Found while testing helpers: WhatsApp trims `status` before comparing to `closed`, Gmail/Messenger do not. `filterConversations` takes `isClosed` so each channel keeps its behavior when rewired in Phase 4.
+- The adapter filter for Messenger comes from `components/MessengerConversationFilters.jsx`; moving that pure function to `utils/` is a Phase 4 candidate.

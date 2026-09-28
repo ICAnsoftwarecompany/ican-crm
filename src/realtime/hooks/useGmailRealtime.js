@@ -1,11 +1,8 @@
 import { useCallback } from 'react'
 import { useNotificationCenterStore } from '../../features/notifications'
 import { buildGmailMessageNotification } from '../../features/notifications/utils/notificationPayloads'
+import { resolveGmailConversationId, resolveGmailMessage } from '../../features/conversations/channels/gmail/realtimeEvents'
 import { useRealtimeChannel } from './useRealtimeChannel'
-
-function resolveGmailMessage(payload = {}) {
-  return payload.message || payload.data?.message || payload
-}
 
 export function useGmailRealtime({
   conversationId = '',
@@ -17,7 +14,7 @@ export function useGmailRealtime({
   const handleEvent = useCallback(
     (payload = {}) => {
       const message = resolveGmailMessage(payload)
-      const eventConversationId = payload.conversation_id || payload.conversation?.id || conversationId
+      const eventConversationId = resolveGmailConversationId(payload, conversationId)
 
       addNotification(buildGmailMessageNotification(message, {
         id: `gmail:${eventConversationId || 'conversation'}:${message.id || message.gmail_message_id || message.received_at || Date.now()}`,
