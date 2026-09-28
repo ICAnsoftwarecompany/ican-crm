@@ -1,6 +1,6 @@
 # Conversations Unification Plan (Step 2)
 
-Status: **APPROVED 2026-09-28** (D1–D4 as recommended). Phase 1 DONE (see §9); Phase 2 awaiting review.
+Status: **APPROVED 2026-09-28** (D1–D4 as recommended). Phases 1–2 DONE (see §9); Phase 3 awaiting review.
 Date: 2026-09-28. Policy: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 Goal: WhatsApp, Messenger and Gmail share one normalized data model and one set of UI
@@ -246,3 +246,19 @@ Deviations from §4, decided while implementing:
 - Capabilities verified against the current UI: only Messenger removes reactions; no channel assigns users in the UI (`messengerApi.assignUser` has no caller), so `assign: false` everywhere; Gmail supports attachments, not replies/reactions.
 - Found while testing helpers: WhatsApp trims `status` before comparing to `closed`, Gmail/Messenger do not. `filterConversations` takes `isClosed` so each channel keeps its behavior when rewired in Phase 4.
 - The adapter filter for Messenger comes from `components/MessengerConversationFilters.jsx`; moving that pure function to `utils/` is a Phase 4 candidate.
+
+### Phase 2 — done (2026-09-28)
+
+2a (pure move): `pages/customers/components/CustomerDetailsDrawer/floating-chats/**` (13 files) → `features/conversations/components/floating-chat/**`, same internal layout; only import paths changed. Consumers updated: `CustomerDetailsDrawer.jsx` (4 imports) and `MessengerChatThread.jsx` (2 imports, removing the features → pages dependency and the page↔feature cycle F8). No shims (nothing outside `src` used the old path). Docs updated: drawer architecture doc, Messenger chat reference, CLAUDE.md.
+
+2b (adapters in the floating hooks, straight replacements only):
+- `useWhatsappFloatingChat`: query keys → `queryKeys.floating.*`; `whatsappIntegrationApi` → `adapter.api` (same object); `extractWhatsappEntity/List`, `getWhatsappConversationId/MessageId` → adapter equivalents; normalize+sort → `adapter.normalizeMessages`.
+- `useMessengerFloatingChat`: query keys → `queryKeys.floating.*`; `messengerApi` → `adapter.api`; `getConversationInfoFromResponse` → `adapter.extractEntity`; normalize+sort → `adapter.normalizeMessages`; the six realtime getters → `adapter.normalizeRealtimeEvent` (same pure functions, same values).
+- `messengerChatUtils.js`: the duplicate `normalizeMessengerMessage`, `sortMessagesAscending`, `getConversationInfoFromResponse` (F5) were removed after an equivalence test against the feature utils/adapter passed (4 conversation-info variants × 7 messages incl. null/empty).
+- Normalized messages now also carry `channel`, `conversationId`, `source`; verified that no renderer reads or spreads these names.
+
+Deliberately NOT replaced (not straight replacements):
+- Messenger `conversationId = conversation?.id`: `getMessengerConversationId` also accepts `conversation_id`/`conversation.id`, which would enable queries that are disabled today.
+- Messenger `getMessagesFromResponse`: `extractMessengerMessages` has an extra `data.data.data` fallback.
+- Messenger `getMessageIdentity` (`id || message_id`, no composite fallback) and both hooks' cache-merge helpers (`upsertMessageIntoCachedResponse`, `upsertMessageIntoInfiniteData`, patch/reaction appliers) → Phase 4 candidates.
+- WhatsApp send helpers (`getWhatsappPhoneNumberId`, `getWhatsappRecipient`) are floating-chat specific.

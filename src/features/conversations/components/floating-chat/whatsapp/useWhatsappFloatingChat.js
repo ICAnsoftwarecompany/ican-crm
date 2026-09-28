@@ -1,19 +1,13 @@
 import { useCallback, useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { whatsappIntegrationApi } from '../../../../integrations/whatsapp'
+import { whatsappAdapter } from '../../../channels/whatsapp/adapter'
 import { playWhatsappNotificationSound } from '../../../utils/whatsappNotificationSound'
 import { useRealtimeMessageHighlight } from '../../../hooks/useRealtimeMessageHighlight'
 import { useWhatsappRealtime } from '../../../../../realtime/hooks/useWhatsappRealtime'
-import {
-  extractWhatsappEntity,
-  extractWhatsappList,
-  getWhatsappConversationId,
-  getWhatsappMessageId,
-  normalizeWhatsappMessage,
-  sortWhatsappMessagesAscending,
-  upsertWhatsappMessage,
-} from '../../../utils/whatsappConversations'
+import { upsertWhatsappMessage } from '../../../utils/whatsappConversations'
+
+const { api: whatsappApi, queryKeys } = whatsappAdapter
 
 function getLeadId(customer) {
   return customer?.lead?.id || customer?.lead_id || ''
@@ -57,7 +51,7 @@ function isIncomingMessage(message = {}) {
 }
 
 function upsertMessageIntoCachedResponse(current, message) {
-  const messages = extractWhatsappList(current)
+  const messages = whatsappAdapter.extractMessages(current)
   const nextMessages = upsertWhatsappMessage(messages, message)
 
   if (Array.isArray(current)) return nextMessages
@@ -74,49 +68,47 @@ export function useWhatsappFloatingChat(customer, open) {
   const customerId = getCustomerId(customer)
   const lookupMode = leadId ? 'lead' : 'customer'
   const lookupId = leadId || customerId
-  const lookupKey = ['whatsapp-chat', lookupMode, lookupId, 'conversation']
+  const lookupKey = queryKeys.floating.conversationLookup(lookupMode, lookupId)
 
   const conversationQuery = useQuery({
     queryKey: lookupKey,
     queryFn: () => (
       leadId
-        ? whatsappIntegrationApi.getLeadConversation(leadId)
-        : whatsappIntegrationApi.getCustomerConversation(customerId)
+        ? whatsappApi.getLeadConversation(leadId)
+        : whatsappApi.getCustomerConversation(customerId)
     ),
     enabled: Boolean(open && lookupId),
     select: getConversationFromResponse,
   })
 
   const conversation = conversationQuery.data
-  const conversationId = getWhatsappConversationId(conversation)
-  const infoKey = ['whatsapp-chat', 'conversation-info', conversationId]
-  const messagesKey = ['whatsapp-chat', 'conversation-messages', conversationId]
+  const conversationId = whatsappAdapter.getConversationId(conversation)
+  const infoKey = queryKeys.floating.conversationInfo(conversationId)
+  const messagesKey = queryKeys.floating.conversationMessages(conversationId)
 
   const conversationInfoQuery = useQuery({
     queryKey: infoKey,
-    queryFn: () => whatsappIntegrationApi.getConversationInfo(conversationId),
+    queryFn: () => whatsappApi.getConversationInfo(conversationId),
     enabled: Boolean(open && conversationId),
-    select: extractWhatsappEntity,
+    select: whatsappAdapter.extractEntity,
   })
 
   const messagesQuery = useQuery({
     queryKey: messagesKey,
-    queryFn: () => whatsappIntegrationApi.getConversationMessages(conversationId, { per_page: 50 }),
+    queryFn: () => whatsappApi.getConversationMessages(conversationId, { per_page: 50 }),
     enabled: Boolean(open && conversationId),
-    select: extractWhatsappList,
+    select: whatsappAdapter.extractMessages,
   })
 
   const conversationInfo = conversationInfoQuery.data || conversation
   const messages = useMemo(() => (
-    sortWhatsappMessagesAscending((messagesQuery.data || []).map((message) => (
-      normalizeWhatsappMessage(message, conversationInfo)
-    )))
+    whatsappAdapter.normalizeMessages(messagesQuery.data || [], conversationInfo)
   ), [conversationInfo, messagesQuery.data])
   const phoneNumberId = getWhatsappPhoneNumberId(conversationInfo, customer)
   const recipient = getWhatsappRecipient(conversationInfo, customer)
 
   const sendMutation = useMutation({
-    mutationFn: ({ text, attachment, replyToMessageId }) => whatsappIntegrationApi.sendMessage({
+    mutationFn: ({ text, attachment, replyToMessageId }) => whatsappApi.sendMessage({
       phone_number_id: phoneNumberId,
       to: recipient,
       message: text,
@@ -130,7 +122,7 @@ export function useWhatsappFloatingChat(customer, open) {
   })
 
   const reactionMutation = useMutation({
-    mutationFn: ({ messageId, reaction }) => whatsappIntegrationApi.sendReaction({
+    mutationFn: ({ messageId, reaction }) => whatsappApi.sendReaction({
       phone_number_id: phoneNumberId,
       to: recipient,
       message_id: messageId,
@@ -160,7 +152,7 @@ export function useWhatsappFloatingChat(customer, open) {
       return
     }
 
-    const messageId = getWhatsappMessageId(message)
+    const messageId = whatsappAdapter.getMessageId(message)
     highlightMessage(messageId)
 
     if (isIncomingMessage(message)) {

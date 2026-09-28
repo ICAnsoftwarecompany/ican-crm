@@ -1,35 +1,28 @@
 import { useCallback, useMemo } from 'react'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { messengerApi } from '../../../api/messengerApi'
+import { messengerAdapter } from '../../../channels/messenger/adapter'
 import { playMessengerNotificationSound } from '../../../utils/messengerNotificationSound'
-import {
-  applyMessengerReactionToMessage,
-  getMessengerRealtimeConversation,
-  getMessengerRealtimeMessage,
-  getMessengerRealtimeMessagePatch,
-  getMessengerRealtimeReaction,
-  getMessengerRealtimeReactionMessageId,
-} from '../../../utils/messengerConversations'
+import { applyMessengerReactionToMessage } from '../../../utils/messengerConversations'
 import { useRealtimeMessageHighlight } from '../../../hooks/useRealtimeMessageHighlight'
 import { useMessengerRealtime } from '../../../../../realtime/hooks/useMessengerRealtime'
 import {
   getConversationFromResponse,
-  getConversationInfoFromResponse,
   getLeadId,
   getMessagesFromResponse,
   getMetaFromResponse,
-  normalizeMessengerMessage,
-  sortMessagesAscending,
 } from './messengerChatUtils'
+
+const { api: messengerApi, queryKeys } = messengerAdapter
 
 function buildQueryKeys(leadId, conversationId) {
   return {
-    leadConversation: ['messenger-chat', 'lead-conversation', leadId],
-    info: ['messenger-chat', 'conversation-info', conversationId],
-    messagesBase: ['messenger-chat', 'conversation-messages', conversationId],
+    leadConversation: queryKeys.floating.leadConversation(leadId),
+    info: queryKeys.floating.conversationInfo(conversationId),
+    messagesBase: queryKeys.floating.conversationMessages(conversationId),
   }
 }
+
 function getMessageIdentity(message) {
   return message?.id || message?.message_id
 }
@@ -293,7 +286,7 @@ export function useMessengerFloatingChat(customer, open) {
     queryKey: conversationKeys.info,
     queryFn: () => messengerApi.getConversationInfo(conversationId),
     enabled: Boolean(open && conversationId),
-    select: getConversationInfoFromResponse,
+    select: messengerAdapter.extractEntity,
   })
 
   const messagesQuery = useInfiniteQuery({
@@ -312,9 +305,7 @@ export function useMessengerFloatingChat(customer, open) {
   const conversationInfo = conversationInfoQuery.data
   const messages = useMemo(() => {
     const rawMessages = (messagesQuery.data?.pages || []).flatMap(getMessagesFromResponse)
-    return sortMessagesAscending(rawMessages.map((message) => (
-      normalizeMessengerMessage(message, conversationInfo)
-    )))
+    return messengerAdapter.normalizeMessages(rawMessages, conversationInfo)
   }, [conversationInfo, messagesQuery.data])
 
   const sendMutation = useMutation({
@@ -359,8 +350,13 @@ export function useMessengerFloatingChat(customer, open) {
   }, [conversationId, conversationKeys.messagesBase, queryClient])
 
   const handleRealtimeMessage = useCallback((payload = {}, eventName = '') => {
-    const message = getMessengerRealtimeMessage(payload)
-    const conversationPatch = getMessengerRealtimeConversation(payload)
+    const {
+      message,
+      conversation: conversationPatch,
+      messagePatch,
+      reaction,
+      reactionMessageId,
+    } = messengerAdapter.normalizeRealtimeEvent(payload, eventName)
 
     if (conversationPatch && conversationId) {
       queryClient.setQueryData(
@@ -371,9 +367,6 @@ export function useMessengerFloatingChat(customer, open) {
     }
 
     if (!message) {
-      const messagePatch = getMessengerRealtimeMessagePatch(payload)
-      const reaction = getMessengerRealtimeReaction(payload)
-      const reactionMessageId = getMessengerRealtimeReactionMessageId(payload)
       if (messagePatch) {
         queryClient.setQueryData(
           conversationKeys.messagesBase,
