@@ -8,10 +8,10 @@ import {
   MESSENGER_CONVERSATION_INFO_QUERY_KEY,
   MESSENGER_CONVERSATION_MESSAGES_QUERY_KEY,
 } from '../utils/messengerConversations'
-import { playMessengerNotificationSound } from '../utils/messengerNotificationSound'
+import { playMessengerNotificationSound } from '../utils/notificationSound'
 import { useMessengerRealtimeMessageHandler } from './useMessengerRealtimeMessageHandler'
 
-vi.mock('../utils/messengerNotificationSound', () => ({ playMessengerNotificationSound: vi.fn() }))
+vi.mock('../utils/notificationSound', () => ({ playMessengerNotificationSound: vi.fn() }))
 
 function renderHandler(queryClient, props) {
   const wrapper = ({ children }) => createElement(QueryClientProvider, { client: queryClient }, children)

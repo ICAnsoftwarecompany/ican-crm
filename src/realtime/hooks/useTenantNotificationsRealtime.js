@@ -4,7 +4,7 @@ import { useAuthStore } from '../../store/authStore'
 import { resolveTenantId } from '../../services/tenantResolver'
 import { useNotificationCenterStore } from '../../features/notifications'
 import { buildNotificationFromPayload, detectNotificationChannel } from '../../features/notifications/utils/notificationPayloads'
-import { playWhatsappNotificationSound } from '../../features/conversations/utils/whatsappNotificationSound'
+import { playWhatsappNotificationSound } from '../../features/conversations/utils/notificationSound'
 import { useRealtimeChannel } from './useRealtimeChannel'
 
 function normalizeValue(value) {

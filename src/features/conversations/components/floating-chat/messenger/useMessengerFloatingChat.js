@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { messengerAdapter } from '../../../channels/messenger/adapter'
-import { playMessengerNotificationSound } from '../../../utils/messengerNotificationSound'
+import { playMessengerNotificationSound } from '../../../utils/notificationSound'
 import { applyMessengerReactionToMessage } from '../../../utils/messengerConversations'
 import { useRealtimeMessageHighlight } from '../../../hooks/useRealtimeMessageHighlight'
 import { useMessengerRealtime } from '../../../../../realtime/hooks/useMessengerRealtime'

@@ -18,7 +18,7 @@ import {
   upsertMessengerConversation,
 } from '../utils/messengerConversations'
 import { mergeInfoIntoCachedResponse, upsertMessageIntoCachedResponse } from '../utils/messengerCachedResponses'
-import { playMessengerNotificationSound } from '../utils/messengerNotificationSound'
+import { playMessengerNotificationSound } from '../utils/notificationSound'
 
 /**
  * Realtime Messenger message handler shared by MessengerConversationsWorkspace and

@@ -19,7 +19,7 @@ import {
   isMessengerNotification,
   upsertMessengerConversation,
 } from '../utils/messengerConversations'
-import { playMessengerNotificationSound } from '../utils/messengerNotificationSound'
+import { playMessengerNotificationSound } from '../utils/notificationSound'
 
 export function useGlobalMessengerNotifications() {
   const navigate = useNavigate()

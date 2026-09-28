@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 
 import { useNotificationCenterStore } from '../../features/notifications'
 import { buildWhatsappMessageNotification } from '../../features/notifications/utils/notificationPayloads'
-import { playWhatsappNotificationSound } from '../../features/conversations/utils/whatsappNotificationSound'
+import { playWhatsappNotificationSound } from '../../features/conversations/utils/notificationSound'
 import {
   isNewIncomingWhatsappMessage,
   resolveWhatsappConversation,

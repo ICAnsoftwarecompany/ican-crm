@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { whatsappAdapter } from '../../../channels/whatsapp/adapter'
-import { playWhatsappNotificationSound } from '../../../utils/whatsappNotificationSound'
+import { playWhatsappNotificationSound } from '../../../utils/notificationSound'
 import { useRealtimeMessageHighlight } from '../../../hooks/useRealtimeMessageHighlight'
 import { useWhatsappRealtime } from '../../../../../realtime/hooks/useWhatsappRealtime'
 import { upsertWhatsappMessage } from '../../../utils/whatsappConversations'

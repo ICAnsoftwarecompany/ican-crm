@@ -94,7 +94,7 @@
   - normalize الرسائل
   - upsert للمحادثات والرسائل داخل الكاش
 
-- `src/features/conversations/utils/messengerNotificationSound.js`
+- `src/features/conversations/utils/notificationSound.js`
   تشغيل صوت التنبيه مع منع التكرار عند وجود أكثر من واجهة مفتوحة.
 
 ---
@@ -282,7 +282,7 @@ export const MESSENGER_NOTIFICATION_SOUND_PATH = '/notifications/Messenger - Qui
 - FloatingMessengerChat
 - إشعار عام
 
-تم إضافة dedupe logic داخل `messengerNotificationSound.js` حتى لا يُشغل الصوت عدة مرات لنفس الرسالة.
+تم إضافة dedupe logic داخل `notificationSound.js` (`playMessengerNotificationSound`) حتى لا يُشغل الصوت عدة مرات لنفس الرسالة.
 
 يعتمد ذلك على `messageId` أو مفتاح مماثل.
 
@@ -415,6 +415,6 @@ queryClient.setQueryData(
   - `useMessengerRealtimeMessageHandler.js` (مشترك بين `MessengerConversationsWorkspace.jsx` و `MessengerSidebarPanel.jsx`)
 
 - الصوت:
-  - `messengerNotificationSound.js`
+  - `notificationSound.js` (`playMessengerNotificationSound`)
 
 هذا هو المرجع الأساسي الحالي لماسنجر شات داخل المشروع.

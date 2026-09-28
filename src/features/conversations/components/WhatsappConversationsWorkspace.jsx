@@ -5,7 +5,7 @@ import { CheckCheck, ExternalLink, LayoutTemplate, Search, UserPlus, UserRound, 
 import { toast } from 'sonner'
 
 import { useWhatsappRealtime } from '../../../realtime/hooks/useWhatsappRealtime'
-import { playWhatsappNotificationSound } from '../utils/whatsappNotificationSound'
+import { playWhatsappNotificationSound } from '../utils/notificationSound'
 import { useWhatsappConversationInfo, useWhatsappConversationMutations, useWhatsappConversations, useWhatsappMessages } from '../hooks/useWhatsappConversations'
 import {
   WHATSAPP_CONVERSATIONS_QUERY_KEY,
