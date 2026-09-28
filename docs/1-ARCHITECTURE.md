@@ -77,7 +77,7 @@ app / pages  ->  features  ->  shared / services
 - **httpClient:** `services/httpClient.js` is the only Axios instance. Its request interceptor adds `Authorization: Bearer <token>` (from `authStore`) and the query parameter `api_password`. A 401 sets `sessionRefreshNeeded` and dispatches `ican:session-expired` (handled by `features/auth/components/SessionRefreshModal.jsx`). It throws at import time when `VITE_API_PASSWORD` is missing — mock it in tests.
 - **api_password:** `VITE_*` values are bundled into the browser. `VITE_API_PASSWORD` is a public compatibility value, **not a secret**. Never publish its value in docs. Replacing it needs backend work; do not change the contract silently.
 - **Auth state:** `store/authStore.js` persists `{ token, user }` in localStorage under `ican-auth`. Auth API (`features/auth/api/authApi.js`): `POST /api/tenant/auth/signin`, `POST /api/tenant/auth/refresh`, `GET /api/tenant/auth/logout`.
-- **Environment variables:** `VITE_API_ROOT_DOMAIN`, `VITE_API_SCHEME`, `VITE_API_USE_DEV_PROXY`, `VITE_API_DEV_PROXY_TARGET`, `VITE_API_PASSWORD`, `VITE_MAIN_SERVER_URL` (Facebook sub-login only), `VITE_REALTIME_ENABLED`, `VITE_REVERB_APP_KEY`, `VITE_REVERB_HOST`, `VITE_REVERB_ROOT_DOMAIN`, `VITE_REVERB_SCHEME`, `VITE_REVERB_PORT`. See `.env.example`.
+- **Environment variables:** `VITE_API_ROOT_DOMAIN`, `VITE_API_SCHEME`, `VITE_API_USE_DEV_PROXY`, `VITE_API_DEV_PROXY_TARGET`, `VITE_API_PASSWORD`, `VITE_MAIN_SERVER_URL` (Facebook sub-login only), `VITE_REALTIME_ENABLED`, `VITE_REVERB_APP_KEY`, `VITE_REVERB_HOST`, `VITE_REVERB_ROOT_DOMAIN`, `VITE_REVERB_SCHEME`, `VITE_REVERB_PORT`, `VITE_SERVICE_MOCKS` (Customer Service demo data: `auto` | `all` | `none`, see [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md#how-data-flows-mock--live)). See `.env.example`.
 
 ## Realtime
 
@@ -90,13 +90,13 @@ app / pages  ->  features  ->  shared / services
 ## i18n
 
 - One i18next namespace, `common` (`src/i18n.js`, `defaultNS: 'common'`). Resources are split into per-domain modules: `src/locales/{ar,en}/<domain>.js`, each `export default { ... }` holding the subtree of its top-level key. The file name **is** the top-level key: `t('customers.table.name')` → `customers.js` → `table.name`. Never call `useTranslation('customers')`.
-- Current modules (same set in both languages): `actions, activities, app, auth, branding, calendar, callMeetings, campaigns, common, conversations, customers, dashboard, dataTable, dealWorkspace, leads, nav, opportunities, outreachCampaigns, products, proposals, socialMedia, status, tasks, visualFlow, visualFlowDemo, workflow`.
+- Current modules (same set in both languages): `actions, activities, app, auth, branding, calendar, callMeetings, campaigns, common, conversations, customers, dashboard, dataTable, dealWorkspace, leads, nav, opportunities, outreachCampaigns, products, proposals, service, socialMedia, status, tasks, visualFlow, visualFlowDemo, workflow`.
 - Cross-cutting modules only: `actions.js` (generic verbs), `status.js` (shared lead/customer statuses), `common.js` (loading/error/empty/retry/toggles). Feature copy goes into the feature's own module. Engines with lots of copy get their own module (`dataTable.js`, `visualFlow.js`).
 - **New feature copy:** create `src/locales/ar/<feature>.js` and `en/<feature>.js`, import both in their `index.js`, use `t('<feature>.*')`, run `npm run check:i18n`.
 - Translate: labels, actions, toasts, validation, `window.confirm` text, placeholders, `aria-label`, `title`, `alt`, empty/error states. Translate enum **labels**, never backend values: `t(\`proposals.page.status.${status}\`, { defaultValue: status })`.
 - Never translate: endpoints, route paths, backend enum values, IDs, event names, provider IDs, or user-entered data (names, notes, messages, product names, custom statuses).
 - `check:i18n` fails on AR/EN key mismatch, empty values, unregistered module files, or index entries without a file. `src/locales/locales.test.js` guards resource assembly. `check:hardcoded-text` is advisory only.
-- Sub-split a domain module (`locales/en/customers/index.js` + parts) only when one file becomes hard to navigate; the public key path stays the same.
+- Sub-split a domain module only when one file becomes hard to navigate; the public key path stays the same. Pattern (used by `service`): keep the registered file `locales/{ar,en}/service.js` and import parts from a sibling folder `locales/{ar,en}/service/*.js` (the folder is ignored by `check:i18n`'s module scan; only the `.js` file is a module).
 
 ## RTL and LTR
 
@@ -108,7 +108,7 @@ app / pages  ->  features  ->  shared / services
 ## Theme and dark mode
 
 - `store/themeStore.js` (persisted) + `app/providers/ThemeProvider.jsx` toggle the root `.dark` class and apply brand tokens. There is one theme store.
-- Semantic CSS variables in `src/index.css` (light `:root` and `.dark`): `--surface`, `--surface-2`, `--border`, `--text`, `--text-muted`, `--text-light`, `--shell-surface`, `--shell-hover`, `--shell-active`; brand `--brand-primary`, `--brand-primary-l`, `--brand-accent`, `--brand-accent-soft`, `--brand-bg`; AI `--ai-color`, `--ai-bg`, `--ai-border`, `--ai-text`; status `--status-new|contacted|qualified|won|lost`; calendar `--calendar-tasks|meetings|calls|social`; layout `--header-height`, `--sidebar-width`, `--sidebar-collapsed`.
+- Semantic CSS variables in `src/index.css` (light `:root` and `.dark`): `--surface`, `--surface-2`, `--border`, `--text`, `--text-muted`, `--text-light`, `--shell-surface`, `--shell-hover`, `--shell-active`; brand `--brand-primary`, `--brand-primary-l`, `--brand-accent`, `--brand-accent-soft`, `--brand-bg`; AI `--ai-color`, `--ai-bg`, `--ai-border`, `--ai-text`; status `--status-new|contacted|qualified|won|lost`; calendar `--calendar-tasks|meetings|calls|social`; Customer Service `--sla-on-track|at-risk|breached|paused`, `--priority-low|normal|high|urgent`; layout `--header-height`, `--sidebar-width`, `--sidebar-collapsed`.
 - `tailwind.config.js` maps brand/surface/status/AI colors to these variables, so `bg-brand-primary` etc. respond to runtime changes. Hardcoded hex (`bg-[#162847]`) does not.
 - Use variables for adaptable surfaces and text. No new hex colors except intentional brand/status hues. Check hover, focus, selected, disabled, overlays, tables, charts and dialogs in both themes.
 - Tenant brand colors: see [3-FEATURES.md → Settings and appearance](3-FEATURES.md#settings-and-appearance).
@@ -179,7 +179,7 @@ Generic stage board with HTML5 drag-and-drop and optional swimlanes; stages come
 - **Current sections:** Overview (Dashboard) · Sales (`module: 'sales'`: Leads, Customers, Activities, Deals, Proposals) · Growth (`module: 'growth'`: Social Media, Campaigns, Outreach Campaigns, Opportunity Center) · Workspace (Conversations, Tasks, Calendar, Team Chat, Products) · Automation (`module: 'automation'`: Automation Center) · Administration (Teams, Users, Templates, Settings).
 - **Item schema:** `{ id, labelKey, icon, path, end?, activePatterns?, module?, permission?, featureFlag?, badge? }`; sections `{ id, type: 'section', labelKey, hideLabel?, module?, items }`. `path` must be an existing route.
 - **Filtering:** `getVisibleNavigation` applies module → permission → feature flag → drops empty sections. `user.modules`/`user.permissions` are not sent by the backend yet, so everything is visible by design — the frontend never fabricates restrictions. `featureFlag` and `badge` are reserved placeholders.
-- **Extend:** add one entry to `navigation.config.js` plus `nav.*` keys in both locales. Never hardcode items in `Sidebar.jsx`/`Header.jsx`. Do not add a Customer Service section until real pages ship.
+- **Extend:** add one entry to `navigation.config.js` plus `nav.*` keys in both locales. Never hardcode items in `Sidebar.jsx`/`Header.jsx`. The Customer Service section (`module: 'customer_service'`) is added in phase F1 when its first real pages ship; `/service` exists without a nav entry until then.
 
 ### Other shared UI
 
@@ -196,7 +196,8 @@ npm run check:i18n           # AR/EN key parity + locale module registration (ga
 npm run check:architecture   # blocks new shared -> features imports (gate)
 npx vitest run               # finite test run (npm test = watch mode)
 npm run build
-npm run check:all            # lint + i18n + architecture + vitest + build
+npm run check:service        # strict i18n/theme gate for features/service + pages/service (gate)
+npm run check:all            # lint + i18n + architecture + service + vitest + build
 npm run check:theme          # advisory: hardcoded colors
 npm run check:hardcoded-text # advisory: literal UI strings
 ```
@@ -219,10 +220,11 @@ One checklist for every change (human or AI). Report anything you could not veri
 - [ ] Loading, empty and error states handled; permissions and tenant isolation considered.
 
 **Before merge**
-- [ ] `npm run lint`, `npm run check:i18n`, `npm run check:architecture`, `npx vitest run`, `npm run build` all pass (advisory `check:theme` / `check:hardcoded-text` output reviewed).
+- [ ] `npm run lint`, `npm run check:i18n`, `npm run check:architecture`, `npm run check:service`, `npx vitest run`, `npm run build` all pass (advisory `check:theme` / `check:hardcoded-text` output reviewed).
 - [ ] RTL + LTR and light + dark verified, or explicitly reported as not verified.
 - [ ] Existing APIs, payloads, query keys used by realtime, and routes remain compatible.
 - [ ] Update the relevant section in docs/2-SALES.md or docs/3-FEATURES.md in the same change. Do not create new .md files; add a section instead. Architecture or rule changes update this file.
+- [ ] **Exception — Customer Service:** it is large and phased, so it has its own doc `docs/4-CUSTOMER-SERVICE.md` (phase log updated every phase), backend specs in `docs/customer-service/`, and a `README.md` in each `features/service/*` sub-module folder and in `pages/service/`. Keep those in sync in the same change.
 
 ## Adding a new module
 

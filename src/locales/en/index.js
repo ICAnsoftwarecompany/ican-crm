@@ -24,6 +24,7 @@ import visualFlowDemo from './visualFlowDemo.js'
 import calendar from './calendar.js'
 import branding from './branding.js'
 import dealWorkspace from './dealWorkspace.js'
+import service from './service.js'
 
 export default {
   app,
@@ -52,4 +53,5 @@ export default {
   calendar,
   branding,
   dealWorkspace,
+  service,
 }

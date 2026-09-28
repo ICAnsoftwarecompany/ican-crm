@@ -20,7 +20,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 - [AI agent](#ai-agent)
 - [Products and services](#products-and-services)
 - [Settings and appearance](#settings-and-appearance)
-- [Customer Service — PLANNED](#customer-service--planned)
+- [Customer Service](#customer-service)
 
 ---
 
@@ -193,25 +193,30 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 - **API:** definitions, users and integrations APIs (see [2-SALES.md → Statuses, tags and pipeline](2-SALES.md#statuses-tags-and-pipeline), [2-SALES.md → Teams and users](2-SALES.md#teams-and-users), [Integrations](#integrations)); branding has no backend yet. Proposed: `GET /api/tenant/branding` → `{ brandPrimary, brandAccent }`, `PUT /api/tenant/branding` (6-digit hex, tenant-scoped); only `brandingApi.js` should change.
 - **Known issues:** brand colors do not sync across devices/users; only `Button` and `SettingsSidebar` read brand tokens — screens with hardcoded brand hex do not follow the picked colors.
 
-## Customer Service — PLANNED
+## Customer Service
 
-**Status:** PLANNED — no routes, navigation section or code yet.
+**Status:** PARTIAL — F0 Foundation done (mock data only). Full domain doc: [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md).
 
-Customer Service is a navigation area and a set of **new** domains that consume existing ones — not a copy of Customers, Tasks, Conversations or Activities.
+**What it does:** Service Operations after the sale — cases/tickets, SLA, service records (bookings, shipments, enrollments, projects), assets and warranty, entitlements, contracts, installments, scheduling, work orders, follow-ups and a customer portal. Works with Sales (contract → handoff) or standalone. Industries are configuration: screens render from the tenant capabilities manifest.
 
-| Capability | Reuse | New domain needed |
-|---|---|---|
-| Customer identity and history | `features/customers`, `features/leads` | — (blocked on the Leads/Customers model decision, see [2-SALES.md → Sales domain known issues](2-SALES.md#sales-domain-known-issues)) |
-| Agent ↔ customer communication (Service Inbox) | `features/conversations` adapters via `getChannelAdapter` | — |
-| Follow-up work items | `features/tasks` | — |
-| Assignment rules, SLA timers, escalation | `features/workflow-engine` (new module definitions, e.g. `ticket.created`, `ticket.sla_breached`) | not a second engine |
-| Agents and teams | `features/teams`, `features/users` | — |
-| Notifications | `features/notifications` + realtime | server-side notifications backend |
-| Support calls/meetings | `features/call-meetings`, `features/activities` | — |
-| Ticket record and status machine | — | **Tickets** |
-| SLA policies and breach tracking | — | **SLA** (sub-concept of Tickets) |
-| Knowledge base | — | **Knowledge Base** |
-| Queues | evaluate `leadAssignmentApi` rule pattern | **Queues** (or extend assignment rules) |
-| Analytics | `features/analytics` (sales dashboard only today) | possibly extend |
+**Code:** `features/service` (public surface `index.js`), `pages/service` (lazy routes in `serviceRoutes.js`), `locales/{ar,en}/service*`.
 
-When it starts: add `features/<domain>` folders, a `customer_service` navigation section (module id reserved), locale modules, and a section in this file.
+**Feature inventory** (source of truth: `features/service/core/constants/serviceModules.js`)
+
+| Feature | Phase | Status | Data |
+|---|---|---|---|
+| Capabilities manifest, terminology, industry templates (demo) | F0 | CURRENT | mock |
+| Service overview `/service` (roadmap, template switcher) | F0 | CURRENT | mock |
+| Contacts & relationships, cases, queues, Conversation → Case, My Work | F1 | PLANNED | — |
+| SLA & escalation, replies & macros, internal KB, CSAT, reports, settings (MVP-1) | F2 | PLANNED | — |
+| Catalog capabilities, service records, assets, warranty, entitlements, contracts, handoffs | F3 | PLANNED | — |
+| Payment plans & installments, collections, scheduling, work orders, COD | F4 | PLANNED | — |
+| Customer portal, imports, follow-up programs, portfolios (MVP-2) | F5 | PLANNED | — |
+| Public KB, quality, template versioning, builders | F6 | PLANNED | — |
+| AI triage, suggestions, summaries, agent, health score | F7 | PLANNED | — |
+
+**Reuses (never duplicates):** `features/customers` (identity), `features/conversations` (channels via `getChannelAdapter` / `index.js`), `features/tasks` (subtasks, follow-up steps), `features/workflow-engine` (automation), `features/teams`/`users`, `features/notifications` + realtime, `shared/components/data-table`, `pipeline-board`, `calendar`.
+
+**API:** all calls go through `createServiceApi(moduleKey)`; while a module is `backend: 'mock'` the request is served by `features/service/mocks` with the real URL and error shape. Contract: [customer-service/SERVICE-MASTER-SPEC.md](customer-service/SERVICE-MASTER-SPEC.md) §51–52.
+
+**Known issues:** no navigation section until F1 pages ship; light/dark and RTL/LTR of `/service` not visually verified yet.

@@ -16,11 +16,12 @@ npm run dev                 # port 3000
 npm run lint
 npm run check:i18n          # ar/en key parity + locale module registration
 npm run check:architecture  # blocks new shared -> features imports
+npm run check:service       # strict i18n/theme gate for features/service + pages/service
 npx vitest run              # finite test run (npm test = watch mode, don't use it in automation)
 npm run build
 ```
 
-All five checks must pass before you say a task is done. Report anything you could not
+All six checks must pass before you say a task is done. Report anything you could not
 verify (e.g. no login/backend available => UI not visually tested).
 
 Do not commit build output (`dist/`), `dist.rar`, or local logs (`.codex/`).
@@ -71,14 +72,16 @@ Legacy/transitional (don't copy these patterns, don't add to them):
 | Calendar | `shared/components/calendar` (engine) + `features/calendar` (sources) | [Calendar](docs/1-ARCHITECTURE.md#calendar) |
 | Realtime | `src/realtime` | [Realtime](docs/1-ARCHITECTURE.md#realtime) |
 | Translations | `src/locales` | [i18n](docs/1-ARCHITECTURE.md#i18n) |
-| Customer Service (tickets/SLA/inbox) | **PLANNED — no code yet** | [Customer Service](docs/3-FEATURES.md#customer-service--planned) |
+| Customer Service / Service Operations (phases F0–F7) | `features/service` (+ `README.md` per sub-module), `pages/service`, `locales/*/service*` | [4-CUSTOMER-SERVICE.md](docs/4-CUSTOMER-SERVICE.md) (phases, rules, phase log), backend spec [docs/customer-service/](docs/customer-service/SERVICE-MASTER-SPEC.md) |
 
 Do not confuse: **campaigns** (paid Meta ads) ≠ **outreach-campaigns** (sending messages).
 `integrations` (connection capabilities) and `meta-integrations` (Meta APIs) overlap — ask before moving code between them.
 
 Policy docs: [docs/1-ARCHITECTURE.md](docs/1-ARCHITECTURE.md) (rules; checklist in
-[Definition of Done](docs/1-ARCHITECTURE.md#definition-of-done)); domain docs [docs/2-SALES.md](docs/2-SALES.md)
-and [docs/3-FEATURES.md](docs/3-FEATURES.md). If docs and code disagree, **the code wins**; historical
+[Definition of Done](docs/1-ARCHITECTURE.md#definition-of-done)); domain docs [docs/2-SALES.md](docs/2-SALES.md),
+[docs/3-FEATURES.md](docs/3-FEATURES.md) and [docs/4-CUSTOMER-SERVICE.md](docs/4-CUSTOMER-SERVICE.md).
+Working on Customer Service: read `features/service/README.md` first; every phase ends with a
+phase-log entry in 4-CUSTOMER-SERVICE.md and updated sub-module READMEs. If docs and code disagree, **the code wins**; historical
 reports were removed (see git history).
 
 ## Non-negotiable rules

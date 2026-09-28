@@ -18,6 +18,7 @@ Open the app from a tenant subdomain (or enable `VITE_API_USE_DEV_PROXY`). `VITE
 npm run lint
 npm run check:i18n
 npm run check:architecture
+npm run check:service
 npx vitest run         # npm test = watch mode
 npm run build
 ```
@@ -27,5 +28,6 @@ npm run build
 1. [docs/1-ARCHITECTURE.md](docs/1-ARCHITECTURE.md) — structure, rules, tenant/auth, realtime, i18n, theme, shared engines, Definition of Done.
 2. [docs/2-SALES.md](docs/2-SALES.md) — sales domain: leads, customers, statuses, assignment, activities, deals, opportunities, proposals.
 3. [docs/3-FEATURES.md](docs/3-FEATURES.md) — conversations, chat, campaigns, outreach, social media, tasks, automation, integrations, settings.
+4. [docs/4-CUSTOMER-SERVICE.md](docs/4-CUSTOMER-SERVICE.md) — Customer Service / Service Operations: phases F0–F7, structure, mock data layer, i18n/theme rules, phase log. Backend specs: [docs/customer-service/](docs/customer-service/).
 
 AI coding agents: see [CLAUDE.md](CLAUDE.md).

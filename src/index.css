@@ -42,6 +42,16 @@
   --calendar-calls:     #F59E0B;
   --calendar-social:    #D946EF;
 
+  /* Service operations (features/service) — SLA state and case priority */
+  --sla-on-track:       #10B981;
+  --sla-at-risk:        #F59E0B;
+  --sla-breached:       #EF4444;
+  --sla-paused:         #64748B;
+  --priority-low:       #64748B;
+  --priority-normal:    #3B82F6;
+  --priority-high:      #F59E0B;
+  --priority-urgent:    #EF4444;
+
   /* Sidebar */
   --sidebar-width:      240px;
   --sidebar-collapsed:  64px;
@@ -68,6 +78,15 @@
   --calendar-meetings:  #38BDF8;
   --calendar-calls:     #FBBF24;
   --calendar-social:    #E879F9;
+
+  --sla-on-track:       #34D399;
+  --sla-at-risk:        #FBBF24;
+  --sla-breached:       #F87171;
+  --sla-paused:         #94A3B8;
+  --priority-low:       #94A3B8;
+  --priority-normal:    #60A5FA;
+  --priority-high:      #FBBF24;
+  --priority-urgent:    #F87171;
 }
 
 * {

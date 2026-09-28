@@ -1,0 +1,53 @@
+import httpClient from '../../../../services/httpClient'
+import { getServiceModule } from '../constants/serviceModules'
+
+/**
+ * Which modules are served by the mock layer.
+ *
+ * `VITE_SERVICE_MOCKS`:
+ * - `auto` (default): a module is mocked while its `backend` is 'mock' in serviceModules.js
+ * - `all`: every Service module is mocked (demos, backend down)
+ * - `none`: nothing is mocked (verify against the real backend)
+ *
+ * @param {string} moduleKey
+ * @param {string} [mode]
+ */
+export function isModuleMocked(moduleKey, mode = import.meta.env.VITE_SERVICE_MOCKS || 'auto') {
+  if (mode === 'all') return true
+  if (mode === 'none') return false
+  const definition = getServiceModule(moduleKey)
+  return !definition || definition.backend !== 'live'
+}
+
+/** Lazily loaded so mock code and seed data stay out of the main bundle. */
+function lazyMockAdapter(config) {
+  return import('../../mocks/mockAdapter').then(({ mockAdapter }) => mockAdapter(config))
+}
+
+/**
+ * @param {string} moduleKey
+ * @param {Object} [config]
+ */
+export function withServiceTransport(moduleKey, config = {}) {
+  return isModuleMocked(moduleKey) ? { ...config, adapter: lazyMockAdapter } : config
+}
+
+/**
+ * HTTP client for one Service sub-module.
+ *
+ * Always goes through the shared `httpClient` (interceptors add the bearer
+ * token and api_password). When the module is mocked, only the Axios adapter
+ * changes — URLs, payloads and error shapes stay exactly as the real API, so
+ * hooks and pages never know the difference.
+ *
+ * @param {string} moduleKey - Key from SERVICE_MODULES.
+ */
+export function createServiceApi(moduleKey) {
+  return {
+    get: (url, config) => httpClient.get(url, withServiceTransport(moduleKey, config)),
+    post: (url, data, config) => httpClient.post(url, data, withServiceTransport(moduleKey, config)),
+    put: (url, data, config) => httpClient.put(url, data, withServiceTransport(moduleKey, config)),
+    patch: (url, data, config) => httpClient.patch(url, data, withServiceTransport(moduleKey, config)),
+    delete: (url, config) => httpClient.delete(url, withServiceTransport(moduleKey, config)),
+  }
+}

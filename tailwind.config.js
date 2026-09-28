@@ -29,6 +29,18 @@ export default {
           won: 'var(--status-won)',
           lost: 'var(--status-lost)',
         },
+        sla: {
+          'on-track': 'var(--sla-on-track)',
+          'at-risk': 'var(--sla-at-risk)',
+          breached: 'var(--sla-breached)',
+          paused: 'var(--sla-paused)',
+        },
+        priority: {
+          low: 'var(--priority-low)',
+          normal: 'var(--priority-normal)',
+          high: 'var(--priority-high)',
+          urgent: 'var(--priority-urgent)',
+        },
         ai: {
           color: 'var(--ai-color)',
           bg: 'var(--ai-bg)',

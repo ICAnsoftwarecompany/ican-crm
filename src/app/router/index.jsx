@@ -74,6 +74,7 @@ import { TemplatesPage } from '../../pages/templates/TemplatesPage'
 import { DataTableDemo } from '../../pages/playground/DataTableDemo'
 import { VisualFlowDemo } from '../../pages/playground/VisualFlowDemo'
 import { InternalChatPage } from '../../pages/chat/InternalChatPage'
+import { serviceRoutes } from '../../pages/service/serviceRoutes'
 
 function NotFoundPage() {
   const { t } = useTranslation()
@@ -215,6 +216,7 @@ export const router = createBrowserRouter([
           { path: 'appearance', element: <AppearanceSettingsPage /> },
         ],
       },
+      serviceRoutes,
       { path: 'integrations/facebook/callback', element: <FacebookCallbackPage /> },
       { path: 'playground/datatable', element: <DataTableDemo /> },
       { path: 'playground/visual-flow', element: <VisualFlowDemo /> },
