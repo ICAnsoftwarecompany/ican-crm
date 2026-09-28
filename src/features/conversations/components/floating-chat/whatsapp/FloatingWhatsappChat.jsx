@@ -1,9 +1,9 @@
 import { toast } from 'sonner'
 import { useState } from 'react'
 
-import { WhatsappLogoIcon } from '../../../../../../features/conversations/components/WhatsappNavbarButton'
-import { WhatsappTemplatesDialog } from '../../../../../../features/conversations/components/WhatsappTemplatesDialog'
-import { requestOpenWhatsappSidebar } from '../../../../../../features/conversations/constants/whatsappSidebarEvents'
+import { WhatsappLogoIcon } from '../../WhatsappNavbarButton'
+import { WhatsappTemplatesDialog } from '../../WhatsappTemplatesDialog'
+import { requestOpenWhatsappSidebar } from '../../../constants/whatsappSidebarEvents'
 import { FloatingCustomerChat } from '../shared/FloatingCustomerChat'
 import { useWhatsappFloatingChat } from './useWhatsappFloatingChat'
 

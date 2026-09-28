@@ -2,7 +2,7 @@ import {
   getMessengerMessageId,
   getMessengerMessageText,
   normalizeMessengerAttachments,
-} from '../../../../../../features/conversations/utils/messengerConversations'
+} from '../../../utils/messengerConversations'
 
 export function getLeadId(customer) {
   return customer?.lead?.id || customer?.lead_id || customer?.id

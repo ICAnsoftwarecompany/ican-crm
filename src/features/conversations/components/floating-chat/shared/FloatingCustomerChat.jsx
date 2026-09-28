@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
-import { useDirection } from '../../../../../../shared/hooks/useDirection'
+import { useDirection } from '../../../../../shared/hooks/useDirection'
 import { FloatingChatHeader } from './FloatingChatHeader'
 import { FloatingChatResizeHandles } from './FloatingChatResizeHandles'
-import { MessengerChatThread } from '../../../../../../features/conversations/components/MessengerChatThread'
+import { MessengerChatThread } from '../../MessengerChatThread'
 import {
   calculateResizedLayout,
   clampLayoutToViewport,

@@ -34,7 +34,7 @@
 - `src/features/conversations/components/MessengerSidebarPanel.jsx`
   شريط جانبي سريع لعرض محادثات ماسنجر والتنقل بينها.
 
-- `src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/FloatingMessengerChat.jsx`
+- `src/features/conversations/components/floating-chat/messenger/FloatingMessengerChat.jsx`
   شات ماسنجر العائم داخل تفاصيل العميل.
 
 ### 2. المكوّنات المشتركة
@@ -46,7 +46,7 @@
   - قائمة الرسائل
   - صندوق الكتابة
 
-- `src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatMessages.jsx`
+- `src/features/conversations/components/floating-chat/shared/FloatingChatMessages.jsx`
   المكوّن المسؤول عن:
   - عرض الرسائل
   - النزول التلقائي لآخر رسالة
@@ -54,14 +54,14 @@
   - تمييز الرسالة الجديدة
   - منطقة scroll الداخلية
 
-- `src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer.jsx`
+- `src/features/conversations/components/floating-chat/shared/FloatingChatComposer.jsx`
   المكوّن المسؤول عن:
   - كتابة الرسائل
   - إرسال الرسالة
   - auto focus
   - auto resize حتى 5 سطور
 
-- `src/pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingCustomerChat.jsx`
+- `src/features/conversations/components/floating-chat/shared/FloatingCustomerChat.jsx`
   حاوية الشات العائم التي تستخدم `MessengerChatThread` داخليًا.
 
 ### 3. Hooks و Realtime
@@ -76,7 +76,7 @@
 - `src/realtime/hooks/useMessengerRealtime.js`
   hook الاشتراك في قنوات ماسنجر realtime.
 
-- `src/pages/customers/components/CustomerDetailsDrawer/floating-chats/messenger/useMessengerFloatingChat.js`
+- `src/features/conversations/components/floating-chat/messenger/useMessengerFloatingChat.js`
   منطق الشات العائم، بما فيه تحديث الرسائل لحظيًا.
 
 - `src/features/conversations/hooks/useRealtimeMessageHighlight.js`

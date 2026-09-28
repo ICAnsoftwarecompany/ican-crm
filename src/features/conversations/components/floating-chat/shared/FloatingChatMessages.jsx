@@ -10,8 +10,8 @@ import {
   Reply,
   SmilePlus,
 } from 'lucide-react'
-import { MessengerMediaGalleryDialog } from '../../../../../../features/conversations/components/MessengerMediaGalleryDialog'
-import { MessengerMessageAttachments } from '../../../../../../features/conversations/components/MessengerMessageAttachments'
+import { MessengerMediaGalleryDialog } from '../../MessengerMediaGalleryDialog'
+import { MessengerMessageAttachments } from '../../MessengerMessageAttachments'
 
 const QUICK_REACTIONS = ['❤️', '👍', '😂', '😮', '😢']
 

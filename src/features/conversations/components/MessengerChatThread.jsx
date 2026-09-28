@@ -16,8 +16,8 @@ import {
   Volume2,
   X,
 } from 'lucide-react'
-import { FloatingChatComposer } from '../../../pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatComposer'
-import { FloatingChatMessages } from '../../../pages/customers/components/CustomerDetailsDrawer/floating-chats/shared/FloatingChatMessages'
+import { FloatingChatComposer } from './floating-chat/shared/FloatingChatComposer'
+import { FloatingChatMessages } from './floating-chat/shared/FloatingChatMessages'
 import { MessengerMediaGalleryDialog } from './MessengerMediaGalleryDialog'
 
 function isOutgoingMessage(message = {}) {

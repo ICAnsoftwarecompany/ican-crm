@@ -1,7 +1,7 @@
 import { toast } from 'sonner'
 
-import { MessengerLogoIcon } from '../../../../../../features/conversations/components/MessengerNavbarButton'
-import { requestOpenMessengerSidebar } from '../../../../../../features/conversations/constants/messengerSidebarEvents'
+import { MessengerLogoIcon } from '../../MessengerNavbarButton'
+import { requestOpenMessengerSidebar } from '../../../constants/messengerSidebarEvents'
 import { FloatingCustomerChat } from '../shared/FloatingCustomerChat'
 import { useMessengerFloatingChat } from './useMessengerFloatingChat'
 

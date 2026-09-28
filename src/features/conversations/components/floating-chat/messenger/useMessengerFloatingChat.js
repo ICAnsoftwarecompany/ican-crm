@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { messengerApi } from '../../../../../../features/conversations/api/messengerApi'
-import { playMessengerNotificationSound } from '../../../../../../features/conversations/utils/messengerNotificationSound'
+import { messengerApi } from '../../../api/messengerApi'
+import { playMessengerNotificationSound } from '../../../utils/messengerNotificationSound'
 import {
   applyMessengerReactionToMessage,
   getMessengerRealtimeConversation,
@@ -10,9 +10,9 @@ import {
   getMessengerRealtimeMessagePatch,
   getMessengerRealtimeReaction,
   getMessengerRealtimeReactionMessageId,
-} from '../../../../../../features/conversations/utils/messengerConversations'
-import { useRealtimeMessageHighlight } from '../../../../../../features/conversations/hooks/useRealtimeMessageHighlight'
-import { useMessengerRealtime } from '../../../../../../realtime/hooks/useMessengerRealtime'
+} from '../../../utils/messengerConversations'
+import { useRealtimeMessageHighlight } from '../../../hooks/useRealtimeMessageHighlight'
+import { useMessengerRealtime } from '../../../../../realtime/hooks/useMessengerRealtime'
 import {
   getConversationFromResponse,
   getConversationInfoFromResponse,

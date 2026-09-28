@@ -210,7 +210,7 @@ alertTitle="..."
 المحادثات العائمة موجودة داخل:
 
 ```txt
-floating-chats/
+src/features/conversations/components/floating-chat/
 ```
 
 القنوات الحالية:
@@ -223,7 +223,7 @@ floating-chats/
 المكون المشترك:
 
 ```txt
-floating-chats/shared/FloatingCustomerChat.jsx
+src/features/conversations/components/floating-chat/shared/FloatingCustomerChat.jsx
 ```
 
 يدعم:

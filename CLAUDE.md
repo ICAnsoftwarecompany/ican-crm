@@ -42,7 +42,7 @@ Dependency direction: `app/pages -> features -> shared/services`. A feature may 
 feature only through that feature's public exports when the domain relationship is real.
 
 Legacy/transitional (don't copy these patterns, don't add to them):
-- `src/pages/customers/**` still contains a lot of business UI (drawer, floating chats,
+- `src/pages/customers/**` still contains a lot of business UI (drawer,
   proposals builder, sales teams, activity timeline). Migrate out incrementally; don't grow it.
 - `shared/components/layout/{MainLayout,Header}.jsx` and `shared/components/data/PageToolbar.jsx`
   are allowed app-shell exceptions that import features.

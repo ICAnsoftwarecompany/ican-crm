@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { whatsappIntegrationApi } from '../../../../../../features/integrations/whatsapp'
-import { playWhatsappNotificationSound } from '../../../../../../features/conversations/utils/whatsappNotificationSound'
-import { useRealtimeMessageHighlight } from '../../../../../../features/conversations/hooks/useRealtimeMessageHighlight'
-import { useWhatsappRealtime } from '../../../../../../realtime/hooks/useWhatsappRealtime'
+import { whatsappIntegrationApi } from '../../../../integrations/whatsapp'
+import { playWhatsappNotificationSound } from '../../../utils/whatsappNotificationSound'
+import { useRealtimeMessageHighlight } from '../../../hooks/useRealtimeMessageHighlight'
+import { useWhatsappRealtime } from '../../../../../realtime/hooks/useWhatsappRealtime'
 import {
   extractWhatsappEntity,
   extractWhatsappList,
@@ -13,7 +13,7 @@ import {
   normalizeWhatsappMessage,
   sortWhatsappMessagesAscending,
   upsertWhatsappMessage,
-} from '../../../../../../features/conversations/utils/whatsappConversations'
+} from '../../../utils/whatsappConversations'
 
 function getLeadId(customer) {
   return customer?.lead?.id || customer?.lead_id || ''
