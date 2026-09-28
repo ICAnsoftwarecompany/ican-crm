@@ -1,4 +1,5 @@
 import { resolveTenantFromHostname } from '../../../services/tenantResolver'
+import { filterConversations, sortMessagesByTime, upsertMessageById } from './conversationHelpers'
 
 export const WHATSAPP_CONVERSATIONS_QUERY_KEY = (params) => ['integrations', 'whatsapp', 'conversations', params || {}]
 export const WHATSAPP_CONVERSATION_INFO_QUERY_KEY = (conversationId) => [
@@ -190,47 +191,20 @@ export function normalizeWhatsappMessage(message = {}, conversationInfo = {}) {
 }
 
 export function sortWhatsappMessagesAscending(messages = []) {
-  return [...messages].sort((first, second) => {
-    const firstTime = new Date(first.createdAt || first.raw?.sent_at || first.raw?.created_at).getTime()
-    const secondTime = new Date(second.createdAt || second.raw?.sent_at || second.raw?.created_at).getTime()
-    return (Number.isNaN(firstTime) ? 0 : firstTime) - (Number.isNaN(secondTime) ? 0 : secondTime)
-  })
+  return sortMessagesByTime(messages, ['sent_at', 'created_at'])
 }
 
 export function upsertWhatsappMessage(messages = [], message) {
-  const messageId = getWhatsappMessageId(message)
-  const exists = messages.some((item) => String(getWhatsappMessageId(item)) === String(messageId))
-  if (exists) {
-    return messages.map((item) => (
-      String(getWhatsappMessageId(item)) === String(messageId) ? { ...item, ...message } : item
-    ))
-  }
-  return [...messages, message]
+  return upsertMessageById(messages, message, getWhatsappMessageId)
 }
 
 export function filterWhatsappConversations(conversations = [], query = '', filters = {}) {
-  const normalizedQuery = normalizeText(query)
-
-  return conversations.filter((conversation) => {
-    if (filters.unreadOnly && Number(conversation.unread_count || 0) <= 0) return false
-    if (filters.unlinkedOnly && (conversation.customer || conversation.customer_id || conversation.customerId)) return false
-    if (filters.closedOnly && normalizeText(conversation.status) !== 'closed') return false
-
-    if (filters.assignedUserId && filters.assignedUserId !== 'all') {
-      const assignedId = String(conversation.assigned_user?.id || conversation.assigned_user_id || '')
-      const assignedName = String(conversation.assigned_user?.name || '')
-      if (filters.assignedUserId !== assignedId && filters.assignedUserId !== assignedName) return false
-    }
-
-    if (!normalizedQuery) return true
-
-    const haystack = [
+  return filterConversations(conversations, query, filters, {
+    matchesQuery: (conversation, normalizedQuery) => [
       getWhatsappConversationTitle(conversation),
       getWhatsappConversationContact(conversation),
       getWhatsappConversationSubtitle(conversation),
       conversation.assigned_user?.name,
-    ].filter(Boolean).join(' ').toLowerCase()
-
-    return haystack.includes(normalizedQuery)
+    ].filter(Boolean).join(' ').toLowerCase().includes(normalizedQuery),
   })
 }

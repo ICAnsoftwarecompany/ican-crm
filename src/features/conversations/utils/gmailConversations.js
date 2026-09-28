@@ -1,3 +1,5 @@
+import { filterConversations, sortMessagesByTime } from './conversationHelpers'
+
 export const GMAIL_CONVERSATIONS_QUERY_KEY = (params) => ['gmail', 'conversations', params || {}]
 export const GMAIL_CONVERSATION_INFO_QUERY_KEY = (conversationId) => [
   'gmail',
@@ -166,30 +168,14 @@ export function normalizeGmailMessage(message = {}, conversationInfo = {}) {
 }
 
 export function sortGmailMessagesAscending(messages = []) {
-  return [...messages].sort((first, second) => {
-    const firstTime = new Date(first.createdAt || first.raw?.received_at || first.raw?.created_at).getTime()
-    const secondTime = new Date(second.createdAt || second.raw?.received_at || second.raw?.created_at).getTime()
-    return (Number.isNaN(firstTime) ? 0 : firstTime) - (Number.isNaN(secondTime) ? 0 : secondTime)
-  })
+  return sortMessagesByTime(messages, ['received_at', 'created_at'])
 }
 
 export function filterGmailConversations(conversations = [], query = '', filters = {}) {
-  const normalizedQuery = String(query || '').trim().toLowerCase()
-
-  return conversations.filter((conversation) => {
-    if (filters.unreadOnly && Number(conversation.unread_count || 0) <= 0) return false
-    if (filters.unlinkedOnly && (conversation.customer || conversation.customer_id || conversation.customerId)) return false
-    if (filters.closedOnly && String(conversation.status || '').toLowerCase() !== 'closed') return false
-
-    if (filters.assignedUserId && filters.assignedUserId !== 'all') {
-      const assignedId = String(conversation.assigned_user?.id || conversation.assigned_user_id || '')
-      const assignedName = String(conversation.assigned_user?.name || '')
-      if (filters.assignedUserId !== assignedId && filters.assignedUserId !== assignedName) return false
-    }
-
-    if (!normalizedQuery) return true
-
-    const haystack = [
+  return filterConversations(conversations, query, filters, {
+    // Gmail compares the status without trimming (WhatsApp trims).
+    isClosed: (conversation) => String(conversation.status || '').toLowerCase() === 'closed',
+    matchesQuery: (conversation, normalizedQuery) => [
       conversation.subject,
       conversation.mailbox_email,
       conversation.participant_email,
@@ -198,8 +184,6 @@ export function filterGmailConversations(conversations = [], query = '', filters
       conversation.customer?.email,
       conversation.assigned_user?.name,
       conversation.last_message?.snippet,
-    ].filter(Boolean).join(' ').toLowerCase()
-
-    return haystack.includes(normalizedQuery)
+    ].filter(Boolean).join(' ').toLowerCase().includes(normalizedQuery),
   })
 }

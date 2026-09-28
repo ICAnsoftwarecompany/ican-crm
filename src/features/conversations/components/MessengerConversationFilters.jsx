@@ -1,4 +1,5 @@
 import { EyeOff, Link2Off, Lock, RotateCcw, UserRound } from 'lucide-react'
+import { filterConversations } from '../utils/conversationHelpers'
 
 export const DEFAULT_MESSENGER_CONVERSATION_FILTERS = {
   unreadOnly: false,
@@ -58,37 +59,31 @@ export function getMessengerAssignedUserOptions(conversations = []) {
 }
 
 export function filterMessengerConversations(conversations = [], query = '', filters = DEFAULT_MESSENGER_CONVERSATION_FILTERS) {
-  const normalizedQuery = normalizeSearch(query)
+  return filterConversations(conversations, query, filters, {
+    isLinked: hasLinkedCustomer,
+    isClosed: isConversationClosed,
+    getAssignedUser: (conversation) => ({
+      id: getAssignedUserId(conversation),
+      name: getAssignedUserName(conversation),
+    }),
+    matchesQuery: (conversation, normalizedQuery) => {
+      const title = normalizeSearch(
+        conversation.contact?.name ||
+        conversation.customer?.name ||
+        conversation.name ||
+        conversation.contact?.phone ||
+        conversation.customer?.phone
+      )
+      const subtitle = normalizeSearch(
+        conversation.last_message?.body ||
+        conversation.last_message?.text ||
+        conversation.contact?.email ||
+        conversation.customer?.email ||
+        conversation.assigned_user?.name
+      )
 
-  return conversations.filter((conversation) => {
-    if (filters.unreadOnly && Number(conversation.unread_count || 0) <= 0) return false
-    if (filters.unlinkedOnly && hasLinkedCustomer(conversation)) return false
-    if (filters.closedOnly && !isConversationClosed(conversation)) return false
-
-    if (filters.assignedUserId && filters.assignedUserId !== 'all') {
-      const assignedId = getAssignedUserId(conversation)
-      const assignedName = getAssignedUserName(conversation)
-      if (filters.assignedUserId !== assignedId && filters.assignedUserId !== assignedName) return false
-    }
-
-    if (!normalizedQuery) return true
-
-    const title = normalizeSearch(
-      conversation.contact?.name ||
-      conversation.customer?.name ||
-      conversation.name ||
-      conversation.contact?.phone ||
-      conversation.customer?.phone
-    )
-    const subtitle = normalizeSearch(
-      conversation.last_message?.body ||
-      conversation.last_message?.text ||
-      conversation.contact?.email ||
-      conversation.customer?.email ||
-      conversation.assigned_user?.name
-    )
-
-    return title.includes(normalizedQuery) || subtitle.includes(normalizedQuery)
+      return title.includes(normalizedQuery) || subtitle.includes(normalizedQuery)
+    },
   })
 }
 

@@ -1,17 +1,27 @@
 import { describe, expect, it } from 'vitest'
-import { filterMessengerConversations } from '../components/MessengerConversationFilters'
-import { filterGmailConversations, sortGmailMessagesAscending } from './gmailConversations'
-import { getMessengerMessageId, sortMessagesAscending, upsertMessengerMessage } from './messengerConversations'
+import * as liveMessengerFilters from '../components/MessengerConversationFilters'
+import * as liveGmail from './gmailConversations'
+import * as liveMessenger from './messengerConversations'
+import * as liveWhatsapp from './whatsappConversations'
+import { getMessengerMessageId } from './messengerConversations'
 import {
-  filterWhatsappConversations,
   getWhatsappConversationContact,
   getWhatsappConversationSubtitle,
   getWhatsappConversationTitle,
   getWhatsappMessageId,
-  sortWhatsappMessagesAscending,
-  upsertWhatsappMessage,
 } from './whatsappConversations'
 import { filterConversations, sortMessagesByTime, upsertMessageById } from './conversationHelpers'
+// Frozen pre-Phase-4b implementations (the live ones now delegate to conversationHelpers).
+import {
+  referenceFilterGmailConversations as filterGmailConversations,
+  referenceFilterMessengerConversations as filterMessengerConversations,
+  referenceFilterWhatsappConversations as filterWhatsappConversations,
+  referenceSortGmailMessagesAscending as sortGmailMessagesAscending,
+  referenceSortMessengerMessagesAscending as sortMessagesAscending,
+  referenceSortWhatsappMessagesAscending as sortWhatsappMessagesAscending,
+  referenceUpsertMessengerMessage as upsertMessengerMessage,
+  referenceUpsertWhatsappMessage as upsertWhatsappMessage,
+} from './__fixtures__/legacyConversationHelpers'
 
 // Normalized messages exercising every time fallback: createdAt, raw.sent_at,
 // raw.received_at, raw.created_at, invalid and missing dates.
@@ -168,5 +178,39 @@ describe('filterConversations', () => {
 
   it('treats a missing filters object as no filters', () => {
     expect(ids(filterConversations(CONVERSATIONS, '', undefined, { matchesQuery: () => true }))).toEqual([1, 2, 3, 4])
+  })
+})
+
+describe('rewired per-channel functions still match the frozen implementations', () => {
+  const UPSERTS = [{ id: 'a', status: 'read' }, { message_id: 'b', text: 'x' }, { id: 'z', text: 'new' }]
+  const EXISTING = [{ id: 'a', text: 'old', status: 'sent' }, { message_id: 'b', text: 'second' }]
+
+  it('sort', () => {
+    expect(liveWhatsapp.sortWhatsappMessagesAscending(MESSAGES)).toEqual(sortWhatsappMessagesAscending(MESSAGES))
+    expect(liveMessenger.sortMessagesAscending(MESSAGES)).toEqual(sortMessagesAscending(MESSAGES))
+    expect(liveGmail.sortGmailMessagesAscending(MESSAGES)).toEqual(sortGmailMessagesAscending(MESSAGES))
+  })
+
+  it.each(UPSERTS)('upsert %j', (message) => {
+    expect(liveWhatsapp.upsertWhatsappMessage(EXISTING, message)).toEqual(upsertWhatsappMessage(EXISTING, message))
+    expect(liveMessenger.upsertMessengerMessage(EXISTING, message)).toEqual(upsertMessengerMessage(EXISTING, message))
+  })
+
+  it.each(CASES)('filters for query %j and filters %j', (query, filters) => {
+    expect(ids(liveWhatsapp.filterWhatsappConversations(CONVERSATIONS, query, filters)))
+      .toEqual(ids(filterWhatsappConversations(CONVERSATIONS, query, filters)))
+    expect(ids(liveGmail.filterGmailConversations(CONVERSATIONS, query, filters)))
+      .toEqual(ids(filterGmailConversations(CONVERSATIONS, query, filters)))
+    expect(ids(liveMessengerFilters.filterMessengerConversations(CONVERSATIONS, query, filters)))
+      .toEqual(ids(filterMessengerConversations(CONVERSATIONS, query, filters)))
+  })
+
+  it('keeps the default arguments', () => {
+    expect(liveWhatsapp.filterWhatsappConversations()).toEqual([])
+    expect(liveGmail.filterGmailConversations()).toEqual([])
+    expect(liveMessengerFilters.filterMessengerConversations()).toEqual([])
+    expect(liveWhatsapp.sortWhatsappMessagesAscending()).toEqual([])
+    expect(liveGmail.sortGmailMessagesAscending()).toEqual([])
+    expect(liveWhatsapp.upsertWhatsappMessage(undefined, { id: 'n' })).toEqual([{ id: 'n' }])
   })
 })

@@ -1,4 +1,5 @@
 import { resolveTenantFromHostname } from '../../../services/tenantResolver'
+import { sortMessagesByTime, upsertMessageById } from './conversationHelpers'
 
 export const MESSENGER_CONVERSATIONS_QUERY_KEY = ['messenger', 'conversations']
 export const MESSENGER_CONVERSATION_INFO_QUERY_KEY = (conversationId) => [
@@ -234,24 +235,11 @@ export function normalizeMessengerMessage(message, conversationInfo) {
 }
 
 export function sortMessagesAscending(messages) {
-  return [...messages].sort((first, second) => {
-    const firstTime = new Date(first.createdAt || first.raw?.sent_at || first.raw?.created_at).getTime()
-    const secondTime = new Date(second.createdAt || second.raw?.sent_at || second.raw?.created_at).getTime()
-    return (Number.isNaN(firstTime) ? 0 : firstTime) - (Number.isNaN(secondTime) ? 0 : secondTime)
-  })
+  return sortMessagesByTime(messages, ['sent_at', 'created_at'])
 }
 
 export function upsertMessengerMessage(messages = [], message) {
-  const messageId = getMessengerMessageId(message)
-  const exists = messages.some((item) => String(getMessengerMessageId(item)) === String(messageId))
-
-  if (exists) {
-    return messages.map((item) => (
-      String(getMessengerMessageId(item)) === String(messageId) ? { ...item, ...message } : item
-    ))
-  }
-
-  return [...messages, message]
+  return upsertMessageById(messages, message, getMessengerMessageId)
 }
 
 function getPayloadData(payload = {}) {
