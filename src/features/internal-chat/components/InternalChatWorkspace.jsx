@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { MessagesSquare, Search, UsersRound } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { MessengerChatThread } from '../../conversations/components/MessengerChatThread'
+import { ConversationThread } from '../../conversations'
 import { useChatConversationMutations, useChatConversations } from '../hooks/useChatConversations'
 import { useChatMessageMutations, useChatMessages } from '../hooks/useChatMessages'
 import { useChatRealtime } from '../hooks/useChatRealtime'
@@ -144,7 +144,7 @@ export function InternalChatWorkspace() {
       </section>
 
       <section className="flex min-h-[520px] flex-col rounded-lg border border-[var(--border)] bg-[var(--surface)] xl:sticky xl:top-16 xl:h-[calc(100vh-5rem)] xl:max-h-[calc(100vh-5rem)] xl:self-start xl:overflow-hidden">
-        <MessengerChatThread
+        <ConversationThread
           title={details.name || 'Internal chat'}
           contactText={details.subtitle || 'Team collaboration'}
           avatarUrl={details.avatar || ''}

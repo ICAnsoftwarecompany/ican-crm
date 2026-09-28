@@ -7,7 +7,7 @@ import { useChatConversationMutations, useChatConversations } from '../hooks/use
 import { useChatMessageMutations, useChatMessages } from '../hooks/useChatMessages'
 import { useInternalChatUiStore } from '../store/internalChatUiStore'
 import { getConversationDisplayInfo, getConversationId, getLastMessagePreview } from '../utils/conversationHelpers'
-import { MessengerChatThread } from '../../conversations/components/MessengerChatThread'
+import { ConversationThread } from '../../conversations'
 
 function HeaderActions({ onOpenPage, onClose }) {
   return (
@@ -184,7 +184,7 @@ export function InternalChatSidebarPanel({ open, onClose }) {
         </div>
 
         <div className="min-h-0">
-          <MessengerChatThread
+          <ConversationThread
             title={details.name || 'Internal chat'}
             contactText={details.subtitle || 'Team discussion'}
             avatarUrl={details.avatar || ''}

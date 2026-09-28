@@ -23,10 +23,12 @@ import { useMessengerNotificationsStore } from '../store/messengerNotificationsS
 import { useMessengerRealtime } from '../../../realtime/hooks/useMessengerRealtime'
 import { useRealtimeMessageHighlight } from '../hooks/useRealtimeMessageHighlight'
 import { useMessengerRealtimeMessageHandler } from '../hooks/useMessengerRealtimeMessageHandler'
-import { MessengerChatThread } from './MessengerChatThread'
+import { ConversationThread } from './shared/ConversationThread'
 import { MessengerLinkCustomerDialog } from './MessengerLinkCustomerDialog'
 import { DEFAULT_MESSENGER_CONVERSATION_FILTERS, filterMessengerConversations } from './MessengerConversationFilters'
 import { MessengerConversationListPanel } from './MessengerConversationListPanel'
+import { messengerAdapter } from '../channels/messenger/adapter'
+import { getThreadCapabilityProps } from './shared/threadCapabilities'
 
 function getConversationContact(conversation) {
   return (
@@ -226,7 +228,7 @@ export function MessengerConversationsWorkspace() {
         />
 
         <section className="flex min-h-[520px] flex-col rounded-lg border border-[var(--border)] bg-[var(--surface)] xl:sticky xl:top-16 xl:h-[calc(100vh-5rem)] xl:max-h-[calc(100vh-5rem)] xl:self-start xl:overflow-hidden">
-          <MessengerChatThread
+          <ConversationThread
             title={selectedId ? selectedTitle || 'عميل' : ''}
             contactText={selectedId ? getConversationContact(conversationInfo || selectedConversation) : 'اختر محادثة لعرض الرسائل'}
             avatarUrl={selectedImage}
@@ -255,9 +257,7 @@ export function MessengerConversationsWorkspace() {
             onConvertToLead={handleConvertToLead}
             onToggleConversationStatus={handleToggleConversationStatus}
             isTogglingConversationStatus={mutations.closeConversation.isPending || mutations.reopenConversation.isPending}
-            supportsAttachments
-            supportsReply
-            supportsReactions
+            {...getThreadCapabilityProps(messengerAdapter.capabilities)}
             channelColor="#0A7CFF"
             autoFocusKey={selectedId}
             highlightedMessageId={highlightedMessageId}

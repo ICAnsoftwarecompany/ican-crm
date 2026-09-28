@@ -42,14 +42,14 @@
 
 ### 2. المكوّنات المشتركة
 
-- `src/features/conversations/components/MessengerChatThread.jsx`
+- `src/features/conversations/components/shared/ConversationThread.jsx`
   المكوّن المشترك الحالي لجسم الشات.
   هذا هو المكان الأساسي الذي يجمّع:
   - شريط معلومات المحادثة
   - قائمة الرسائل
   - صندوق الكتابة
 
-- `src/features/conversations/components/floating-chat/shared/FloatingChatMessages.jsx`
+- `src/features/conversations/components/shared/ConversationMessages.jsx`
   المكوّن المسؤول عن:
   - عرض الرسائل
   - النزول التلقائي لآخر رسالة
@@ -57,7 +57,7 @@
   - تمييز الرسالة الجديدة
   - منطقة scroll الداخلية
 
-- `src/features/conversations/components/floating-chat/shared/FloatingChatComposer.jsx`
+- `src/features/conversations/components/shared/ConversationComposer.jsx`
   المكوّن المسؤول عن:
   - كتابة الرسائل
   - إرسال الرسالة
@@ -65,7 +65,7 @@
   - auto resize حتى 5 سطور
 
 - `src/features/conversations/components/floating-chat/shared/FloatingCustomerChat.jsx`
-  حاوية الشات العائم التي تستخدم `MessengerChatThread` داخليًا.
+  حاوية الشات العائم التي تستخدم `ConversationThread` داخليًا.
 
 ### 3. Hooks و Realtime
 
@@ -187,7 +187,7 @@ export const MESSENGER_CONVERSATION_MESSAGES_QUERY_KEY = (conversationId) => [
 
 ---
 
-## لماذا تم توحيد `MessengerChatThread`
+## لماذا تم توحيد `ConversationThread`
 
 سابقًا كان كل مكان يكتب واجهة الرسائل بنفسه:
 - الصفحة
@@ -204,7 +204,7 @@ export const MESSENGER_CONVERSATION_MESSAGES_QUERY_KEY = (conversationId) => [
 الآن التعديل على جسم الشات يتم من مكان واحد:
 
 ```txt
-src/features/conversations/components/MessengerChatThread.jsx
+src/features/conversations/components/shared/ConversationThread.jsx
 ```
 
 أي تعديل فيه ينعكس على كل أماكن عرض شات ماسنجر.
@@ -215,7 +215,7 @@ src/features/conversations/components/MessengerChatThread.jsx
 
 ### 1. النزول التلقائي لآخر رسالة
 
-المكوّن `FloatingChatMessages.jsx` يقوم بالنزول لآخر رسالة تلقائيًا عندما:
+المكوّن `ConversationMessages.jsx` يقوم بالنزول لآخر رسالة تلقائيًا عندما:
 - يتم فتح المحادثة
 - يتم اختيار محادثة أخرى
 - تكون الواجهة أصلًا قريبة من آخر الرسائل ثم تصل رسالة جديدة
@@ -247,7 +247,7 @@ src/features/conversations/hooks/useRealtimeMessageHighlight.js
 
 ## سلوك صندوق الكتابة
 
-المكوّن `FloatingChatComposer.jsx` الآن يدعم:
+المكوّن `ConversationComposer.jsx` الآن يدعم:
 
 - Auto focus عند فتح المحادثة
 - Enter للإرسال
@@ -354,9 +354,9 @@ queryClient.setQueryData(
 
 1. لا تعدل واجهة الرسائل في الصفحة والسايدبار والشات العائم كلٌ على حدة.
 التعديل الصحيح غالبًا يكون في:
-- `MessengerChatThread.jsx`
-- `FloatingChatMessages.jsx`
-- `FloatingChatComposer.jsx`
+- `ConversationThread.jsx`
+- `ConversationMessages.jsx`
+- `ConversationComposer.jsx`
 
 2. لو حصلت مشكلة أن الرسالة وصلت في console ولم تظهر:
 - افحص أولًا query key
@@ -370,7 +370,7 @@ queryClient.setQueryData(
 4. لو المحادثة لا تنزل لآخر رسالة:
 - افحص `autoFocusKey`
 - افحص `autoScrollKey`
-- افحص `showScrollToBottom` داخل `FloatingChatMessages.jsx`
+- افحص `showScrollToBottom` داخل `ConversationMessages.jsx`
 
 5. لو الرسالة الجديدة لا تلمع:
 - افحص `highlightedMessageId`
@@ -384,7 +384,7 @@ queryClient.setQueryData(
 - `MessengerSidebarPanel.jsx`
 - `FloatingMessengerChat.jsx` عبر `FloatingCustomerChat.jsx`
 
-إذا تمت إضافة واجهة ماسنجر جديدة مستقبلًا، يفضل أن تعتمد على نفس `MessengerChatThread` بدل بناء واجهة منفصلة.
+إذا تمت إضافة واجهة ماسنجر جديدة مستقبلًا، يفضل أن تعتمد على نفس `ConversationThread` بدل بناء واجهة منفصلة.
 
 ---
 
@@ -393,7 +393,7 @@ queryClient.setQueryData(
 1. توحيد الهيدر أيضًا في مكوّن مشترك بدل بقاء كل شاشة بهيدر خاص بها.
 2. دعم تحميل رسائل أقدم في صفحة المحادثات الرئيسية والسايدبار مثل الشات العائم.
 3. إضافة badge بصري على المحادثة في القائمة عند وصول رسالة جديدة.
-4. دعم الرسائل المرفقة والملفات داخل `MessengerChatThread` بشكل موحّد.
+4. دعم الرسائل المرفقة والملفات داخل `ConversationThread` بشكل موحّد.
 5. إضافة logger تشخيصي اختياري للمحادثات في وضع التطوير فقط.
 
 ---
@@ -403,11 +403,11 @@ queryClient.setQueryData(
 إذا أردت تعديل أي شيء في شات ماسنجر:
 
 - شكل الرسائل أو سلوكها:
-  - `MessengerChatThread.jsx`
-  - `FloatingChatMessages.jsx`
+  - `ConversationThread.jsx`
+  - `ConversationMessages.jsx`
 
 - سلوك الكتابة والإرسال:
-  - `FloatingChatComposer.jsx`
+  - `ConversationComposer.jsx`
 
 - realtime:
   - `useMessengerRealtime.js`

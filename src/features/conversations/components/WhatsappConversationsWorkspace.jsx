@@ -24,10 +24,19 @@ import {
   upsertWhatsappMessage,
 } from '../utils/whatsappConversations'
 import { DEFAULT_MESSENGER_CONVERSATION_FILTERS, MessengerConversationFilters } from './MessengerConversationFilters'
-import { MessengerChatThread } from './MessengerChatThread'
+import { ConversationThread } from './shared/ConversationThread'
 import { MessengerLinkCustomerDialog } from './MessengerLinkCustomerDialog'
 import { WhatsappLogoIcon } from './WhatsappNavbarButton'
 import { WhatsappTemplatesDialog } from './WhatsappTemplatesDialog'
+import { whatsappAdapter } from '../channels/whatsapp/adapter'
+import { getThreadCapabilityProps } from './shared/threadCapabilities'
+import { formatConversationTime } from '../utils/formatConversationTime'
+import { InitialsAvatar } from './shared/InitialsAvatar'
+
+const WHATSAPP_AVATAR_TONE = {
+  activeClassName: 'bg-[#25D366] text-white ring-4 ring-[#E9FFF2]',
+  idleClassName: 'bg-[#E9FFF2] text-[#087D3E]',
+}
 
 const TEXT = {
   whatsappChats: '\u0645\u062d\u0627\u062f\u062b\u0627\u062a WhatsApp',
@@ -50,25 +59,6 @@ const TEXT = {
   missingPhoneNumberId: '\u0636\u0639 VITE_WHATSAPP_PHONE_NUMBER_ID \u0641\u064a .env \u0623\u0648 \u0623\u0631\u062c\u0639 phone_number_id \u0645\u0639 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0645\u062d\u0627\u062f\u062b\u0629.',
 }
 
-function formatTime(value) {
-  if (!value) return ''
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return ''
-  return date.toLocaleString('ar-EG', {
-    month: 'short',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  })
-}
-
-function getInitials(value = '') {
-  const text = String(value || '').trim()
-  if (!text) return 'W'
-  return text.split(/\s+/).slice(0, 2).map((part) => part[0]).join('').toUpperCase()
-}
-
 function isOutgoingLastMessage(conversation) {
   const direction = String(conversation?.last_message?.direction || '').toLowerCase()
   return direction === 'outbound' || direction === 'outgoing' || direction === 'sent'
@@ -83,24 +73,6 @@ function LastMessageStatus({ conversation }) {
   if (!isRead && !isDelivered) return null
 
   return <CheckCheck size={14} className={isRead ? 'shrink-0 text-[#0A7CFF]' : 'shrink-0 text-[#94A3B8]'} />
-}
-
-function WhatsappConversationAvatar({ title, unreadCount = 0, active = false }) {
-  return (
-    <span
-      className={[
-        'relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-xs font-black shadow-sm',
-        active ? 'bg-[#25D366] text-white ring-4 ring-[#E9FFF2]' : 'bg-[#E9FFF2] text-[#087D3E]',
-      ].join(' ')}
-    >
-      {getInitials(title)}
-      {unreadCount > 0 ? (
-        <span className="absolute -top-1 -end-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[10px] font-black text-white ring-2 ring-white">
-          {unreadCount > 99 ? '99+' : unreadCount}
-        </span>
-      ) : null}
-    </span>
-  )
 }
 
 function getWhatsappPhoneNumberId(conversationInfo, selectedConversation) {
@@ -450,12 +422,12 @@ export function WhatsappConversationsWorkspace({
               ].join(' ')}
             >
               <div className="flex items-start gap-3">
-                <WhatsappConversationAvatar title={title} unreadCount={unreadCount} active={isActive} />
+                <InitialsAvatar title={title} unreadCount={unreadCount} active={isActive} fallbackInitial="W" {...WHATSAPP_AVATAR_TONE} />
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center justify-between gap-2">
                     <span className="truncate text-sm font-black text-[var(--text)]">{title}</span>
                     {isClosed ? <span className="rounded-full bg-[#FEF2F2] px-2 py-0.5 text-[10px] font-black text-[#B91C1C]">{TEXT.closed}</span> : null}
-                    <span className="shrink-0 text-[10px] font-semibold text-[var(--text-muted)]">{formatTime(conversation.last_message_at)}</span>
+                    <span className="shrink-0 text-[10px] font-semibold text-[var(--text-muted)]">{formatConversationTime(conversation.last_message_at)}</span>
                   </span>
                   <span className="mt-1 flex min-w-0 items-center gap-1 text-xs font-semibold text-[var(--text-muted)]">
                     <LastMessageStatus conversation={conversation} />
@@ -511,7 +483,7 @@ export function WhatsappConversationsWorkspace({
         </div>
       ) : null}
 
-      <MessengerChatThread
+      <ConversationThread
         title={selectedId ? selectedTitle || 'WhatsApp' : ''}
         contactText={selectedId ? selectedContact || 'WhatsApp' : TEXT.chooseConversation}
         contactDetails={{
@@ -535,9 +507,7 @@ export function WhatsappConversationsWorkspace({
         onConvertToLead={(conversation) => handleConvertToLead(conversationInfo || selectedConversation || conversation)}
         onToggleConversationStatus={handleToggleConversationStatus}
         isTogglingConversationStatus={mutations.closeConversation.isPending || mutations.reopenConversation.isPending}
-        supportsAttachments
-        supportsReply
-        supportsReactions
+        {...getThreadCapabilityProps(whatsappAdapter.capabilities)}
         channelColor="#25D366"
         autoFocusKey={`${panel ? 'panel' : 'page'}-${selectedId}`}
         composerDisabled={!selectedId || selectedClosed}

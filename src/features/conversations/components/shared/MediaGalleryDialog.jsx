@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight, ExternalLink, FileText, Music, X } from 'lucide-react'
 
-export function MessengerMediaGalleryDialog({ open, items = [], activeIndex = 0, onIndexChange, onClose }) {
+export function MediaGalleryDialog({ open, items = [], activeIndex = 0, onIndexChange, onClose }) {
   if (!open || !items.length) return null
 
   const currentIndex = Math.max(0, Math.min(activeIndex, items.length - 1))

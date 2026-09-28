@@ -66,7 +66,7 @@ function ComposerButton({ title, icon: Icon, onClick, disabled = false }) {
   )
 }
 
-export function FloatingChatComposer({
+export function ConversationComposer({
   isSending,
   onSend,
   channelColor = '#00C2CB',
@@ -192,7 +192,7 @@ export function FloatingChatComposer({
     const blob = encodeWav(samples, audioSampleRateRef.current)
     const file = new File([blob], `voice-note-${Date.now()}.wav`, { type: 'audio/wav' })
     if (import.meta.env.DEV) {
-      console.info('[FloatingChatComposer] voice note ready', {
+      console.info('[ConversationComposer] voice note ready', {
         name: file.name,
         type: file.type,
         size: file.size,

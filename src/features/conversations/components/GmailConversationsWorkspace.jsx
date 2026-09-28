@@ -30,28 +30,18 @@ import {
   sortGmailMessagesAscending,
 } from '../utils/gmailConversations'
 import { DEFAULT_MESSENGER_CONVERSATION_FILTERS, MessengerConversationFilters } from './MessengerConversationFilters'
-import { MessengerChatThread } from './MessengerChatThread'
+import { ConversationThread } from './shared/ConversationThread'
 import { MessengerLinkCustomerDialog } from './MessengerLinkCustomerDialog'
 import { GmailBusinessEmailsPanel } from './GmailBusinessEmailsPanel'
 import { GmailLogoIcon } from './GmailNavbarButton'
+import { gmailAdapter } from '../channels/gmail/adapter'
+import { getThreadCapabilityProps } from './shared/threadCapabilities'
+import { formatConversationTime } from '../utils/formatConversationTime'
+import { InitialsAvatar } from './shared/InitialsAvatar'
 
-function formatTime(value) {
-  if (!value) return ''
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return ''
-  return date.toLocaleString('ar-EG', {
-    month: 'short',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  })
-}
-
-function getInitials(value = '') {
-  const text = String(value || '').trim()
-  if (!text) return 'G'
-  return text.split(/\s+/).slice(0, 2).map((part) => part[0]).join('').toUpperCase()
+const GMAIL_AVATAR_TONE = {
+  activeClassName: 'bg-[#D93025] text-white ring-4 ring-[#FCE8E6]',
+  idleClassName: 'bg-[#FCE8E6] text-[#B3261E]',
 }
 
 function upsertGmailMessageIntoCache(current, incomingMessage) {
@@ -79,24 +69,6 @@ function upsertGmailMessageIntoCache(current, incomingMessage) {
   if (Array.isArray(current?.data)) return { ...current, data: nextMessages }
   if (Array.isArray(current?.messages)) return { ...current, messages: nextMessages }
   return nextMessages
-}
-
-function GmailConversationAvatar({ title, unreadCount = 0, active = false }) {
-  return (
-    <span
-      className={[
-        'relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-xs font-black shadow-sm',
-        active ? 'bg-[#D93025] text-white ring-4 ring-[#FCE8E6]' : 'bg-[#FCE8E6] text-[#B3261E]',
-      ].join(' ')}
-    >
-      {getInitials(title)}
-      {unreadCount > 0 ? (
-        <span className="absolute -top-1 -end-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[10px] font-black text-white ring-2 ring-white">
-          {unreadCount > 99 ? '99+' : unreadCount}
-        </span>
-      ) : null}
-    </span>
-  )
 }
 
 function GmailLoginRequired({ tenantId, compact = false }) {
@@ -389,12 +361,12 @@ export function GmailConversationsWorkspace({
               ].join(' ')}
             >
               <div className="flex items-start gap-3">
-                <GmailConversationAvatar title={title} unreadCount={unreadCount} active={isActive} />
+                <InitialsAvatar title={title} unreadCount={unreadCount} active={isActive} fallbackInitial="G" {...GMAIL_AVATAR_TONE} />
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center justify-between gap-2">
                     <span className="truncate text-sm font-black text-[var(--text)]">{title}</span>
                     {isClosed ? <span className="rounded-full bg-[#FEF2F2] px-2 py-0.5 text-[10px] font-black text-[#B91C1C]">منتهية</span> : null}
-                    <span className="shrink-0 text-[10px] font-semibold text-[var(--text-muted)]">{formatTime(conversation.last_message_at)}</span>
+                    <span className="shrink-0 text-[10px] font-semibold text-[var(--text-muted)]">{formatConversationTime(conversation.last_message_at)}</span>
                   </span>
                   <span className="mt-1 block truncate text-xs font-semibold text-[var(--text-muted)]">
                     {getGmailConversationSubtitle(conversation) || conversation.mailbox_email}
@@ -437,7 +409,7 @@ export function GmailConversationsWorkspace({
         </div>
       ) : null}
 
-      <MessengerChatThread
+      <ConversationThread
         title={selectedId ? selectedTitle || 'Gmail' : ''}
         contactText={selectedId ? selectedContact || participantEmail || 'Gmail' : 'اختر محادثة Gmail'}
         contactDetails={{
@@ -460,9 +432,7 @@ export function GmailConversationsWorkspace({
         onConvertToLead={(conversation) => setLinkDialogConversation(conversationInfo || selectedConversation || conversation)}
         onToggleConversationStatus={handleToggleConversationStatus}
         isTogglingConversationStatus={mutations.closeConversation.isPending || mutations.reopenConversation.isPending}
-        supportsAttachments
-        supportsReply={false}
-        supportsReactions={false}
+        {...getThreadCapabilityProps(gmailAdapter.capabilities)}
         channelColor="#D93025"
         autoFocusKey={`${panel ? 'panel' : 'page'}-${selectedId}`}
         composerDisabled={!selectedId || String(conversationInfo?.status || selectedConversation?.status || '').toLowerCase() === 'closed'}

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CheckCheck, UserPlus, UserRound } from 'lucide-react'
+import { UserPlus, UserRound } from 'lucide-react'
 import {
   getMessengerConversationId,
   getMessengerConversationSubtitle,
@@ -7,43 +7,8 @@ import {
   getMessengerProfilePicture,
 } from '../utils/messengerConversations'
 import { MessengerConversationHoverPreview } from './MessengerConversationHoverPreview'
-
-function formatTime(value) {
-  if (!value) return ''
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return ''
-
-  return date.toLocaleString('ar-EG', {
-    month: 'short',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  })
-}
-
-function isOutgoingLastMessage(conversation) {
-  const lastMessage = conversation?.last_message || {}
-  const direction = String(lastMessage?.direction || '').toLowerCase()
-  return direction === 'outbound' || direction === 'outgoing'
-}
-
-function LastMessageStatus({ conversation }) {
-  if (!isOutgoingLastMessage(conversation)) return null
-
-  const status = String(conversation?.last_message?.status || '').toLowerCase()
-  const isRead = status === 'read' || status === 'seen'
-  const isDelivered = status === 'delivered'
-  if (!isRead && !isDelivered) return null
-
-  return (
-    <CheckCheck
-      size={14}
-      className={isRead ? 'shrink-0 text-[#0A7CFF]' : 'shrink-0 text-[#94A3B8]'}
-      aria-label={isRead ? 'seen' : 'delivered'}
-    />
-  )
-}
+import { formatConversationTime } from '../utils/formatConversationTime'
+import { LastMessageStatus } from './shared/LastMessageStatus'
 
 function MessengerConversationAvatar({ conversation, className = 'h-10 w-10 rounded-lg' }) {
   const [imageFailed, setImageFailed] = useState(false)
@@ -107,7 +72,7 @@ export function MessengerConversationListItem({ conversation, isActive, onSelect
               </span>
             ) : null}
             <span className="shrink-0 text-[10px] font-semibold text-[var(--text-muted)]">
-              {formatTime(conversation.last_message_at)}
+              {formatConversationTime(conversation.last_message_at)}
             </span>
           </span>
           <span className="mt-1 flex min-w-0 items-center gap-1 text-xs font-semibold text-[var(--text-muted)]">

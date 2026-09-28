@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom'
 import { useDirection } from '../../../../../shared/hooks/useDirection'
 import { FloatingChatHeader } from './FloatingChatHeader'
 import { FloatingChatResizeHandles } from './FloatingChatResizeHandles'
-import { MessengerChatThread } from '../../MessengerChatThread'
+import { ConversationThread } from '../../shared/ConversationThread'
 import {
   calculateResizedLayout,
   clampLayoutToViewport,
@@ -233,7 +233,7 @@ export function FloatingCustomerChat({
 
         {!layout.isMinimized && (
           <div className="flex h-[calc(100%-64px)] min-h-0 flex-col">
-            <MessengerChatThread
+            <ConversationThread
               title={customer?.name || 'عميل'}
               contactText={customer?.phone || customer?.email || 'بدون بيانات تواصل'}
               avatarUrl={customer?.profile_picture || customer?.avatar || ''}

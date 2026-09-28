@@ -16,9 +16,9 @@ import {
   Volume2,
   X,
 } from 'lucide-react'
-import { FloatingChatComposer } from './floating-chat/shared/FloatingChatComposer'
-import { FloatingChatMessages } from './floating-chat/shared/FloatingChatMessages'
-import { MessengerMediaGalleryDialog } from './MessengerMediaGalleryDialog'
+import { ConversationComposer } from './ConversationComposer'
+import { ConversationMessages } from './ConversationMessages'
+import { MediaGalleryDialog } from './MediaGalleryDialog'
 
 function isOutgoingMessage(message = {}) {
   const direction = String(message?.direction || '').toLowerCase()
@@ -107,7 +107,7 @@ function formatDisplayDateTime(value) {
   })
 }
 
-export function MessengerChatThread({
+export function ConversationThread({
   title = '',
   contactText = 'بدون بيانات تواصل',
   avatarUrl = '',
@@ -495,7 +495,7 @@ export function MessengerChatThread({
         </div>
       </div>
       {viewMode === 'chat' && (
-        <FloatingChatMessages
+        <ConversationMessages
           messages={filteredMessages}
           isLoadingMessages={isLoadingMessages}
           error={error}
@@ -753,7 +753,7 @@ export function MessengerChatThread({
       )}
 
       {viewMode === 'chat' && (
-        <FloatingChatComposer
+        <ConversationComposer
           isSending={isSending}
           onSend={onSend}
           channelColor={channelColor}
@@ -765,7 +765,7 @@ export function MessengerChatThread({
         />
       )}
 
-      <MessengerMediaGalleryDialog
+      <MediaGalleryDialog
         open={detailsMediaIndex >= 0}
         items={detailsGalleryItems}
         activeIndex={detailsMediaIndex}

@@ -10,8 +10,8 @@ import {
   Reply,
   SmilePlus,
 } from 'lucide-react'
-import { MessengerMediaGalleryDialog } from '../../MessengerMediaGalleryDialog'
-import { MessengerMessageAttachments } from '../../MessengerMessageAttachments'
+import { MediaGalleryDialog } from './MediaGalleryDialog'
+import { MessageAttachments } from './MessageAttachments'
 
 const QUICK_REACTIONS = ['❤️', '👍', '😂', '😮', '😢']
 
@@ -272,7 +272,7 @@ function MessageReactionBadge({
   )
 }
 
-export function FloatingChatMessages({
+export function ConversationMessages({
   messages = [],
   isLoadingMessages,
   error,
@@ -525,7 +525,7 @@ export function FloatingChatMessages({
                   ) : null}
 
                   {messageText ? <div className="whitespace-pre-wrap break-words">{messageText}</div> : null}
-                  <MessengerMessageAttachments attachments={attachments} outgoing={outgoing} onOpenMedia={openMediaGallery} />
+                  <MessageAttachments attachments={attachments} outgoing={outgoing} onOpenMedia={openMediaGallery} />
                 </div>
 
                 {reactions.length ? (
@@ -590,7 +590,7 @@ export function FloatingChatMessages({
         </button>
       )}
 
-      <MessengerMediaGalleryDialog
+      <MediaGalleryDialog
         open={activeMediaIndex >= 0}
         items={mediaItems}
         activeIndex={activeMediaIndex}

@@ -223,7 +223,7 @@ function MessengerVoiceNoteAttachment({ attachment, outgoing = false }) {
   )
 }
 
-export function MessengerMessageAttachments({ attachments = [], outgoing = false, onOpenMedia }) {
+export function MessageAttachments({ attachments = [], outgoing = false, onOpenMedia }) {
   if (!attachments.length) return null
 
   return (

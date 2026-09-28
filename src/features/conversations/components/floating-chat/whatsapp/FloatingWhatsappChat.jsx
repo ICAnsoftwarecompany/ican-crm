@@ -6,6 +6,8 @@ import { WhatsappTemplatesDialog } from '../../WhatsappTemplatesDialog'
 import { requestOpenWhatsappSidebar } from '../../../constants/whatsappSidebarEvents'
 import { FloatingCustomerChat } from '../shared/FloatingCustomerChat'
 import { useWhatsappFloatingChat } from './useWhatsappFloatingChat'
+import { whatsappAdapter } from '../../../channels/whatsapp/adapter'
+import { getThreadCapabilityProps } from '../../shared/threadCapabilities'
 
 const TEXT = {
   noConversation: '\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u062d\u0627\u062f\u062b\u0629 WhatsApp \u0645\u0631\u062a\u0628\u0637\u0629 \u0628\u0647\u0630\u0627 \u0627\u0644\u0639\u0645\u064a\u0644.',
@@ -93,9 +95,7 @@ export function FloatingWhatsappChat({ open, customer, onClose, zIndex, onFocus 
         onClose={onClose}
         onSend={handleSend}
         onReact={handleReact}
-        supportsAttachments
-        supportsReply
-        supportsReactions
+        {...getThreadCapabilityProps(whatsappAdapter.capabilities)}
         onOpenSidebar={handleOpenSidebar}
         openSidebarTitle={TEXT.sidebarTitle}
         zIndex={zIndex}

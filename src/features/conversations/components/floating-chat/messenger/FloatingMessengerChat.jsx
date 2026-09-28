@@ -4,6 +4,8 @@ import { MessengerLogoIcon } from '../../MessengerNavbarButton'
 import { requestOpenMessengerSidebar } from '../../../constants/messengerSidebarEvents'
 import { FloatingCustomerChat } from '../shared/FloatingCustomerChat'
 import { useMessengerFloatingChat } from './useMessengerFloatingChat'
+import { messengerAdapter } from '../../../channels/messenger/adapter'
+import { getThreadCapabilityProps } from '../../shared/threadCapabilities'
 
 export function FloatingMessengerChat({ open, customer, onClose, zIndex, onFocus }) {
   const chat = useMessengerFloatingChat(customer, open)
@@ -43,9 +45,7 @@ export function FloatingMessengerChat({ open, customer, onClose, zIndex, onFocus
       onSend={handleSend}
       onReact={chat.reactToMessage}
       onRemoveReaction={chat.removeReaction}
-      supportsAttachments={true}
-      supportsReply={true}
-      supportsReactions={true}
+      {...getThreadCapabilityProps(messengerAdapter.capabilities)}
       onOpenSidebar={handleOpenInSidebar}
       openSidebarTitle="فتح المحادثة في اللوحة الجانبية"
       zIndex={zIndex}

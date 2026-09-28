@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import {
-  CheckCheck,
   ChevronRight,
   ExternalLink,
   Search,
@@ -31,7 +30,7 @@ import {
 } from '../utils/messengerConversations'
 import { useMessengerNotificationsStore } from '../store/messengerNotificationsStore'
 import { useMessengerRealtime } from '../../../realtime/hooks/useMessengerRealtime'
-import { MessengerChatThread } from './MessengerChatThread'
+import { ConversationThread } from './shared/ConversationThread'
 import { useRealtimeMessageHighlight } from '../hooks/useRealtimeMessageHighlight'
 import { useMessengerRealtimeMessageHandler } from '../hooks/useMessengerRealtimeMessageHandler'
 import { MessengerLinkCustomerDialog } from './MessengerLinkCustomerDialog'
@@ -42,6 +41,9 @@ import {
   filterMessengerConversations,
 } from './MessengerConversationFilters'
 import { MessengerConversationHoverPreview } from './MessengerConversationHoverPreview'
+import { messengerAdapter } from '../channels/messenger/adapter'
+import { getThreadCapabilityProps } from './shared/threadCapabilities'
+import { LastMessageStatus } from './shared/LastMessageStatus'
 
 function formatTime(value) {
   if (!value) return ''
@@ -71,29 +73,6 @@ function getConversationContact(conversation) {
     conversation?.lead?.email ||
     conversation?.email ||
     'بدون بيانات تواصل'
-  )
-}
-
-function isOutgoingLastMessage(conversation) {
-  const lastMessage = conversation?.last_message || {}
-  const direction = String(lastMessage?.direction || '').toLowerCase()
-  return direction === 'outbound' || direction === 'outgoing'
-}
-
-function LastMessageStatus({ conversation }) {
-  if (!isOutgoingLastMessage(conversation)) return null
-
-  const status = String(conversation?.last_message?.status || '').toLowerCase()
-  const isRead = status === 'read' || status === 'seen'
-  const isDelivered = status === 'delivered'
-  if (!isRead && !isDelivered) return null
-
-  return (
-    <CheckCheck
-      size={14}
-      className={isRead ? 'shrink-0 text-[#0A7CFF]' : 'shrink-0 text-[#94A3B8]'}
-      aria-label={isRead ? 'seen' : 'delivered'}
-    />
   )
 }
 
@@ -521,7 +500,7 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {} }) {
               </div>
             </div>
 
-            <MessengerChatThread
+            <ConversationThread
               title={selectedTitle}
               contactText={getConversationContact(conversationInfo || selectedConversation)}
               avatarUrl={selectedImage}
@@ -578,9 +557,7 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {} }) {
               onConvertToLead={handleConvertToLead}
               onToggleConversationStatus={handleToggleConversationStatus}
               isTogglingConversationStatus={mutations.closeConversation.isPending || mutations.reopenConversation.isPending}
-              supportsAttachments
-              supportsReply
-              supportsReactions
+              {...getThreadCapabilityProps(messengerAdapter.capabilities)}
               channelColor="#0A7CFF"
               autoFocusKey={`${open ? 'open' : 'closed'}-${mode}-${selectedId}`}
               highlightedMessageId={highlightedMessageId}
