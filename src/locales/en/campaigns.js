@@ -36,6 +36,7 @@ export default {
   "create": {
     "title": "Create campaign", "description": "Create a campaign using the selected platform account.", "name": "Campaign name", "page": "Facebook page", "selectPage": "Select page", "objective": "Objective", "submit": "Create campaign", "required": "Campaign name and page are required", "success": "Campaign created successfully", "error": "Failed to create campaign",
     "saveDraft": "Save Draft", "continue": "Continue",
+    "validation": { "campaignBudgetRequired": "Enter a campaign budget greater than zero.", "adSetBudgetRequired": "Enter a budget greater than zero for every ad set.", "lifetimeEndRequired": "Lifetime budgets require an end date and time.", "invalidObjective": "Select an objective supported by Meta campaigns.", "incompatibleAdSet": "The conversion location or optimization goal is incompatible with the campaign objective.", "whatsappPhoneRequired": "A WhatsApp number is required for the WhatsApp conversion location.", "websiteConversionRequired": "A Pixel ID and conversion event are required for website leads or sales.", "appDetailsRequired": "An application ID and store URL are required for app promotion.", "frequencyRequired": "Frequency count and interval are required for awareness campaigns." },
     "steps": { "objective": "Objective", "campaignSetup": "Campaign Setup", "adSets": "Ad Sets", "ads": "Ads", "review": "Review" },
     "objectiveStep": {
       "intro": "Choose the outcome that matters most for this campaign. You can't change it once the campaign is created.",
@@ -70,6 +71,26 @@ export default {
         "bidStrategy": { "label": "Bid strategy", "highest_volume": "Highest volume", "cost_cap": "Cost cap", "bid_cap": "Bid cap" },
         "bidAmount": "Bid amount"
       }
+    },
+    "adSets": {
+      "itemTitle": "Ad set {{count}}",
+      "name": "Ad set name",
+      "conversionLocation": "Conversion location",
+      "optimizationGoal": "Optimization goal",
+      "optimizationAutomatic": "Meta will use the default optimization goal for this conversion location.",
+      "countries": "Countries (comma-separated codes)",
+      "ageMin": "Minimum age",
+      "ageMax": "Maximum age",
+      "pixelId": "Pixel ID",
+      "customEventType": "Conversion event",
+      "whatsappPhoneNumber": "WhatsApp phone number",
+      "applicationId": "Application ID",
+      "objectStoreUrl": "App store URL",
+      "frequencyMax": "Maximum frequency",
+      "frequencyIntervalDays": "Frequency interval in days",
+      "required": "Complete the ad set name and conversion location before continuing.",
+      "missingCampaignId": "The campaign was created, but its ID was not returned, so the ad sets could not be created.",
+      "locations": { "default": "Default", "app": "App", "website": "Website", "instant_form": "Instant form", "messenger": "Messenger", "whatsapp": "WhatsApp", "instagram_direct": "Instagram Direct", "phone_call": "Phone calls", "post": "Post engagement", "page": "Facebook Page", "video": "Video", "event": "Event" }
     },
     "guide": {
       "title": "Guide",

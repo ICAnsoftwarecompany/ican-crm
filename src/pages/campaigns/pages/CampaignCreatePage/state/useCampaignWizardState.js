@@ -57,6 +57,10 @@ export function useCampaignWizardState({ tenantId, platformId, accountId }) {
     (patch) => dispatch({ type: WIZARD_ACTIONS.UPDATE_CAMPAIGN, patch }),
     []
   )
+  const updateAdSet = useCallback(
+    (adSetId, patch) => dispatch({ type: WIZARD_ACTIONS.UPDATE_AD_SET, adSetId, patch }),
+    []
+  )
   const setStage = useCallback((stage) => dispatch({ type: WIZARD_ACTIONS.SET_STAGE, stage }), [])
   const setFocusedField = useCallback(
     (fieldId) => dispatch({ type: WIZARD_ACTIONS.SET_FOCUSED_FIELD, fieldId }),
@@ -84,6 +88,7 @@ export function useCampaignWizardState({ tenantId, platformId, accountId }) {
     state,
     setObjective,
     updateCampaign,
+    updateAdSet,
     setStage,
     setFocusedField,
     saveDraftNow,

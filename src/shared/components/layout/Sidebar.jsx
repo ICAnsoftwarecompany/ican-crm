@@ -38,13 +38,13 @@ function SidebarNavItem({ item, isActive, collapsed, t, isFavorite = false, onTo
         aria-pressed={isFavorite}
         className={cn(
           'flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-all hover:bg-[var(--shell-hover)] hover:text-[var(--text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-accent)]',
-          collapsed && 'absolute end-0 top-0 h-5 w-5',
+          collapsed && 'hidden',
           isFavorite
             ? 'text-[var(--brand-accent)] opacity-90'
             : 'text-[var(--text-muted)] opacity-20 group-hover/nav-item:opacity-80 focus-visible:opacity-100'
         )}
       >
-        <Pin size={collapsed ? 10 : 13} className={cn(isFavorite && 'fill-current')} />
+        <Pin size={13} className={cn(isFavorite && 'fill-current')} />
       </button>
     </div>
   )

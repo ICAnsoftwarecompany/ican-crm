@@ -11,6 +11,7 @@ import { PipelineBoard, PipelineCard } from '../../shared/components/pipeline-bo
 import { Button } from '../../shared/components/ui/Button'
 import { useLocalStorage } from '../../shared/components/data-table/hooks/useLocalStorage'
 import { cn } from '../../shared/utils/cn'
+import { getDealStatusValue } from '../../features/deals/utils/dealDisplay'
 
 const tabs = ['overview', 'board', 'team', 'products', 'contracts', 'analytics']
 
@@ -63,7 +64,10 @@ export function DealWorkspacePage() {
     if (activeTab === 'board') return viewMode === 'table' ? <DataTable data={leads} columns={leadColumns} tableId={`deal-${dealId}-leads`} isLoading={leadsQuery.isLoading} error={leadsQuery.error} onRetry={leadsQuery.refetch} enableSorting enableFiltering enableGlobalSearch enableColumnVisibility enableExport showToolbar showFooter /> : board
     if (activeTab === 'team') return <SimpleList icon={Users} items={resources.team.items} getLabel={(item) => item.user?.name || item.team?.name || item.name} />
     if (activeTab === 'products') return <SimpleList icon={Package} items={resources.products.items} getLabel={(item) => item.product?.name || item.name} />
-    if (activeTab === 'overview') return <div className="grid gap-3 sm:grid-cols-3"><Metric label={t('dealWorkspace.fields.leads')} value={leads.length} /><Metric label={t('dealWorkspace.fields.revenue')} value={deal.target_revenue || 0} /><Metric label={t('dealWorkspace.fields.status')} value={t(`dealWorkspace.statuses.${deal.status}`, deal.status)} /></div>
+    if (activeTab === 'overview') {
+      const status = getDealStatusValue(deal.status)
+      return <div className="grid gap-3 sm:grid-cols-3"><Metric label={t('dealWorkspace.fields.leads')} value={leads.length} /><Metric label={t('dealWorkspace.fields.revenue')} value={deal.target_revenue || 0} /><Metric label={t('dealWorkspace.fields.status')} value={status ? t(`dealWorkspace.statuses.${status}`, status) : '-'} /></div>
+    }
     return <div className="rounded-md border border-dashed border-[var(--border)] bg-[var(--surface)] p-10 text-center text-sm text-[var(--text-muted)]">{t('dealWorkspace.unavailable')}</div>
   }
 

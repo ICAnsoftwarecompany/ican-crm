@@ -1,5 +1,14 @@
 # Campaign Center Architecture
 
+## تحديث عقود Facebook Campaign وAd Set
+
+- طبقة التكامل المركزية موجودة في `facebook-campaign/api/facebookCampaignApi.js`.
+- مسار مجموعات الحملة هو `/api/tenant/campaigns/{campaign}/adsets` بدون مقطع `facebook` طبقًا لآخر Postman.
+- `useFacebookCampaignMutations` يوفر `create` للحملة و`createAdSet` للمجموعة الإعلانية، ويعيد إبطال كاش Campaign Center بعد النجاح.
+- إنشاء وإلغاء Sub Login Invite يذهبان إلى `VITE_MAIN_SERVER_URL`، أما قوائم الدعوات فتستخدم سيرفر المستأجر.
+- مرحلة Ad Sets في Wizard أصبحت متصلة فعليًا بالـ API. مرحلة Ads لا تزال غير متصلة لأن عقد إنشاء الإعلان غير موجود في الملفات المرسلة.
+- عملية النشر تسلسلية وليست متوازية: يجب نجاح Campaign والحصول على معرّفه قبل إنشاء Ad Sets.
+
 ## الهدف والحدود
 
 `/campaigns` هو مركز الحملات الإعلانية متعددة المنصات. يختلف عن Outreach Campaigns (`/outreach-campaigns`): الأول يتعامل مع منصات الإعلان والحسابات الإعلانية، والثاني يرسل رسائل إلى جهات اتصال CRM. لا يجوز دمج النموذجين بسبب تشابه الاسم.

@@ -1,25 +1,25 @@
 import { Eye, MessageSquare, MousePointerClick, ShoppingCart, Smartphone, Target } from 'lucide-react'
 import { CardOption } from '../components/CardOption'
+import { META_CAMPAIGN_OBJECTIVES } from '../config/metaObjectives'
 
-// Full ODAX outcome objective set (today's wizard only had 2 of these).
-const OBJECTIVES = [
-  { value: 'OUTCOME_AWARENESS', icon: Eye },
-  { value: 'OUTCOME_TRAFFIC', icon: MousePointerClick },
-  { value: 'OUTCOME_ENGAGEMENT', icon: MessageSquare },
-  { value: 'OUTCOME_LEADS', icon: Target },
-  { value: 'OUTCOME_APP_PROMOTION', icon: Smartphone },
-  { value: 'OUTCOME_SALES', icon: ShoppingCart },
-]
+const OBJECTIVE_ICONS = {
+  OUTCOME_AWARENESS: Eye,
+  OUTCOME_TRAFFIC: MousePointerClick,
+  OUTCOME_ENGAGEMENT: MessageSquare,
+  OUTCOME_LEADS: Target,
+  OUTCOME_SALES: ShoppingCart,
+  OUTCOME_APP_PROMOTION: Smartphone,
+}
 
 export function ObjectiveStep({ t, objective, onChange, onFocusField, onBlurField }) {
   return (
     <div>
       <p className="mb-4 text-sm text-[var(--text-muted)]">{t('campaigns.create.objectiveStep.intro')}</p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {OBJECTIVES.map(({ value, icon }) => (
+        {META_CAMPAIGN_OBJECTIVES.map((value) => (
           <CardOption
             key={value}
-            icon={icon}
+            icon={OBJECTIVE_ICONS[value]}
             title={t(`campaigns.objectives.${value}`)}
             description={t(`campaigns.create.objectiveStep.useWhen.${value}`)}
             selected={objective === value}

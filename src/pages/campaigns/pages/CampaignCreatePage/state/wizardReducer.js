@@ -3,6 +3,7 @@ import { createInitialWizardState } from './initialWizardState'
 export const WIZARD_ACTIONS = {
   SET_OBJECTIVE: 'SET_OBJECTIVE',
   UPDATE_CAMPAIGN: 'UPDATE_CAMPAIGN',
+  UPDATE_AD_SET: 'UPDATE_AD_SET',
   SET_STAGE: 'SET_STAGE',
   SET_FOCUSED_FIELD: 'SET_FOCUSED_FIELD',
   SET_LAST_SAVED: 'SET_LAST_SAVED',
@@ -20,6 +21,12 @@ export function wizardReducer(state, action) {
 
     case WIZARD_ACTIONS.UPDATE_CAMPAIGN:
       return { ...state, campaign: { ...state.campaign, ...action.patch } }
+
+    case WIZARD_ACTIONS.UPDATE_AD_SET:
+      return {
+        ...state,
+        adSets: state.adSets.map((adSet) => adSet.id === action.adSetId ? { ...adSet, ...action.patch } : adSet),
+      }
 
     case WIZARD_ACTIONS.SET_STAGE:
       return { ...state, meta: { ...state.meta, currentStage: action.stage } }

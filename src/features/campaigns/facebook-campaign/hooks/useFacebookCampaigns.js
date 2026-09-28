@@ -22,6 +22,7 @@ export function useFacebookCampaignMutations({ tenantId, accountId }) {
   const invalidate = () => queryClient.invalidateQueries({ queryKey: facebookCampaignKeys.all(tenantId) })
   return {
     create: useMutation({ mutationFn: facebookCampaignApi.createCampaign, onSuccess: invalidate }),
+    createAdSet: useMutation({ mutationFn: facebookCampaignApi.createAdSet, onSuccess: invalidate }),
     sync: useMutation({
       mutationFn: () => facebookCampaignApi.syncCampaigns(accountId ? { ad_account_id: accountId } : undefined),
       onSuccess: invalidate,

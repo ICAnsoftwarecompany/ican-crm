@@ -32,6 +32,18 @@ export function ReviewStep({ t, state, pages }) {
         </div>
       </div>
 
+      <section className="rounded-md border border-[var(--border)] bg-[var(--surface)] p-3">
+        <div className="mb-2 text-xs font-bold text-[var(--text-muted)]">{t('campaigns.create.steps.adSets')}</div>
+        <div className="space-y-2">
+          {state.adSets.map((adSet) => (
+            <div key={adSet.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] pb-2 text-sm last:border-0 last:pb-0">
+              <strong className="text-[var(--text)]">{displayValue(adSet.name)}</strong>
+              <span className="text-[var(--text-muted)]">{displayValue(adSet.conversionLocation)} · {adSet.audience.countries.join(', ')}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <p className="text-xs text-[var(--text-muted)]">{t('campaigns.create.review.note')}</p>
     </div>
   )

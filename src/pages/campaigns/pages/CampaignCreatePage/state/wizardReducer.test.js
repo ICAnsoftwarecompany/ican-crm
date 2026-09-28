@@ -23,6 +23,21 @@ describe('wizardReducer', () => {
     expect(next.campaign.budgetLevel).toBe('campaign')
   })
 
+  it('updates only the selected ad set', () => {
+    const state = createInitialWizardState()
+    const adSetId = state.adSets[0].id
+    const next = wizardReducer(state, {
+      type: WIZARD_ACTIONS.UPDATE_AD_SET,
+      adSetId,
+      patch: { name: 'Website traffic', conversionLocation: 'website' },
+    })
+
+    expect(next.adSets[0].name).toBe('Website traffic')
+    expect(next.adSets[0].conversionLocation).toBe('website')
+    expect(next.adSets[0].audience).toBe(state.adSets[0].audience)
+    expect(next.campaign).toBe(state.campaign)
+  })
+
   it('tracks the active stage', () => {
     const state = createInitialWizardState()
     const next = wizardReducer(state, { type: WIZARD_ACTIONS.SET_STAGE, stage: 'review' })

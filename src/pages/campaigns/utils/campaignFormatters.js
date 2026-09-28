@@ -6,9 +6,27 @@ export function resolveLocale(language) {
 }
 
 export function formatDate(value, language) {
-  if (!value) return '—'
-  const formatted = formatLocalizedDate(value, language, { dateStyle: 'medium', timeStyle: 'short' })
+  const normalizedValue = normalizeCampaignDate(value)
+  if (!normalizedValue) return '—'
+  const formatted = formatLocalizedDate(normalizedValue, language, { dateStyle: 'medium', timeStyle: 'short' })
   return formatted || displayValue(value)
+}
+
+export function normalizeCampaignDate(value) {
+  if (value === undefined || value === null || value === '' || value === 0 || value === '0') return null
+
+  const isNumericValue = typeof value === 'number' || /^\d+$/.test(String(value).trim())
+  if (isNumericValue) {
+    const timestamp = Number(value)
+    if (!Number.isFinite(timestamp) || timestamp <= 0) return null
+
+    return timestamp < 1_000_000_000_000 ? timestamp * 1000 : timestamp
+  }
+
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime()) || parsed.getUTCFullYear() <= 1970) return null
+
+  return value
 }
 
 export function formatNumber(value, language) {

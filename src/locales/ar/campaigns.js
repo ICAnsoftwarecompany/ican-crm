@@ -36,6 +36,7 @@ export default {
   "create": {
     "title": "إنشاء حملة", "description": "أنشئ حملة باستخدام حساب المنصة المختار.", "name": "اسم الحملة", "page": "صفحة Facebook", "selectPage": "اختر الصفحة", "objective": "الهدف", "submit": "إنشاء الحملة", "required": "اسم الحملة والصفحة مطلوبان", "success": "تم إنشاء الحملة بنجاح", "error": "فشل إنشاء الحملة",
     "saveDraft": "حفظ كمسودة", "continue": "متابعة",
+    "validation": { "campaignBudgetRequired": "أدخل ميزانية للحملة أكبر من صفر.", "adSetBudgetRequired": "أدخل ميزانية أكبر من صفر لكل مجموعة إعلانية.", "lifetimeEndRequired": "ميزانية المدة الكاملة تحتاج تاريخ ووقت نهاية.", "invalidObjective": "اختر هدفًا تدعمه حملات Meta.", "incompatibleAdSet": "مكان التحويل أو هدف التحسين غير متوافق مع هدف الحملة.", "whatsappPhoneRequired": "رقم واتساب مطلوب لمكان التحويل واتساب.", "websiteConversionRequired": "معرّف Pixel وحدث التحويل مطلوبان لليدز أو المبيعات من الموقع.", "appDetailsRequired": "معرّف التطبيق ورابط متجر التطبيق مطلوبان لترويج التطبيق.", "frequencyRequired": "عدد مرات الظهور وفترة التكرار مطلوبان لحملة الوعي." },
     "steps": { "objective": "الهدف", "campaignSetup": "إعداد الحملة", "adSets": "مجموعات الإعلانات", "ads": "الإعلانات", "review": "المراجعة" },
     "objectiveStep": {
       "intro": "اختر النتيجة الأهم بالنسبة لهذه الحملة. لن تقدر تغيّرها بعد إنشاء الحملة.",
@@ -70,6 +71,26 @@ export default {
         "bidStrategy": { "label": "استراتيجية العرض", "highest_volume": "أكبر عدد نتائج", "cost_cap": "حد أقصى للتكلفة", "bid_cap": "حد أقصى للعرض" },
         "bidAmount": "مبلغ العرض"
       }
+    },
+    "adSets": {
+      "itemTitle": "مجموعة إعلانية {{count}}",
+      "name": "اسم المجموعة الإعلانية",
+      "conversionLocation": "مكان التحويل",
+      "optimizationGoal": "هدف التحسين",
+      "optimizationAutomatic": "ستحدد Meta هدف التحسين الافتراضي المناسب لمكان التحويل.",
+      "countries": "الدول (أكواد مفصولة بفاصلة)",
+      "ageMin": "الحد الأدنى للعمر",
+      "ageMax": "الحد الأقصى للعمر",
+      "pixelId": "معرّف Pixel",
+      "customEventType": "حدث التحويل",
+      "whatsappPhoneNumber": "رقم واتساب",
+      "applicationId": "معرّف التطبيق",
+      "objectStoreUrl": "رابط التطبيق على المتجر",
+      "frequencyMax": "الحد الأقصى للتكرار",
+      "frequencyIntervalDays": "فترة التكرار بالأيام",
+      "required": "أكمل اسم المجموعة الإعلانية ومكان التحويل قبل المتابعة.",
+      "missingCampaignId": "تم إنشاء الحملة لكن لم يرجع معرّفها، لذلك تعذر إنشاء المجموعات الإعلانية.",
+      "locations": { "default": "افتراضي", "app": "التطبيق", "website": "الموقع", "instant_form": "نموذج فوري", "messenger": "ماسنجر", "whatsapp": "واتساب", "instagram_direct": "رسائل إنستجرام", "phone_call": "مكالمات هاتفية", "post": "تفاعل المنشور", "page": "صفحة فيسبوك", "video": "فيديو", "event": "حدث" }
     },
     "guide": {
       "title": "الدليل",

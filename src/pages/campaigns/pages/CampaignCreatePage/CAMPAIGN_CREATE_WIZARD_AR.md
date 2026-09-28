@@ -1,5 +1,36 @@
 # Wizard إنشاء حملة Meta — دليل الفولدر
 
+## تحديث الربط الفعلي
+
+أصبحت المراحل المتصلة بالباك إند:
+
+1. **Objective**: اختيار هدف ODAX.
+2. **Campaign Setup**: الاسم والصفحة والفئة الخاصة ومستوى الميزانية وإعداداتها.
+3. **Ad Sets**: الاسم، مكان التحويل، هدف التحسين، الدول، العمر والحقول المشروطة.
+4. **Ads**: ما زالت تعرض حالة غير مهيأة لعدم وجود endpoint إنشاء إعلان في Postman الحالي.
+5. **Review**: تعرض الحملة وكل Ad Sets قبل الإرسال.
+
+عند الضغط على النشر:
+
+```text
+POST /api/tenant/facebook/campaigns/create
+  -> extract campaign_id
+  -> POST /api/tenant/facebook/adset/create لكل Ad Set
+```
+
+### حقول Ad Set المشروطة
+
+- `website`: يعرض `pixel_id` و`custom_event_type`.
+- `whatsapp`: يعرض `whatsapp_phone_number`.
+- ميزانية Ad Set تظهر فقط عندما يكون `campaign.budgetLevel = adSet`.
+- عند استخدام ميزانية الحملة لا يرسل Wizard ميزانية أو استراتيجية مزايدة على Ad Set.
+
+### إدارة الحالة
+
+- `UPDATE_AD_SET` في `wizardReducer.js` يحدث المجموعة المطلوبة حسب `adSet.id`.
+- `updateAdSet` في `useCampaignWizardState.js` هو الواجهة التي تستخدمها خطوة Ad Sets.
+- الحقول الجديدة تدخل ضمن الحفظ التلقائي للمسودة لأنها جزء من `state.adSets`.
+
 آخر تحديث: 2026-09-21 (Phase 1 من إعادة تصميم أوسع — انظر آخر قسم للخطة الكاملة).
 
 هذا الملف بيشرح فولدر `CampaignCreatePage/` بالتفصيل: إيه اللي موجود، ليه اتبنى كده، وإزاي تضيف حاجة جديدة من غير ما تكسر حاجة موجودة. للسياق الأوسع (Campaign Center كله، Platform Registry، الـrouting العام) شوف `src/features/campaigns/docs/CAMPAIGN_CENTER_ARCHITECTURE_AR.md` — الملف ده بيركّز بس على صفحة الإنشاء.

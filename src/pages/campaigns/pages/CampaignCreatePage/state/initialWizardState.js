@@ -21,6 +21,13 @@ function createDefaultAdSet() {
     bidAmount: '',
     conversionLocation: '',
     performanceGoal: '',
+    pixelId: '',
+    customEventType: '',
+    whatsappPhoneNumber: '',
+    applicationId: '',
+    objectStoreUrl: '',
+    frequencyMax: 3,
+    frequencyIntervalDays: 7,
     audience: {
       mode: 'advantage',
       countries: ['EG'],
