@@ -53,32 +53,33 @@ Legacy/transitional (don't copy these patterns, don't add to them):
 
 | Area | Code | Doc |
 |---|---|---|
-| Leads & customers (`/leads`, `/LeadsCenter/*`, `/lead/:customerId`) | `features/leads`, `features/customers`, `pages/customers` | `src/pages/customers/CUSTOMERS_SECTION_IMPLEMENTATION_AR.md`, `.../CustomerDetailsDrawer/CUSTOMER_DETAILS_DRAWER_ARCHITECTURE_AR.md` |
-| Lead assignment | `features/leads/api/leadAssignmentApi.js`, `/LeadsCenter/assignments` | — |
-| Statuses / definitions | `features/definitions` | — |
-| Activities, calls, meetings | `features/activities`, `features/call-meetings`, `features/meetings` | `src/features/activities/ArchitectureActivitiesModule.md`, `src/features/call-meetings/Call-Meeting-README_AR.md` |
-| Conversations (WhatsApp/Messenger/Gmail) | `features/conversations` (adapters in `channels/`, shared chat UI in `components/shared/`), `pages/conversations`, `src/realtime/hooks` | `docs/ARCHITECTURE.md` → Domain boundaries, `docs/CONVERSATIONS_UNIFICATION_PLAN.md`, `src/features/conversations/MESSENGER_CHAT_REFERENCE_AR.md` |
-| Internal team chat | `features/internal-chat` | `src/features/internal-chat/INTERNAL_CHAT.md` |
-| Ad campaigns (Meta ads, ad sets, lead forms) | `features/campaigns`, `features/meta-integrations`, `pages/campaigns` | `src/features/campaigns/docs/CAMPAIGN_CENTER_ARCHITECTURE_AR.md` |
-| Outreach campaigns (messages to CRM contacts) | `features/outreach-campaigns`, `pages/outreach-campaigns` | `src/features/outreach-campaigns/docs/OUTREACH_CAMPAIGNS_ARCHITECTURE_AR.md` |
-| Social media | `features/social-media`, `pages/social-media` | `src/features/social-media/docs/SOCIAL_MEDIA_ARCHITECTURE_AR.md` |
-| Deals / opportunities | `features/deals`, `features/opportunities` | `src/pages/deals/README_AR.md`, `src/features/opportunities/OPPORTUNITY_CENTER.md` |
-| Proposals | `features/proposals`, `pages/customers/pages/proposals` | `.../proposals/PROPOSAL_ARCHITECTURE_AR.md` |
-| Tasks | `features/tasks` | `src/features/tasks/TASKS_WORKSPACE.md` |
-| Automation | `features/workflow-engine` + `shared/components/visual-flow` | `src/features/workflow-engine/docs/WORKFLOW_ENGINE_ARCHITECTURE_AR.md` |
-| Data table | `shared/components/data-table` (canonical table) | `src/shared/components/data-table/docs/DATATABLE_ARCHITECTURE.md` |
-| Sidebar / navigation | `app/navigation`, `shared/components/layout` | `src/shared/components/layout/SIDEBAR_ARCHITECTURE.md` |
-| Calendar | `shared/components/calendar` (engine) + `features/calendar` (sources) | `docs/ARCHITECTURE.md` |
-| Realtime | `src/realtime` | `src/realtime/README_AR.md` |
-| Translations | `src/locales` | `docs/LOCALES_ARCHITECTURE.md` |
-| Customer Service (tickets/SLA/inbox) | **PLANNED — no code yet** | `docs/ARCHITECTURE.md` → Domain boundaries |
+| Leads & customers (`/leads`, `/LeadsCenter/*`, `/lead/:customerId`) | `features/leads`, `features/customers`, `pages/customers` | [Leads Center](docs/2-SALES.md#leads-center-pages), [Customer drawer](docs/2-SALES.md#customer-details-drawer), [Domain model](docs/2-SALES.md#domain-model) |
+| Lead assignment | `features/leads/api/leadAssignmentApi.js`, `/LeadsCenter/assignments` | [Leads & assignment](docs/2-SALES.md#leads-page-and-lead-assignment) |
+| Statuses / definitions | `features/definitions` | [Statuses & tags](docs/2-SALES.md#statuses-tags-and-pipeline) |
+| Activities, calls, meetings | `features/activities`, `features/call-meetings`, `features/meetings` | [Activities](docs/2-SALES.md#activities-calls-and-meetings) |
+| Conversations (WhatsApp/Messenger/Gmail) | `features/conversations` (adapters in `channels/`, shared chat UI in `components/shared/`), `pages/conversations`, `src/realtime/hooks` | [Conversations](docs/3-FEATURES.md#conversations) |
+| Internal team chat | `features/internal-chat` | [Internal chat](docs/3-FEATURES.md#internal-chat) |
+| Ad campaigns (Meta ads, ad sets, lead forms) | `features/campaigns`, `features/meta-integrations`, `pages/campaigns` | [Ad campaigns](docs/3-FEATURES.md#ad-campaigns-and-meta-integrations) |
+| Outreach campaigns (messages to CRM contacts) | `features/outreach-campaigns`, `pages/outreach-campaigns` | [Outreach](docs/3-FEATURES.md#outreach-campaigns) |
+| Social media | `features/social-media`, `pages/social-media` | [Social media](docs/3-FEATURES.md#social-media) |
+| Deals / opportunities | `features/deals`, `features/opportunities` | [Deals](docs/2-SALES.md#deals), [Opportunities](docs/2-SALES.md#opportunities) |
+| Proposals | `features/proposals`, `pages/customers/pages/proposals` | [Proposals](docs/2-SALES.md#proposals) |
+| Tasks | `features/tasks` | [Tasks](docs/3-FEATURES.md#tasks) |
+| Automation | `features/workflow-engine` + `shared/components/visual-flow` | [Workflow engine](docs/3-FEATURES.md#workflow-engine-and-automation), [Visual Flow](docs/1-ARCHITECTURE.md#visual-flow) |
+| Data table | `shared/components/data-table` (canonical table) | [DataTable](docs/1-ARCHITECTURE.md#datatable) |
+| Sidebar / navigation | `app/navigation`, `shared/components/layout` | [Sidebar & navigation](docs/1-ARCHITECTURE.md#sidebar-and-navigation) |
+| Calendar | `shared/components/calendar` (engine) + `features/calendar` (sources) | [Calendar](docs/1-ARCHITECTURE.md#calendar) |
+| Realtime | `src/realtime` | [Realtime](docs/1-ARCHITECTURE.md#realtime) |
+| Translations | `src/locales` | [i18n](docs/1-ARCHITECTURE.md#i18n) |
+| Customer Service (tickets/SLA/inbox) | **PLANNED — no code yet** | [Customer Service](docs/3-FEATURES.md#customer-service--planned) |
 
 Do not confuse: **campaigns** (paid Meta ads) ≠ **outreach-campaigns** (sending messages).
 `integrations` (connection capabilities) and `meta-integrations` (Meta APIs) overlap — ask before moving code between them.
 
-Policy docs: `docs/ARCHITECTURE.md` (rules), `docs/FEATURE_DEVELOPMENT_CHECKLIST.md` (checklist),
-`docs/DEVELOPMENT_ROADMAP.md` (priorities). If docs and code disagree, **the code wins**; files
-named `*_REPORT.md` / `PHASE_*.md` are historical, not current truth.
+Policy docs: [docs/1-ARCHITECTURE.md](docs/1-ARCHITECTURE.md) (rules; checklist in
+[Definition of Done](docs/1-ARCHITECTURE.md#definition-of-done)); domain docs [docs/2-SALES.md](docs/2-SALES.md)
+and [docs/3-FEATURES.md](docs/3-FEATURES.md). If docs and code disagree, **the code wins**; historical
+reports were removed (see git history).
 
 ## Non-negotiable rules
 

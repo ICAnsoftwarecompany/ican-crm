@@ -1,24 +1,31 @@
 # ICAN CRM
 
-React/Vite multi-tenant CRM frontend. The current codebase inventory is [README_About_project.md](README_About_project.md); architecture and mandatory development rules are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/DEVELOPMENT_ROADMAP.md](docs/DEVELOPMENT_ROADMAP.md).
+Multi-tenant omnichannel CRM **frontend**: leads and customers, sales pipeline and deals, activities, proposals, WhatsApp/Messenger/Gmail inbox, internal chat, Meta ad campaigns, outreach messaging, social media, tasks and automation. React 19 + Vite 5; the Laravel backend is a separate repository.
 
-## Start
+## Run
 
 ```bash
 npm install
-npm run dev
+cp .env.example .env   # set tenant root domain, dev proxy and backend values
+npm run dev            # http://localhost:3000
 ```
 
-Vite serves port 3000 by default. Configure the tenant API root/dev proxy and backend credentials for your environment. Do not put real secrets in `VITE_*`: these values are public in the browser bundle. The existing backend requires `VITE_API_PASSWORD` as an `api_password` request parameter; treat this as a compatibility value, not a secret.
+Open the app from a tenant subdomain (or enable `VITE_API_USE_DEV_PROXY`). `VITE_*` values are bundled into the browser — never put secrets there; `VITE_API_PASSWORD` is a compatibility value, not a secret.
 
 ## Checks
 
 ```bash
-npm run build
 npm run lint
 npm run check:i18n
 npm run check:architecture
-npx vitest run
+npx vitest run         # npm test = watch mode
+npm run build
 ```
 
-`npm test` runs Vitest in watch mode. The architecture report records actual check results and unresolved migration work: [docs/ARCHITECTURE_REFACTOR_REPORT.md](docs/ARCHITECTURE_REFACTOR_REPORT.md).
+## Documentation
+
+1. [docs/1-ARCHITECTURE.md](docs/1-ARCHITECTURE.md) — structure, rules, tenant/auth, realtime, i18n, theme, shared engines, Definition of Done.
+2. [docs/2-SALES.md](docs/2-SALES.md) — sales domain: leads, customers, statuses, assignment, activities, deals, opportunities, proposals.
+3. [docs/3-FEATURES.md](docs/3-FEATURES.md) — conversations, chat, campaigns, outreach, social media, tasks, automation, integrations, settings.
+
+AI coding agents: see [CLAUDE.md](CLAUDE.md).
