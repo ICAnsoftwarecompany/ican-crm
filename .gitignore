@@ -10,6 +10,11 @@
 
 # production
 /build
+/dist
+dist.rar
+
+# local tool logs
+/.codex
 
 # misc
 .DS_Store
