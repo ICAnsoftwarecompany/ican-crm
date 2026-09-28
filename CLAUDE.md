@@ -57,7 +57,7 @@ Legacy/transitional (don't copy these patterns, don't add to them):
 | Lead assignment | `features/leads/api/leadAssignmentApi.js`, `/LeadsCenter/assignments` | — |
 | Statuses / definitions | `features/definitions` | — |
 | Activities, calls, meetings | `features/activities`, `features/call-meetings`, `features/meetings` | `src/features/activities/ArchitectureActivitiesModule.md`, `src/features/call-meetings/Call-Meeting-README_AR.md` |
-| Conversations (WhatsApp/Messenger/Gmail) | `features/conversations`, `pages/conversations`, `src/realtime/hooks` | `src/features/conversations/MESSENGER_CHAT_REFERENCE_AR.md` |
+| Conversations (WhatsApp/Messenger/Gmail) | `features/conversations` (adapters in `channels/`, shared chat UI in `components/shared/`), `pages/conversations`, `src/realtime/hooks` | `docs/ARCHITECTURE.md` → Domain boundaries, `docs/CONVERSATIONS_UNIFICATION_PLAN.md`, `src/features/conversations/MESSENGER_CHAT_REFERENCE_AR.md` |
 | Internal team chat | `features/internal-chat` | `src/features/internal-chat/INTERNAL_CHAT.md` |
 | Ad campaigns (Meta ads, ad sets, lead forms) | `features/campaigns`, `features/meta-integrations`, `pages/campaigns` | `src/features/campaigns/docs/CAMPAIGN_CENTER_ARCHITECTURE_AR.md` |
 | Outreach campaigns (messages to CRM contacts) | `features/outreach-campaigns`, `pages/outreach-campaigns` | `src/features/outreach-campaigns/docs/OUTREACH_CAMPAIGNS_ARCHITECTURE_AR.md` |

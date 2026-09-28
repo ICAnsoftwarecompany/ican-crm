@@ -1,6 +1,6 @@
 # Conversations Unification Plan (Step 2)
 
-Status: **APPROVED 2026-09-28** (D1–D4 as recommended). Phases 1–3 DONE (see §9); Phase 4 awaiting review.
+Status: **COMPLETE 2026-09-28** — all phases done (see §9); remaining duplication in §10.
 Date: 2026-09-28. Policy: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 Goal: WhatsApp, Messenger and Gmail share one normalized data model and one set of UI
@@ -271,3 +271,30 @@ Deliberately NOT replaced (not straight replacements):
 - F7 confirmed: the workspace and `MessengerSidebarPanel` had identical `upsertMessageIntoCachedResponse` / `mergeInfoIntoCachedResponse` and an identical realtime message handler except the highlight condition (sidebar adds `open && mode === 'chat'`). Now shared: `utils/messengerCachedResponses.js` and `hooks/useMessengerRealtimeMessageHandler.js` (handler body verbatim; the difference is the `canHighlight` option). Tests added for both.
 - To respect the ~300-line component guideline, the list pane and list row were split out verbatim into `MessengerConversationListPanel.jsx` (81) and `MessengerConversationListItem.jsx` (160); only handler names became props (`onSelect`, `onConvertToLead`, `onToggleStatus`). Workspace: 281 lines. `MessengerSidebarPanel.jsx`: 706 → 607 lines.
 - Not merged (differ): `formatTime` (sidebar has no month/day), and the sidebar's own list/avatar markup → Phase 4 candidates only if identical. The workspace's `handleRealtimeNotification` exists only in the workspace.
+
+### Phase 4 — done (2026-09-28)
+
+4a — notification sound: `utils/notificationSound.js` (`createNotificationSound` + Messenger/WhatsApp instances with the same path, volume, dedupe and log text). Per-channel Audio + dedupe map preserved (F9). All 7 consumers migrated; `messengerNotificationSound.js` / `whatsappNotificationSound.js` deleted (no shims).
+
+4b — the per-channel `sort*`, `upsert*` and `filter*` functions keep their names/signatures but delegate to `utils/conversationHelpers.js`. The pre-change implementations are frozen verbatim in `utils/__fixtures__/legacyConversationHelpers.js`; tests compare both the helpers and the rewired functions with them (a deliberate mutation was confirmed to fail). Only edge difference: Messenger `sortMessagesAscending(undefined)` now returns `[]` instead of throwing.
+
+4c — shared UI:
+- Moved/renamed to `components/shared/`: `MessengerChatThread` → `ConversationThread`, `FloatingChatMessages` → `ConversationMessages`, `FloatingChatComposer` → `ConversationComposer`, `MessengerMessageAttachments` → `MessageAttachments`, `MessengerMediaGalleryDialog` → `MediaGalleryDialog`. All consumers updated (5 in conversations + 2 in `internal-chat`), no shims.
+- `features/conversations/index.js` added; `internal-chat` imports `ConversationThread` from it (was reaching into internals).
+- `threadCapabilities.js`: `supportsAttachments/Reply/Reactions` now come from adapter `capabilities` in all 6 channel consumers; value-identical to the old literals (pinned by test). The mail/SMS stubs keep their defaults.
+- Mechanical list merges: `utils/formatConversationTime.js` (3 identical copies), `components/shared/LastMessageStatus.jsx` (Messenger list item + sidebar), `components/shared/InitialsAvatar.jsx` (WhatsApp + Gmail; colors and fallback letter are props).
+
+---
+
+## 10. Remaining duplication / future (not done in Step 2)
+
+- **Cache namespaces (F2):** drawer floating chats (`whatsapp-chat`, `messenger-chat`) and workspaces use different React Query keys, so a message sent from the drawer does not update the inbox cache and vice versa.
+- **Cache updaters:** `upsertWhatsappMessageIntoCache` (WhatsApp workspace), `upsertGmailMessageIntoCache` (Gmail workspace), `upsertMessageIntoCachedResponse` (WhatsApp floating) and the Messenger floating infinite-query updaters differ in response-shape branches → a shared, tested cache reducer driven by `normalizeRealtimeEvent` is the next step.
+- **Normalized model adoption in the UI:** workspaces and list rows still read raw API fields; `normalizeConversation` is not yet used for rendering. The Service Inbox should be the first consumer.
+- **Differing variants kept local:** WhatsApp `LastMessageStatus` (also treats `sent` as outgoing, no aria-label); Messenger sidebar `formatTime` (time only), `getInitials` and `ConversationAvatar`; three different list-row layouts (WhatsApp/Gmail initials rows, Messenger workspace image row, Messenger sidebar row) → a single `ConversationListItem` needs a design decision.
+- **Messenger-named but cross-channel:** `MessengerConversationFilters` (+ `filterMessengerConversations` living in a component file) and `MessengerLinkCustomerDialog` are used by all three workspaces; rename/move to `components/shared/` in a follow-up.
+- **Oversized components (>300 lines):** `ConversationThread` 777, `MessengerLinkCustomerDialog` 773, `ConversationMessages` 602, `MessengerSidebarPanel` 584, `WhatsappConversationsWorkspace` 552, `ConversationComposer` 492, `GmailConversationsWorkspace` 469.
+- **i18n/theme debt (F10):** hardcoded Arabic strings and hex colors in the moved code; `formatConversationTime` uses a fixed `ar-EG` locale.
+- **Dead code (D4):** `api/whatsappApi.js` + `useConversations`/`useMessages`/`useConversationMutations`.
+- **Drawer mail/SMS chats (F4)** are local stubs.
+- Plus the items already listed in §8.
