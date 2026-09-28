@@ -1,6 +1,6 @@
 # Conversations Unification Plan (Step 2)
 
-Status: **APPROVED 2026-09-28** (D1–D4 as recommended). Phases 1–2 DONE (see §9); Phase 3 awaiting review.
+Status: **APPROVED 2026-09-28** (D1–D4 as recommended). Phases 1–3 DONE (see §9); Phase 4 awaiting review.
 Date: 2026-09-28. Policy: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 Goal: WhatsApp, Messenger and Gmail share one normalized data model and one set of UI
@@ -262,3 +262,12 @@ Deliberately NOT replaced (not straight replacements):
 - Messenger `getMessagesFromResponse`: `extractMessengerMessages` has an extra `data.data.data` fallback.
 - Messenger `getMessageIdentity` (`id || message_id`, no composite fallback) and both hooks' cache-merge helpers (`upsertMessageIntoCachedResponse`, `upsertMessageIntoInfiniteData`, patch/reaction appliers) → Phase 4 candidates.
 - WhatsApp send helpers (`getWhatsappPhoneNumberId`, `getWhatsappRecipient`) are floating-chat specific.
+
+### Phase 3 — done (2026-09-28)
+
+3a (pure move): `MessengerConversationsPage` + local helpers (page lines 136–663) → `components/MessengerConversationsWorkspace.jsx` (`MessengerConversationsWorkspace`), verified byte-identical apart from the rename. `ConversationsPage.jsx` 728 → 152 lines: page header, channel tabs, unread badges, selected workspace. The already-unused `PageToolbar` import was dropped.
+
+3b (dedupe + size):
+- F7 confirmed: the workspace and `MessengerSidebarPanel` had identical `upsertMessageIntoCachedResponse` / `mergeInfoIntoCachedResponse` and an identical realtime message handler except the highlight condition (sidebar adds `open && mode === 'chat'`). Now shared: `utils/messengerCachedResponses.js` and `hooks/useMessengerRealtimeMessageHandler.js` (handler body verbatim; the difference is the `canHighlight` option). Tests added for both.
+- To respect the ~300-line component guideline, the list pane and list row were split out verbatim into `MessengerConversationListPanel.jsx` (81) and `MessengerConversationListItem.jsx` (160); only handler names became props (`onSelect`, `onConvertToLead`, `onToggleStatus`). Workspace: 281 lines. `MessengerSidebarPanel.jsx`: 706 → 607 lines.
+- Not merged (differ): `formatTime` (sidebar has no month/day), and the sidebar's own list/avatar markup → Phase 4 candidates only if identical. The workspace's `handleRealtimeNotification` exists only in the workspace.

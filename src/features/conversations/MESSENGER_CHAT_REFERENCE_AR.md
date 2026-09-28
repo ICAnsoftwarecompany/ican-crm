@@ -29,7 +29,10 @@
 ### 1. واجهات العرض
 
 - `src/pages/conversations/ConversationsPage.jsx`
-  صفحة المحادثات الرئيسية.
+  صفحة المحادثات الرئيسية (تبويبات القنوات + مساحة العمل المختارة فقط).
+
+- `src/features/conversations/components/MessengerConversationsWorkspace.jsx`
+  مساحة عمل ماسنجر (القائمة + الشات)، مع `MessengerConversationListPanel.jsx` و `MessengerConversationListItem.jsx`.
 
 - `src/features/conversations/components/MessengerSidebarPanel.jsx`
   شريط جانبي سريع لعرض محادثات ماسنجر والتنقل بينها.
@@ -377,7 +380,7 @@ queryClient.setQueryData(
 
 ## الأماكن التي تستخدم الشات الموحّد حاليًا
 
-- `ConversationsPage.jsx`
+- `MessengerConversationsWorkspace.jsx` (داخل `ConversationsPage.jsx`)
 - `MessengerSidebarPanel.jsx`
 - `FloatingMessengerChat.jsx` عبر `FloatingCustomerChat.jsx`
 
@@ -409,8 +412,7 @@ queryClient.setQueryData(
 - realtime:
   - `useMessengerRealtime.js`
   - `useMessengerFloatingChat.js`
-  - `ConversationsPage.jsx`
-  - `MessengerSidebarPanel.jsx`
+  - `useMessengerRealtimeMessageHandler.js` (مشترك بين `MessengerConversationsWorkspace.jsx` و `MessengerSidebarPanel.jsx`)
 
 - الصوت:
   - `messengerNotificationSound.js`

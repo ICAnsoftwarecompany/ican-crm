@@ -21,33 +21,19 @@ import {
 import {
   MESSENGER_CONVERSATIONS_QUERY_KEY,
   MESSENGER_CONVERSATION_INFO_QUERY_KEY,
-  MESSENGER_CONVERSATION_MESSAGES_QUERY_KEY,
-  applyMessengerMessagePatchToCachedResponse,
-  applyMessengerReactionToCachedResponse,
-  extractMessengerMessages,
   getMessengerConversationId,
   getMessengerConversationSubtitle,
   getMessengerConversationTitle,
   getMessengerContactId,
-  getMessengerRealtimeConversation,
-  getMessengerRealtimeConversationId,
-  getMessengerRealtimeMessage,
-  getMessengerRealtimeMessagePatch,
-  getMessengerRealtimeReaction,
-  getMessengerRealtimeReactionMessageId,
   getMessengerProfilePicture,
-  getMessengerMessageId,
-  isOutgoingMessage,
   normalizeMessengerMessage,
   sortMessagesAscending,
-  upsertMessengerConversation,
-  upsertMessengerMessage,
 } from '../utils/messengerConversations'
-import { playMessengerNotificationSound } from '../utils/messengerNotificationSound'
 import { useMessengerNotificationsStore } from '../store/messengerNotificationsStore'
 import { useMessengerRealtime } from '../../../realtime/hooks/useMessengerRealtime'
 import { MessengerChatThread } from './MessengerChatThread'
 import { useRealtimeMessageHighlight } from '../hooks/useRealtimeMessageHighlight'
+import { useMessengerRealtimeMessageHandler } from '../hooks/useMessengerRealtimeMessageHandler'
 import { MessengerLinkCustomerDialog } from './MessengerLinkCustomerDialog'
 import { MessengerLogoIcon } from './MessengerNavbarButton'
 import {
@@ -109,41 +95,6 @@ function LastMessageStatus({ conversation }) {
       aria-label={isRead ? 'seen' : 'delivered'}
     />
   )
-}
-
-function upsertMessageIntoCachedResponse(current, message) {
-  const messages = upsertMessengerMessage(extractMessengerMessages(current), message)
-
-  if (Array.isArray(current)) return messages
-  if (Array.isArray(current?.data)) return { ...current, data: messages }
-  if (Array.isArray(current?.messages)) return { ...current, messages }
-  if (Array.isArray(current?.data?.data)) {
-    return {
-      ...current,
-      data: {
-        ...current.data,
-        data: messages,
-      },
-    }
-  }
-
-  return messages
-}
-
-function mergeInfoIntoCachedResponse(current, conversation) {
-  if (!conversation) return current
-  if (!current) return { success: true, data: conversation }
-  if (current.data && typeof current.data === 'object' && !Array.isArray(current.data)) {
-    return {
-      ...current,
-      data: {
-        ...current.data,
-        ...conversation,
-      },
-    }
-  }
-
-  return { ...current, ...conversation }
 }
 
 function ConversationAvatar({ title, imageUrl = '', active = false, unreadCount = 0, size = 'md' }) {
@@ -303,61 +254,11 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {} }) {
     setMode('chat')
   }
 
-  const handleRealtimeMessage = useCallback((payload = {}, eventName = '') => {
-    const incomingMessage = getMessengerRealtimeMessage(payload)
-    const conversationPatch = getMessengerRealtimeConversation(payload)
-    const eventConversationId = getMessengerRealtimeConversationId(payload) || conversationPatch?.id || selectedId
-
-    if (conversationPatch) {
-      queryClient.setQueryData(
-        MESSENGER_CONVERSATIONS_QUERY_KEY,
-        (current = []) => upsertMessengerConversation(current, conversationPatch)
-      )
-      queryClient.setQueryData(
-        MESSENGER_CONVERSATION_INFO_QUERY_KEY(eventConversationId),
-        (current) => mergeInfoIntoCachedResponse(current, conversationPatch)
-      )
-    }
-
-    if (!eventConversationId) return
-
-    if (!incomingMessage) {
-      const messagePatch = getMessengerRealtimeMessagePatch(payload)
-      const reaction = getMessengerRealtimeReaction(payload)
-      const reactionMessageId = getMessengerRealtimeReactionMessageId(payload)
-      if (messagePatch) {
-        queryClient.setQueryData(
-          MESSENGER_CONVERSATION_MESSAGES_QUERY_KEY(eventConversationId),
-          (current) => applyMessengerMessagePatchToCachedResponse(current, messagePatch)
-        )
-      }
-
-      if (reaction || reactionMessageId) {
-        queryClient.setQueryData(
-          MESSENGER_CONVERSATION_MESSAGES_QUERY_KEY(eventConversationId),
-          (current) => applyMessengerReactionToCachedResponse(current, payload, eventName)
-        )
-      }
-
-      queryClient.invalidateQueries({ queryKey: MESSENGER_CONVERSATIONS_QUERY_KEY })
-      queryClient.invalidateQueries({ queryKey: MESSENGER_CONVERSATION_INFO_QUERY_KEY(eventConversationId) })
-      return
-    }
-
-    const messageIdentity = getMessengerMessageId(incomingMessage)
-    if (String(eventConversationId) === String(selectedId) && open && mode === 'chat') {
-      highlightMessage(messageIdentity)
-    }
-
-    if (!isOutgoingMessage(incomingMessage) && (incomingMessage.status === 'received' || !incomingMessage.sent_by_user_id)) {
-      playMessengerNotificationSound(messageIdentity)
-    }
-
-    queryClient.setQueryData(
-      MESSENGER_CONVERSATION_MESSAGES_QUERY_KEY(eventConversationId),
-      (current) => upsertMessageIntoCachedResponse(current, incomingMessage)
-    )
-  }, [highlightMessage, mode, open, queryClient, selectedId])
+  const handleRealtimeMessage = useMessengerRealtimeMessageHandler({
+    selectedId,
+    highlightMessage,
+    canHighlight: open && mode === 'chat',
+  })
 
   useMessengerRealtime({
     conversationId: selectedId,

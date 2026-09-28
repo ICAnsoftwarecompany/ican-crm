@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
-import { CheckCheck, MessageCircle, RefreshCw, UserPlus, UserRound } from 'lucide-react'
 import { toast } from 'sonner'
-import { ResourceState } from '../../../shared/components/data/ResourceState'
 import {
   useMessengerConversationInfo,
   useMessengerConversationMutations,
@@ -14,54 +12,21 @@ import {
   MESSENGER_CONVERSATIONS_QUERY_KEY,
   MESSENGER_CONVERSATION_INFO_QUERY_KEY,
   MESSENGER_CONVERSATION_MESSAGES_QUERY_KEY,
-  applyMessengerMessagePatchToCachedResponse,
-  applyMessengerReactionToCachedResponse,
-  extractMessengerMessages,
   getMessengerConversationId,
-  getMessengerRealtimeConversation,
-  getMessengerRealtimeConversationId,
-  getMessengerRealtimeMessage,
-  getMessengerRealtimeMessagePatch,
-  getMessengerRealtimeReaction,
-  getMessengerRealtimeReactionMessageId,
-  getMessengerConversationSubtitle,
   getMessengerConversationTitle,
   getMessengerContactId,
   getMessengerProfilePicture,
-  getMessengerMessageId,
-  isOutgoingMessage,
   normalizeMessengerMessage,
   sortMessagesAscending,
-  upsertMessengerConversation,
-  upsertMessengerMessage,
 } from '../utils/messengerConversations'
-import { playMessengerNotificationSound } from '../utils/messengerNotificationSound'
 import { useMessengerNotificationsStore } from '../store/messengerNotificationsStore'
 import { useMessengerRealtime } from '../../../realtime/hooks/useMessengerRealtime'
 import { useRealtimeMessageHighlight } from '../hooks/useRealtimeMessageHighlight'
+import { useMessengerRealtimeMessageHandler } from '../hooks/useMessengerRealtimeMessageHandler'
 import { MessengerChatThread } from './MessengerChatThread'
 import { MessengerLinkCustomerDialog } from './MessengerLinkCustomerDialog'
-import { MessengerLogoIcon } from './MessengerNavbarButton'
-import {
-  DEFAULT_MESSENGER_CONVERSATION_FILTERS,
-  MessengerConversationFilters,
-  filterMessengerConversations,
-} from './MessengerConversationFilters'
-import { MessengerConversationHoverPreview } from './MessengerConversationHoverPreview'
-
-function formatTime(value) {
-  if (!value) return ''
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return ''
-
-  return date.toLocaleString('ar-EG', {
-    month: 'short',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  })
-}
+import { DEFAULT_MESSENGER_CONVERSATION_FILTERS, filterMessengerConversations } from './MessengerConversationFilters'
+import { MessengerConversationListPanel } from './MessengerConversationListPanel'
 
 function getConversationContact(conversation) {
   return (
@@ -72,88 +37,6 @@ function getConversationContact(conversation) {
     conversation?.lead?.email ||
     conversation?.email ||
     'بدون بيانات تواصل'
-  )
-}
-
-function isOutgoingLastMessage(conversation) {
-  const lastMessage = conversation?.last_message || {}
-  const direction = String(lastMessage?.direction || '').toLowerCase()
-  return direction === 'outbound' || direction === 'outgoing'
-}
-
-function LastMessageStatus({ conversation }) {
-  if (!isOutgoingLastMessage(conversation)) return null
-
-  const status = String(conversation?.last_message?.status || '').toLowerCase()
-  const isRead = status === 'read' || status === 'seen'
-  const isDelivered = status === 'delivered'
-  if (!isRead && !isDelivered) return null
-
-  return (
-    <CheckCheck
-      size={14}
-      className={isRead ? 'shrink-0 text-[#0A7CFF]' : 'shrink-0 text-[#94A3B8]'}
-      aria-label={isRead ? 'seen' : 'delivered'}
-    />
-  )
-}
-
-function upsertMessageIntoCachedResponse(current, message) {
-  const messages = upsertMessengerMessage(extractMessengerMessages(current), message)
-
-  if (Array.isArray(current)) return messages
-  if (Array.isArray(current?.data)) return { ...current, data: messages }
-  if (Array.isArray(current?.messages)) return { ...current, messages }
-  if (Array.isArray(current?.data?.data)) {
-    return {
-      ...current,
-      data: {
-        ...current.data,
-        data: messages,
-      },
-    }
-  }
-
-  return messages
-}
-
-function mergeInfoIntoCachedResponse(current, conversation) {
-  if (!conversation) return current
-  if (!current) return { success: true, data: conversation }
-  if (current.data && typeof current.data === 'object' && !Array.isArray(current.data)) {
-    return {
-      ...current,
-      data: {
-        ...current.data,
-        ...conversation,
-      },
-    }
-  }
-
-  return { ...current, ...conversation }
-}
-
-function MessengerConversationAvatar({ conversation, className = 'h-10 w-10 rounded-lg' }) {
-  const [imageFailed, setImageFailed] = useState(false)
-  const imageUrl = getMessengerProfilePicture(conversation)
-  const title = getMessengerConversationTitle(conversation)
-
-  if (imageUrl && !imageFailed) {
-    return (
-      <img
-        src={imageUrl}
-        alt={title}
-        className={`${className} shrink-0 object-cover shadow-sm`}
-        referrerPolicy="no-referrer"
-        onError={() => setImageFailed(true)}
-      />
-    )
-  }
-
-  return (
-    <span className={`${className} inline-flex shrink-0 items-center justify-center bg-white text-[#00878D] shadow-sm`}>
-      <UserRound size={18} />
-    </span>
   )
 }
 
@@ -207,61 +90,7 @@ export function MessengerConversationsWorkspace() {
     markAllRead()
   }, [markAllRead])
 
-  const handleRealtimeMessage = useCallback((payload = {}, eventName = '') => {
-    const incomingMessage = getMessengerRealtimeMessage(payload)
-    const conversationPatch = getMessengerRealtimeConversation(payload)
-    const eventConversationId = getMessengerRealtimeConversationId(payload) || conversationPatch?.id || selectedId
-
-    if (conversationPatch) {
-      queryClient.setQueryData(
-        MESSENGER_CONVERSATIONS_QUERY_KEY,
-        (current = []) => upsertMessengerConversation(current, conversationPatch)
-      )
-      queryClient.setQueryData(
-        MESSENGER_CONVERSATION_INFO_QUERY_KEY(eventConversationId),
-        (current) => mergeInfoIntoCachedResponse(current, conversationPatch)
-      )
-    }
-
-    if (!eventConversationId) return
-
-    if (!incomingMessage) {
-      const messagePatch = getMessengerRealtimeMessagePatch(payload)
-      const reaction = getMessengerRealtimeReaction(payload)
-      const reactionMessageId = getMessengerRealtimeReactionMessageId(payload)
-      if (messagePatch) {
-        queryClient.setQueryData(
-          MESSENGER_CONVERSATION_MESSAGES_QUERY_KEY(eventConversationId),
-          (current) => applyMessengerMessagePatchToCachedResponse(current, messagePatch)
-        )
-      }
-
-      if (reaction || reactionMessageId) {
-        queryClient.setQueryData(
-          MESSENGER_CONVERSATION_MESSAGES_QUERY_KEY(eventConversationId),
-          (current) => applyMessengerReactionToCachedResponse(current, payload, eventName)
-        )
-      }
-
-      queryClient.invalidateQueries({ queryKey: MESSENGER_CONVERSATIONS_QUERY_KEY })
-      queryClient.invalidateQueries({ queryKey: MESSENGER_CONVERSATION_INFO_QUERY_KEY(eventConversationId) })
-      return
-    }
-
-    const messageIdentity = getMessengerMessageId(incomingMessage)
-    if (String(eventConversationId) === String(selectedId)) {
-      highlightMessage(messageIdentity)
-    }
-
-    if (!isOutgoingMessage(incomingMessage) && (incomingMessage.status === 'received' || !incomingMessage.sent_by_user_id)) {
-      playMessengerNotificationSound(messageIdentity)
-    }
-
-    queryClient.setQueryData(
-      MESSENGER_CONVERSATION_MESSAGES_QUERY_KEY(eventConversationId),
-      (current) => upsertMessageIntoCachedResponse(current, incomingMessage)
-    )
-  }, [highlightMessage, queryClient, selectedId])
+  const handleRealtimeMessage = useMessengerRealtimeMessageHandler({ selectedId, highlightMessage })
 
   const handleRealtimeNotification = useCallback((payload = {}) => {
     const data = payload.data || payload.notification?.data || {}
@@ -384,144 +213,17 @@ export function MessengerConversationsWorkspace() {
       
 
       <div className="grid min-h-[calc(100vh-170px)] grid-cols-1 gap-4 xl:grid-cols-[360px_minmax(0,1fr)] xl:items-start">
-        <section className="min-h-[360px] rounded-lg border border-[var(--border)] bg-[var(--surface)] xl:sticky xl:top-16 xl:max-h-[calc(100vh-5rem)] xl:self-start xl:overflow-hidden">
-          <header className="flex items-center justify-between gap-3 border-b border-[var(--border)] p-3">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#E8F9FA] text-[#00878D]">
-                <MessengerLogoIcon size={22} />
-              </span>
-              <div>
-                <h2 className="text-sm font-black text-[var(--text)]">كل المحادثات</h2>
-                <p className="text-xs font-semibold text-[var(--text-muted)]">{conversations.length} محادثة</p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => conversationsQuery.refetch()}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] text-[var(--text-muted)] transition-colors hover:bg-[#F8FAFC] hover:text-[var(--text)]"
-              title="تحديث المحادثات"
-            >
-              <RefreshCw size={15} />
-            </button>
-          </header>
-
-          <MessengerConversationFilters
-            conversations={conversations}
-            filters={conversationFilters}
-            onChange={setConversationFilters}
-            resultCount={filteredConversations.length}
-          />
-
-          <ResourceState
-            isLoading={conversationsQuery.isLoading}
-            error={conversationsQuery.error}
-            empty={conversations.length === 0}
-            emptyIcon={<MessageCircle size={24} />}
-            emptyTitle="لا توجد محادثات ماسنجر"
-            emptyDescription="\u0639\u0646\u062f \u0648\u0635\u0648\u0644 \u0623\u0648\u0644 \u0645\u062d\u0627\u062f\u062b\u0629 \u0633\u062a\u0638\u0647\u0631 \u0647\u0646\u0627 \u062a\u0644\u0642\u0627\u0626\u064a\u064b\u0627."
-            onRetry={conversationsQuery.refetch}
-          >
-            <div className="max-h-[calc(100vh-345px)] overflow-y-auto p-2 xl:max-h-[calc(100vh-16rem)]">
-              {!conversationsQuery.isLoading && filteredConversations.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-[#CFE8EB] bg-[#FAFDFE] px-4 py-6 text-center text-sm font-bold text-[#64748B]">
-                  لا توجد محادثات مطابقة للفلاتر الحالية.
-                </div>
-              ) : null}
-
-              {filteredConversations.map((conversation) => {
-                const id = getMessengerConversationId(conversation)
-                const isActive = String(selectedId) === String(id)
-                const unreadCount = Number(conversation.unread_count || 0)
-                const hasLinkedCustomer = Boolean(conversation?.customer)
-                const assignedUserName = conversation?.assigned_user?.name || ''
-                const isClosed = String(conversation?.status || '').toLowerCase() === 'closed'
-
-                return (
-                  <div
-                    key={id}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => selectConversation(id)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault()
-                        selectConversation(id)
-                      }
-                    }}
-                    className={[
-                      'group relative mb-2 w-full rounded-lg border p-3 text-start transition-colors',
-                      isActive
-                        ? 'border-[#00C2CB] bg-[#E8F9FA]'
-                        : 'border-[var(--border)] bg-[var(--surface-2)] hover:border-[#B8EFF2]',
-                    ].join(' ')}
-                  >
-                    <div className="flex items-start gap-3">
-                      <MessengerConversationAvatar conversation={conversation} />
-                      <span className="min-w-0 flex-1">
-                        <span className="flex items-center justify-between gap-2">
-                          <span className="truncate text-sm font-black text-[var(--text)]">
-                            {getMessengerConversationTitle(conversation)}
-                          </span>
-                          {isClosed ? (
-                            <span className="shrink-0 rounded-full bg-[#FEF2F2] px-2 py-0.5 text-[10px] font-black text-[#B91C1C]">
-                              {'\u0645\u0646\u062a\u0647\u064a\u0629'}
-                            </span>
-                          ) : null}
-                          <span className="shrink-0 text-[10px] font-semibold text-[var(--text-muted)]">
-                            {formatTime(conversation.last_message_at)}
-                          </span>
-                        </span>
-                        <span className="mt-1 flex min-w-0 items-center gap-1 text-xs font-semibold text-[var(--text-muted)]">
-                          <LastMessageStatus conversation={conversation} />
-                          <span className="min-w-0 truncate">
-                            {getMessengerConversationSubtitle(conversation) || 'لا توجد معاينة للرسالة'}
-                          </span>
-                        </span>
-                        {assignedUserName ? (
-                          <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-black text-[#475569]">
-                            <UserRound size={11} />
-                            <span className="truncate">المسؤول: {assignedUserName}</span>
-                          </span>
-                        ) : null}
-                      </span>
-                      {unreadCount > 0 && (
-                        <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[10px] font-black text-white">
-                          {unreadCount > 99 ? '99+' : unreadCount}
-                        </span>
-                      )}
-                    </div>
-                    {!hasLinkedCustomer ? (
-                      <button
-                        type="button"
-                        onClick={(event) => {
-                          event.stopPropagation()
-                          handleConvertToLead(conversation)
-                        }}
-                        className="mt-2 inline-flex h-8 items-center gap-1 rounded-lg border border-[#BEEFF2] bg-white px-2 text-[11px] font-black text-[#007A80] transition hover:border-[#00C2CB] hover:bg-[#E8F9FA]"
-                      >
-                        <UserPlus size={13} />
-                        تحويل عميل محتمل
-                      </button>
-                    ) : null}
-                    {isClosed ? (
-                      <button
-                        type="button"
-                        onClick={(event) => {
-                          event.stopPropagation()
-                          handleToggleConversationStatus(conversation)
-                        }}
-                        className="mt-2 ms-2 inline-flex h-8 items-center gap-1 rounded-lg border border-[#BEEFF2] bg-white px-2 text-[11px] font-black text-[#007A80] transition hover:border-[#00C2CB] hover:bg-[#E8F9FA]"
-                      >
-                        {'\u0641\u062a\u062d \u0645\u0631\u0629 \u0623\u062e\u0631\u0649'}
-                      </button>
-                    ) : null}
-                    <MessengerConversationHoverPreview conversation={conversation} />
-                  </div>
-                )
-              })}
-            </div>
-          </ResourceState>
-        </section>
+        <MessengerConversationListPanel
+          conversations={conversations}
+          filteredConversations={filteredConversations}
+          conversationsQuery={conversationsQuery}
+          filters={conversationFilters}
+          onFiltersChange={setConversationFilters}
+          selectedId={selectedId}
+          onSelect={selectConversation}
+          onConvertToLead={handleConvertToLead}
+          onToggleStatus={handleToggleConversationStatus}
+        />
 
         <section className="flex min-h-[520px] flex-col rounded-lg border border-[var(--border)] bg-[var(--surface)] xl:sticky xl:top-16 xl:h-[calc(100vh-5rem)] xl:max-h-[calc(100vh-5rem)] xl:self-start xl:overflow-hidden">
           <MessengerChatThread
