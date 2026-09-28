@@ -1,6 +1,10 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { CAMPAIGN_CAPABILITIES } from './campaignCapabilities'
 import { getCampaignPlatform, getVisibleCampaignPlatforms, platformHasCapability, userHasCampaignPermission } from './platformRegistry'
+
+// The registry pulls in campaign providers -> httpClient, which resolves the
+// tenant API URL and api password at import time; these tests make no requests.
+vi.mock('../../../services/httpClient', () => ({ default: {} }))
 
 describe('campaign platform registry', () => {
   it('does not invent package restrictions when modules are unavailable', () => {

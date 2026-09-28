@@ -1,5 +1,9 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { normalizeFacebookAdAccountId } from './facebookCampaignApi'
+
+// httpClient resolves the tenant API URL and api password at import time;
+// these pure-function tests make no requests, so stub it out.
+vi.mock('../../../../services/httpClient', () => ({ default: {} }))
 
 describe('normalizeFacebookAdAccountId', () => {
   it('adds the Meta act_ prefix to a numeric account id', () => {
