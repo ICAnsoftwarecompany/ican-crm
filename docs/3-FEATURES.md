@@ -1,0 +1,217 @@
+# ICAN CRM — Features
+
+All modules outside the sales domain: communication, growth, work management, automation, platform and settings.
+Rules and shared engines: [1-ARCHITECTURE.md](1-ARCHITECTURE.md). Sales domain: [2-SALES.md](2-SALES.md).
+Describes the **current code**; if code and this file disagree, the code wins — update this file in the same change.
+
+Every module section uses: **Status · What it does · Key files · API · Used by · Known issues**. All endpoints go through `services/httpClient` (bearer token + `api_password` added automatically) unless noted.
+
+## Contents
+
+- [Conversations](#conversations)
+- [Internal chat](#internal-chat)
+- [Ad campaigns and Meta integrations](#ad-campaigns-and-meta-integrations)
+- [Outreach campaigns](#outreach-campaigns)
+- [Social media](#social-media)
+- [Tasks](#tasks)
+- [Workflow engine and automation](#workflow-engine-and-automation)
+- [Integrations](#integrations)
+- [Notifications](#notifications)
+- [AI agent](#ai-agent)
+- [Products and services](#products-and-services)
+- [Settings and appearance](#settings-and-appearance)
+- [Customer Service — PLANNED](#customer-service--planned)
+
+---
+
+## Conversations
+
+**Status:** CURRENT
+
+**What it does:** omnichannel inbox for WhatsApp, Messenger and Gmail at `/conversations` (`?channel=whatsapp|gmail`, Messenger default), quick sidebar panels and navbar buttons in the app shell, and floating chat windows inside the customer drawer. One normalized data model and one set of chat UI building blocks serve all three channels.
+
+**Structure (`src/features/conversations`)**
+- `model/conversationModel.js` — JSDoc typedefs: `Conversation` (`channel, id, contact, title, subtitle, lastMessage, unreadCount, updatedAt, status, linkedCustomerId, linkedLeadId, assignedUser, raw`), `Message` (`channel, id, conversationId, direction, status, text, createdAt, attachments, reactions, replyToMessageId, replyTo, subject?, raw, source`), `Attachment`, `Contact`, `RealtimeEvent`, `ChannelCapabilities`. `Message.raw` keeps the legacy enriched shape the UI reads (WhatsApp swaps `raw.id` to the Meta message id); `Message.source` and `Conversation.raw` hold the untouched API payload.
+- `channels/registry.js` → `getChannelAdapter(channel)`, `hasChannelAdapter`, `CONVERSATION_CHANNELS`. Adapters `channels/{whatsapp,messenger,gmail}/adapter.js` share one interface: `normalizeConversation`, `normalizeMessage(s)`, `normalizeRealtimeEvent`, `getConversationId`, `getMessageId`, `extractConversations|Messages|Entity`, `filterConversations`, `queryKeys.workspace` + `queryKeys.floating`, `api`, `capabilities`. They delegate to `utils/{whatsapp,messenger,gmail}Conversations.js`, which own the request/response contracts and query keys. `channels/{whatsapp,gmail}/realtimeEvents.js` hold the pure realtime payload resolvers.
+- Shared helpers: `utils/conversationHelpers.js` (`sortMessagesByTime`, `upsertMessageById`, `filterConversations`), `utils/notificationSound.js` (`createNotificationSound`, one Audio + 1.2 s dedupe per channel), `utils/messengerCachedResponses.js`, `utils/formatConversationTime.js`.
+- UI: workspaces `components/{Whatsapp,Messenger,Gmail}ConversationsWorkspace.jsx` (Messenger list split into `MessengerConversationListPanel`/`ListItem`), composed by `pages/conversations/ConversationsPage.jsx` (header, channel tabs, unread badges). Channel-neutral chat UI in `components/shared/`: `ConversationThread`, `ConversationMessages`, `ConversationComposer`, `MessageAttachments`, `MediaGalleryDialog`, `InitialsAvatar`, `LastMessageStatus`, `threadCapabilities.js`. Drawer floating chats in `components/floating-chat/{shared,whatsapp,messenger,mail,sms}`. Channel-specific UI stays separate: `WhatsappTemplatesDialog`, `GmailBusinessEmailsPanel`, sidebar panels, navbar buttons.
+- Public surface for other features: `features/conversations/index.js` (exports `ConversationThread`).
+
+**Capabilities** (drive `supportsAttachments/Reply/Reactions` via `getThreadCapabilityProps`)
+
+| | WhatsApp | Messenger | Gmail |
+|---|---|---|---|
+| attachments | yes | yes | yes |
+| reactions / remove reaction | yes / no | yes / yes | no |
+| replies | yes | yes | no |
+| templates | yes | no | no |
+| email subject, mailboxes | no | no | yes |
+| link customer, close/reopen | yes | yes | yes |
+| assign (UI) | no | no (API exists) | no |
+| messaging window (policy note, not enforced) | 24 h | 24 h | — |
+
+**Realtime:** `realtime/hooks/useWhatsappRealtime` (`whatsapp.conversation.{id}`, many `.whatsapp.message.*` events), `useMessengerRealtime` (`messenger.conversation.{id}` + tenant notifications channel as fallback), `useGmailRealtime` (`gmail.conversation.{id}`, `.gmail.message.received`). The hooks play sounds / add notifications and call consumer callbacks; the workspaces, `MessengerSidebarPanel`, `useGlobalMessengerNotifications` and the floating-chat hooks update caches (Messenger workspace + sidebar share `hooks/useMessengerRealtimeMessageHandler.js`).
+
+**Query keys:** workspace — `['integrations','whatsapp','conversations',…]`, `['messenger','conversations'|'conversation-info'|'conversation-messages',…]`, `['gmail',…]`; drawer floating chats — `['whatsapp-chat',…]`, `['messenger-chat',…]`. Keep them stable.
+
+**API**
+- WhatsApp (`features/integrations/whatsapp/api/whatsappIntegrationApi.js`, base `/api/tenant/whatsapp`): `POST send`, conversations list/info/messages, `POST conversations/{id}/close|reopen|link`, `GET customers/{id}/conversation`, `GET leads/{id}/conversation`, `POST reaction`, templates (`GET templats`, `POST|PUT create/templat/{integrationId}`, `POST templat/{id}/sync-status`, `PATCH templat/{id}/toggle-active`, `DELETE templat/{id}`, spelling as in backend).
+- Messenger (`api/messengerApi.js`): conversations list/info/messages, `POST .../{id}/messages` (FormData), reactions add/remove, `POST .../{id}/assign|close|reopen`, lead/customer conversation lookup, contact link, `POST /api/messenger/test-send`.
+- Gmail (`api/gmailApi.js`): Google OAuth redirect and token refresh, `POST .../send/messages` (FormData with attachments), conversations list/info/messages, link/close/reopen, customer/lead conversation, `GET my-mailboxes`, business emails list/save.
+
+**Used by:** `/conversations`, app shell (`Header`, `MainLayout` sidebar panels), customer drawer, Leads Center columns, `/templates` (WhatsApp templates), outreach wizard (Gmail mailboxes), `internal-chat` (thread UI).
+
+**Known issues**
+- Drawer floating chats and workspaces use separate cache namespaces, so a message sent from the drawer does not update the inbox (and vice versa).
+- Four per-channel cache updaters remain (`upsertWhatsappMessageIntoCache`, `upsertGmailMessageIntoCache`, WhatsApp floating `upsertMessageIntoCachedResponse`, Messenger floating infinite-query updaters); a shared, tested reducer driven by `normalizeRealtimeEvent` is the next step.
+- Workspaces still render raw API fields; `normalizeConversation` is not yet used for rendering (the future Service Inbox should be the first consumer).
+- Differing local variants kept on purpose: WhatsApp `LastMessageStatus` (treats `sent` as outgoing), Messenger sidebar time format/avatar; three different list-row layouts need a design decision before merging.
+- `MessengerConversationFilters` and `MessengerLinkCustomerDialog` are cross-channel but Messenger-named; `filterMessengerConversations` lives in a component file.
+- Oversized: `ConversationThread` (≈780 lines), `MessengerLinkCustomerDialog` (≈770), `ConversationMessages` (≈600), `MessengerSidebarPanel`, WhatsApp/Gmail workspaces.
+- Dead code: `api/whatsappApi.js` and `useConversations`/`useMessages`/`useConversationMutations` in `hooks/useConversations.js` have no consumers.
+- Drawer Mail/SMS chats are local stubs (`useFloatingChatDraft`), not Gmail/SMS-backed.
+- Hardcoded Arabic strings and hex colors in moved code; `formatConversationTime` uses a fixed `ar-EG` locale; messaging-window policy not enforced in the composer.
+
+## Internal chat
+
+**Status:** CURRENT
+
+- **What it does:** team chat inside the tenant (direct and group conversations), isolated from external channels. Full workspace at `/team-chat` (`pages/chat/InternalChatPage.jsx`) and a header quick panel.
+- **Key files:** `features/internal-chat/api/internalChatApi.js`; hooks `useChatConversations`, `useChatMessages`, `useChatMembers`, `useChatRealtime`, `useChatUnreadCount`, `useChatSearch`, `useTypingIndicator`, `useChatPermissions`; `store/internalChatUiStore.js`; `constants/chatConstants.js` (`chatKeys`); `utils/` (`conversationHelpers`, `messageCacheHelpers`, `messageGrouping`); components `InternalChatWorkspace`, `InternalChatSidebarPanel`, `InternalChatNavbarButton`. Renders messages with `ConversationThread` from `features/conversations`.
+- **Message lifecycle:** paginated load → normalize and sort oldest-first → send multipart → optimistic pending message → reconcile with the server message. Opening a conversation marks it read.
+- **API (`/api/tenant/chat`):** `GET` / `POST` conversations, `GET {id}/messages`, `POST send/messages/{id}`, `POST {id}/read`, `POST {id}/members`, `DELETE {id}/members/{user}`, `PATCH {id}/members/{user}/role`, `POST {id}/mute|unmute`, `PATCH messages/{messageId}`, `DELETE messages/{messageId}`, `POST messages/{messageId}/reactions`, `DELETE messages/{messageId}/reactions/{emoji}`.
+- **Realtime:** reuses the tenant notifications channel via `useRealtimeChannel` and filters internal-chat events; updates caches and unread counts. No second connection.
+- **Used by:** `/team-chat`, header.
+- **Known issues:** backend gaps — reliable `unread_count`/`last_read_message_id`, consistent edit/delete, server-side search, pin/saved/threads, mention ids, archive/leave, direct-chat de-duplication. UI translation not audited.
+
+## Ad campaigns and Meta integrations
+
+**Status:** PARTIAL (Meta only; other platforms registered but not configured)
+
+- **What it does:** Campaign Center at `/campaigns` for **paid** advertising (campaigns, ad sets, ads, lead forms, insights). Not the same as [Outreach campaigns](#outreach-campaigns). Routes: `/campaigns` (redirects to the last platform, stored as `ican-campaign-center-platform`), `/campaigns/:platform`, `/create`, `/list`, `/analytics`, `/billing`, `/:campaignId`. Unavailable or unconfigured platforms show "feature not included" / "not configured" states.
+- **Layers:** `pages/campaigns` (route composition, sub-sidebar, header, list table, details) → `features/campaigns` (`config/platformRegistry.js` + `campaignCapabilities.js`, `context/CampaignCenterContext.jsx`, `hooks/useCampaigns.js`) → `providers/` (`campaignProvider.js` default adapter; `meta/metaCampaignProvider.js` wires the real functions) → `facebook-campaign/` (API contracts, hooks, cache keys) → `services/httpClient`.
+- **Platform registry:** each platform has `id`, `labelKey`, `icon`, `moduleKeys`, `capabilities`, `provider` (Meta, Google, TikTok, Snapchat registered; only Meta configured). Sub-sidebar = capability ∩ permission. Visibility order: module/package → platform capability → user permission → page. No `if (platform === 'meta')` in pages. Tested in `platformRegistry.test.js`.
+- **Create wizard** (`pages/campaigns/pages/CampaignCreatePage/`): steps Objective (ODAX) → Campaign Setup → Ad Sets (conditional fields: `pixel_id`/`custom_event_type` for website, `whatsapp_phone_number` for WhatsApp; ad-set budget only when budget level is ad set) → Ads (`NotConfiguredStep`, no create-ad contract) → Review. State via `state/` reducer + local draft autosave. Publish is sequential: create campaign → take `campaign_id` → create each ad set.
+- **Details page:** campaign data, ad sets, ads and insights (actions, cost, video).
+- **Cache keys:** `campaign-center / tenant / meta / account / resource / filters`; mutations invalidate only the tenant+Meta prefix.
+- **API** — `facebook-campaign/api/facebookCampaignApi.js` (`/api/tenant/facebook`): `GET campaigns/get`, `GET campaigns/sync`, `POST campaigns/create`, `GET /api/tenant/campaigns/{campaign}/adsets`, `POST adset/create`, `GET adset/get`, `GET adset/sync`, `GET campaigns/adsets/{adSetId}/ads`, `GET campaigns/ads/{adId}/insights`, `GET campaigns/pages/{pageId}/posts`, `GET campaigns/posts/{postId}/engagement|comments`; sub-login invites: `POST login/invite`, `GET login/invite/my`, and on `VITE_MAIN_SERVER_URL`: `POST /api/tenant/facebook/login/invite/create`, `GET .../invite/revoke/{id}`, `GET /api/facebook/sub-login/{tenant}/{token}`. Older CRUD modules: `api/campaignsApi.js`, `campaignAdsApi.js`, `adsFormsApi.js` (`/api/tenant/{campaigns|ads|ads-forms}/save|edite|active|inactive|details`), `api/facebookApi.js` (`/api/facebook/campaign|adset|ad/create`, `lead-form/create/{tenant}`, connect/pages/refresh-token/assets).
+- **Meta integrations (`features/meta-integrations`):** `facebookMetaApi.js` (`GET /api/tenant/channel/facebook/connect-link`, `GET /api/tenant/facebook/pages/{tenant}`, `GET /api/tenant/facebook/get/intgrations`, refresh token, assets), `hooks/useFacebookIntegrations.js` (connection state, ad accounts, pages — the hook everyone uses), `utils/metaConnectUrl.js`.
+- **Used by:** `/campaigns`, social media, outreach wizard, workflow data sources, `/settings/integrations` (Meta tab), `/integrations/facebook/callback`.
+- **Known issues:** the Ads step is not connected; last commit notes an open error in ad-set creation (Unverified: exact failure); Meta analytics/billing/pause/edit/duplicate endpoints missing; Google/TikTok/Snapchat providers not built; creatives, CRM-attributed leads/conversions and sync log missing on details. `messengerMetaApi.js` is fully commented out, so importing `metaIntegrationsApi`/the `meta-integrations` barrel would break the build (only `useFacebookIntegrations` is safe to import). `facebookApi.js` and `meta-integrations/facebookAdsApi.js` duplicate the same create endpoints; `whatsappMetaApi.js` duplicates legacy tenant-in-path WhatsApp endpoints. Ownership overlap with `features/integrations` unresolved.
+
+## Outreach campaigns
+
+**Status:** CURRENT (backend features limited)
+
+- **What it does:** bulk **messages** to existing CRM contacts over WhatsApp, Gmail and Messenger (`Audience → Campaign → Channel → Message → Schedule → Send`). Channels are adapters in one channel registry used by one wizard. Routes under `/outreach-campaigns` (own layout + sidebar): overview (index), `live`, `all`, `create`, `channels/messenger|whatsapp|gmail`, `calendar`, `workflow`, `:campaignId`.
+- **Key files:** `features/outreach-campaigns/` — `api/messegeCampaignApi.js`, `whatsappTemplateImagesApi.js`, `hooks/useMessegeCampaign.js`, `useOutreachCampaigns.js`, `config/campaignChannels.js` (channel registry), `constants/campaignStatus.js`, `campaignObjectives.js`, `utils/normalizeCampaign.js` (backend → domain), `buildCampaignPayload.js` (form → backend), `campaignAudience.js` (per-channel eligibility), `campaignCalendar.js`, `schemas/` (Zod per channel), `workflow/outreachWorkflowDefinition.js`, components (`OutreachSidebar`, `CampaignStageNavigation`, overview/list/create/calendar/workflow content); wizard UI in `pages/outreach-campaigns/components/wizard/`. `features/MessegeCampaign/index.js` is an unused re-export kept for compatibility.
+- **API (`/api/tenant/campaigns`):** `POST create`, `POST {id}/edite`, `GET show/{id}`, `GET {id}/destroy`, `GET {id}/cancel`, `GET scheduled`, `GET my`, `GET my/scheduled`, `POST {id}/add|remove/images`, `POST {id}/add|remove/customers`, `POST {id}/add|remove/users`. WhatsApp template images (`/api/tenant/whatsapp`): `POST create/template/images`, `GET template/images`, `GET template/{id}/images`, `POST change/template/{id}/image/status`. Channel data reuses WhatsApp templates, Gmail sending/mailboxes and `useFacebookIntegrations`.
+- **Used by:** sidebar Growth → Outreach Campaigns; workflow engine (embedded builder in campaign details).
+- **Known issues:** no documented list/detail response shape; Bearer requirement unconfirmed on `edite` and add/remove customers/users; meaning of `external_id` for Messenger unconfirmed. Not built (backend): campaign members, segments/saved audiences, sequences, delivery/read/reply/click tracking, stop conditions, suppression/consent/unsubscribe, rate limiting, analytics endpoint, opportunity signals, "campaigns of this customer". The misspelled `messege*` names are kept to match the backend. UI translation not re-audited.
+
+## Social media
+
+**Status:** PARTIAL (Facebook read-only)
+
+- **What it does:** **organic** social presence — connected profiles/pages, published content, engagement and comments — at `/social-media` (overview index, `profiles`, `content`, `planner`, `analytics`, `facebook`, `facebook/:pageId`, `instagram`, `tiktok`, `snapchat`). Separate UI domain from paid Campaigns even though both use Meta.
+- **Key files:** `features/social-media/config/socialPlatformsRegistry.js` (single source of truth; Facebook `available: true` with adapter; Instagram/TikTok/Snapchat `available: false`), `socialCapabilities.js` (`profiles`, `contentRead`, `engagementRead`, `commentsRead` true for Facebook; create/schedule/publish/insights false everywhere), `adapters/socialAdapterContract.js` + `adapters/facebook/`, `api/facebookSocialApi.js` (thin re-export of `facebookCampaignApi.getPagePosts|getPostEngagement|getPostComments`), hooks `useSocialProfiles` (uses `useFacebookIntegrations`), `useSocialContent`, `useSocialEngagement`, `useSocialComments`, `socialKeys.js`; components (profile cards/header, metrics, content, details); `pages/social-media/`; locale `socialMedia.js`.
+- **Three independent states:** supported by ICAN (`available`), included in the tenant package (`moduleKeys` vs `user.modules`), connected (runtime data). Never collapse them into one boolean. UI checks capabilities, never platform names.
+- **API:** `GET /api/tenant/facebook/campaigns/pages/{pageId}/posts`, `GET .../posts/{postId}/engagement`, `GET .../posts/{postId}/comments` (shared with Campaign Center).
+- **Used by:** sidebar Growth → Social Media (`permission: 'social.view'`).
+- **Extend:** new platform = registry entry + adapter implementing the contract + capabilities; no new routes beyond its platform page.
+- **Known issues:** no publishing, scheduling, planner backend or insights for any platform; Instagram/TikTok/Snapchat have no adapters.
+
+## Tasks
+
+**Status:** CURRENT (board persistence PARTIAL)
+
+- **What it does:** task workspace at `/tasks` with board/list UX, smart views (All, Due Today, Overdue, In Progress, …), Kanban and calendar views, task drawer, reusable task form, header button and quick sidebar panel. Board/list placement is organizational and separate from task **status** (`pending`, `in_progress`, `completed`, `cancelled`).
+- **Key files:** `features/tasks/api/tasksApi.js`, `hooks/useTasks.js`, `components/` (`TaskDrawer`, `TaskForm`, `TaskFormDialog`, `TaskKanbanView`, `TaskCalendarView`, `TasksNavbarButton`, `TasksSidebarPanel`, `board/`, `workspace/`), `repositories/taskBoardRepository.js` (static board and list definitions), `utils/taskMeta.js`, `workflow/taskWorkflowDefinition.js`; `pages/tasks/TasksPage.jsx`; locale `tasks.js`.
+- **API (`/api/tenant/tasks`):** `GET` list, `POST` create, `GET|PUT|DELETE {id}`, `PATCH {id}/status`, `PATCH {id}/read`, `POST {id}/assign-users`, `DELETE {id}/users/{userId}`, `POST {id}/assign-teams`, `DELETE {id}/teams/{teamId}`, `POST {id}/notes`, `PUT|DELETE {id}/notes/{noteId}`, `POST {id}/attachments`, `DELETE {id}/attachments/{attachmentId}`.
+- **Used by:** `/tasks`, header, calendar (`taskEventAdapter`), workflow engine, customer drawer (separate mini Tasks tab).
+- **Known issues (backend gaps):** boards, board lists, ordering and membership are not persisted (static definitions); missing endpoints for task activity log, board item movement, reminders scheduler, bulk actions, subtasks/checklists, recurring tasks, server-side filtering (`status, priority, due_date, assignee…`), and realtime `task.*` / `task_board*` events. `TaskCalendarView` is not on the shared calendar engine.
+
+## Workflow engine and automation
+
+**Status:** PARTIAL (builder CURRENT, execution PLANNED)
+
+- **What it does:** one central automation engine. Each module registers its triggers, conditions, actions and variables; the same builder adapts to the module that opens it and supports cross-module actions. Full page `/automation` (`pages/automation/AutomationCenterPage.jsx`, workflow list via `VisualFlowSidebar` + builder); embeddable anywhere via `WorkflowLauncher`, `useWorkflowBuilder` + `WorkflowBuilder mode="context"`, or `WorkflowBuilder … embedded` (e.g. outreach campaign details).
+- **Key files:** `features/workflow-engine/registry/workflowRegistry.js` (`registerWorkflowModule`, `getModules`, `getTriggers|Conditions|Actions(ForContext)`, data sources), `config/registerBuiltinModules.js` (imports module definitions; also registers a `notifications` module whose actions are `backendSupport: false`), `config/registerDataSources.js`, `hooks/useDataSourceOptions.js`, `core/` (node types, domain model), `components/` (`WorkflowBuilder`, `WorkflowLauncher`, `WorkflowVisualCanvas` on Visual Flow, node library/properties, `WorkflowLocalStorageNotice`), `hooks/useWorkflowStore.js` (Zustand `persist`, key `ican-workflow-drafts`), `templates/`; module definitions in `features/{leads,opportunities,outreach-campaigns,tasks}/workflow/*WorkflowDefinition.js`; locale `workflow.js`.
+- **Node concepts:** trigger (`entity.event`), conditions, actions (`backendSupport: true|false` per action), branch, wait, wait-for-event, variables (`{{key}}`), context (`module`, `entity`, `entityId`).
+- **API:** none — workflows are local browser drafts; the UI never claims a workflow is running. Suggested backend surface: `GET|POST /workflows`, `GET|PUT|DELETE /workflows/{id}`, `POST /workflows/{id}/activate|pause|duplicate`, `GET /workflows/{id}/executions`, `GET /workflow-executions/{id}`, `GET /workflow-executions/{id}/logs`, plus event bus, action executors, scheduler/queue, variable resolution, versioning, retry, idempotency, loop protection, permissions and tenant capabilities.
+- **Used by:** `/automation`, deals workspace, outreach campaign details, any module via `WorkflowLauncher`.
+- **Extend:** new module = `features/<module>/workflow/<module>WorkflowDefinition.js` calling `registerWorkflowModule({...})` + one import line in `registerBuiltinModules.js` + labels in `locales/{ar,en}/workflow.js`. New action field data source = a `case` in `useDataSourceOptions.js` registered in `registerDataSources.js`. Never build a second automation engine.
+- **Known issues:** no persistence or execution backend; drafts are per browser; many actions `backendSupport: false` (e.g. send notification).
+
+## Integrations
+
+**Status:** PARTIAL
+
+- **What it does:** tenant integration settings and provider connections. `/settings/integrations` has two tabs: **Meta** (default — connect Meta account, refresh connection, list connected Facebook pages) and **Other integrations** (generic list). OAuth return lands on `/integrations/facebook/callback` (`pages/integrations/FacebookCallbackPage.jsx`), which reads `status`, `pages_saved`, `messenger_saved`, `whatsapp_saved`, strips the `#_=_` artifact, toasts the result and redirects to `/settings/integrations` after ~2.5 s.
+- **Key files:** `features/integrations/api/integrationsApi.js`, `hooks/useIntegrations.js`; `features/integrations/whatsapp/` (WhatsApp messaging + templates API and hooks, `WHATSAPP_INTEGRATION_QUERY_KEYS`); `features/meta-integrations/` (see [Ad campaigns and Meta integrations](#ad-campaigns-and-meta-integrations)); `pages/settings/pages/integrations/` (`MetaIntegrationTab`, `OtherIntegrationsTab`). The Meta connect link is resolved by `utils/metaConnectUrl.js` (absolute URLs kept, relative ones built as `{scheme}://{tenant}.{VITE_API_ROOT_DOMAIN}/{link}`).
+- **API:** `GET /api/tenant/integrations/get`, `POST .../save/intgration`, `POST .../edite/intgration/{id}` (backend spelling); Meta connect/pages/refresh; WhatsApp endpoints listed under [Conversations](#conversations).
+- **Used by:** settings, conversations (WhatsApp), `/templates` (WhatsApp template management via `WhatsappTemplatesDialog`), campaigns, outreach, social media.
+- **Known issues:** `integrations` vs `meta-integrations` ownership overlap; WhatsApp code lives under `integrations` while Messenger/Gmail live under `conversations`.
+
+## Notifications
+
+**Status:** PARTIAL (client-side center, fed by realtime)
+
+- **What it does:** notification center in the header (`NotificationCenterButton`, `NotificationCenterPanel`) backed by a Zustand store persisted in localStorage (`ican-notification-center-items`, capped list). Items are added by realtime handlers — tenant notifications (`useTenantNotificationsRealtime`) and channel message events (`buildWhatsappMessageNotification`, `buildGmailMessageNotification` in `utils/notificationPayloads.js`) — each with an `actionUrl` (e.g. `/conversations?channel=whatsapp&whatsappConversation={id}`).
+- **Key files:** `features/notifications/` (`components/`, `store/notificationCenterStore.js`, `utils/notificationPayloads.js`, `index.js`); `realtime/hooks/useTenantNotificationsRealtime.js`.
+- **API:** none (no list/read endpoints); realtime channel `tenant.{tenantId}.notifications.{userId}`, event `.notification.created`.
+- **Used by:** `Header`, conversation realtime hooks, tenant notification realtime.
+- **Known issues:** no server-side history or read state; workflow "send notification" action not backed.
+
+## AI agent
+
+**Status:** PARTIAL (UI scaffold)
+
+- **What it does:** assistant UI components and an AI permission model.
+- **Key files:** `features/ai-agent/components/AgentChat.jsx` (chat box; answers only through an `onAsk` prop), `AgentSuggestions.jsx`, `AIThinkingIndicator.jsx`, `AutomationLog.jsx`; `services/agentPermissions.js` (`getAiPermission`, `AI_PERMISSION_LEVELS`, tested). Styling uses `--ai-*` tokens.
+- **API:** none.
+- **Used by:** `AgentChat` in the deals workspace drawer (rendered without `onAsk`).
+- **Known issues:** no AI backend contract, so the chat never answers; `AgentSuggestions` and `AutomationLog` have no consumers; hardcoded Arabic copy in `AgentChat`.
+
+## Products and services
+
+**Status:** CURRENT
+
+- **What it does:** products, product categories (tree), services and service categories under `/products` (own layout and sidebar: `categories`, `services`, `service-categories`). Services reuse `ProductsPage` with `productType="service"`.
+- **Key files:** `features/products/api/productsApi.js`, `categoriesApi.js`, `linkProductsApi.js`, `hooks/useProducts.js` (`useProducts`, `useProductCategories`, `useProductMutations`); `pages/products/ProductsPage/` (`ProductsPage`, `ProductFormDrawer`, `ProductCategoriesPage`, `CategoryFormDrawer`, `categoryTree.js`, `AdditionalDataFields`), `pages/products/ServicesPage/`, `layout/`; locale `products.js`.
+- **API:** `GET /api/tenant/product/data`, `GET .../info/{id}`, `POST .../create`, `POST .../update/{id}`; categories `GET /api/tenant/category/data`, `GET .../info/{id}`, `POST .../create`, `POST .../update/{id}`; link products `POST /api/tenant/link-products/save`, `POST .../update-status`.
+- **Used by:** `/products`, lead interests and follow-up dialogs, customer products dialog, proposal builder/pricing, Messenger link-customer dialog.
+- **Known issues:** Unverified: delete endpoints for products/categories (none in the API files).
+
+## Settings and appearance
+
+**Status:** CURRENT (brand persistence local only)
+
+- **What it does:** `/settings` has its own layout and internal sidebar (`SettingsLayout`, `SettingsSidebar`, `SettingsMobileSidebar`, `constants/settingsNavigation.js`; collapse state in `settings-sidebar-collapsed`). Pages: `/settings` → definitions, `/settings/definitions`, `/settings/users`, `/settings/integrations`, `/settings/appearance`.
+- **Appearance:** tenant admins pick **brand primary** and **brand accent**; `features/branding/utils/deriveBrandTokens.js` (pure) derives `--brand-primary-l` (+12 lightness), `--brand-accent-soft` (92 % light / 15 % dark lightness), `--ai-color` (= accent), `--ai-bg` (= accent soft), `--ai-border` (70 % lightness). `themeStore.setBrandPrimary/Accent` apply tokens live on `document.documentElement`; `saveBrandTokens` persists via `features/branding/api/brandingApi.js` to localStorage (`ican-crm:brand-tokens`); `resetBrandTokens` restores `src/index.css` defaults. Drafts are excluded from zustand persist. `ThemeProvider` re-applies tokens on mount and on theme/brand change. Font family, semantic tokens, spacing and density are deliberately not exposed.
+- **Key files:** `pages/settings/` (layout, `pages/definitions|users|integrations|appearance`), `features/branding/` (`api/brandingApi.js`, `utils/deriveBrandTokens.js`, `hooks/useAppearanceSettings.js`, `index.js`), `store/themeStore.js`; locale `branding.js`.
+- **API:** definitions, users and integrations APIs (see [2-SALES.md → Statuses, tags and pipeline](2-SALES.md#statuses-tags-and-pipeline), [2-SALES.md → Teams and users](2-SALES.md#teams-and-users), [Integrations](#integrations)); branding has no backend yet. Proposed: `GET /api/tenant/branding` → `{ brandPrimary, brandAccent }`, `PUT /api/tenant/branding` (6-digit hex, tenant-scoped); only `brandingApi.js` should change.
+- **Known issues:** brand colors do not sync across devices/users; only `Button` and `SettingsSidebar` read brand tokens — screens with hardcoded brand hex do not follow the picked colors.
+
+## Customer Service — PLANNED
+
+**Status:** PLANNED — no routes, navigation section or code yet.
+
+Customer Service is a navigation area and a set of **new** domains that consume existing ones — not a copy of Customers, Tasks, Conversations or Activities.
+
+| Capability | Reuse | New domain needed |
+|---|---|---|
+| Customer identity and history | `features/customers`, `features/leads` | — (blocked on the Leads/Customers model decision, see [2-SALES.md → Sales domain known issues](2-SALES.md#sales-domain-known-issues)) |
+| Agent ↔ customer communication (Service Inbox) | `features/conversations` adapters via `getChannelAdapter` | — |
+| Follow-up work items | `features/tasks` | — |
+| Assignment rules, SLA timers, escalation | `features/workflow-engine` (new module definitions, e.g. `ticket.created`, `ticket.sla_breached`) | not a second engine |
+| Agents and teams | `features/teams`, `features/users` | — |
+| Notifications | `features/notifications` + realtime | server-side notifications backend |
+| Support calls/meetings | `features/call-meetings`, `features/activities` | — |
+| Ticket record and status machine | — | **Tickets** |
+| SLA policies and breach tracking | — | **SLA** (sub-concept of Tickets) |
+| Knowledge base | — | **Knowledge Base** |
+| Queues | evaluate `leadAssignmentApi` rule pattern | **Queues** (or extend assignment rules) |
+| Analytics | `features/analytics` (sales dashboard only today) | possibly extend |
+
+When it starts: add `features/<domain>` folders, a `customer_service` navigation section (module id reserved), locale modules, and a section in this file.
