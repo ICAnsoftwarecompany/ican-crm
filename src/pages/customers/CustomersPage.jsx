@@ -29,39 +29,10 @@ import { FollowUpNoteDialog } from './components/follow-up-note'
 import { MeetingDataDrawer, ScheduleActivityDialog } from '../../features/call-meetings'
 import { buildAfterMeetingReportUrl, buildScheduleStatusPayload } from '../../features/call-meetings/utils/scheduleUiUtils'
 import { useMeetingMutations } from '../../features/meetings/hooks/useMeetings'
-
-const ACTIVITY_RANGE_VALUES = [1, 7, 15, 30]
-
-function getActivityRangeOptions(t) {
-  return ACTIVITY_RANGE_VALUES.map((value) => ({
-    value,
-    label: value === 1
-      ? (t ? t('customers.table.range.today') : 'Today')
-      : (t ? t('activities.duration.day', { count: value }) : `${value} days`),
-  }))
-}
-
-function parseBackendLocalDateParts(value) {
-  if (!value) return null
-
-  const normalized = String(value)
-    .trim()
-    .replace('T', ' ')
-    .replace(/(\.\d+)?(Z|[+-]\d{2}:?\d{2})$/, '')
-
-  const match = normalized.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?::(\d{2}))?$/)
-  if (!match) return null
-
-  const [, year, month, day, hour, minute, second = '0'] = match
-  return {
-    year: Number(year),
-    month: Number(month),
-    day: Number(day),
-    hour: Number(hour),
-    minute: Number(minute),
-    second: Number(second),
-  }
-}
+import { CustomersActivitySidePanel } from './components/CustomersActivitySidePanel'
+import { parseBackendLocalDateParts } from './utils/backendLocalDate'
+import { CUSTOMERS_VIEW_MODES, CustomersViewModeToggle, useCustomersViewMode } from '../../features/customers/pipeline'
+import { CustomersPipelineSection } from './components/CustomersPipelineSection'
 
 function parseBackendLocalTimestamp(value) {
   const parts = parseBackendLocalDateParts(value)
@@ -77,16 +48,6 @@ function parseBackendLocalTimestamp(value) {
   ).getTime()
 
   return Number.isNaN(time) ? Number.NaN : time
-}
-
-function formatBackendTime12(value, t) {
-  const parts = parseBackendLocalDateParts(value)
-  if (!parts) return '-'
-
-  const hour12 = parts.hour % 12 || 12
-  const period = parts.hour >= 12 ? (t ? t('common.pm') : 'PM') : (t ? t('common.am') : 'AM')
-  const minutes = String(parts.minute).padStart(2, '0')
-  return `${hour12}:${minutes} ${period}`
 }
 
 function getTodayActivitiesByType(rows = [], type = 'meeting', nowTimestamp = Date.now()) {
@@ -202,26 +163,6 @@ function getActivitiesByTypeInRange(rows = [], type = 'meeting', nowTimestamp = 
   })
 
   return list
-}
-
-function getActivityRangeLabel(rangeDays, t) {
-  const option = getActivityRangeOptions(t).find((item) => Number(item.value) === Number(rangeDays))
-  return option?.label || (t ? t('activities.duration.day', { count: rangeDays }) : `${rangeDays} days`)
-}
-
-function formatBackendDateShort(value) {
-  const parts = parseBackendLocalDateParts(value)
-  if (!parts) return ''
-
-  return `${String(parts.day).padStart(2, '0')}/${String(parts.month).padStart(2, '0')}/${parts.year}`
-}
-
-function getActivityStatusLabel(status = '', t) {
-  if (status === 'scheduled') return t ? t('activities.status.scheduled') : 'Scheduled'
-  if (status === 'in_progress') return t ? t('activities.status.in_progress') : 'In Progress'
-  if (status === 'completed') return t ? t('activities.status.completed') : 'Completed'
-  if (status === 'cancelled') return t ? t('activities.status.cancelled') : 'Cancelled'
-  return status || '-'
 }
 
 function normalizeText(value) {
@@ -651,6 +592,8 @@ export function CustomersPage({ defaultShowTrash = false }) {
   const [activityRangeDays, setActivityRangeDays] = useLocalStorage('customers-activity-drawer-range-days', 1)
   const [leadNoteDialogRow, setLeadNoteDialogRow] = useState(null)
   const [scheduleDialog, setScheduleDialog] = useState(null)
+  const [viewMode, setViewMode] = useCustomersViewMode()
+  const isPipelineView = !showTrash && viewMode === CUSTOMERS_VIEW_MODES.PIPELINE
   const customersQuery = useCustomers()
   const deletedQuery = useDeletedCustomers(showTrash)
   const mutations = useCustomerMutations()
@@ -1003,14 +946,6 @@ export function CustomersPage({ defaultShowTrash = false }) {
       return String(item?.status || '').trim().toLowerCase() === activeActivityStatusFilter
     })
 
-  const activityStatusOptions = [
-    { value: 'all', label: t('customers.page.allStatuses') },
-    { value: 'scheduled', label: t('activities.status.scheduled') },
-    { value: 'in_progress', label: t('activities.status.in_progress') },
-    { value: 'completed', label: t('activities.status.completed') },
-    { value: 'cancelled', label: t('activities.status.cancelled') },
-  ]
-
   const handleToggleActivityDrawer = useCallback((type) => {
     setSelectedActivityItem(null)
     setActiveActivityStatusFilter('all')
@@ -1345,30 +1280,9 @@ export function CustomersPage({ defaultShowTrash = false }) {
         onExport={() => navigate('/LeadsCenter/import-export')}
         onTrash={() => navigate(showTrash ? '/LeadsCenter' : '/LeadsCenter/trash')}
         trashActive={showTrash}
-        onTableSettings={() => setIsTableSettingsOpen(true)}
+        onTableSettings={!isPipelineView ? () => setIsTableSettingsOpen(true) : undefined}
+        viewToggle={!showTrash ? <CustomersViewModeToggle value={viewMode} onChange={setViewMode} /> : null}
       />
-
-      {/*
-      <PageToolbar title={t('customers.title')} description="إدارة العملاء، البحث، الحذف المؤقت، والاسترجاع.">
-        <div className="flex gap-2">
-          {!showTrash && (
-            <Button variant="primary" onClick={() => setIsDialogOpen(true)} className="gap-2">
-              <Plus size={16} />
-              {t('customers.newCustomer')}
-            </Button>
-          )}
-          <Button
-            variant={showTrash ? 'primary' : 'outline'}
-            onClick={() => setShowTrash((value) => !value)}
-            className="gap-2"
-          >
-            <ArchiveRestore size={16} />
-            {showTrash ? t('customers.active') : t('customers.trash')}
-          </Button>
-        </div>
-      </PageToolbar>
-
-      */}
 
       {!showTrash && (
         <LeadStatusTabs
@@ -1393,6 +1307,35 @@ export function CustomersPage({ defaultShowTrash = false }) {
 
       <div className={`grid min-w-0 gap-3 ${activeActivityDrawerType ? 'xl:grid-cols-[minmax(0,1fr)_340px]' : 'grid-cols-1'}`}>
         <section className="overflow-x-auto min-w-0">
+          {isPipelineView ? (
+            <CustomersPipelineSection
+              rows={baseFilteredRows}
+              statuses={leadStatusesQuery.data || []}
+              statusById={statusById}
+              selectedStatusId={freshLeadActive ? null : selectedLeadStatusId}
+              isLoading={isLoading || leadStatusesQuery.isLoading}
+              error={error || leadStatusesQuery.error}
+              onRetry={() => Promise.allSettled([refetch(), leadStatusesQuery.refetch()])}
+              hasNextPage={customersQuery.hasNextPage}
+              isFetchingNextPage={customersQuery.isFetchingNextPage}
+              onLoadMore={customersQuery.fetchNextPage}
+              activeCustomerKey={isDetailsOpen ? getCustomerRowKey(selectedCustomer) : ''}
+              latestLeadNotes={latestLeadNotes}
+              resolveMessengerChannel={resolveMessengerChannel}
+              resolveGmailChannel={resolveGmailChannel}
+              onDone={refetch}
+              onAddLeadNote={handleOpenLeadNoteDialog}
+              actions={{
+                onOpenDetails: openCustomerDetails,
+                onOpenLeadPage: (row) => handleRowDoubleClick(row, { ctrlKey: true }),
+                onAddMeeting: (row) => handleOpenScheduledActivityDialog(row, 'meeting'),
+                onAddCall: (row) => handleOpenScheduledActivityDialog(row, 'call'),
+                onAddFollowUp: handleOpenLeadNoteDialog,
+                onOpenMessenger: handleOpenMessengerFromChannel,
+                onOpenGmail: handleOpenGmailFromChannel,
+              }}
+            />
+          ) : (
           <DataTable
             data={filteredRows}
             columns={columns}
@@ -1433,117 +1376,20 @@ export function CustomersPage({ defaultShowTrash = false }) {
             showToolbar={true}
             showFooter={true}
           />
+          )}
         </section>
 
         {activeActivityDrawerType ? (
-          <aside className="min-w-0 rounded-xl border border-[#D7EEF0] bg-white shadow-sm xl:sticky xl:top-16 xl:h-[calc(100vh-7rem)] xl:overflow-hidden">
-            <div className="flex items-center justify-between border-b border-[#E8EEF0] px-3 py-2">
-              <div className="text-sm font-black text-[var(--text)]">
-                {activeActivityDrawerType === 'meeting' ? t('customers.table.meetingsGroupLabel') : t('customers.table.callsGroupLabel')} {getActivityRangeLabel(activityRangeValue, t)}
-              </div>
-              <div className="inline-flex items-center gap-2">
-                <span className="rounded-full bg-[#F1F5F9] px-2 py-0.5 text-xs font-black text-[#334155]">
-                  {activeActivityList.length}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setActiveActivityDrawerType(null)}
-                  className="rounded-lg border border-[#E2E8F0] px-2 py-1 text-xs font-bold text-[#475569] transition-colors hover:bg-[#F8FAFC]"
-                >
-                  {t('customers.page.close')}
-                </button>
-              </div>
-            </div>
-
-            <div className="border-b border-[#E8EEF0] px-2 py-2">
-              <div className="grid grid-cols-4 gap-1 rounded-lg bg-[#F8FAFC] p-1">
-                {getActivityRangeOptions(t).map((option) => {
-                  const isSelected = Number(option.value) === Number(activityRangeValue)
-
-                  return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => setActivityRangeDays(option.value)}
-                      className={`rounded-md px-2 py-1.5 text-[11px] font-black transition-colors ${
-                        isSelected
-                          ? activeActivityDrawerType === 'meeting'
-                            ? 'bg-[#E8F9FA] text-[#007A80] shadow-sm'
-                            : 'bg-[#FFF1F2] text-[#B91C1C] shadow-sm'
-                          : 'text-[#64748B] hover:bg-white'
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            <div className="border-b border-[#E8EEF0] px-2 py-2">
-              <div className="flex flex-wrap gap-1.5">
-                {activityStatusOptions.map((option) => {
-                  const isSelected = activeActivityStatusFilter === option.value
-
-                  return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => setActiveActivityStatusFilter(option.value)}
-                      className={`rounded-full border px-2.5 py-1 text-[10px] font-black transition-colors ${
-                        isSelected
-                          ? activeActivityDrawerType === 'meeting'
-                            ? 'border-[#BEEFF2] bg-[#E8F9FA] text-[#007A80]'
-                            : 'border-[#F8C3C3] bg-[#FFF1F2] text-[#B91C1C]'
-                          : 'border-[#E2E8F0] bg-white text-[#475569] hover:bg-[#F8FAFC]'
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            <div className="space-y-2 p-2 xl:h-[calc(100%-98px)] xl:overflow-y-auto">
-              {activeActivityList.length ? activeActivityList.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setSelectedActivityItem(item)}
-                  className={`block w-full rounded-lg border px-2.5 py-2 text-left transition-colors ${
-                    activeActivityDrawerType === 'meeting'
-                      ? 'border-[#D7EEF0] bg-[#F8FEFF] hover:bg-[#F0FEFF]'
-                      : 'border-[#FADADA] bg-[#FFF8F8] hover:bg-[#FFF2F2]'
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <div className="truncate text-xs font-black text-[var(--text)]">{item.customerName}</div>
-                      <div className="truncate text-[11px] font-semibold text-[var(--text-muted)]">{item.title}</div>
-                    </div>
-                    <div className={`shrink-0 text-[11px] font-black ${activeActivityDrawerType === 'meeting' ? 'text-[#0F766E]' : 'text-[#B91C1C]'}`}>
-                      {formatBackendTime12(item.startAt, t)}
-                    </div>
-                  </div>
-                  <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] font-bold text-[#64748B]">
-                    <span>{getActivityStatusLabel(item.status, t)}</span>
-                    {activityRangeValue > 1 ? (
-                      <span className="rounded-full bg-white px-1.5 py-0.5 text-[#475569] ring-1 ring-[#E2E8F0]">
-                        {formatBackendDateShort(item.startAt)}
-                      </span>
-                    ) : null}
-                  </div>
-                </button>
-              )) : (
-                <div className="rounded-lg border border-dashed border-[#D7EEF0] px-2 py-3 text-center text-xs font-semibold text-[var(--text-muted)]">
-                  {activeActivityDrawerType === 'meeting'
-                    ? t('customers.page.noMeetingsInRange', { range: getActivityRangeLabel(activityRangeValue, t) })
-                    : t('customers.page.noCallsInRange', { range: getActivityRangeLabel(activityRangeValue, t) })}
-                </div>
-              )}
-            </div>
-          </aside>
+          <CustomersActivitySidePanel
+            type={activeActivityDrawerType}
+            items={activeActivityList}
+            rangeDays={activityRangeValue}
+            onRangeChange={setActivityRangeDays}
+            statusFilter={activeActivityStatusFilter}
+            onStatusFilterChange={setActiveActivityStatusFilter}
+            onSelectItem={setSelectedActivityItem}
+            onClose={() => setActiveActivityDrawerType(null)}
+          />
         ) : null}
       </div>
 

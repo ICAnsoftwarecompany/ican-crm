@@ -87,12 +87,12 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 **Status:** CURRENT (main table) · several sub-pages PLANNED (placeholders)
 
 - **What it does:** the main customer/lead workspace at `/LeadsCenter` with its own layout and internal sidebar.
-- **Key files:** `pages/customers/CustomersPage.jsx` (≈1.6k lines: table, stats, filters, drawer wiring), `layout/CustomersLayout.jsx`, `CustomersSidebar.jsx`, `CustomersMobileSidebar.jsx`, `constants/customerNavigation.js`, `components/CustomersTableColumns.jsx`, `components/customers-table/*`, `components/page-actions/*` (add, import, export, table settings, trash), `components/TableSettingsDrawer.jsx`, `components/StatusTaps/LeadStatusTabs.jsx`.
+- **Key files:** `pages/customers/CustomersPage.jsx` (≈1.45k lines: table/pipeline switch, stats, filters, drawer wiring), `components/CustomersActivitySidePanel.jsx` (meetings/calls side panel), `utils/backendLocalDate.js`, `layout/CustomersLayout.jsx`, `CustomersSidebar.jsx`, `CustomersMobileSidebar.jsx`, `constants/customerNavigation.js`, `components/CustomersTableColumns.jsx`, `components/customers-table/*`, `components/page-actions/*` (add, import, export, table settings, trash), `components/TableSettingsDrawer.jsx`, `components/StatusTaps/LeadStatusTabs.jsx`.
 - **Routes:**
 
 | Route | Page | Status |
 |---|---|---|
-| `/LeadsCenter` | All customers table (`DataTable`), stats, status tabs, bulk actions, drawer | CURRENT |
+| `/LeadsCenter` | All customers — **Table** (`DataTable`) or **Pipeline** (Kanban by lead status) view, stats, status tabs, bulk actions, drawer | CURRENT |
 | `/LeadsCenter/status-board` | Columns per lead status | CURRENT |
 | `/LeadsCenter/customization` | Statuses + tags tabs | CURRENT |
 | `/LeadsCenter/teams` | Sales teams (`pages/SalesTeams/CustomerTeamsPage.jsx`, team + members drawers) | CURRENT |
@@ -105,7 +105,12 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 - **API:** `GET /api/tenant/customers/data`, `GET .../info/{id}`, `POST .../create`, `POST .../update/{id}`, `POST .../delete`, `GET .../deleted/data`, `POST .../restore/deleted`, `POST .../force/delete`.
 - **Realtime:** `useCustomersTableRealtime` on `tenant.{tenantId}.customers-table` updates `['customers','list']`, `customers.detail(id)` and `customers.deleted` caches directly.
 - **Used by:** table row click opens the [drawer](#customer-details-drawer); columns show Messenger/Gmail/WhatsApp buttons from `features/conversations`.
-- **Persisted UI:** `main-sidebar-collapsed`, `customers-sidebar-collapsed`, `customers-bulk-actions-pin-mode`, DataTable `datatable-*-{tableId}` keys.
+- **Pipeline view:** a Table / Pipeline toggle in the page header switches `/LeadsCenter` between the `DataTable` and a board with one column per active lead status (plus a "No status" column only when some leads have none). Code: `features/customers/pipeline/` (`CustomersPipelineView`, `CustomerPipelineCard`, `CustomersViewModeToggle`, `useCustomersViewMode`, `useCustomerStatusMove`, `utils/customerPipeline.js` + tests), composed by `pages/customers/components/CustomersPipelineSection.jsx` (adds the page-owned bulk actions and `StatusChangeReasonDialog`). The board is the shared `shared/components/pipeline-board`.
+  - Same data and filters as the table: the Fresh-lead tab filters cards; a selected status tab shows only that column; the board has its own search (name / phone digits / email).
+  - Same actions as a table row: click = details drawer, Ctrl/Cmd+click = full lead page, card menu = add meeting / call / follow-up, Messenger/Gmail buttons, checkbox selection → the same `CustomersBulkActions` (status, tag, follow-up, messaging).
+  - Dragging a card to another column changes the lead status with the same `leadsApi.saveAction` payload as bulk/drawer status changes (`data.source: 'customers_pipeline'`). Statuses with `has_resone = 1` open the reason dialog first. The card moves optimistically in the `['customers','list']` cache and rolls back on error. Cards can't be dropped on "No status".
+  - Not in the pipeline yet: the table's row alert colours (upcoming/overdue activity, new-message flash) and column customization.
+- **Persisted UI:** `main-sidebar-collapsed`, `customers-sidebar-collapsed`, `customers-bulk-actions-pin-mode`, `customers-view-mode` (`table` \| `pipeline`, via the DataTable `useLocalStorage` helper), DataTable `datatable-*-{tableId}` keys.
 - **Known issues:** eight placeholder sub-routes (table above); `CustomersPage.jsx` is oversized and route-owned; `customersApi` logs responses to the console.
 
 ## Customer details drawer
