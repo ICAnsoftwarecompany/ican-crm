@@ -11,16 +11,18 @@ import { useCatalogItems } from '../../catalog/api/catalogApi'
 import { CustomerSelect } from '../../records/components/CustomerSelect'
 import { useResourceList } from '../../settings/api/settingsApi'
 import { contractTypesResource } from '../../settings/resources/contractResources'
+import { paymentPlansResource } from '../../settings/resources/billingResources'
 import { useContractMutations } from '../api/contractsApi'
 import { ContractLinesField } from './ContractLinesField'
 
-const EMPTY = { customer_id: '', type_id: '', start_date: '', end_date: '', items: [] }
+const EMPTY = { customer_id: '', type_id: '', payment_plan_id: '', start_date: '', end_date: '', items: [] }
 
 /** Draft a contract (standalone mode or service contracts). Deals will create contracts from Sales. */
 export function ContractCreateDialog({ open, onClose, customer, detailPath }) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const types = useResourceList(contractTypesResource)
+  const plans = useResourceList(paymentPlansResource)
   const catalog = useCatalogItems({})
   const { create } = useContractMutations()
   const [form, setForm] = useState(EMPTY)
@@ -39,7 +41,7 @@ export function ContractCreateDialog({ open, onClose, customer, detailPath }) {
 
   const submit = () =>
     create.mutate(
-      { ...form, start_date: iso(form.start_date), end_date: iso(form.end_date), items: form.items.map((line) => ({ ...line, quantity: Number(line.quantity), unit_price: Number(line.unit_price), discount: Number(line.discount) || 0 })) },
+      { ...form, payment_plan_id: form.payment_plan_id || undefined, start_date: iso(form.start_date), end_date: iso(form.end_date), items: form.items.map((line) => ({ ...line, quantity: Number(line.quantity), unit_price: Number(line.unit_price), discount: Number(line.discount) || 0 })) },
       {
         onSuccess: (contract) => {
           toast.success(t('service.contracts.created', { number: contract.contract_number }))
@@ -57,6 +59,7 @@ export function ContractCreateDialog({ open, onClose, customer, detailPath }) {
         <Input type="date" dir="ltr" label={t('service.contracts.fields.start')} value={form.start_date} onChange={(event) => set('start_date')(event.target.value)} />
         <Input type="date" dir="ltr" label={t('service.contracts.fields.end')} value={form.end_date} onChange={(event) => set('end_date')(event.target.value)} />
       </div>
+      <Select label={t('service.contracts.fields.paymentPlan')} placeholder={t('service.contracts.noPaymentPlan')} value={form.payment_plan_id} onChange={set('payment_plan_id')} options={(plans.data || []).filter((plan) => plan.status !== 'archived').map((plan) => ({ value: plan.id, label: localizeLabel(plan.name, i18n.language, plan.id) }))} />
       <ContractLinesField lines={form.items} onChange={set('items')} items={catalog.data || []} error={required('items')} />
     </FormDialog>
   )

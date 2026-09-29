@@ -15,6 +15,11 @@ export default {
     },
   },
   errors: {
+    SCHEDULE_NOT_ACTIVE: 'جدول السداد ده لم يعد نشطًا.',
+    PAYMENT_NOT_REVERSIBLE: 'لا يمكن عكس هذه الدفعة.',
+    NO_LATE_FEE: 'لا توجد غرامة تأخير للإعفاء على هذا البند.',
+    RESCHEDULE_PENDING: 'يوجد طلب إعادة جدولة في انتظار الموافقة بالفعل.',
+    NO_PENDING_RESCHEDULE: 'لا يوجد طلب إعادة جدولة في انتظار القرار.',
     CONTRACT_LOCKED: 'العقد الموقّع لا يُعدّل. أضف ملحقًا بدلًا من ذلك.',
     CONTRACT_INVALID_STATE: 'هذا الإجراء غير متاح في حالة العقد الحالية.',
     CONTRACT_NOT_SIGNABLE: 'أرسل العقد أولًا قبل توقيعه.',

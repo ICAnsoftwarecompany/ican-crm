@@ -14,7 +14,7 @@ import { AssetStatusBadge } from '../../assets/components/AssetStatusBadge'
 import { useContractList } from '../../contracts/api/contractsApi'
 import { ContractStatusBadge } from '../../contracts/components/ContractStatusBadge'
 
-function Section({ icon: Icon, title, action, children }) {
+export function Section({ icon: Icon, title, action, children }) {
   return (
     <section className="grid gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">
       <div className="flex items-center justify-between gap-2">
@@ -29,7 +29,7 @@ function Section({ icon: Icon, title, action, children }) {
   )
 }
 
-const rowClass = 'flex items-center gap-3 rounded-md bg-[var(--surface-2)] px-3 py-2 transition-colors hover:bg-[var(--shell-hover)]'
+export const rowClass = 'flex items-center gap-3 rounded-md bg-[var(--surface-2)] px-3 py-2 transition-colors hover:bg-[var(--shell-hover)]'
 
 /** Service records of the customer, one section per record type. */
 export function CustomerRecordsSection({ customer }) {

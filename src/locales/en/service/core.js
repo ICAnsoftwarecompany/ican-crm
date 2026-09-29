@@ -15,6 +15,11 @@ export default {
     },
   },
   errors: {
+    SCHEDULE_NOT_ACTIVE: 'This payment schedule is no longer active.',
+    PAYMENT_NOT_REVERSIBLE: 'This payment cannot be reversed.',
+    NO_LATE_FEE: 'There is no late fee to waive on this line.',
+    RESCHEDULE_PENDING: 'A reschedule is already waiting for approval.',
+    NO_PENDING_RESCHEDULE: 'There is no reschedule waiting for a decision.',
     CONTRACT_LOCKED: 'Signed contracts cannot be edited. Add an amendment instead.',
     CONTRACT_INVALID_STATE: 'This action is not available in the contract\'s current status.',
     CONTRACT_NOT_SIGNABLE: 'Send the contract before signing it.',

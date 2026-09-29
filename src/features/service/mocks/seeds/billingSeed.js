@@ -2,6 +2,11 @@
  * Payment plan library + assignments per template (spec §29.4–29.5).
  * Plans are rules, not amounts; the real-estate "8 years" plan from the spec is in every template.
  */
+import { buildContractsState } from './contractsSeed'
+import { createRandom } from './seedUtils'
+import { addPeriod, previewPlan } from '../state/paymentPlanEngine'
+import { todayIso } from '../state/billingLedger'
+
 const L = (ar, en) => ({ ar, en })
 
 const base = (extra) => ({
@@ -75,3 +80,78 @@ export const buildPlanAssignments = (manifest) =>
     is_excluded: false,
     active: true,
   }))
+
+/**
+ * Payment schedules for the seeded signed contracts (spec §29.10): built with the same preview engine,
+ * then history is replayed — lines due in the past are paid, except the scenarios the collections
+ * workspace needs (overdue, partially paid, due today, promises).
+ */
+export function buildPaymentSchedules(manifest) {
+  const random = createRandom(`schedules-${manifest.template}`)
+  const today = todayIso()
+  const plans = buildPaymentPlans(manifest)
+  const { contracts } = buildContractsState(manifest)
+  const schedules = []
+
+  contracts.forEach((contract, index) => {
+    if (!['signed', 'active', 'expiring', 'terminated'].includes(contract.status) || !(contract.total_value > 0)) return
+    const plan = plans[index === 6 && plans.length > 2 ? 1 : 0]
+    const contractDate = contract.start_date.slice(0, 10)
+    const preview = previewPlan(plan.config, { price: contract.total_value, contract_date: contractDate, delivery_date: contract.end_date?.slice(0, 10) || addPeriod(contractDate, 6, 'month') })
+    const id = `ps-${index + 1}`
+    const lines = preview.lines.map((line) => ({ ...line, id: `${id}-l${line.seq}`, paid_amount: 0, fee_paid: 0 }))
+    const due = lines.filter((line) => line.due_date && line.due_date < today)
+    const unpaid = new Set(index === 5 ? due.slice(-2).map((line) => line.id) : index === 7 ? due.slice(-2, -1).map((line) => line.id) : [])
+    const partial = index === 7 ? due[due.length - 1] : null
+    const payments = []
+    due.forEach((line) => {
+      if (unpaid.has(line.id)) return
+      const amount = line === partial ? Math.round(line.amount / 2) : line.amount
+      line.paid_amount = amount
+      const paidAt = addPeriod(line.due_date, random.int(0, 3), 'day')
+      payments.push({
+        id: `${id}-p${payments.length + 1}`,
+        number: `RC-${String(1000 + index * 50 + payments.length)}`,
+        amount,
+        currency: contract.currency,
+        paid_at: `${paidAt < today ? paidAt : today}T10:00:00.000Z`,
+        method: random.pick(['cash', 'bank_transfer', 'card', 'wallet']),
+        source: 'manual',
+        reference: null,
+        recorded_by: { id: 'agent-4', name: 'كريم عادل' },
+        status: 'confirmed',
+        reversal_of_id: null,
+        allocations: [{ line_id: line.id, seq: line.seq, fee: 0, principal: amount }],
+      })
+    })
+    const promises = index === 5
+      ? [
+          { id: `${id}-pr1`, amount: due[due.length - 2]?.amount || 1000, promised_date: addPeriod(today, -10, 'day'), note: 'وعد بالسداد بعد القبض', created_at: `${addPeriod(today, -20, 'day')}T09:00:00.000Z`, created_by: { id: 'agent-4', name: 'كريم عادل' } },
+          { id: `${id}-pr2`, amount: due[due.length - 1]?.amount || 1000, promised_date: addPeriod(today, 3, 'day'), note: 'اتصال: هيحوّل أول الأسبوع', created_at: `${addPeriod(today, -1, 'day')}T09:00:00.000Z`, created_by: { id: 'agent-4', name: 'كريم عادل' } },
+        ]
+      : []
+
+    schedules.push({
+      id,
+      schedule_number: `PS-2026-${String(500 + index)}`,
+      contract_id: contract.id,
+      contract_number: contract.contract_number,
+      customer: contract.customer,
+      customer_id: contract.customer_id,
+      currency: contract.currency,
+      plan_snapshot: { ...plan.config, plan_id: plan.id, name: plan.name, version: plan.version },
+      final_price: preview.final_price,
+      status: contract.status === 'terminated' ? 'cancelled' : 'active',
+      cancelled_reason: contract.status === 'terminated' ? contract.terminated_reason : null,
+      replaces_schedule_id: null,
+      replaced_by_schedule_id: null,
+      pending_reschedule: null,
+      lines,
+      payments: payments.reverse(),
+      promises,
+      created_at: contract.signed_at || contract.start_date,
+      version: 1,
+    })
+  })
+  return schedules
+}

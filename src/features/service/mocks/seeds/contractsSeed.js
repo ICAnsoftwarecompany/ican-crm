@@ -1,6 +1,7 @@
 import { buildCustomers } from './casesSeed'
 import { buildCatalogItems } from './catalogSeed'
 import { createRandom, hoursAgo } from './seedUtils'
+import { addPeriod } from '../state/paymentPlanEngine'
 
 /**
  * Contract types, contracts (versions, parties, items, signatures,
@@ -8,6 +9,7 @@ import { createRandom, hoursAgo } from './seedUtils'
  */
 const L = (ar, en) => ({ ar, en })
 const DAY = 24
+const addMonthsIso = (months) => addPeriod(new Date().toISOString().slice(0, 10), months, 'month')
 
 const TYPES = {
   devices: [['sales', L('عقد بيع', 'Sales contract'), true], ['maintenance', L('عقد صيانة', 'Maintenance contract'), true]],
@@ -67,6 +69,8 @@ export function buildContractsState(manifest) {
     })
     const total = lines.reduce((sum, line) => sum + line.total, 0)
     const startDays = random.int(10, 300)
+    // Fixed ages so the billing seed has overdue (5, 7) and due-today (9) installments.
+    const fixedStart = { 5: hoursAgo(DAY * 200), 7: hoursAgo(DAY * 130), 9: `${addMonthsIso(-3)}T09:00:00.000Z` }[index]
     const signed = ['signed', 'active', 'expiring', 'terminated'].includes(status)
     const versions = [{ version: 1, status: signed ? 'signed' : status === 'draft' ? 'draft' : 'sent', summary: L('النسخة الأولى', 'First version'), created_at: hoursAgo(DAY * (startDays + 5)) }]
     if (index === 1) versions.push({ version: 2, status: 'sent', summary: L('تعديل الخصم بعد التفاوض', 'Discount changed after negotiation'), created_at: hoursAgo(DAY * startDays) })
@@ -78,7 +82,7 @@ export function buildContractsState(manifest) {
       customer_id: customer.id,
       customer: { id: customer.id, name: customer.name, phone: customer.phone },
       deal_id: index % 2 ? `deal-${100 + index}` : null,
-      start_date: hoursAgo(DAY * startDays),
+      start_date: fixedStart || hoursAgo(DAY * startDays),
       end_date: hoursAgo(DAY * (startDays - (status === 'expiring' ? startDays + 20 : 365))),
       status,
       currency: 'EGP',

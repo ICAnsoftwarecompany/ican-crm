@@ -1,3 +1,8 @@
 export { PlanCalculator } from './components/PlanCalculator'
 export { PlanPreviewTable } from './components/PlanPreviewTable'
+export { BillingNav } from './components/BillingNav'
+export { SchedulesList } from './components/SchedulesList'
+export { ScheduleDetailView } from './components/ScheduleDetailView'
+export { CollectionsWorkspace } from './components/CollectionsWorkspace'
 export { usePlanPreview, usePlansForItem } from './api/billingApi'
+export { useScheduleList, useSchedule } from './api/schedulesApi'

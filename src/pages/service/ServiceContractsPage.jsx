@@ -12,7 +12,7 @@ export function ServiceContractsPage() {
   const { contractId } = useParams()
   usePageHeader({ title: t('service.hub.title'), icon: FileSignature })
   return contractId ? (
-    <ContractDetailView contractId={contractId} backTo="/service/contracts" detailPath={detailPath} handoffPath={(handoff) => `/service/handoffs/${handoff.id}`} />
+    <ContractDetailView contractId={contractId} backTo="/service/contracts" detailPath={detailPath} handoffPath={(handoff) => `/service/handoffs/${handoff.id}`} schedulePath={(schedule) => `/service/billing/schedules/${schedule.id}`} />
   ) : (
     <ContractsWorkspace detailPath={detailPath} />
   )

@@ -14,6 +14,7 @@ import { CustomerContactsPanel } from '../../contacts/components/CustomerContact
 import { useServiceCapabilities } from '../../core/capabilities/useServiceCapabilities'
 import { EntitlementsList } from '../../entitlements/components/EntitlementsList'
 import { CustomerAssetsSection, CustomerContractsSection, CustomerRecordsSection } from './CustomerHubSections'
+import { CustomerPaymentsSection } from './CustomerPaymentsSection'
 
 /**
  * "Service" tab of the customer drawer / page (Customer 360).
@@ -88,6 +89,7 @@ export function CustomerServiceTab({ customer }) {
         </section>
       )}
       {customerId && <CustomerContractsSection customer={{ id: customerId }} />}
+      {customerId && <CustomerPaymentsSection customer={{ id: customerId }} />}
 
       <CustomerContactsPanel customerId={customerId} />
 

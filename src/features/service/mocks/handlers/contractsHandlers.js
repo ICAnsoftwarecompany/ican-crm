@@ -5,6 +5,7 @@ import { MockHttpError, notFound } from '../errors'
 import { buildContractTypes, buildContractsState } from '../seeds/contractsSeed'
 import { getCaseSetup } from '../state/caseConfig'
 import { processHandoff } from '../state/handoffProcessor'
+import { createScheduleFromContract } from '../state/billingSchedules'
 import { getMockCurrentUser, mockId } from '../seeds/seedUtils'
 import { matchesSearch, nowIso, paginate } from '../utils'
 import { findOrAdoptCustomer } from './casesHandlers'
@@ -49,7 +50,8 @@ function buildLines(items = []) {
 function serializeContract(contract, { detail = false } = {}) {
   const type = getCollection('contractTypes').find((entry) => entry.id === contract.type_id)
   const handoff = getCollection('handoffs').find((entry) => entry.contract_id === contract.id)
-  const base = { ...contract, type: type ? { id: type.id, key: type.key, label: type.label, requires_signature: type.requires_signature } : null, handoff: handoff ? { id: handoff.id, status: handoff.status } : null }
+  const schedule = getCollection('paymentSchedules').filter((entry) => entry.contract_id === contract.id).find((entry) => !entry.replaced_by_schedule_id)
+  const base = { ...contract, payment_schedule: schedule ? { id: schedule.id, schedule_number: schedule.schedule_number, status: schedule.status } : null, type: type ? { id: type.id, key: type.key, label: type.label, requires_signature: type.requires_signature } : null, handoff: handoff ? { id: handoff.id, status: handoff.status } : null }
   if (!detail) {
     const { items, versions, signatures, amendments, parties, ...rest } = base
     return { ...rest, items_count: items.length }
@@ -74,6 +76,7 @@ function sign(contract, body) {
     contract.signed_at = nowIso()
     contract.versions.forEach((version) => version.version === contract.effective_version && (version.status = 'signed'))
     processHandoff(contract)
+    createScheduleFromContract(contract)
   } else contract.status = 'partially_signed'
 }
 
@@ -117,6 +120,8 @@ export const contractsHandlers = [
         customer_id: customer.id,
         customer: { id: customer.id, name: customer.name, phone: customer.phone },
         deal_id: body.deal_id || null,
+        payment_plan_id: body.payment_plan_id || null,
+        plan_overrides: body.plan_overrides || null,
         start_date: body.start_date || nowIso(),
         end_date: body.end_date || null,
         status: 'draft',

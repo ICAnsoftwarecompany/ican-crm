@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, FileCheck2 } from 'lucide-react'
+import { ArrowLeft, FileCheck2, Wallet } from 'lucide-react'
 import { ResourceState } from '../../../../shared/components/data/ResourceState'
 import { formatDate } from '../../../../shared/utils/dateTime'
 import { localizeLabel } from '../../core/utils/localizeLabel'
@@ -22,7 +22,7 @@ function Section({ title, children }) {
 }
 
 /** Contract: lifecycle actions, lines with fulfillment state, versions, signatures, amendments, handoff link. */
-export function ContractDetailView({ contractId, backTo, detailPath, handoffPath }) {
+export function ContractDetailView({ contractId, backTo, detailPath, handoffPath, schedulePath }) {
   const { t, i18n } = useTranslation()
   const term = useServiceTerminology()
   const contract = useContract(contractId)
@@ -55,6 +55,12 @@ export function ContractDetailView({ contractId, backTo, detailPath, handoffPath
                   <Link to={handoffPath(item.handoff)} className="inline-flex w-fit items-center gap-1 text-xs text-[var(--text)] underline">
                     <FileCheck2 size={14} aria-hidden="true" />
                     {t('service.contracts.handoffLink', { status: t(`service.handoffs.statuses.${item.handoff.status}`) })}
+                  </Link>
+                )}
+                {item.payment_schedule && schedulePath && (
+                  <Link to={schedulePath(item.payment_schedule)} className="inline-flex w-fit items-center gap-1 text-xs text-[var(--text)] underline">
+                    <Wallet size={14} aria-hidden="true" />
+                    {t('service.contracts.scheduleLink', { status: t(`service.billing.scheduleStatuses.${item.payment_schedule.status}`) })}
                   </Link>
                 )}
               </div>

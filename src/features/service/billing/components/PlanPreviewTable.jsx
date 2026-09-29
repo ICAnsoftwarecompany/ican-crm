@@ -27,7 +27,7 @@ export function PlanPreviewTable({ preview, currency = 'EGP' }) {
         ].map(([key, value]) => (
           <div key={key} className="rounded-md bg-[var(--surface-2)] p-3">
             <dt className="text-xs text-[var(--text-muted)]">{t(`service.billing.totals.${key}`)}</dt>
-            <dd className="text-base font-bold text-[var(--text)]" dir="ltr">{money.format(value || 0)}</dd>
+            <dd className="text-base font-bold text-[var(--text)]"><span dir="ltr">{money.format(value || 0)}</span></dd>
           </div>
         ))}
       </dl>
@@ -63,7 +63,7 @@ export function PlanPreviewTable({ preview, currency = 'EGP' }) {
                   {!line.in_price && <span className="ms-1 text-xs">· {t('service.billing.outside')}</span>}
                 </td>
                 <td className="px-3 py-1.5 text-xs">{line.due_date ? formatDate(line.due_date, language, { dateStyle: 'medium' }) : '—'}</td>
-                <td className="px-3 py-1.5 text-end font-medium" dir="ltr">{money.format(line.amount)}</td>
+                <td className="px-3 py-1.5 text-end font-medium"><span dir="ltr">{money.format(line.amount)}</span></td>
                 {line.status && <td className="px-3 py-1.5 text-end text-xs">{t(`service.billing.lineStatuses.${line.status}`, { defaultValue: line.status })}</td>}
               </tr>
             ))}

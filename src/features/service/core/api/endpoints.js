@@ -85,6 +85,14 @@ export const serviceEndpoints = {
   setupTemplates: `${TENANT_API}/settings/templates`,
   // Billing Lite (F4) — preview never saves; schedules are created from signed contracts.
   paymentPlanPreview: (planId) => `${TENANT_API}/billing/payment-plans/${planId}/preview`,
+  // Schedules: GET /{id} + POST /{id}/payments|reschedule|cancel|payoff-quote (spec §51); list, promises,
+  // reschedule approve/reject, payment reverse and /collections are proposed additions (see billing/README.md).
+  billing: {
+    schedules: `${TENANT_API}/billing/schedules`,
+    payments: `${TENANT_API}/billing/payments`,
+    lines: `${TENANT_API}/billing/lines`,
+    collections: `${TENANT_API}/billing/collections`,
+  },
 
   setupApply: (key) => `${TENANT_API}/settings/templates/${key}/apply`,
 
