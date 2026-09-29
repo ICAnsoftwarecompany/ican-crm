@@ -2,6 +2,7 @@ export default {
   favorites: 'المفضلة',
   pinPage: 'تثبيت في المفضلة',
   unpinPage: 'إزالة من المفضلة',
+  reorderHint: 'اضغط مطولًا ثم اسحب المجموعة لأعلى أو لأسفل لتغيير ترتيبها.',
   serviceCenter: 'مركز العمليات',
   serviceCases: 'الطلبات',
   serviceMyWork: 'شغلي',

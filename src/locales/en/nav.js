@@ -2,6 +2,7 @@ export default {
   favorites: 'Favorites',
   pinPage: 'Pin to favorites',
   unpinPage: 'Remove from favorites',
+  reorderHint: 'Press and hold, then drag the group up or down to reorder it.',
   serviceCenter: 'Operations Center',
   serviceCases: 'Cases',
   serviceMyWork: 'My Work',

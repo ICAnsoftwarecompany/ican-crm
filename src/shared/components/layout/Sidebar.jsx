@@ -1,9 +1,12 @@
+import { useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronDown, Pin, Sparkles } from 'lucide-react'
+import { ChevronDown, GripVertical, Pin, Sparkles } from 'lucide-react'
 import { cn } from '../../utils/cn'
 import { useLocalStorage } from '../data-table/hooks/useLocalStorage'
 import { useNavigation } from '../../../app/navigation/useNavigation'
+import { applySidebarSectionOrder, moveSidebarSection } from './sidebarSectionOrder'
 
 function SidebarNavItem({ item, isActive, collapsed, t, isFavorite = false, onToggleFavorite }) {
   const Icon = item.icon
@@ -47,7 +50,7 @@ function SidebarNavItem({ item, isActive, collapsed, t, isFavorite = false, onTo
   )
 }
 
-function SidebarSection({ section, collapsed, activeItemId, activeSectionId, expanded, onToggle, favoriteIds, onToggleFavorite, t, isFirst = false }) {
+function SidebarSection({ section, collapsed, activeItemId, activeSectionId, expanded, onToggle, favoriteIds, onToggleFavorite, t, isFirst = false, dragging, dragHandlers }) {
   const isSingleAndBare = section.hideLabel
   const isActiveSection = section.id === activeSectionId
 
@@ -90,12 +93,25 @@ function SidebarSection({ section, collapsed, activeItemId, activeSectionId, exp
   const isExpanded = expanded
 
   return (
-    <section className={cn(!isFirst && 'border-t border-[var(--border)] pt-2')}>
+    <section
+      data-sidebar-section-id={section.id}
+      className={cn(
+        !isFirst && 'border-t border-[var(--border)] pt-2',
+        dragging && 'relative z-10 opacity-80'
+      )}
+    >
       <button
         type="button"
-        onClick={() => onToggle(section.id)}
+        onClick={(event) => dragHandlers.onClick(event, section.id)}
+        onPointerDown={(event) => dragHandlers.onPointerDown(event, section)}
+        onPointerMove={dragHandlers.onPointerMove}
+        onPointerUp={dragHandlers.onPointerUp}
+        onPointerCancel={dragHandlers.onPointerCancel}
+        onPointerEnter={(event) => dragHandlers.onPointerEnter(event, section)}
+        onPointerLeave={dragHandlers.onPointerLeave}
         className={cn(
-          'flex w-full items-center justify-between rounded-md border-s-2 px-2 py-2 transition-colors',
+          'group flex w-full touch-pan-y select-none items-center justify-between rounded-md border-s-2 px-2 py-2 transition-colors',
+          dragging && 'cursor-grabbing border-[var(--brand-accent)] bg-[var(--brand-accent-soft)] shadow-sm',
           isActiveSection
             ? 'border-[var(--brand-accent)] bg-[var(--shell-active)] font-semibold text-[var(--text)]'
             : 'border-transparent text-[var(--text-muted)] hover:bg-[var(--shell-hover)] hover:text-[var(--text)]'
@@ -106,10 +122,13 @@ function SidebarSection({ section, collapsed, activeItemId, activeSectionId, exp
         <span className="font-arabic text-[13px] font-semibold leading-5">
           {t(section.labelKey)}
         </span>
-        <ChevronDown
-          size={13}
-          className={cn('transition-transform duration-150', isExpanded ? 'rotate-0' : '-rotate-90')}
-        />
+        <span className="flex items-center gap-1">
+          <GripVertical size={13} className={cn('text-[var(--text-muted)] opacity-30 transition-opacity', dragging ? 'opacity-100' : 'group-hover:opacity-80')} />
+          <ChevronDown
+            size={13}
+            className={cn('transition-transform duration-150', isExpanded ? 'rotate-0' : '-rotate-90')}
+          />
+        </span>
       </button>
 
       {isExpanded && (
@@ -136,6 +155,17 @@ export function Sidebar({ collapsed }) {
   const { sections, activeItem, activeSectionId } = useNavigation()
   const [collapsedSections, setCollapsedSections] = useLocalStorage('main-sidebar-collapsed-sections', {})
   const [favoriteIds, setFavoriteIds] = useLocalStorage('main-sidebar-favorites', [])
+  const [sectionOrder, setSectionOrder] = useLocalStorage('main-sidebar-section-order', [])
+  const [draggingSectionId, setDraggingSectionId] = useState(null)
+  const [reorderTooltip, setReorderTooltip] = useState(null)
+  const longPressTimerRef = useRef(null)
+  const tooltipTimerRef = useRef(null)
+  const pointerRef = useRef(null)
+  const sectionOrderRef = useRef(sectionOrder)
+  const suppressClickRef = useRef(false)
+  sectionOrderRef.current = sectionOrder
+  const orderedSections = applySidebarSectionOrder(sections, sectionOrder)
+  const movableSectionIds = sections.filter((section) => !section.hideLabel).map((section) => section.id)
   const visibleItems = sections.flatMap((section) => section.items)
   const favoriteItems = favoriteIds.map((id) => visibleItems.find((item) => item.id === id)).filter(Boolean)
 
@@ -147,6 +177,80 @@ export function Sidebar({ collapsed }) {
     setFavoriteIds((current) => current.includes(itemId)
       ? current.filter((id) => id !== itemId)
       : [...current, itemId])
+  }
+
+  const clearLongPressTimer = () => {
+    if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current)
+    longPressTimerRef.current = null
+  }
+
+  const clearTooltipTimer = () => {
+    if (tooltipTimerRef.current) clearTimeout(tooltipTimerRef.current)
+    tooltipTimerRef.current = null
+  }
+
+  const finishSectionDrag = () => {
+    clearLongPressTimer()
+    pointerRef.current = null
+    setDraggingSectionId(null)
+  }
+
+  const dragHandlers = {
+    onClick: (event, sectionId) => {
+      if (suppressClickRef.current) {
+        suppressClickRef.current = false
+        event.preventDefault()
+        return
+      }
+      handleToggleSection(sectionId)
+    },
+    onPointerDown: (event, section) => {
+      if (collapsed || section.hideLabel || (event.pointerType === 'mouse' && event.button !== 0)) return
+      clearTooltipTimer()
+      setReorderTooltip(null)
+      pointerRef.current = { sectionId: section.id, x: event.clientX, y: event.clientY }
+      event.currentTarget.setPointerCapture?.(event.pointerId)
+      clearLongPressTimer()
+      longPressTimerRef.current = setTimeout(() => {
+        suppressClickRef.current = true
+        setDraggingSectionId(section.id)
+        navigator.vibrate?.(25)
+      }, 450)
+    },
+    onPointerMove: (event) => {
+      const pointer = pointerRef.current
+      if (!pointer) return
+      if (!draggingSectionId) {
+        if (Math.hypot(event.clientX - pointer.x, event.clientY - pointer.y) > 8) clearLongPressTimer()
+        return
+      }
+
+      const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-sidebar-section-id]')
+      const targetId = target?.dataset.sidebarSectionId
+      if (!targetId || targetId === draggingSectionId || !movableSectionIds.includes(targetId)) return
+
+      const nextOrder = moveSidebarSection(sectionOrderRef.current, draggingSectionId, targetId, movableSectionIds)
+      sectionOrderRef.current = nextOrder
+      setSectionOrder(nextOrder)
+    },
+    onPointerUp: finishSectionDrag,
+    onPointerCancel: finishSectionDrag,
+    onPointerEnter: (event, section) => {
+      if (collapsed || section.hideLabel || event.pointerType !== 'mouse' || draggingSectionId) return
+      const rect = event.currentTarget.getBoundingClientRect()
+      clearTooltipTimer()
+      tooltipTimerRef.current = setTimeout(() => {
+        setReorderTooltip({
+          sectionId: section.id,
+          top: rect.bottom + 6,
+          left: Math.max(8, Math.min(rect.left, window.innerWidth - 272)),
+        })
+      }, 500)
+    },
+    onPointerLeave: () => {
+      clearTooltipTimer()
+      setReorderTooltip(null)
+    },
   }
 
   return (
@@ -172,7 +276,7 @@ export function Sidebar({ collapsed }) {
 
       {/* App nav */}
       <nav aria-label={t('nav.workspace', 'Workspace')} className="flex-1 space-y-2 overflow-y-auto px-3 py-2 scrollbar-thin">
-        {sections.map((section, index) => (
+        {orderedSections.map((section, index) => (
           <div key={section.id} className="space-y-2">
             <SidebarSection
               section={section}
@@ -185,6 +289,8 @@ export function Sidebar({ collapsed }) {
               onToggleFavorite={handleToggleFavorite}
               t={t}
               isFirst={index === 0}
+              dragging={draggingSectionId === section.id}
+              dragHandlers={dragHandlers}
             />
             {index === 0 && favoriteItems.length > 0 && (
               <section className="border-t border-[var(--border)] pt-2" aria-label={t('nav.favorites')}>
@@ -199,6 +305,17 @@ export function Sidebar({ collapsed }) {
           </div>
         ))}
       </nav>
+
+      {reorderTooltip && typeof document !== 'undefined' && createPortal(
+        <div
+          role="tooltip"
+          className="fixed z-[2000] max-w-64 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs leading-5 text-[var(--text)] shadow-xl"
+          style={{ top: reorderTooltip.top, left: reorderTooltip.left }}
+        >
+          {t('nav.reorderHint')}
+        </div>,
+        document.body
+      )}
 
       {/* AI Indicator */}
       {!collapsed && (
