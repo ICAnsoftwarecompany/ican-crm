@@ -38,7 +38,7 @@ export function entitlementBalance(entitlement) {
   return { quota: entitlement.quota, used, remaining: entitlement.quota == null ? null : Math.max(entitlement.quota - used, 0) }
 }
 
-function entitlementState(entitlement, now = Date.now()) {
+export function entitlementState(entitlement, now = Date.now()) {
   if (entitlement.status === 'suspended') return 'suspended'
   if (entitlement.ends_at && new Date(entitlement.ends_at).getTime() < now) return 'expired'
   const balance = entitlementBalance(entitlement)

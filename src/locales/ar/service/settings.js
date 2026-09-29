@@ -35,6 +35,7 @@ export default {
       taken: 'هذا المفتاح مستخدم بالفعل',
     },
     groups: {
+      scheduling: 'المواعيد',
       billing: 'المدفوعات',
       general: 'عام',
       contracts: 'العقود',
@@ -45,6 +46,11 @@ export default {
       sla: 'مستويات الخدمة',
     },
     resources: {
+      schedulingResources: {
+        title: 'الموارد',
+        one: 'مورد',
+        description: 'الفنيين والمناديب والقاعات والمركبات والمقاعد: السعة ومواعيد العمل والمهارات والمناطق المستخدمة لإيجاد المواعيد المتاحة.',
+      },
       paymentPlans: {
         title: 'خطط السداد',
         one: 'خطة سداد',

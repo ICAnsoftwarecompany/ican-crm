@@ -84,6 +84,13 @@ export const serviceEndpoints = {
   // Subscriptions (spec §30, §51 `CRUD /subscriptions (+ /cancel, /suspend, /resume, /renew)`).
   subscriptions: `${TENANT_API}/subscriptions`,
 
+  // Scheduling (spec §19): resources (proposed CRUD), reservations (§51 `POST /reservations`, `DELETE /reservations/{id}`
+  // + proposed `/confirm`), slots (`GET /scheduling/availability`). Work orders (§38, §51 `/service/work-orders`).
+  schedulingResources: `${TENANT_API}/scheduling/resources`,
+  schedulingAvailability: `${TENANT_API}/scheduling/availability`,
+  reservations: `${TENANT_API}/reservations`,
+  workOrders: `${SERVICE_API}/work-orders`,
+
   // Setup wizard (F3, spec §47.2): industry templates + apply (with dry run).
   setupTemplates: `${TENANT_API}/settings/templates`,
   // Billing Lite (F4) — preview never saves; schedules are created from signed contracts.

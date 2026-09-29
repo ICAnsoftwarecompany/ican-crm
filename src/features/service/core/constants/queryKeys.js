@@ -82,6 +82,14 @@ export const serviceKeys = {
   subscriptionList: (params) => [...serviceKeys.subscriptions(), 'list', params ?? {}],
   subscriptionDetail: (id) => [...serviceKeys.subscriptions(), 'detail', String(id)],
 
+  // Scheduling & work orders (F4)
+  scheduling: () => [...serviceKeys.all, 'scheduling'],
+  reservations: (params) => [...serviceKeys.scheduling(), 'reservations', params ?? {}],
+  availability: (params) => [...serviceKeys.scheduling(), 'availability', params ?? {}],
+  workOrders: () => [...serviceKeys.all, 'work-orders'],
+  workOrderList: (params) => [...serviceKeys.workOrders(), 'list', params ?? {}],
+  workOrderDetail: (id) => [...serviceKeys.workOrders(), 'detail', String(id)],
+
   // Saved views (F2) — per entity (e.g. service_case)
   savedViews: (entity) => [...serviceKeys.all, 'saved-views', entity],
 }

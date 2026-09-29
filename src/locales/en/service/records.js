@@ -17,6 +17,8 @@ export default {
     confirmMessage: 'Configuration from the template will be added. Your existing requests, records and contracts are kept.',
   },
   hub: {
+    workOrders: 'Work orders',
+    scheduling: 'Scheduling',
     subscriptions: 'Subscriptions',
     billing: 'Payments',
     title: 'Services',

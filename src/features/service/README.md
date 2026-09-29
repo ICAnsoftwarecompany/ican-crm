@@ -31,7 +31,10 @@ Everything business-related for Customer Service lives here. Start with
 | `contracts/` | Contracts: versions, signatures, amendments | F3 ✅ | [contracts/README.md](contracts/README.md) |
 | `handoffs/` | Sales → Service handoff inbox | F3 ✅ | [handoffs/README.md](handoffs/README.md) |
 | `setup/` | Setup wizard (industry templates) | F3 ✅ | [setup/README.md](setup/README.md) |
-| `billing/`, `scheduling/`, `work-orders/` | Billing & scheduling | F4 | added with the code |
+| `billing/` | Payment plans, preview, schedules, payments, collections | F4 | `billing/README.md` |
+| `subscriptions/` | Subscription lifecycle | F4 | `subscriptions/README.md` |
+| `scheduling/` | Resources, reservations, slots | F4 | `scheduling/README.md` |
+| `work-orders/` | Work orders & field visits | F4 | `work-orders/README.md` |
 | `portal/`, `imports/`, `follow-ups/`, `portfolios/` | Portal & growth (MVP-2) | F5 | added with the code |
 | `quality/`, `templates/` | Knowledge & quality | F6 | added with the code |
 | `ai/` | AI | F7 | added with the code |

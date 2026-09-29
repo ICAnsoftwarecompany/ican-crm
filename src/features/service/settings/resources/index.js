@@ -9,6 +9,7 @@ import { kbCategoriesResource, macrosResource, savedRepliesResource } from './co
 import { itemTypesResource, pipelinesResource, recordTypesResource } from './catalogResources'
 import { contractTypesResource } from './contractResources'
 import { paymentPlansResource, planAssignmentsResource } from './billingResources'
+import { schedulingResourcesResource } from './schedulingResources'
 import { Package, Wand2 } from 'lucide-react'
 import { SetupWizardPanel } from '../../setup/components/SetupWizardPanel'
 import { CatalogItemsPanel } from '../../catalog/components/CatalogItemsPanel'
@@ -29,6 +30,7 @@ export const SETTINGS_GROUPS = [
   { key: 'catalog', resources: [catalogItemsSection, itemTypesResource, recordTypesResource, pipelinesResource] },
   { key: 'contracts', resources: [contractTypesResource] },
   { key: 'billing', resources: [paymentPlansResource, planAssignmentsResource] },
+  { key: 'scheduling', resources: [schedulingResourcesResource] },
   { key: 'sla', resources: [slaPoliciesResource, businessCalendarsResource, escalationRulesResource] },
   { key: 'communication', resources: [savedRepliesResource, macrosResource] },
   { key: 'knowledge', resources: [kbCategoriesResource] },
@@ -53,6 +55,7 @@ const SECTION_SLUGS = {
   setup: 'setup',
   paymentPlans: 'payment-plans',
   planAssignments: 'plan-assignments',
+  schedulingResources: 'scheduling-resources',
 }
 
 /** URL slug for a resource (kebab-case, stable). */

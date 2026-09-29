@@ -15,6 +15,11 @@ export default {
     },
   },
   errors: {
+    RESERVATION_CONFLICT: 'This slot was just booked. Pick another one.',
+    RESERVATION_NOT_HOLD: 'Only a hold can be confirmed.',
+    RESERVATION_NOT_ACTIVE: 'This reservation is no longer active.',
+    RESERVATION_OWNED: 'This booking belongs to a work order. Reschedule or cancel the work order.',
+    WORK_ORDER_INVALID_STATE: 'This step is not available in the work order status.',
     SUBSCRIPTION_INVALID_STATE: 'This action is not available in the current subscription status.',
     SUBSCRIPTION_HAS_DUES: 'Pay the overdue periods to reactivate this subscription.',
     SUBSCRIPTION_AUTO_RENEWS: 'This subscription renews automatically.',

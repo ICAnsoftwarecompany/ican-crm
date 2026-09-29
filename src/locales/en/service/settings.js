@@ -35,6 +35,7 @@ export default {
       taken: 'This key is already used',
     },
     groups: {
+      scheduling: 'Scheduling',
       billing: 'Payments',
       general: 'General',
       contracts: 'Contracts',
@@ -45,6 +46,11 @@ export default {
       sla: 'Service levels',
     },
     resources: {
+      schedulingResources: {
+        title: 'Resources',
+        one: 'resource',
+        description: 'Technicians, couriers, rooms, vehicles or seats: capacity, working hours, skills and zones used to find free slots.',
+      },
       paymentPlans: {
         title: 'Payment plans',
         one: 'payment plan',

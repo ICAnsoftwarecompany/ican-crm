@@ -11,6 +11,7 @@ import { insightsHandlers } from './insightsHandlers'
 import { myWorkHandlers } from './myWorkHandlers'
 import { recordsHandlers } from './recordsHandlers'
 import { settingsHandlers } from './settingsHandlers'
+import { schedulingHandlers } from './schedulingHandlers'
 import { setupHandlers } from './setupHandlers'
 import { subscriptionsHandlers } from './subscriptionsHandlers'
 
@@ -33,6 +34,7 @@ export const mockRoutes = [
   ...myWorkHandlers,
   ...recordsHandlers,
   ...settingsHandlers,
+  ...schedulingHandlers,
   ...setupHandlers,
   ...subscriptionsHandlers,
 ]

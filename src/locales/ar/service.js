@@ -15,6 +15,7 @@ import assets from './service/assets.js'
 import contracts from './service/contracts.js'
 import billing from './service/billing.js'
 import subscriptions from './service/subscriptions.js'
+import scheduling from './service/scheduling.js'
 
 /**
  * نصوص إدارة العملاء (Customer Hub) — جذر المفاتيح `service.*`.
@@ -38,5 +39,6 @@ export default {
   ...contracts,
   ...billing,
   ...subscriptions,
+  ...scheduling,
   terms,
 }

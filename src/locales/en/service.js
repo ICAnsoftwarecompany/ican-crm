@@ -15,6 +15,7 @@ import assets from './service/assets.js'
 import contracts from './service/contracts.js'
 import billing from './service/billing.js'
 import subscriptions from './service/subscriptions.js'
+import scheduling from './service/scheduling.js'
 
 /**
  * Customer Hub (Service Operations) copy — key root `service.*`.
@@ -39,5 +40,6 @@ export default {
   ...contracts,
   ...billing,
   ...subscriptions,
+  ...scheduling,
   terms,
 }

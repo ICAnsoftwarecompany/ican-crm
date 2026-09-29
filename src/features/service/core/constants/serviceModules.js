@@ -70,8 +70,8 @@ export const SERVICE_MODULES = [
   // F4 — Billing Lite & Scheduling
   { key: 'billing', folder: 'billing', phase: 4, status: 'in_progress', backend: 'mock' },
   { key: 'subscriptions', folder: 'subscriptions', phase: 4, status: 'in_progress', backend: 'mock' },
-  { key: 'scheduling', folder: 'scheduling', phase: 4, status: 'planned', backend: 'mock' },
-  { key: 'workOrders', folder: 'work-orders', phase: 4, status: 'planned', backend: 'mock' },
+  { key: 'scheduling', folder: 'scheduling', phase: 4, status: 'in_progress', backend: 'mock' },
+  { key: 'workOrders', folder: 'work-orders', phase: 4, status: 'in_progress', backend: 'mock' },
 
   // F5 — Portal & Growth (MVP-2)
   { key: 'portal', folder: 'portal', phase: 5, status: 'planned', backend: 'mock' },

@@ -69,4 +69,6 @@ export { HandoffsWorkspace, HandoffDetailView } from './handoffs'
 
 // F4 — Billing Lite
 export { SubscriptionsWorkspace, SubscriptionDetailView } from './subscriptions'
+export { SchedulingWorkspace, SlotPicker } from './scheduling'
+export { WorkOrdersWorkspace, WorkOrderDetailView, WorkOrderCreateDialog } from './work-orders'
 export { PlanCalculator, PlanPreviewTable, BillingNav, SchedulesList, ScheduleDetailView, CollectionsWorkspace } from './billing'

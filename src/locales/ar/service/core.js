@@ -15,6 +15,11 @@ export default {
     },
   },
   errors: {
+    RESERVATION_CONFLICT: 'الموعد ده اتحجز حالًا. اختر موعد تاني.',
+    RESERVATION_NOT_HOLD: 'التأكيد متاح للحجز المبدئي فقط.',
+    RESERVATION_NOT_ACTIVE: 'هذا الحجز لم يعد نشطًا.',
+    RESERVATION_OWNED: 'الحجز ده تابع لأمر عمل. غيّر موعد أمر العمل أو ألغيه.',
+    WORK_ORDER_INVALID_STATE: 'الخطوة دي غير متاحة في حالة أمر العمل الحالية.',
     SUBSCRIPTION_INVALID_STATE: 'هذا الإجراء غير متاح في حالة الاشتراك الحالية.',
     SUBSCRIPTION_HAS_DUES: 'ادفع الفترات المتأخرة لإعادة تفعيل الاشتراك.',
     SUBSCRIPTION_AUTO_RENEWS: 'هذا الاشتراك بيتجدد تلقائيًا.',
