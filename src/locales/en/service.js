@@ -11,6 +11,7 @@ import knowledge from './service/knowledge.js'
 import insights from './service/insights.js'
 import catalogConfig from './service/catalogConfig.js'
 import records from './service/records.js'
+import assets from './service/assets.js'
 
 /**
  * Customer Hub (Service Operations) copy — key root `service.*`.
@@ -31,5 +32,6 @@ export default {
   ...insights,
   ...catalogConfig,
   ...records,
+  ...assets,
   terms,
 }

@@ -61,8 +61,8 @@ export const SERVICE_MODULES = [
   { key: 'catalog', folder: 'catalog', phase: 3, status: 'done', backend: 'mock' },
   { key: 'pipelines', folder: 'pipelines', phase: 3, status: 'done', backend: 'mock' },
   { key: 'records', folder: 'records', phase: 3, status: 'done', backend: 'mock' },
-  { key: 'assets', folder: 'assets', phase: 3, status: 'planned', backend: 'mock' },
-  { key: 'entitlements', folder: 'entitlements', phase: 3, status: 'planned', backend: 'mock' },
+  { key: 'assets', folder: 'assets', phase: 3, status: 'done', backend: 'mock' },
+  { key: 'entitlements', folder: 'entitlements', phase: 3, status: 'done', backend: 'mock' },
   { key: 'contracts', folder: 'contracts', phase: 3, status: 'planned', backend: 'mock' },
   { key: 'handoffs', folder: 'handoffs', phase: 3, status: 'planned', backend: 'mock' },
 

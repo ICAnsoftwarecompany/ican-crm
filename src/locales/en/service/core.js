@@ -15,6 +15,9 @@ export default {
     },
   },
   errors: {
+    ENTITLEMENT_NOT_AVAILABLE: 'This entitlement cannot be used (used up, expired or suspended).',
+    RECORD_TRANSITION_NOT_ALLOWED: 'This status change is not allowed for this record.',
+    DOCUMENT_NOT_UPLOADED: 'Upload the document before verifying it.',
     PIPELINE_STATUS_IN_USE: 'A status you removed is still used by requests or records. Move them first or keep the status.',
     generic: 'Something went wrong. Please try again.',
     CONFLICT_VERSION: 'Someone else changed this record. The latest version was loaded, please try again.',

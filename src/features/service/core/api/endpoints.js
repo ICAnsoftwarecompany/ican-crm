@@ -68,6 +68,11 @@ export const serviceEndpoints = {
   records: `${SERVICE_API}/records`,
   batches: `${SERVICE_API}/batches`,
 
+  // Assets, warranties, entitlements (F3, spec §34–35).
+  assets: `${SERVICE_API}/assets`,
+  warranties: `${SERVICE_API}/warranties`,
+  entitlements: `${SERVICE_API}/entitlements`,
+
   // Knowledge base (F2) — CRUD + publish (kb.publish permission). New articles start as drafts.
   kbArticles: `${SERVICE_API}/kb/articles`,
   kbArticle: (articleId) => `${SERVICE_API}/kb/articles/${articleId}`,

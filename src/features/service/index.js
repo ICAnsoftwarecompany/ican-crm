@@ -58,3 +58,7 @@ export { FeedbackList, CsatScore } from './feedback'
 // F3 — Service records & batches
 export { RecordsWorkspace, RecordDetailView, BatchesWorkspace, BatchDetailView, useRecordsSetup, findRecordType } from './records'
 export { ServicesHubNav } from './core/components/ServicesHubNav'
+
+// F3 — Assets, warranty, entitlements
+export { AssetsWorkspace, AssetDetailView } from './assets'
+export { EntitlementsList, CaseCoveragePanel } from './entitlements'

@@ -15,6 +15,9 @@ export default {
     },
   },
   errors: {
+    ENTITLEMENT_NOT_AVAILABLE: 'لا يمكن استخدام هذا الاستحقاق (مستنفد أو منتهٍ أو موقوف).',
+    RECORD_TRANSITION_NOT_ALLOWED: 'تغيير الحالة هذا غير مسموح لهذا السجل.',
+    DOCUMENT_NOT_UPLOADED: 'ارفع المستند أولًا قبل اعتماده.',
     PIPELINE_STATUS_IN_USE: 'حالة حذفتها ما زالت مستخدمة في طلبات أو سجلات. انقلها أولًا أو احتفظ بالحالة.',
     generic: 'حصلت مشكلة. حاول مرة تانية.',
     CONFLICT_VERSION: 'حد تاني عدّل السجل ده. اتحملت آخر نسخة، حاول تاني.',

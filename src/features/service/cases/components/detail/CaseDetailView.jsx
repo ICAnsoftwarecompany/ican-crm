@@ -17,11 +17,14 @@ import { SlaBadge, SlaPanel } from '../../../sla'
 import { MacroMenu } from '../../../replies'
 import { SuggestedArticlesPanel } from '../../../knowledge'
 import { CaseCsatCard } from '../../../feedback'
+import { CaseCoveragePanel } from '../../../entitlements'
+import { useServiceCapabilities } from '../../../core/capabilities/useServiceCapabilities'
 
 /** Full case screen: header + transitions, timeline + composer, properties. */
 export function CaseDetailView({ caseId }) {
   const { t } = useTranslation()
   const term = useServiceTerminology()
+  const { hasFeature } = useServiceCapabilities()
   const caseQuery = useCase(caseId)
   const setup = useCaseSetup()
   const activities = useCaseActivities(caseId)
@@ -78,6 +81,7 @@ export function CaseDetailView({ caseId }) {
               <div className="grid content-start gap-4">
                 <SlaPanel sla={caseItem.sla} />
                 <CaseCsatCard csat={caseItem.csat} />
+                {hasFeature('entitlements') && <CaseCoveragePanel caseItem={caseItem} />}
                 <CasePropertiesPanel caseItem={caseItem} setup={setup.data} />
                 <SuggestedArticlesPanel caseId={caseItem.id} />
                 <CustomerContactsPanel customerId={caseItem.customer?.id} compact />

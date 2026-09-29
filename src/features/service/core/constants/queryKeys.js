@@ -53,6 +53,15 @@ export const serviceKeys = {
   batches: (params) => [...serviceKeys.records(), 'batches', params ?? {}],
   batchDetail: (batchId) => [...serviceKeys.records(), 'batch', String(batchId)],
 
+  // Assets & entitlements (F3)
+  assets: () => [...serviceKeys.all, 'assets'],
+  assetList: (params) => [...serviceKeys.assets(), 'list', params ?? {}],
+  assetDetail: (assetId) => [...serviceKeys.assets(), 'detail', String(assetId)],
+  entitlements: () => [...serviceKeys.all, 'entitlements'],
+  entitlementList: (params) => [...serviceKeys.entitlements(), 'list', params ?? {}],
+  entitlementDetail: (id) => [...serviceKeys.entitlements(), 'detail', String(id)],
+  entitlementCheck: (params) => [...serviceKeys.entitlements(), 'check', params ?? {}],
+
   // Saved views (F2) — per entity (e.g. service_case)
   savedViews: (entity) => [...serviceKeys.all, 'saved-views', entity],
 }
