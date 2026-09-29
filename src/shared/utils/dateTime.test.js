@@ -3,6 +3,7 @@ import {
   addDays,
   addMonths,
   formatMonthYear,
+  formatRelativeTime,
   getWeekStartDay,
   isSameDay,
   isSameMonth,
@@ -86,5 +87,23 @@ describe('formatMonthYear', () => {
 
   it('formats a valid date for English', () => {
     expect(formatMonthYear('2026-09-18', 'en')).toMatch(/2026/)
+  })
+})
+
+describe('formatRelativeTime', () => {
+  const now = new Date('2026-09-29T12:00:00Z')
+
+  it('formats past values in the largest fitting unit', () => {
+    expect(formatRelativeTime(new Date('2026-09-29T09:00:00Z'), 'en', now)).toBe('3 hours ago')
+    expect(formatRelativeTime(new Date('2026-09-27T12:00:00Z'), 'en', now)).toBe('2 days ago')
+  })
+
+  it('reads sub-minute differences as now and supports Arabic', () => {
+    expect(formatRelativeTime(new Date('2026-09-29T11:59:40Z'), 'en', now)).toBe('now')
+    expect(formatRelativeTime(new Date('2026-09-29T11:00:00Z'), 'ar', now)).toContain('ساعة')
+  })
+
+  it('returns an empty string for invalid input', () => {
+    expect(formatRelativeTime(null, 'en', now)).toBe('')
   })
 })

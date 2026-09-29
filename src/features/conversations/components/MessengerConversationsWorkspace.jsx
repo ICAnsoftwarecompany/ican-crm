@@ -42,7 +42,7 @@ function getConversationContact(conversation) {
   )
 }
 
-export function MessengerConversationsWorkspace() {
+export function MessengerConversationsWorkspace({ threadHeaderActions = null } = {}) {
   const queryClient = useQueryClient()
   const [searchParams, setSearchParams] = useSearchParams()
   const { highlightedMessageId, highlightMessage } = useRealtimeMessageHighlight()
@@ -259,6 +259,7 @@ export function MessengerConversationsWorkspace() {
             isTogglingConversationStatus={mutations.closeConversation.isPending || mutations.reopenConversation.isPending}
             {...getThreadCapabilityProps(messengerAdapter.capabilities)}
             channelColor="#0A7CFF"
+            headerActions={selectedId ? threadHeaderActions : null}
             autoFocusKey={selectedId}
             highlightedMessageId={highlightedMessageId}
             composerDisabled={!selectedId}

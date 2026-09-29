@@ -2,6 +2,9 @@ import core from './service/core.js'
 import phases from './service/phases.js'
 import catalog from './service/catalog.js'
 import terms from './service/terms.js'
+import cases from './service/cases.js'
+import workspace from './service/workspace.js'
+import contacts from './service/contacts.js'
 
 /**
  * Service Operations copy — key root `service.*`.
@@ -13,5 +16,8 @@ export default {
   ...core,
   ...phases,
   ...catalog,
+  ...cases,
+  ...workspace,
+  ...contacts,
   terms,
 }

@@ -117,3 +117,31 @@ export function formatDateTimeForApi(value) {
   if (!date) return ''
   return toDayjs(date).format('YYYY-MM-DD HH:mm:ss')
 }
+
+const RELATIVE_UNITS = [
+  ['year', 365 * 24 * 60 * 60],
+  ['month', 30 * 24 * 60 * 60],
+  ['week', 7 * 24 * 60 * 60],
+  ['day', 24 * 60 * 60],
+  ['hour', 60 * 60],
+  ['minute', 60],
+]
+
+/**
+ * Localized relative time ("3 hours ago" / "منذ 3 ساعات") via Intl.RelativeTimeFormat.
+ * Values under a minute read as "now".
+ * @param {Date|string|number} value
+ * @param {string} language
+ * @param {Date|string|number} [now]
+ */
+export function formatRelativeTime(value, language, now = new Date()) {
+  const date = toDate(value)
+  const reference = toDate(now)
+  if (!date || !reference) return ''
+  const diffSeconds = Math.round((date.getTime() - reference.getTime()) / 1000)
+  const formatter = new Intl.RelativeTimeFormat(resolveLocale(language), { numeric: 'auto' })
+  for (const [unit, seconds] of RELATIVE_UNITS) {
+    if (Math.abs(diffSeconds) >= seconds) return formatter.format(Math.round(diffSeconds / seconds), unit)
+  }
+  return formatter.format(0, 'second')
+}

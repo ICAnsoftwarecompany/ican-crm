@@ -15,6 +15,7 @@ export default {
     cases: 'Cases',
     queues: 'Queues',
     myWork: 'My Work',
+    customer360: 'Customer 360',
     sla: 'SLA',
     replies: 'Replies & macros',
     knowledge: 'Knowledge base',

@@ -9,4 +9,30 @@ export const SERVICE_API = `${TENANT_API}/service`
 
 export const serviceEndpoints = {
   capabilities: `${TENANT_API}/me/capabilities`,
+
+  // Cases (F1)
+  cases: `${SERVICE_API}/cases`,
+  caseFromConversation: (conversationId) => `${SERVICE_API}/cases/from-conversation/${conversationId}`,
+  case: (caseId) => `${SERVICE_API}/cases/${caseId}`,
+  caseTransition: (caseId) => `${SERVICE_API}/cases/${caseId}/transition`,
+  caseAssign: (caseId) => `${SERVICE_API}/cases/${caseId}/assign`,
+  caseActivities: (caseId) => `${SERVICE_API}/cases/${caseId}/activities`,
+  caseReply: (caseId) => `${SERVICE_API}/cases/${caseId}/reply`,
+  caseNotes: (caseId) => `${SERVICE_API}/cases/${caseId}/notes`,
+  // Setup data a case screen needs in one call: case types (with pipelines),
+  // queues, agents and resolution codes. Split per settings module in F2.
+  caseSetup: `${SERVICE_API}/cases/setup`,
+  // Counts per built-in view (open, mine, unassigned…) for tabs and Service Center.
+  caseSummary: `${SERVICE_API}/cases/summary`,
+  // Lightweight customer search for pickers. Proposed contract (not in spec §51 yet):
+  // returns [{ id, name, phone }].
+  customerLookup: `${SERVICE_API}/customers/lookup`,
+
+  // My Work (F1) — work_items read model for the signed-in user (spec §20.2).
+  myWork: `${TENANT_API}/my-work`,
+
+  // Contacts (F1) — people under a customer + relationships (spec §24.2). Core
+  // customer endpoints; served by the Service mock until the backend ships them.
+  customerContacts: (customerId) => `${TENANT_API}/customers/${customerId}/contacts`,
+  contactsSetup: `${TENANT_API}/contacts/setup`,
 }

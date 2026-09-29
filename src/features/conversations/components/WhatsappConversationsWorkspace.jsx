@@ -122,6 +122,7 @@ export function WhatsappConversationsWorkspace({
   open = true,
   onClose,
   initialTarget = {},
+  threadHeaderActions = null,
 }) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -509,6 +510,7 @@ export function WhatsappConversationsWorkspace({
         isTogglingConversationStatus={mutations.closeConversation.isPending || mutations.reopenConversation.isPending}
         {...getThreadCapabilityProps(whatsappAdapter.capabilities)}
         channelColor="#25D366"
+        headerActions={selectedId ? threadHeaderActions : null}
         autoFocusKey={`${panel ? 'panel' : 'page'}-${selectedId}`}
         composerDisabled={!selectedId || selectedClosed}
         emptyMessage={selectedId ? TEXT.noMessages : TEXT.chooseConversation}

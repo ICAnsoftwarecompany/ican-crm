@@ -7,4 +7,20 @@
 export const serviceKeys = {
   all: ['service'],
   capabilities: () => [...serviceKeys.all, 'capabilities'],
+
+  // Cases (F1)
+  cases: () => [...serviceKeys.all, 'cases'],
+  caseList: (params) => [...serviceKeys.cases(), 'list', params ?? {}],
+  caseSummary: () => [...serviceKeys.cases(), 'summary'],
+  caseDetail: (caseId) => [...serviceKeys.cases(), 'detail', String(caseId)],
+  caseActivities: (caseId) => [...serviceKeys.cases(), 'activities', String(caseId)],
+  caseSetup: () => [...serviceKeys.cases(), 'setup'],
+  customerLookup: (search) => [...serviceKeys.all, 'customer-lookup', search ?? ''],
+
+  // My Work (F1) — read model of everything assigned to the current user.
+  myWork: () => [...serviceKeys.all, 'my-work'],
+
+  // Contacts (F1)
+  contacts: (customerId) => [...serviceKeys.all, 'contacts', String(customerId)],
+  contactsSetup: () => [...serviceKeys.all, 'contacts-setup'],
 }

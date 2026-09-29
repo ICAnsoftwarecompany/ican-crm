@@ -13,6 +13,11 @@ weighs on the main bundle. Remove a module's mocks only after it has run `live` 
 | `templates/modelFeatures.js` | Models → features map (mirror of spec §9.4). |
 | `handlers/index.js` | `mockRoutes` — one line per module. |
 | `handlers/capabilitiesHandlers.js` | `GET /api/tenant/me/capabilities`. |
+| `handlers/casesHandlers.js` | Cases: setup, summary, list (views), CRUD, from-conversation, transition (pipeline + required fields + version), assign, activities, reply, notes, customer lookup. Unknown real customer ids are adopted as placeholders (`#<id>`). |
+| `handlers/myWorkHandlers.js` | `GET /api/tenant/my-work` from mock cases assigned to the signed-in user + two demo tasks. |
+| `handlers/contactsHandlers.js` | Customer contacts, contacts setup (roles, relation types). |
+| `seeds/` | Deterministic seeds per template: `caseSetupSeed` (types, pipeline, queues, agents, resolution codes), `casesSeed` (customers, cases, activities), `contactsSeed`; `seedUtils` (seeded random, current user). |
+| `utils.js` | `paginate` (Laravel meta), `matchesSearch`, `nowIso`. |
 
 ## Writing handlers
 
@@ -41,4 +46,4 @@ export const casesHandlers = [
 
 ## Tests
 
-`router.test.js`, `mockAdapter.test.js`, `db.test.js`.
+`router.test.js`, `mockAdapter.test.js`, `db.test.js`, `handlers/casesHandlers.test.js`, `handlers/contactsHandlers.test.js`.

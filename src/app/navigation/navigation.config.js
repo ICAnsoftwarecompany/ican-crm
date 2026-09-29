@@ -52,6 +52,9 @@ import {
   Workflow,
   Share2,
   Handshake,
+  Headset,
+  Inbox,
+  ListChecks,
 } from 'lucide-react'
 
 /** @type {NavigationSection[]} */
@@ -165,10 +168,38 @@ export const navigationConfig = [
     ],
   },
 
-  // Customer Service is planned architecture only (no routes exist yet), so
-  // no section is emitted here. When the module is built, add its section
-  // here following the "How to Add a New Module" guide — Sidebar requires no
-  // code changes to pick it up.
+  // Customer Service (Service Operations) — features/service, built in
+  // phases F0–F7 (docs/4-CUSTOMER-SERVICE.md). Keep 3–7 items here; deeper
+  // destinations (settings, records, reports) live inside /service pages.
+  {
+    id: 'customer-service',
+    type: 'section',
+    labelKey: 'nav.sections.customerService',
+    module: 'customer_service',
+    items: [
+      {
+        id: 'service-center',
+        labelKey: 'nav.serviceCenter',
+        icon: Headset,
+        path: '/service',
+        end: true,
+        activePatterns: ['/service', '/service/overview'],
+      },
+      {
+        id: 'service-cases',
+        labelKey: 'nav.serviceCases',
+        icon: Inbox,
+        path: '/service/cases',
+        activePatterns: ['/service/cases', '/service/cases/*'],
+      },
+      {
+        id: 'service-my-work',
+        labelKey: 'nav.serviceMyWork',
+        icon: ListChecks,
+        path: '/service/my-work',
+      },
+    ],
+  },
 
   // Workspace: cross-module, company-wide tools. Conversations lives here
   // short-term per the migration strategy documented in

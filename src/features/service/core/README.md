@@ -15,13 +15,17 @@ Foundation shared by every Service sub-module. Nothing here knows about a specif
 | `components/ServiceMockBanner.jsx` | — | Shows demo-data state and the industry template switcher. |
 | `components/CapabilitiesOverview.jsx` | — | Models, features, terminology of the tenant. |
 | `components/ServiceRoadmap.jsx` | — | Live phase board from `serviceModules.js`. |
+| `utils/localizeLabel.js` | `localizeLabel(value, language, fallback)` | Tenant labels `{ ar, en }` → current language. Never `t()` data. Tested. |
+| `utils/serviceErrors.js` | `getServiceErrorMessage(error, t)`, `getServiceFieldErrors(error)` | Backend error `code` → `service.errors.<CODE>`; 422 field errors. |
 
 ## Query keys
 
 - `serviceKeys.capabilities()` → `['service', 'capabilities']`
+- Cases: `caseSetup`, `caseSummary`, `caseList(params)`, `caseDetail(id)`, `caseActivities(id)`, `customerLookup(search)`
+- `myWork()`, `contacts(customerId)`, `contactsSetup()`
 - Add sub-module keys as `serviceKeys.<module>…` so `invalidateQueries({ queryKey: serviceKeys.all })`
   refreshes the whole area (used after switching the mock template).
 
 ## Tests
 
-`api/serviceHttp.test.js`, `capabilities/capabilities.utils.test.js`.
+`api/serviceHttp.test.js`, `capabilities/capabilities.utils.test.js`, `utils/localizeLabel.test.js`.

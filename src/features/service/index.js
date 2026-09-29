@@ -21,3 +21,22 @@ export { useServiceCapabilities, useServiceTerminology } from './core/capabiliti
 export { ServiceMockBanner } from './core/components/ServiceMockBanner'
 export { CapabilitiesOverview } from './core/components/CapabilitiesOverview'
 export { ServiceRoadmap } from './core/components/ServiceRoadmap'
+
+// F1 — Cases
+export {
+  CasesWorkspace,
+  CaseDetailView,
+  CaseCreateDialog,
+  CreateCaseFromConversationButton,
+  CaseStatusBadge,
+  CasePriorityBadge,
+  useCaseList,
+  useCaseSummary,
+} from './cases'
+
+// F1 — My Work & Service Center
+export { MyWorkList, ServiceCenterCounters, useMyWork } from './my-work'
+
+// F1 — Contacts & Customer 360
+export { CustomerContactsPanel, useCustomerContacts } from './contacts'
+export { CustomerServiceTab } from './customer-360'

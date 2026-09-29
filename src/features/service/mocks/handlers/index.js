@@ -1,4 +1,7 @@
 import { capabilitiesHandlers } from './capabilitiesHandlers'
+import { casesHandlers } from './casesHandlers'
+import { contactsHandlers } from './contactsHandlers'
+import { myWorkHandlers } from './myWorkHandlers'
 
 /**
  * Every mock route of the Service area. A new sub-module adds ONE line here
@@ -7,4 +10,7 @@ import { capabilitiesHandlers } from './capabilitiesHandlers'
  */
 export const mockRoutes = [
   ...capabilitiesHandlers,
+  ...casesHandlers,
+  ...contactsHandlers,
+  ...myWorkHandlers,
 ]

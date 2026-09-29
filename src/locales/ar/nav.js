@@ -2,6 +2,9 @@ export default {
   favorites: 'المفضلة',
   pinPage: 'تثبيت في المفضلة',
   unpinPage: 'إزالة من المفضلة',
+  serviceCenter: 'مركز الخدمة',
+  serviceCases: 'الطلبات',
+  serviceMyWork: 'شغلي',
   deals: 'الصفقات',
   "sections": {
     "overview": "نظرة عامة",

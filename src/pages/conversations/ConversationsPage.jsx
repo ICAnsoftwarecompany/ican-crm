@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { Suspense, lazy, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useMessengerConversations } from '../../features/conversations/hooks/useConversations'
 import { GmailConversationsWorkspace } from '../../features/conversations/components/GmailConversationsWorkspace'
@@ -10,6 +10,17 @@ import { WhatsappLogoIcon } from '../../features/conversations/components/Whatsa
 import { useGmailConversations, useGmailMailboxes } from '../../features/conversations/hooks/useGmailConversations'
 import { useWhatsappConversations } from '../../features/conversations/hooks/useWhatsappConversations'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
+
+// Customer Service: "Create case" in every thread header (docs/4-CUSTOMER-SERVICE.md, F1).
+// Lazy so the Service area stays out of the conversations chunk.
+const CreateCaseFromConversationButton = lazy(() =>
+  import('../../features/service').then((module) => ({ default: module.CreateCaseFromConversationButton }))
+)
+const renderThreadHeaderActions = (details) => (
+  <Suspense fallback={null}>
+    <CreateCaseFromConversationButton details={details} />
+  </Suspense>
+)
 
 function getUnreadTotal(conversations = []) {
   return conversations.reduce((total, conversation) => total + Number(conversation?.unread_count || 0), 0)
@@ -143,10 +154,10 @@ export function ConversationsPage() {
     <div className="space-y-4">
       <ConversationChannelTabs activeChannel={activeChannel} onChange={setChannel} unreadCounts={unreadCounts} />
       {activeChannel === 'gmail'
-        ? <GmailConversationsWorkspace />
+        ? <GmailConversationsWorkspace threadHeaderActions={renderThreadHeaderActions} />
         : activeChannel === 'whatsapp'
-          ? <WhatsappConversationsWorkspace />
-          : <MessengerConversationsWorkspace />}
+          ? <WhatsappConversationsWorkspace threadHeaderActions={renderThreadHeaderActions} />
+          : <MessengerConversationsWorkspace threadHeaderActions={renderThreadHeaderActions} />}
     </div>
   )
 }

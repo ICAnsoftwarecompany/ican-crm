@@ -377,7 +377,7 @@ export function ConversationThread({
                 تحويل
               </button>
             ) : null}
-            {headerActions}
+            {typeof headerActions === 'function' ? headerActions(detailsSource) : headerActions}
             <button
               type="button"
               onClick={() => togglePanel('search')}

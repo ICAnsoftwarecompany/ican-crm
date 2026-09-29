@@ -15,6 +15,7 @@ export default {
     cases: 'الطلبات',
     queues: 'الطوابير',
     myWork: 'شغلي',
+    customer360: 'ملف العميل',
     sla: 'SLA',
     replies: 'الردود والماكرو',
     knowledge: 'قاعدة المعرفة',

@@ -6,7 +6,7 @@ Frontend domain doc for the Customer Service area. Business and backend contract
 **what the frontend has built, where it lives, and the rules for adding more**. Update it in the same
 change as the code (see [Phase log](#phase-log)).
 
-**Status:** PARTIAL — F0 Foundation done. All data comes from the mock layer until the backend ships.
+**Status:** PARTIAL — F0 Foundation and F1 Case core done. All data comes from the mock layer until the backend ships.
 
 ## Contents
 
@@ -18,6 +18,8 @@ change as the code (see [Phase log](#phase-log)).
 - [i18n rules for Service](#i18n-rules-for-service)
 - [Theme and dark mode](#theme-and-dark-mode)
 - [Routes and navigation](#routes-and-navigation)
+- [Integration points outside the area](#integration-points-outside-the-area)
+- [API used by the frontend](#api-used-by-the-frontend)
 - [Adding a sub-module](#adding-a-sub-module)
 - [Per-phase checklist](#per-phase-checklist)
 - [Phase log](#phase-log)
@@ -43,8 +45,8 @@ code (`features/service/core/constants/serviceModules.js`) and is rendered live 
 | Phase | Name | Frontend scope | Milestone | Status |
 |---|---|---|---|---|
 | **F0** | Foundation | Module structure, mock transport, capabilities + terminology, locale module, SLA/priority theme tokens, `check:service` gate, docs | — | ✅ Done |
-| **F1** | Case core | Contacts & relationships, cases (list / board / detail, activities, timeline, notes), queues, Conversation → Case, My Work, customer drawer Service tab, Service navigation section | — | ⏳ Next |
-| **F2** | Service operations | SLA display & escalation states, saved replies & macros, internal knowledge base, CSAT, dashboard & reports, settings (case types, pipelines, queues, SLA, business calendar) | **MVP-1** (standalone helpdesk) | Planned |
+| **F1** | Case core | Contacts & relationships, cases (list / board / detail, activities, timeline, notes), queues, Conversation → Case, My Work, customer drawer Service tab, Service navigation section | — | ✅ Done |
+| **F2** | Service operations | SLA display & escalation states, saved replies & macros, internal knowledge base, CSAT, dashboard & reports, settings (case types, pipelines, queues, SLA, business calendar), saved views | **MVP-1** (standalone helpdesk) | ⏳ Next |
 | **F3** | Service context | Item types & capabilities settings, service records (generic by type) with participants, components, entries, batches; assets, warranty, entitlements, contracts, handoffs, setup wizard | — | Planned |
 | **F4** | Billing & scheduling | Payment plans, deal preview, schedules & payments, collections workspace, scheduling & capacity, work orders, courier/technician views | — | Planned |
 | **F5** | Portal & growth | Customer portal app (self / guardian / B2B / guest), imports, follow-up programs, portfolios, operations workspaces | **MVP-2** (pilot) | Planned |
@@ -65,8 +67,12 @@ src/features/service/          ← all business code (README.md inside)
 │   ├── capabilities/          ← manifest API, useServiceCapabilities, useServiceTerminology
 │   ├── components/            ← service-wide UI (mock banner, roadmap, capabilities overview)
 │   └── constants/             ← serviceModules (phases registry), catalog keys, query keys
-├── mocks/                     ← demo backend: adapter, router, in-memory db, templates, handlers (README.md inside)
-└── <sub-module>/              ← one folder per sub-module from F1 on: cases/, contacts/, queues/, sla/ …
+├── mocks/                     ← demo backend: adapter, router, in-memory db, templates, seeds, handlers (README.md inside)
+├── cases/                     ← F1: cases workspace, detail, create, transitions (README.md inside)
+├── my-work/                   ← F1: My Work read model + Service Center counters (README.md inside)
+├── contacts/                  ← F1: contacts & relationships (README.md inside)
+├── customer-360/              ← F1: Service tab of the customer drawer (README.md inside)
+└── <sub-module>/              ← one folder per sub-module as phases ship: sla/, knowledge/, records/ …
 
 src/pages/service/             ← thin route pages + serviceRoutes.js (README.md inside)
 src/locales/{ar,en}/service.js ← `service.*` copy, split into ./service/*.js parts
@@ -145,11 +151,52 @@ component → hook (React Query) → casesApi → createServiceApi('cases') → 
 
 | Route | Page | Phase |
 |---|---|---|
-| `/service` | `ServiceOverviewPage` — manifest, mock template switcher, roadmap | F0 |
+| `/service` | `ServiceCenterPage` — counters per view, My Work preview, new case, demo banner | F1 |
+| `/service/cases` | `ServiceCasesPage` — views (`?view=`), search (`?q=`), list or board (`?mode=board`) | F1 |
+| `/service/cases/:caseId` | `ServiceCaseDetailPage` — timeline, reply / internal note, status, properties, contacts | F1 |
+| `/service/my-work` | `ServiceMyWorkPage` — everything assigned to me | F1 |
+| `/service/overview` | `ServiceOverviewPage` — manifest, mock template switcher, roadmap | F0 |
 
 - All Service routes are declared in `src/pages/service/serviceRoutes.js` and **lazy-loaded** (own chunks).
-- No sidebar section yet (architecture rule: add it when real pages ship). F1 adds the
-  `customer_service` section in `app/navigation/navigation.config.js` with `module: 'customer_service'`.
+- Sidebar section `customer-service` (`module: 'customer_service'`, label `nav.sections.customerService`)
+  in `app/navigation/navigation.config.js`: Service Center, Cases, My Work. Keep it at 3–7 items;
+  deeper destinations (settings, records, reports) go inside `/service` pages or an internal sidebar (F2).
+
+## Integration points outside the area
+
+Customer Service plugs into existing screens without those screens importing Service internals:
+
+| Where | How | Files touched |
+|---|---|---|
+| Conversations thread header → **Create case** | Workspaces accept an optional `threadHeaderActions` prop; `ConversationThread.headerActions` may be a function receiving the thread `contactDetails`. `pages/conversations/ConversationsPage.jsx` lazy-loads `CreateCaseFromConversationButton` and passes it. Conversations code never imports Service. | `features/conversations/components/{Whatsapp,Messenger,Gmail}ConversationsWorkspace.jsx`, `shared/ConversationThread.jsx`, `pages/conversations/ConversationsPage.jsx` |
+| Customer drawer → **Service** tab | One `DRAWER_TABS` entry + one branch in `ActiveTabContent`; `tabs/CustomerServiceTabSlot.jsx` lazy-loads `CustomerServiceTab` and adapts the Leads Center row. | `pages/customers/components/CustomerDetailsDrawer/CustomerDetailsDrawer.jsx`, `tabs/CustomerServiceTabSlot.jsx` |
+| Relative times | `formatRelativeTime(value, language)` added to `shared/utils/dateTime.js` (domain-neutral, tested). | `shared/utils/dateTime.js` |
+
+## API used by the frontend
+
+Every call below is served by the mock layer today with the exact shapes the screens need. It is the
+**proposed contract for the backend** (built from the master spec §36, §24, §20.2, §51). Base path
+`/api/tenant`. Lists use Laravel pagination meta `{ current_page, per_page, total, last_page }`. Errors use
+the unified body `{ success:false, code, message, errors, meta:{ request_id } }` with codes
+`VALIDATION_FAILED` (422), `CONFLICT_VERSION` (409), `CASE_TRANSITION_NOT_ALLOWED` (409), `NOT_FOUND`, `FORBIDDEN`, `FEATURE_DISABLED`.
+
+| Method & path | Purpose | Notes |
+|---|---|---|
+| `GET /me/capabilities` | `{ template, models[], features[], terminology{}, permissions[] }` | Terminology values: term key or `{ ar, en }`. |
+| `GET /service/cases/setup` | `{ case_types[{ id,key,label,icon,default_priority,pipeline{ version_id, statuses[{id,key,label,category,is_initial,is_terminal,sla_behavior}], transitions[{from,to,required_fields[]}] } }], queues[{id,key,label}], agents[{id,name}], resolution_codes[{key,label}], priorities[], severities[], channels[] }` | Labels `{ ar, en }`. Split into settings endpoints in F2. |
+| `GET /service/cases/summary` | `{ views: { open, mine, unassigned, waiting_customer, waiting_internal, high_priority, resolved, closed, all } }` | Counts for tabs + Service Center. |
+| `GET /service/cases` | Paged cases. Params: `view`, `search`, `queue_id`, `type_id`, `priority`, `customer_id`, `page`, `per_page` | `view` filters are server-side (see `cases/constants/caseViews.js`). |
+| `POST /service/cases` | Create `{ customer_id, subject, type_id, description?, priority?, severity?, queue_id?, assignee_id?, source_channel? }` → 201 case | Initial status from the type pipeline. |
+| `POST /service/cases/from-conversation/{conversationId}` | Same body; links the conversation and copies recent messages as context | |
+| `GET /service/cases/{id}` / `PATCH` | Case / update `{ version, priority?, severity?, type_id?, subject?, description? }` | Stale `version` → 409. |
+| `POST /service/cases/{id}/transition` | `{ version, to_status_id, …required_fields }` | Not in `transitions` → 409 `CASE_TRANSITION_NOT_ALLOWED`; missing field → 422. |
+| `POST /service/cases/{id}/assign` | `{ version, assignee_id?, queue_id? }` | |
+| `GET /service/cases/{id}/activities` | `[{ id, type, visibility, channel?, author{type,id,name}, body, metadata, occurred_at }]` | Types: `created, inbound, reply, internal_note, status_change, assignment, field_change`. |
+| `POST /service/cases/{id}/reply` / `notes` | `{ body }` → 201 activity | Reply goes out on the case channel via messaging policy. |
+| `GET /service/customers/lookup?search=` | `[{ id, name, phone }]` | Proposed (not in the spec yet): light picker search. |
+| `GET /my-work` | `[{ id, source_type, source_id, title, reference, customer, priority, status, due_at, updated_at }]` | Read model for the signed-in user. |
+| `GET/POST /customers/{id}/contacts` | Contacts `{ id, name, phone, email, role{key,label}, is_primary, relationships[{id,relation_type,to_contact{id,name}}] }`; create `{ name, phone?, email?, role_key, relation?{ from_contact_id, relation_type } }` | |
+| `GET /contacts/setup` | `{ roles[{key,label}], relation_types[{key,label}] }` | Tenant configuration. |
 
 ## Adding a sub-module
 
@@ -175,6 +222,27 @@ Copy into the phase log entry and tick honestly (write "not verified" when true)
 - [ ] Sub-module README + this doc + `3-FEATURES.md` section updated
 
 ## Phase log
+
+### F1 — Case core · 2026-09-29
+
+- **Added:** `features/service/cases` (workspace with 9 server views + counts, list on DataTable with
+  paged scroll, board by status category with drag-to-transition, detail with timeline / reply /
+  internal note / properties, create dialog, transition dialog for required fields, conversation →
+  case button), `my-work` (read model list + Service Center counters), `contacts` (panel + form with
+  relationships), `customer-360` (Service tab); pages Service Center, Cases, Case detail, My Work;
+  sidebar section; `core/utils` (`localizeLabel`, `serviceErrors`); `service.errors.*` copy.
+- **Outside the area:** conversations thread-header slot, customer drawer Service tab, `formatRelativeTime`
+  in `shared/utils/dateTime.js` (see [Integration points](#integration-points-outside-the-area)).
+- **Mock layer:** seeds per template (case types, pipeline, queues, agents, resolution codes, customers,
+  cases, activities, contacts); handlers enforce transitions, required fields and versions like the backend will.
+- **Mocked modules:** capabilities, cases, queues, myWork, contacts. **Live modules:** none.
+- **Tests:** case status helpers, cases and contacts handlers (views, create, transitions, 409/422,
+  notes vs replies, template reseed), `localizeLabel`, `formatRelativeTime`.
+- **Checklist:** lint ✅ · i18n ✅ · architecture ✅ · service gate ✅ · vitest ✅ · build ✅ ·
+  light/dark + RTL/LTR verified with screenshots on Service Center, Cases (list + board), Case detail,
+  create dialog and transition menu (AR light, EN dark, AR dark on the school template) ✅ ·
+  Conversation → Case button and drawer Service tab **not visually verified** (need the real
+  conversations/customers backend).
 
 ### F0 — Foundation · 2026-09-28
 

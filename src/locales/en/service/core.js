@@ -14,6 +14,16 @@ export default {
       batch: 'Batch',
     },
   },
+  errors: {
+    generic: 'Something went wrong. Please try again.',
+    CONFLICT_VERSION: 'Someone else changed this record. The latest version was loaded, please try again.',
+    CASE_TRANSITION_NOT_ALLOWED: 'This status change is not allowed from the current status.',
+    VALIDATION_FAILED: 'Please complete the required fields.',
+    NOT_FOUND: 'This record no longer exists.',
+    FORBIDDEN: 'You do not have permission to do this.',
+    FEATURE_DISABLED: 'This feature is not enabled for your workspace.',
+    MOCK_ROUTE_NOT_FOUND: 'Demo data is not available for this action yet.',
+  },
   mock: {
     title: 'Demo data',
     description: '{{count}} of {{total}} service modules use demo data until the backend is ready.',

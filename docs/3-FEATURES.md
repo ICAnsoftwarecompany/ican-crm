@@ -36,6 +36,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 - Shared helpers: `utils/conversationHelpers.js` (`sortMessagesByTime`, `upsertMessageById`, `filterConversations`), `utils/notificationSound.js` (`createNotificationSound`, one Audio + 1.2 s dedupe per channel), `utils/messengerCachedResponses.js`, `utils/formatConversationTime.js`.
 - UI: workspaces `components/{Whatsapp,Messenger,Gmail}ConversationsWorkspace.jsx` (Messenger list split into `MessengerConversationListPanel`/`ListItem`), composed by `pages/conversations/ConversationsPage.jsx` (header, channel tabs, unread badges). Channel-neutral chat UI in `components/shared/`: `ConversationThread`, `ConversationMessages`, `ConversationComposer`, `MessageAttachments`, `MediaGalleryDialog`, `InitialsAvatar`, `LastMessageStatus`, `threadCapabilities.js`. Drawer floating chats in `components/floating-chat/{shared,whatsapp,messenger,mail,sms}`. Channel-specific UI stays separate: `WhatsappTemplatesDialog`, `GmailBusinessEmailsPanel`, sidebar panels, navbar buttons.
 - Public surface for other features: `features/conversations/index.js` (exports `ConversationThread`).
+- Extension slot: the three workspaces accept `threadHeaderActions`; `ConversationThread.headerActions` may be a function of the thread `contactDetails`. Used by `pages/conversations` to add Customer Service's **Create case** without conversations importing Service.
 
 **Capabilities** (drive `supportsAttachments/Reply/Reactions` via `getThreadCapabilityProps`)
 
@@ -195,7 +196,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 ## Customer Service
 
-**Status:** PARTIAL — F0 Foundation done (mock data only). Full domain doc: [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md).
+**Status:** PARTIAL — F0 Foundation and F1 Case core done (mock data only). Full domain doc: [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md).
 
 **What it does:** Service Operations after the sale — cases/tickets, SLA, service records (bookings, shipments, enrollments, projects), assets and warranty, entitlements, contracts, installments, scheduling, work orders, follow-ups and a customer portal. Works with Sales (contract → handoff) or standalone. Industries are configuration: screens render from the tenant capabilities manifest.
 
@@ -207,7 +208,13 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 |---|---|---|---|
 | Capabilities manifest, terminology, industry templates (demo) | F0 | CURRENT | mock |
 | Service overview `/service` (roadmap, template switcher) | F0 | CURRENT | mock |
-| Contacts & relationships, cases, queues, Conversation → Case, My Work | F1 | PLANNED | — |
+| Service Center `/service` (counters, My Work preview) | F1 | CURRENT | mock |
+| Cases `/service/cases` (views, list, board, create) and case detail (timeline, reply, internal note, status, properties) | F1 | CURRENT | mock |
+| Queues (filter + assign; settings in F2) | F1 | CURRENT | mock |
+| My Work `/service/my-work` | F1 | CURRENT | mock |
+| Contacts & relationships (case detail, drawer) | F1 | CURRENT | mock |
+| Conversation → Case (thread header in `/conversations`) | F1 | CURRENT | mock |
+| Customer drawer **Service** tab | F1 | CURRENT | mock |
 | SLA & escalation, replies & macros, internal KB, CSAT, reports, settings (MVP-1) | F2 | PLANNED | — |
 | Catalog capabilities, service records, assets, warranty, entitlements, contracts, handoffs | F3 | PLANNED | — |
 | Payment plans & installments, collections, scheduling, work orders, COD | F4 | PLANNED | — |
@@ -219,4 +226,6 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 **API:** all calls go through `createServiceApi(moduleKey)`; while a module is `backend: 'mock'` the request is served by `features/service/mocks` with the real URL and error shape. Contract: [customer-service/SERVICE-MASTER-SPEC.md](customer-service/SERVICE-MASTER-SPEC.md) §51–52.
 
-**Known issues:** no navigation section until F1 pages ship; light/dark and RTL/LTR of `/service` not visually verified yet.
+**Navigation:** section Customer Service (`module: 'customer_service'`): Service Center, Cases, My Work.
+
+**Known issues:** SLA, saved views, macros and settings screens arrive in F2; the board shows loaded pages only; Conversation → Case and the drawer Service tab were not visually verified against the real backend.

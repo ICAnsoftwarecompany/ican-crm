@@ -115,6 +115,7 @@ export function GmailConversationsWorkspace({
   open = true,
   onClose,
   initialTarget = {},
+  threadHeaderActions = null,
 }) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -434,6 +435,7 @@ export function GmailConversationsWorkspace({
         isTogglingConversationStatus={mutations.closeConversation.isPending || mutations.reopenConversation.isPending}
         {...getThreadCapabilityProps(gmailAdapter.capabilities)}
         channelColor="#D93025"
+        headerActions={selectedId ? threadHeaderActions : null}
         autoFocusKey={`${panel ? 'panel' : 'page'}-${selectedId}`}
         composerDisabled={!selectedId || String(conversationInfo?.status || selectedConversation?.status || '').toLowerCase() === 'closed'}
         emptyMessage={selectedId ? 'لا توجد رسائل Gmail بعد.' : 'اختر محادثة Gmail'}

@@ -40,10 +40,13 @@ export const SERVICE_MODULES = [
   { key: 'capabilities', folder: 'core/capabilities', phase: 0, status: 'done', backend: 'mock' },
 
   // F1 — Case Core
-  { key: 'contacts', folder: 'contacts', phase: 1, status: 'planned', backend: 'mock' },
-  { key: 'cases', folder: 'cases', phase: 1, status: 'planned', backend: 'mock' },
-  { key: 'queues', folder: 'queues', phase: 1, status: 'planned', backend: 'mock' },
-  { key: 'myWork', folder: 'my-work', phase: 1, status: 'planned', backend: 'mock' },
+  { key: 'contacts', folder: 'contacts', phase: 1, status: 'done', backend: 'mock' },
+  { key: 'cases', folder: 'cases', phase: 1, status: 'done', backend: 'mock' },
+  // Queues ship inside case setup (filter, assign) in F1; queue settings screens come with settings in F2.
+  { key: 'queues', folder: 'cases', phase: 1, status: 'done', backend: 'mock' },
+  { key: 'myWork', folder: 'my-work', phase: 1, status: 'done', backend: 'mock' },
+  // Service tab in the customer drawer; reads cases + contacts, no API of its own.
+  { key: 'customer360', folder: 'customer-360', phase: 1, status: 'done', backend: 'mock' },
 
   // F2 — Service Operations (MVP-1)
   { key: 'sla', folder: 'sla', phase: 2, status: 'planned', backend: 'mock' },
@@ -79,7 +82,7 @@ export const SERVICE_MODULES = [
   { key: 'ai', folder: 'ai', phase: 7, status: 'planned', backend: 'mock' },
 ]
 
-export const CURRENT_SERVICE_PHASE = 0
+export const CURRENT_SERVICE_PHASE = 2
 
 /** @param {string} key */
 export function getServiceModule(key) {

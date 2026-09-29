@@ -297,6 +297,7 @@ export default {
       "tabs": {
         "home": "Customer Info",
         "timeline": "Timeline",
+        "service": "Service",
         "interests": "Interests",
         "notes": "Notes",
         "tasks": "Tasks",

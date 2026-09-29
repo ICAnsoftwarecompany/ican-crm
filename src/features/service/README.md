@@ -8,9 +8,12 @@ Everything business-related for Customer Service lives here. Start with
 | Folder | What | Phase | README |
 |---|---|---|---|
 | `index.js` | Public surface — the only import path for pages and other features | F0 | — |
-| `core/` | Transport (mock/live), capabilities & terminology, service-wide UI, constants | F0 | [core/README.md](core/README.md) |
+| `core/` | Transport (mock/live), capabilities & terminology, service-wide UI, constants, utils (`localizeLabel`, `serviceErrors`) | F0 | [core/README.md](core/README.md) |
 | `mocks/` | Demo backend: axios adapter, router, in-memory db, industry templates, handlers | F0 | [mocks/README.md](mocks/README.md) |
-| `contacts/`, `cases/`, `queues/`, `my-work/` | Case core | F1 | added with the code |
+| `cases/` | Cases: workspace (views, list, board), detail, create, transitions, conversation → case. Queues live in case setup until F2 | F1 ✅ | [cases/README.md](cases/README.md) |
+| `my-work/` | My Work read model + Service Center counters | F1 ✅ | [my-work/README.md](my-work/README.md) |
+| `contacts/` | Contacts & relationships under a customer | F1 ✅ | [contacts/README.md](contacts/README.md) |
+| `customer-360/` | Service tab in the customer drawer | F1 ✅ | [customer-360/README.md](customer-360/README.md) |
 | `sla/`, `replies/`, `knowledge/`, `feedback/`, `reports/`, `settings/` | Operations (MVP-1) | F2 | added with the code |
 | `records/`, `assets/`, `entitlements/`, `contracts/`, `handoffs/` | Service context | F3 | added with the code |
 | `billing/`, `scheduling/`, `work-orders/` | Billing & scheduling | F4 | added with the code |

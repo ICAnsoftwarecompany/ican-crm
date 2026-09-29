@@ -2,6 +2,9 @@ export default {
   favorites: 'Favorites',
   pinPage: 'Pin to favorites',
   unpinPage: 'Remove from favorites',
+  serviceCenter: 'Service Center',
+  serviceCases: 'Cases',
+  serviceMyWork: 'My Work',
   deals: 'Deals',
   "sections": {
     "overview": "Overview",

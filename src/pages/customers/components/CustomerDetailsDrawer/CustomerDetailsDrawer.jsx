@@ -11,6 +11,7 @@ import {
   CheckSquare,
   ChevronDown,
   Clock3,
+  Headset,
   ExternalLink,
   FileText,
   Heart,
@@ -53,6 +54,7 @@ import { NotesTab } from './tabs/NotesTab'
 import { TasksTab } from './tabs/TasksTab'
 import { TimelineTab } from './tabs/TimeLineTap/TimelineTab'
 import { CallsActionTab, MeetingsActionTab } from '../../../../features/call-meetings'
+import { CustomerServiceTabSlot } from './tabs/CustomerServiceTabSlot'
 
 const DRAWER_TABS_ORDER_KEY = 'customer-details-drawer-tabs-order:v4'
 const DRAWER_TABS_LONG_PRESS_MS = 280
@@ -60,6 +62,7 @@ const DRAWER_TABS_LONG_PRESS_MS = 280
 const DRAWER_TABS = [
   { id: 'home', labelKey: 'customers.drawer.tabs.home', icon: BadgeInfo, fixed: true, iconOnly: true },
   { id: 'timeline', labelKey: 'customers.drawer.tabs.timeline', icon: Clock3 },
+  { id: 'service', labelKey: 'customers.drawer.tabs.service', icon: Headset },
   { id: 'interests', labelKey: 'customers.drawer.tabs.interests', icon: Heart },
   { id: 'notes', labelKey: 'customers.drawer.tabs.notes', icon: FileText },
   { id: 'tasks', labelKey: 'customers.drawer.tabs.tasks', icon: CheckSquare },
@@ -1301,6 +1304,7 @@ function ActiveTabContent({
       </div>
     )
   }
+  if (activeTab === 'service') return <CustomerServiceTabSlot customer={customer} />
   if (activeTab === 'tasks') return <TasksTab customer={customer} layoutMode={layoutMode} />
   if (activeTab === 'interests') return <InterestsTab customer={customer} layoutMode={layoutMode} />
   if (activeTab === 'notes') return <NotesTab customer={customer} layoutMode={layoutMode} />
