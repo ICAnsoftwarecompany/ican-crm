@@ -94,7 +94,7 @@ export function InternalChatWorkspace() {
       <section className="min-h-[360px] rounded-lg border border-[var(--border)] bg-[var(--surface)] xl:sticky xl:top-16 xl:max-h-[calc(100vh-5rem)] xl:self-start xl:overflow-hidden">
         <header className="border-b border-[var(--border)] p-3">
           <div className="flex items-center gap-2">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#E8F9FA] text-[#00878D]">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]">
               <MessagesSquare size={18} />
             </span>
             <div>
@@ -104,12 +104,12 @@ export function InternalChatWorkspace() {
           </div>
 
           <label className="relative mt-3 block">
-            <Search size={14} className="pointer-events-none absolute start-2.5 top-2.5 text-[#94A3B8]" />
+            <Search size={14} className="pointer-events-none absolute start-2.5 top-2.5 text-[var(--text-muted)]" />
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="ابحث في المحادثات..."
-              className="h-9 w-full rounded-lg border border-[#D7EEF0] bg-white ps-8 pe-3 text-xs font-semibold text-[#0F172A] outline-none focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]"
+              className="h-9 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] ps-8 pe-3 text-xs font-semibold text-[var(--text)] outline-none focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]"
             />
           </label>
         </header>
@@ -125,7 +125,7 @@ export function InternalChatWorkspace() {
                 onClick={() => setActiveConversationId(id)}
                 className={[
                   'mb-2 w-full rounded-xl border p-3 text-start transition-colors',
-                  active ? 'border-[#00C2CB] bg-[#E8F9FA]' : 'border-[var(--border)] bg-[var(--surface-2)] hover:border-[#B8EFF2]',
+                  active ? 'border-[#00C2CB] bg-[var(--brand-accent-soft)]' : 'border-[var(--border)] bg-[var(--surface-2)] hover:border-[#B8EFF2]',
                 ].join(' ')}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -174,7 +174,7 @@ export function InternalChatWorkspace() {
 
       <section className="hidden rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4 xl:block xl:sticky xl:top-16 xl:max-h-[calc(100vh-5rem)] xl:overflow-y-auto">
         <div className="flex items-center gap-2">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#E8F9FA] text-[#007A80]">
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]">
             <UsersRound size={16} />
           </span>
           <h3 className="text-sm font-black text-[var(--text)]">تفاصيل المحادثة</h3>
@@ -184,19 +184,19 @@ export function InternalChatWorkspace() {
           <p className="mt-4 text-xs font-semibold text-[var(--text-muted)]">اختر محادثة لعرض الأعضاء والإعدادات.</p>
         ) : (
           <div className="mt-4 space-y-3">
-            <div className="rounded-lg border border-[#E5EEF0] bg-[#F8FEFF] p-3">
-              <div className="text-xs font-bold text-[#64748B]">الاسم</div>
-              <div className="mt-1 text-sm font-black text-[#0F172A]">{details.name || 'Internal chat'}</div>
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
+              <div className="text-xs font-bold text-[var(--text-muted)]">الاسم</div>
+              <div className="mt-1 text-sm font-black text-[var(--text)]">{details.name || 'Internal chat'}</div>
             </div>
 
-            <div className="rounded-lg border border-[#E5EEF0] bg-white p-3">
-              <div className="text-xs font-bold text-[#64748B]">نوع المحادثة</div>
-              <div className="mt-1 text-sm font-black text-[#0F172A]">{activeConversation?.type || 'group'}</div>
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3">
+              <div className="text-xs font-bold text-[var(--text-muted)]">نوع المحادثة</div>
+              <div className="mt-1 text-sm font-black text-[var(--text)]">{activeConversation?.type || 'group'}</div>
             </div>
 
-            <div className="rounded-lg border border-[#E5EEF0] bg-white p-3">
-              <div className="text-xs font-bold text-[#64748B]">الأعضاء</div>
-              <div className="mt-1 text-sm font-black text-[#0F172A]">{activeConversation?.users_count || activeConversation?.users?.length || 0}</div>
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3">
+              <div className="text-xs font-bold text-[var(--text-muted)]">الأعضاء</div>
+              <div className="mt-1 text-sm font-black text-[var(--text)]">{activeConversation?.users_count || activeConversation?.users?.length || 0}</div>
             </div>
           </div>
         )}

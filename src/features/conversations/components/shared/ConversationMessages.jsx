@@ -145,14 +145,14 @@ function getReactionOrigin(reaction = {}, message = {}) {
 
 function getReactionClassName(origin = 'unknown') {
   if (origin === 'customer') {
-    return 'border-[#BFDBFE] bg-[#EFF6FF] text-[#1D4ED8] shadow-[0_4px_14px_rgba(37,99,235,0.12)]'
+    return 'border-[#BFDBFE] bg-[#EFF6FF] dark:bg-[#172554] text-[#1D4ED8] shadow-[0_4px_14px_rgba(37,99,235,0.12)]'
   }
 
   if (origin === 'crm') {
-    return 'border-[#99F6E4] bg-[#ECFDF5] text-[#047857] shadow-[0_4px_14px_rgba(5,150,105,0.12)]'
+    return 'border-[#99F6E4] bg-[#ECFDF5] dark:bg-[#052e16] text-[#047857] shadow-[0_4px_14px_rgba(5,150,105,0.12)]'
   }
 
-  return 'border-[#E2E8F0] bg-white text-[#0F172A] shadow-sm'
+  return 'border-[var(--border)] bg-[var(--surface)] text-[var(--text)] shadow-sm'
 }
 
 function getReactionActorName(reaction = {}, message = {}, origin = 'unknown') {
@@ -256,7 +256,7 @@ function MessageReactionBadge({
         ? createPortal(
             <div
               dir="auto"
-              className="pointer-events-none fixed z-[10000] rounded-lg border border-[#D8E7EA] bg-white px-2 py-1 text-center text-[10px] font-black text-[#0F172A] shadow-2xl"
+              className="pointer-events-none fixed z-[10000] rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-center text-[10px] font-black text-[var(--text)] shadow-2xl"
               style={{
                 left: tooltipRect.left,
                 top: tooltipRect.top,
@@ -393,13 +393,13 @@ export function ConversationMessages({
   }
 
   return (
-    <div className="relative min-h-0 flex-1 bg-[#F8FEFF]">
+    <div className="relative min-h-0 flex-1 bg-[var(--surface-2)]">
       <div ref={scrollRef} onScroll={syncScrollState} className="min-h-0 h-full space-y-3 overflow-y-auto p-3">
         {hasMoreMessages && (
           <button
             type="button"
             onClick={onLoadMore}
-            className="mx-auto flex items-center gap-2 rounded-full border border-[#D9EEF0] bg-white px-3 py-1.5 text-xs font-bold text-[var(--text-muted)] hover:text-[#007A80]"
+            className="mx-auto flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-xs font-bold text-[var(--text-muted)] hover:text-[var(--brand-accent)]"
           >
             <RefreshCw size={13} />
             تحميل رسائل أقدم
@@ -407,7 +407,7 @@ export function ConversationMessages({
         )}
 
         {isLoadingMessages && (
-          <div className="rounded-xl border border-[#D9EEF0] bg-white p-3 text-center text-xs font-semibold text-[var(--text-muted)]">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-center text-xs font-semibold text-[var(--text-muted)]">
             جاري تحميل الرسائل...
           </div>
         )}
@@ -419,7 +419,7 @@ export function ConversationMessages({
         )}
 
         {!isLoadingMessages && messages.length === 0 && (
-          <div className="rounded-xl border border-dashed border-[#BEEFF2] bg-white/70 p-4 text-center text-xs font-semibold text-[var(--text-muted)]">
+          <div className="rounded-xl border border-dashed border-[var(--brand-accent)] bg-[var(--surface)]/70 p-4 text-center text-xs font-semibold text-[var(--text-muted)]">
             <div>{emptyMessage}</div>
             {emptyDescription ? <div className="mt-1 text-[11px] text-[var(--text-muted)]/85">{emptyDescription}</div> : null}
           </div>
@@ -453,12 +453,12 @@ export function ConversationMessages({
             >
               <div className="group relative max-w-[82%]">
                 {(supportsReply || supportsReactions) ? (
-                  <div className={`absolute top-1 z-10 hidden items-center gap-1 rounded-full border border-[#D8EEF2] bg-white/95 p-1 shadow-sm group-hover:flex ${outgoing ? '-start-16' : '-end-16'}`}>
+                  <div className={`absolute top-1 z-10 hidden items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--surface)]/95 p-1 shadow-sm group-hover:flex ${outgoing ? '-start-16' : '-end-16'}`}>
                     {supportsReply ? (
                       <button
                         type="button"
                         onClick={() => onReply?.(message)}
-                        className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A]"
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
                         title="رد"
                       >
                         <Reply size={13} />
@@ -468,7 +468,7 @@ export function ConversationMessages({
                       <button
                         type="button"
                         onClick={() => setReactionPickerId((current) => (current === String(message.id) ? '' : String(message.id)))}
-                        className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A]"
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
                         title="تفاعل"
                       >
                         <SmilePlus size={13} />
@@ -478,7 +478,7 @@ export function ConversationMessages({
                 ) : null}
 
                 {reactionPickerId === String(message.id) ? (
-                  <div className={`absolute -top-10 z-20 flex items-center gap-1 rounded-full border border-[#D8EEF2] bg-white p-1 shadow-lg ${outgoing ? 'end-0' : 'start-0'}`}>
+                  <div className={`absolute -top-10 z-20 flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--surface)] p-1 shadow-lg ${outgoing ? 'end-0' : 'start-0'}`}>
                     {QUICK_REACTIONS.map((emoji) => (
                       <button
                         key={emoji}
@@ -487,7 +487,7 @@ export function ConversationMessages({
                           onReact?.({ messageId: messageBackendId, reaction: emoji })
                           setReactionPickerId('')
                         }}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-full text-base hover:bg-[#F1F5F9]"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-full text-base hover:bg-[var(--surface-2)]"
                         title={emoji}
                       >
                         {emoji}
@@ -500,12 +500,12 @@ export function ConversationMessages({
                   className={`rounded-2xl px-3 py-2 text-sm shadow-sm transition-all duration-700 ${
                     outgoing
                       ? 'rounded-br-md text-white'
-                      : 'rounded-bl-md border border-[#E5F7F8] bg-white text-[var(--text)]'
+                      : 'rounded-bl-md border border-[var(--border)] bg-[var(--surface)] text-[var(--text)]'
                   } ${isHighlighted ? 'ring-2 ring-[#00C2CB] ring-offset-2 ring-offset-[#F8FEFF] shadow-[0_0_0_3px_rgba(0,194,203,0.12)]' : ''}`}
                   style={outgoing ? { backgroundColor: channelColor } : undefined}
                 >
                   {isHighlighted && (
-                    <div className={`mb-1 text-[10px] font-black ${outgoing ? 'text-white/85' : 'text-[#00878D]'}`}>
+                    <div className={`mb-1 text-[10px] font-black ${outgoing ? 'text-white/85' : 'text-[var(--brand-accent)]'}`}>
                       جديد
                     </div>
                   )}
@@ -515,7 +515,7 @@ export function ConversationMessages({
                       type="button"
                       onClick={() => scrollToMessage(replyTargetId)}
                       className={`mb-2 block w-full rounded-xl border px-2 py-1.5 text-start text-xs font-semibold transition hover:scale-[1.01] ${
-                      outgoing ? 'border-white/25 bg-white/15 text-white/85' : 'border-[#D8EEF2] bg-[#F8FEFF] text-[#475569]'
+                      outgoing ? 'border-white/25 bg-[var(--surface)]/15 text-white/85' : 'border-[var(--border)] bg-[var(--surface-2)] text-[var(--text-muted)]'
                     }`}
                       title="الانتقال للرسالة الأصلية"
                     >
@@ -551,22 +551,22 @@ export function ConversationMessages({
                 ) : null}
 
                 {!outgoing && dateTimeLabel ? (
-                  <div className="mt-1.5 flex items-center justify-start text-[10px] font-semibold text-[#64748B]">
+                  <div className="mt-1.5 flex items-center justify-start text-[10px] font-semibold text-[var(--text-muted)]">
                     <span>{dateTimeLabel}</span>
                   </div>
                 ) : null}
 
                 {showOutgoingMeta ? (
-                  <div className="mt-1.5 flex items-center justify-end gap-2 text-[10px] font-semibold text-[#475569]">
+                  <div className="mt-1.5 flex items-center justify-end gap-2 text-[10px] font-semibold text-[var(--text-muted)]">
                     {senderName ? <span className="max-w-[220px] truncate">{senderName}</span> : null}
-                    {dateTimeLabel ? <span className="text-[#64748B]">{dateTimeLabel}</span> : null}
+                    {dateTimeLabel ? <span className="text-[var(--text-muted)]">{dateTimeLabel}</span> : null}
                     {statusLabel ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-[#DBEAFE] bg-[#F8FBFF] px-1.5 py-0.5 font-black text-[#0F172A]">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-[#DBEAFE] bg-[#F8FBFF] dark:bg-[#172554] px-1.5 py-0.5 font-black text-[var(--text)]">
                         <MessageStatus status={message.status} />
                         {statusLabel}
                       </span>
                     ) : (
-                      <span className="inline-flex items-center rounded-full border border-[#E2E8F0] bg-white px-1.5 py-0.5 text-[#475569]">
+                      <span className="inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--surface)] px-1.5 py-0.5 text-[var(--text-muted)]">
                         <MessageStatus status={message.status} />
                       </span>
                     )}
@@ -582,7 +582,7 @@ export function ConversationMessages({
         <button
           type="button"
           onClick={() => scrollToBottom('smooth')}
-          className="absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1 rounded-full border border-[#CFE8EB] bg-white/95 px-3 py-1.5 text-xs font-black text-[#007A80] shadow-md backdrop-blur hover:bg-white"
+          className="absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--surface)]/95 px-3 py-1.5 text-xs font-black text-[var(--brand-accent)] shadow-md backdrop-blur hover:bg-[var(--surface)]"
           title="النزول لآخر رسالة"
         >
           <ArrowDown size={13} />

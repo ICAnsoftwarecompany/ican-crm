@@ -50,15 +50,15 @@ function ChannelUnreadBadge({ count, active, color = 'messenger' }) {
 
 function ConversationChannelTabs({ activeChannel, onChange, unreadCounts = {} }) {
   return (
-    <div className="mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-[#E5EEF0] bg-white p-2 shadow-sm">
+    <div className="mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-sm">
       <button
         type="button"
         onClick={() => onChange('messenger')}
         className={[
           'inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-black transition',
           activeChannel === 'messenger'
-            ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]'
-            : 'border-[#E5EEF0] bg-white text-[#64748B] hover:bg-[#F8FEFF]',
+            ? 'border-[#00C2CB] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]'
+            : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-2)]',
         ].join(' ')}
       >
         <MessengerLogoIcon size={20} />
@@ -71,8 +71,8 @@ function ConversationChannelTabs({ activeChannel, onChange, unreadCounts = {} })
         className={[
           'inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-black transition',
           activeChannel === 'gmail'
-            ? 'border-[#D93025] bg-[#FCE8E6] text-[#B3261E]'
-            : 'border-[#E5EEF0] bg-white text-[#64748B] hover:bg-[#FFFBFA]',
+            ? 'border-[#D93025] bg-[#FCE8E6] text-[#B3261E] dark:bg-[#3b2024] dark:text-[#fca5a5]'
+            : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-2)]',
         ].join(' ')}
       >
         <GmailLogoIcon size={20} />
@@ -85,8 +85,8 @@ function ConversationChannelTabs({ activeChannel, onChange, unreadCounts = {} })
         className={[
           'inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-black transition',
           activeChannel === 'whatsapp'
-            ? 'border-[#25D366] bg-[#E9FFF2] text-[#087D3E]'
-            : 'border-[#E5EEF0] bg-white text-[#64748B] hover:bg-[#F0FFF7]',
+            ? 'border-[#25D366] bg-[#E9FFF2] text-[#087D3E] dark:bg-[#153a2a] dark:text-[#86efac]'
+            : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-2)]',
         ].join(' ')}
       >
         <WhatsappLogoIcon size={20} />

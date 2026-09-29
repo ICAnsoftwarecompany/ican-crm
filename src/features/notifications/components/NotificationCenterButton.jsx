@@ -19,8 +19,8 @@ export function NotificationCenterButton() {
         className={cn(
           'relative h-8 w-8 inline-flex items-center justify-center rounded-lg border transition-colors',
           open
-            ? 'border-[#0F766E] bg-[#ECFDF5] text-[#0F766E]'
-            : 'border-[#E5E7EB] bg-white text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#111827]'
+            ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]'
+            : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
         )}
         aria-label="مركز التنبيهات"
         title="مركز التنبيهات"

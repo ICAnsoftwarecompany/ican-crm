@@ -124,7 +124,7 @@ function MessengerVoiceNoteAttachment({ attachment, outgoing = false }) {
         'mt-2 flex min-w-[250px] max-w-full items-center gap-2 rounded-full border px-2 py-2 text-left shadow-sm',
         outgoing
           ? 'border-[#B8D8FF] bg-[#E8F2FF] text-[#0A4EA3]'
-          : 'border-[#D8DEE7] bg-[#F1F5F9] text-[#1F2937]',
+          : 'border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)]',
       ].join(' ')}
     >
       <audio
@@ -144,7 +144,7 @@ function MessengerVoiceNoteAttachment({ attachment, outgoing = false }) {
         onClick={togglePlayback}
         className={[
           'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition',
-          outgoing ? 'bg-[#0A7CFF] text-white hover:bg-[#0869D8]' : 'bg-white text-[#111827] hover:bg-[#E2E8F0]',
+          outgoing ? 'bg-[#0A7CFF] text-white hover:bg-[#0869D8]' : 'bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-2)]',
         ].join(' ')}
         title={isPlaying ? '\u0625\u064a\u0642\u0627\u0641' : '\u062a\u0634\u063a\u064a\u0644'}
       >
@@ -173,7 +173,7 @@ function MessengerVoiceNoteAttachment({ attachment, outgoing = false }) {
           onClick={() => setShowSpeedMenu((current) => !current)}
           className={[
             'inline-flex h-8 min-w-9 items-center justify-center gap-1 rounded-full px-2 text-[10px] font-black transition',
-            outgoing ? 'bg-white/80 text-[#0A4EA3] hover:bg-white' : 'bg-white text-[#1F2937] hover:bg-[#E2E8F0]',
+            outgoing ? 'bg-[var(--surface)] text-[#0A4EA3] hover:bg-[var(--surface)]' : 'bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-2)]',
           ].join(' ')}
           title="\u062a\u0633\u0631\u064a\u0639 \u0623\u0648 \u0625\u0628\u0637\u0627\u0621 \u0627\u0644\u0635\u0648\u062a"
         >
@@ -184,7 +184,7 @@ function MessengerVoiceNoteAttachment({ attachment, outgoing = false }) {
           ? createPortal(
               <div
                 dir="ltr"
-                className="fixed z-[10000] flex flex-col rounded-xl border border-[#D8E7EA] bg-white p-1 text-left shadow-2xl"
+                className="fixed z-[10000] flex flex-col rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 text-left shadow-2xl"
                 style={{
                   left: speedMenuRect.left,
                   top: speedMenuRect.top,
@@ -200,8 +200,8 @@ function MessengerVoiceNoteAttachment({ attachment, outgoing = false }) {
                       setShowSpeedMenu(false)
                     }}
                     className={[
-                      'rounded-lg px-2 py-1.5 text-start text-[11px] font-black transition hover:bg-[#E8F9FA]',
-                      playbackRate === speed ? 'text-[#007A80]' : 'text-[#334155]',
+                      'rounded-lg px-2 py-1.5 text-start text-[11px] font-black transition hover:bg-[var(--brand-accent-soft)]',
+                      playbackRate === speed ? 'text-[var(--brand-accent)]' : 'text-[var(--text)]',
                     ].join(' ')}
                   >
                     {speed}x
@@ -266,7 +266,7 @@ export function MessageAttachments({ attachments = [], outgoing = false, onOpenM
               >
                 <video src={url} className="max-h-64 w-full bg-black" muted />
                 <span className="absolute inset-0 flex items-center justify-center">
-                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-[#0F172A] shadow-lg">
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[var(--surface)]/90 text-[var(--text)] shadow-lg">
                     <Play size={20} />
                   </span>
                 </span>
@@ -287,8 +287,8 @@ export function MessageAttachments({ attachments = [], outgoing = false, onOpenM
             rel="noreferrer"
             className={`mt-2 flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold ${
               outgoing
-                ? 'border-white/30 bg-white/15 text-white'
-                : 'border-[#D8EEF2] bg-[#F8FEFF] text-[#334155]'
+                ? 'border-white/30 bg-[var(--surface)]/15 text-white'
+                : 'border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)]'
             }`}
           >
             {type === 'image' ? <ImageIcon size={15} /> : type === 'video' ? <Play size={15} /> : <FileText size={15} />}

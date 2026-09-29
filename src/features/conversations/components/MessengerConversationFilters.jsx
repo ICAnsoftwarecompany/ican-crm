@@ -95,14 +95,14 @@ function FilterButton({ active, icon: Icon, label, count, onClick }) {
       className={[
         'inline-flex h-8 items-center gap-1 rounded-lg border px-2 text-[11px] font-black transition',
         active
-          ? 'border-[#00A8B0] bg-[#E8F9FA] text-[#007A80]'
-          : 'border-[#D8E7EA] bg-white text-[#64748B] hover:border-[#BEEFF2] hover:bg-[#F8FEFF]',
+          ? 'border-[#00A8B0] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]'
+          : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:border-[var(--brand-accent)] hover:bg-[var(--surface-2)]',
       ].join(' ')}
     >
       <Icon size={13} />
       <span>{label}</span>
       {typeof count === 'number' ? (
-        <span className={active ? 'text-[#007A80]' : 'text-[#94A3B8]'}>{count}</span>
+        <span className={active ? 'text-[var(--brand-accent)]' : 'text-[var(--text-muted)]'}>{count}</span>
       ) : null}
     </button>
   )
@@ -126,7 +126,7 @@ export function MessengerConversationFilters({
   const reset = () => onChange?.(DEFAULT_MESSENGER_CONVERSATION_FILTERS)
 
   return (
-    <div className={`space-y-2 border-b border-[#EEF2F4] bg-white p-3 ${className}`}>
+    <div className={`space-y-2 border-b border-[var(--border)] bg-[var(--surface)] p-3 ${className}`}>
       <div className="flex flex-wrap items-center gap-2">
         <FilterButton
           active={value.unreadOnly}
@@ -153,7 +153,7 @@ export function MessengerConversationFilters({
           <button
             type="button"
             onClick={reset}
-            className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#E5EEF0] bg-[#F8FAFC] px-2 text-[11px] font-black text-[#64748B] transition hover:bg-white hover:text-[#0F172A]"
+            className="inline-flex h-8 items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-2 text-[11px] font-black text-[var(--text-muted)] transition hover:bg-[var(--surface)] hover:text-[var(--text)]"
           >
             <RotateCcw size={13} />
             مسح
@@ -163,11 +163,11 @@ export function MessengerConversationFilters({
 
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
         <label className="relative block">
-          <UserRound size={14} className="pointer-events-none absolute start-2.5 top-1/2 -translate-y-1/2 text-[#64748B]" />
+          <UserRound size={14} className="pointer-events-none absolute start-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
           <select
             value={value.assignedUserId}
             onChange={(event) => update({ assignedUserId: event.target.value })}
-            className="h-9 w-full rounded-lg border border-[#D8E7EA] bg-[#FBFEFF] ps-8 pe-2 text-xs font-black text-[#0F172A] outline-none transition focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+            className="h-9 w-full rounded-lg border border-[var(--border)] bg-[var(--surface-2)] ps-8 pe-2 text-xs font-black text-[var(--text)] outline-none transition focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
           >
             <option value="all">كل المستخدمين</option>
             {assignedUsers.map((user) => (
@@ -175,7 +175,7 @@ export function MessengerConversationFilters({
             ))}
           </select>
         </label>
-        <span className="rounded-full bg-[#F1F5F9] px-2 py-1 text-[10px] font-black text-[#64748B]">
+        <span className="rounded-full bg-[var(--surface-2)] px-2 py-1 text-[10px] font-black text-[var(--text-muted)]">
           {resultCount}/{conversations.length}
         </span>
       </div>

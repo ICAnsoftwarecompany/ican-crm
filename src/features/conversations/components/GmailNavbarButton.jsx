@@ -26,8 +26,8 @@ export function GmailNavbarButton({ active = false, onClick }) {
       className={cn(
         'relative h-8 w-8 inline-flex items-center justify-center rounded-lg border transition-colors',
         active
-          ? 'border-[#D93025] bg-[#FCE8E6]'
-          : 'border-[#E5E7EB] bg-white hover:bg-[#FCE8E6]'
+          ? 'border-[#D93025] bg-[#FCE8E6] dark:bg-[#3b2024]'
+          : 'border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-2)]'
       )}
       aria-label="محادثات Gmail"
       title="فتح Gmail السريع"
@@ -45,7 +45,7 @@ export function GmailNavbarButton({ active = false, onClick }) {
 export function GmailLogoIcon({ size = 22 }) {
   return (
     <span
-      className="inline-flex shrink-0 items-center justify-center rounded-md bg-white"
+      className="inline-flex shrink-0 items-center justify-center rounded-md bg-[var(--surface)]"
       style={{ width: size, height: size }}
       aria-hidden="true"
     >

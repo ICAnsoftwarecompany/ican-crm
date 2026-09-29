@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { CAMPAIGN_NAV_ITEMS, platformHasCapability, userHasCampaignPermission } from '../../../features/campaigns'
+import { WorkspaceSubSidebarFrame } from '../../../shared/components/layout/WorkspaceSubSidebarFrame'
 import { cn } from '../../../shared/utils/cn'
 
 const NAV_ICONS = {
@@ -25,7 +26,7 @@ const NAV_ICONS = {
   billing: WalletCards,
 }
 
-export function CampaignSubSidebar({ platforms, activePlatformId, permissions, connectionByPlatform, onNavigate, collapsed = false, onToggleCollapse }) {
+export function CampaignSubSidebar({ platforms, activePlatformId, permissions, connectionByPlatform, onNavigate, collapsed = false, onToggleCollapse, framed = true }) {
   const { t, i18n } = useTranslation()
   const [expanded, setExpanded] = useState(activePlatformId || platforms[0]?.id)
   const isRtl = i18n.dir() === 'rtl'
@@ -37,7 +38,7 @@ export function CampaignSubSidebar({ platforms, activePlatformId, permissions, c
   ])), [permissions, platforms])
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden border-e border-[var(--border)] bg-[var(--surface)]">
+    <WorkspaceSubSidebarFrame framed={framed}>
       <div className={cn('border-b border-[var(--border)] p-3', collapsed && 'px-2')}>
         <div className={cn('flex items-center gap-3', collapsed && 'flex-col justify-center gap-2')}>
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#E8F9FA] text-[#007A80] dark:bg-cyan-950 dark:text-cyan-200">
@@ -53,7 +54,7 @@ export function CampaignSubSidebar({ platforms, activePlatformId, permissions, c
         </div>
       </div>
 
-      <nav className={cn('scrollbar-thin flex-1 overflow-y-auto', collapsed ? 'space-y-3 px-2 py-10' : 'space-y-5 p-3')} aria-label={t('campaigns.center.platformNavigation')}>
+      <nav className={cn('scrollbar-sidebar flex-1 overflow-y-auto', collapsed ? 'space-y-3 px-2 py-10' : 'space-y-5 p-3')} aria-label={t('campaigns.center.platformNavigation')}>
         <section className="space-y-1">
           {!collapsed && <h3 className="px-2 text-[11px] font-bold text-[var(--text-light)]">{t('campaigns.center.platforms')}</h3>}
           {platforms.map((platform) => {
@@ -112,6 +113,6 @@ export function CampaignSubSidebar({ platforms, activePlatformId, permissions, c
           {!collapsed && <span className="truncate">{t('campaigns.center.integrationSettings')}</span>}
         </NavLink>
       </div>
-    </div>
+    </WorkspaceSubSidebarFrame>
   )
 }

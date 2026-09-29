@@ -204,7 +204,7 @@ export function FloatingCustomerChat({
       <div
         role="dialog"
         aria-label={`${channelLabel} محادثة العميل`}
-        className="pointer-events-auto fixed overflow-hidden rounded-2xl border border-[#BEEFF2] bg-[var(--surface)] shadow-2xl"
+        className="pointer-events-auto fixed overflow-hidden rounded-2xl border border-[var(--brand-accent)] bg-[var(--surface)] shadow-2xl"
         onPointerDownCapture={onFocus}
         style={{
           left: 0,

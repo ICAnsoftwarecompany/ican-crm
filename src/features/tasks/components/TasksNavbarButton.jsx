@@ -18,13 +18,13 @@ export function TasksNavbarButton({ active = false, onClick }) {
       className={cn(
         'relative h-8 w-8 inline-flex items-center justify-center rounded-lg border transition-colors',
         active
-          ? 'border-[#00C2CB] bg-[#E8F9FA]'
-          : 'border-[#E5E7EB] bg-white hover:bg-[#E8F9FA]'
+          ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)]'
+          : 'border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-2)]'
       )}
       aria-label={t('tasks.navbarButton.ariaLabel')}
       title={t('tasks.navbarButton.title')}
     >
-      <ListTodo size={16} className="text-[#0F172A]" />
+      <ListTodo size={16} className="text-[var(--text)]" />
       {unreadCount > 0 && (
         <span className="absolute -top-1.5 -end-1.5 min-w-5 h-5 rounded-full bg-[#EF4444] px-1 text-[10px] font-black leading-5 text-white shadow-sm">
           {unreadCount > 99 ? '99+' : unreadCount}

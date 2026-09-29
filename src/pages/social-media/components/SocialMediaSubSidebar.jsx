@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronRight, Gauge, Users, Image as ImageIcon, CalendarRange, BarChart3, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { SOCIAL_NAV_ITEMS } from '../../../features/social-media/config/socialCapabilities'
 import { getVisibleSocialPlatforms } from '../../../features/social-media/config/socialPlatformsRegistry'
+import { WorkspaceSubSidebarFrame } from '../../../shared/components/layout/WorkspaceSubSidebarFrame'
 import { cn } from '../../../shared/utils/cn'
 
 const NAV_ICONS = { overview: Gauge, profiles: Users, content: ImageIcon, planner: CalendarRange, analytics: BarChart3 }
@@ -14,7 +15,7 @@ const NAV_ICONS = { overview: Gauge, profiles: Users, content: ImageIcon, planne
  * (every registered platform shows here regardless of `available` — an
  * unavailable one still routes, just to its "not connected yet" page).
  */
-export function SocialMediaSubSidebar({ enabledModules, collapsed = false, onToggleCollapse, onNavigate }) {
+export function SocialMediaSubSidebar({ enabledModules, collapsed = false, onToggleCollapse, onNavigate, framed = true }) {
   const { t, i18n } = useTranslation()
   const isRtl = i18n.dir() === 'rtl'
   const CollapseIcon = isRtl ? ChevronLeft : ChevronRight
@@ -30,7 +31,7 @@ export function SocialMediaSubSidebar({ enabledModules, collapsed = false, onTog
     )
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden border-e border-[var(--border)] bg-[var(--surface)]">
+    <WorkspaceSubSidebarFrame framed={framed}>
       <div className={cn('flex items-center border-b border-[var(--border)] p-3', collapsed ? 'justify-center px-2' : 'justify-between')}>
         {!collapsed && <h2 className="truncate text-sm font-bold text-[var(--text)]">{t('socialMedia.center.title')}</h2>}
         <button
@@ -43,7 +44,7 @@ export function SocialMediaSubSidebar({ enabledModules, collapsed = false, onTog
         </button>
       </div>
 
-      <nav className="scrollbar-thin flex-1 space-y-5 overflow-y-auto p-3" aria-label={t('socialMedia.center.navigation')}>
+      <nav className="scrollbar-sidebar flex-1 space-y-5 overflow-y-auto p-3" aria-label={t('socialMedia.center.navigation')}>
         <section className="space-y-1">
           {!collapsed && <h3 className="px-2 text-[11px] font-bold text-[var(--text-light)]">{t('socialMedia.center.overviewGroup')}</h3>}
           {SOCIAL_NAV_ITEMS.map((item) => {
@@ -86,6 +87,6 @@ export function SocialMediaSubSidebar({ enabledModules, collapsed = false, onTog
           })}
         </section>
       </nav>
-    </div>
+    </WorkspaceSubSidebarFrame>
   )
 }

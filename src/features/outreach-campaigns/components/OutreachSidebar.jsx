@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { CalendarDays, ChartNoAxesCombined, List, Mail, MessageCircle, PanelLeftClose, PanelLeftOpen, Plus, Radio, Workflow } from 'lucide-react'
+import { WorkspaceSubSidebarFrame } from '../../../shared/components/layout/WorkspaceSubSidebarFrame'
 import { cn } from '../../../shared/utils/cn'
 import { CAMPAIGN_CHANNEL_LIST } from '../config/campaignChannels'
 
@@ -33,15 +34,15 @@ function SidebarLink({ path, label, icon: Icon, end, onNavigate, disabled = fals
   )
 }
 
-export function OutreachSidebar({ onNavigate, collapsed = false, onToggleCollapse }) {
+export function OutreachSidebar({ onNavigate, collapsed = false, onToggleCollapse, framed = true }) {
   const { t } = useTranslation()
   return (
-    <aside className="flex h-full min-h-0 flex-col border-e border-[var(--border)] bg-[var(--surface)]">
+    <WorkspaceSubSidebarFrame framed={framed}>
       <div className={cn('flex items-center border-b border-[var(--border)] py-4', collapsed ? 'justify-center px-2' : 'justify-between px-4')}>
         {!collapsed && <h2 className="text-sm font-bold text-[var(--text)]">{t('outreachCampaigns.pageTitle')}</h2>}
         {onToggleCollapse && <button type="button" onClick={onToggleCollapse} title={t(collapsed ? 'outreachCampaigns.navigation.expandNavigation' : 'outreachCampaigns.navigation.collapseNavigation')} aria-label={t(collapsed ? 'outreachCampaigns.navigation.expandNavigation' : 'outreachCampaigns.navigation.collapseNavigation')} className="flex h-8 w-8 items-center justify-center rounded-md text-[var(--text-muted)] hover:bg-[var(--surface-2)]">{collapsed ? <PanelLeftOpen size={17} /> : <PanelLeftClose size={17} />}</button>}
       </div>
-      <nav className={cn('min-h-0 flex-1 space-y-5 overflow-y-auto', collapsed ? 'p-2' : 'p-3')} aria-label={t('outreachCampaigns.pageTitle')}>
+      <nav className={cn('scrollbar-sidebar min-h-0 flex-1 space-y-5 overflow-y-auto', collapsed ? 'p-2' : 'p-3')} aria-label={t('outreachCampaigns.pageTitle')}>
         <section className="space-y-1">
           {primary.map((item) => <SidebarLink key={item.key} {...item} label={t(`outreachCampaigns.navigation.${item.key}`)} onNavigate={onNavigate} collapsed={collapsed} />)}
         </section>
@@ -56,6 +57,6 @@ export function OutreachSidebar({ onNavigate, collapsed = false, onToggleCollaps
           {tools.map((item) => <SidebarLink key={item.key} {...item} label={t(`outreachCampaigns.navigation.${item.key}`)} onNavigate={onNavigate} collapsed={collapsed} />)}
         </section>
       </nav>
-    </aside>
+    </WorkspaceSubSidebarFrame>
   )
 }

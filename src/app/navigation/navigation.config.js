@@ -288,14 +288,14 @@ export const navigationConfig = [
     id: 'automation',
     type: 'section',
     labelKey: 'nav.sections.automation',
-    hideLabel: true,
     module: 'automation',
     items: [
       {
         id: 'automation-center',
-        labelKey: 'nav.automation',
+        labelKey: 'nav.automationOverview',
         icon: Workflow,
         path: '/automation',
+        activePatterns: ['/automation', '/automation/*'],
       },
     ],
   },

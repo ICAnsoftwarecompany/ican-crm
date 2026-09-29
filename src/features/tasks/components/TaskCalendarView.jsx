@@ -108,20 +108,20 @@ export function TaskCalendarView({ tasks = [], onOpenTask, onCreateAt }) {
   }
 
   return (
-    <div className="rounded-2xl border border-[#D7EEF0] bg-white p-3">
+    <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3">
       <header className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#E8F9FA] text-[#007A80]"><CalendarDays size={16} /></span>
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]"><CalendarDays size={16} /></span>
           <div>
-            <h3 className="text-sm font-black text-[#0F172A]">{t('tasks.calendar.title')}</h3>
-            <p className="text-xs font-semibold text-[#64748B]">{formatHeaderDate(focusDate, mode, i18n.language)}</p>
+            <h3 className="text-sm font-black text-[var(--text)]">{t('tasks.calendar.title')}</h3>
+            <p className="text-xs font-semibold text-[var(--text-muted)]">{formatHeaderDate(focusDate, mode, i18n.language)}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-1">
-          <button type="button" onClick={() => setFocusDate(new Date())} className="h-8 rounded-lg border border-[#D7EEF0] bg-white px-2 text-xs font-black text-[#007A80]">{t('tasks.calendar.todayButton')}</button>
-          <button type="button" onClick={() => moveRange(-1)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#D7EEF0] bg-white text-[#007A80]"><ChevronRight size={14} /></button>
-          <button type="button" onClick={() => moveRange(1)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#D7EEF0] bg-white text-[#007A80]"><ChevronLeft size={14} /></button>
+          <button type="button" onClick={() => setFocusDate(new Date())} className="h-8 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-black text-[var(--brand-accent)]">{t('tasks.calendar.todayButton')}</button>
+          <button type="button" onClick={() => moveRange(-1)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--brand-accent)]"><ChevronRight size={14} /></button>
+          <button type="button" onClick={() => moveRange(1)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--brand-accent)]"><ChevronLeft size={14} /></button>
         </div>
       </header>
 
@@ -133,7 +133,7 @@ export function TaskCalendarView({ tasks = [], onOpenTask, onCreateAt }) {
             onClick={() => setMode(item)}
             className={[
               'h-8 rounded-lg border px-2 text-xs font-black',
-              mode === item ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]' : 'border-[#D7EEF0] bg-white text-[#64748B]',
+              mode === item ? 'border-[#00C2CB] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)]',
             ].join(' ')}
           >
             {item === 'month' ? t('tasks.calendar.month') : item === 'week' ? t('tasks.calendar.week') : t('tasks.calendar.day')}
@@ -143,15 +143,15 @@ export function TaskCalendarView({ tasks = [], onOpenTask, onCreateAt }) {
 
       <div className="space-y-2">
         {groupedByDay.length ? groupedByDay.map((group) => (
-          <section key={group.date.toISOString()} className="rounded-xl border border-[#E5EEF0] bg-[#F8FEFF] p-2">
+          <section key={group.date.toISOString()} className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-2">
             <div className="mb-2 flex items-center justify-between">
-              <h4 className="text-xs font-black text-[#0F172A]">
+              <h4 className="text-xs font-black text-[var(--text)]">
                 {formatDateWithLocale(group.date, i18n.language, { weekday: 'long', day: 'numeric', month: 'long' })}
               </h4>
               <button
                 type="button"
                 onClick={() => onCreateAt?.(group.date)}
-                className="rounded-lg border border-[#D7EEF0] bg-white px-2 py-1 text-[10px] font-black text-[#007A80]"
+                className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-[10px] font-black text-[var(--brand-accent)]"
               >
                 {t('tasks.calendar.addTaskHere')}
               </button>
@@ -169,14 +169,14 @@ export function TaskCalendarView({ tasks = [], onOpenTask, onCreateAt }) {
                     key={task.id || `${task.title}-${date.toISOString()}`}
                     type="button"
                     onClick={() => onOpenTask?.(task.id)}
-                    className="flex w-full items-center justify-between rounded-lg border border-[#D7EEF0] bg-white px-2 py-1.5 text-start"
+                    className="flex w-full items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 text-start"
                   >
                     <span className="flex min-w-0 items-center gap-1.5">
-                      <TypeIcon size={13} className="text-[#007A80]" />
-                      <span className="truncate text-xs font-black text-[#0F172A]">{getTaskTitle(task, t)}</span>
+                      <TypeIcon size={13} className="text-[var(--brand-accent)]" />
+                      <span className="truncate text-xs font-black text-[var(--text)]">{getTaskTitle(task, t)}</span>
                     </span>
                     <span className="flex items-center gap-1">
-                      <span className="text-[10px] font-bold text-[#64748B]">{time}</span>
+                      <span className="text-[10px] font-bold text-[var(--text-muted)]">{time}</span>
                       <span className={`rounded-full border px-1.5 py-0.5 text-[10px] font-black ${priorityMeta.className}`}>{priorityMeta.label}</span>
                     </span>
                   </button>
@@ -185,7 +185,7 @@ export function TaskCalendarView({ tasks = [], onOpenTask, onCreateAt }) {
             </div>
           </section>
         )) : (
-          <div className="rounded-xl border border-dashed border-[#D7EEF0] bg-[#F8FEFF] p-3 text-center text-xs font-semibold text-[#64748B]">
+          <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface-2)] p-3 text-center text-xs font-semibold text-[var(--text-muted)]">
             {t('tasks.calendar.noTasksInRange')}
           </div>
         )}

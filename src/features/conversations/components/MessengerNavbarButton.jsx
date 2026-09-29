@@ -22,8 +22,8 @@ export function MessengerNavbarButton({ active = false, onClick }) {
       className={cn(
         'relative h-8 w-8 inline-flex items-center justify-center rounded-lg border transition-colors',
         active
-          ? 'border-[#00C2CB] bg-[#E8F9FA]'
-          : 'border-[#E5E7EB] bg-white hover:bg-[#E8F9FA]'
+          ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)]'
+          : 'border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-2)]'
       )}
       aria-label="محادثات ماسنجر"
       title="فتح شات ماسنجر السريع"

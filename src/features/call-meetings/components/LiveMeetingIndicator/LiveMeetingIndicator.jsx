@@ -140,7 +140,7 @@ export function LiveMeetingIndicator() {
         onFocus={showPreview}
         onBlur={() => setPreviewPosition(null)}
         onClick={handleOpenLiveMeetingDrawer}
-        className="relative inline-flex h-8 items-center gap-1.5 rounded-lg border border-[#7FDDE1] bg-[#F3FDFF] px-2 text-xs font-black text-[#007A80] transition-colors hover:bg-[#E8F9FA]"
+        className="relative inline-flex h-8 items-center gap-1.5 rounded-lg border border-[var(--brand-accent)] bg-[var(--brand-accent-soft)] px-2 text-xs font-black text-[var(--brand-accent)] transition-colors hover:bg-[var(--surface-2)]"
         aria-label={t('callMeetings.liveIndicator.ariaLabel')}
       >
         <span className="relative flex size-4 items-center justify-center">
@@ -149,7 +149,7 @@ export function LiveMeetingIndicator() {
         </span>
         <span className="hidden lg:inline">{t('callMeetings.liveIndicator.live')}</span>
         {liveMeetings.length > 1 ? (
-          <span className="rounded-full bg-white px-1.5 py-0.5 text-[10px] text-[#0F766E]">
+          <span className="rounded-full bg-[var(--surface)] px-1.5 py-0.5 text-[10px] text-[var(--brand-accent)]">
             {liveMeetings.length}
           </span>
         ) : null}

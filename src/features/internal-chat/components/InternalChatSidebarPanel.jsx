@@ -15,7 +15,7 @@ function HeaderActions({ onOpenPage, onClose }) {
       <button
         type="button"
         onClick={onOpenPage}
-        className="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-[#D8E7EA] bg-white px-2 text-xs font-black text-[#00878D] transition-colors hover:bg-[#E8F9FA]"
+        className="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-black text-[var(--brand-accent)] transition-colors hover:bg-[var(--brand-accent-soft)]"
       >
         <ExternalLink size={13} />
         فتح
@@ -23,7 +23,7 @@ function HeaderActions({ onOpenPage, onClose }) {
       <button
         type="button"
         onClick={onClose}
-        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#E5E7EB] bg-white text-[#64748B] transition-colors hover:bg-[#F8FAFC] hover:text-[#111827]"
+        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
       >
         <X size={15} />
       </button>
@@ -116,33 +116,33 @@ export function InternalChatSidebarPanel({ open, onClose }) {
 
   return (
     <aside
-      className="fixed end-0 top-12 bottom-0 z-30 w-[min(520px,calc(100vw-72px))] border-s border-[#DDECEF] bg-white shadow-[-14px_0_30px_rgba(15,23,42,0.08)] transition-transform duration-300"
+      className="fixed end-0 top-12 bottom-0 z-30 w-[min(520px,calc(100vw-72px))] border-s border-[var(--border)] bg-[var(--surface)] shadow-[-14px_0_30px_rgba(15,23,42,0.08)] transition-transform duration-300"
       style={{ transform: open ? 'translateX(0)' : `translateX(${isRtl ? '-100%' : '100%'})` }}
       aria-hidden={!open}
     >
       <div className="grid h-full min-h-0 grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)]">
-        <div className="min-h-0 border-b border-[#E5EEF0] md:border-b-0 md:border-e">
-          <header className="border-b border-[#E5EEF0] bg-[#F8FEFF] p-3">
+        <div className="min-h-0 border-b border-[var(--border)] md:border-b-0 md:border-e">
+          <header className="border-b border-[var(--border)] bg-[var(--surface-2)] p-3">
             <div className="flex items-center justify-between gap-2">
               <div className="flex min-w-0 items-center gap-2">
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#E8F9FA] text-[#00878D]">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]">
                   <MessagesSquare size={18} />
                 </span>
                 <div className="min-w-0">
-                  <h2 className="truncate text-sm font-black text-[#111827]">الشات الداخلي</h2>
-                  <p className="truncate text-xs font-semibold text-[#64748B]">{conversations.length} محادثة</p>
+                  <h2 className="truncate text-sm font-black text-[var(--text)]">الشات الداخلي</h2>
+                  <p className="truncate text-xs font-semibold text-[var(--text-muted)]">{conversations.length} محادثة</p>
                 </div>
               </div>
               <HeaderActions onOpenPage={() => { navigate('/team-chat'); onClose?.() }} onClose={onClose} />
             </div>
 
             <label className="relative mt-3 block">
-              <Search size={14} className="pointer-events-none absolute start-2.5 top-2.5 text-[#94A3B8]" />
+              <Search size={14} className="pointer-events-none absolute start-2.5 top-2.5 text-[var(--text-muted)]" />
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="ابحث..."
-                className="h-9 w-full rounded-lg border border-[#D7EEF0] bg-white ps-8 pe-3 text-xs font-semibold text-[#0F172A] outline-none focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]"
+                className="h-9 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] ps-8 pe-3 text-xs font-semibold text-[var(--text)] outline-none focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]"
               />
             </label>
           </header>
@@ -158,23 +158,23 @@ export function InternalChatSidebarPanel({ open, onClose }) {
                   onClick={() => setSelectedConversationId(id)}
                   className={[
                     'mb-2 w-full rounded-xl border p-2 text-start transition-colors',
-                    isActive ? 'border-[#7FDDE1] bg-[#F3FDFF]' : 'border-[#E5EEF0] bg-white hover:bg-[#F8FEFF]',
+                    isActive ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)]' : 'border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-2)]',
                   ].join(' ')}
                 >
                   <div className="flex items-start gap-2">
-                    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#E8F9FA] text-[#007A80]">
+                    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]">
                       <UserRound size={14} />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center justify-between gap-2">
-                        <span className="truncate text-xs font-black text-[#0F172A]">{conversation?.display_name || conversation?.name || 'Conversation'}</span>
+                        <span className="truncate text-xs font-black text-[var(--text)]">{conversation?.display_name || conversation?.name || 'Conversation'}</span>
                         {conversation?.unread_count > 0 ? (
                           <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[10px] font-black text-white">
                             {conversation.unread_count > 99 ? '99+' : conversation.unread_count}
                           </span>
                         ) : null}
                       </span>
-                      <span className="mt-1 block truncate text-[10px] font-semibold text-[#64748B]">{getLastMessagePreview(conversation)}</span>
+                      <span className="mt-1 block truncate text-[10px] font-semibold text-[var(--text-muted)]">{getLastMessagePreview(conversation)}</span>
                     </span>
                   </div>
                 </button>

@@ -4,6 +4,13 @@ export default {
   "activeUsers": "Active users",
   "active": "Active",
   "more": "More",
+  "aiActive": "AI active",
+  "profile": {
+    "openMenu": "Open account menu",
+    "account": "Account",
+    "username": "Username",
+    "email": "Email"
+  },
   "notFoundTitle": "Page not found",
   "notFoundDescription": "This address is unavailable or has changed.",
   "backToLeads": "Back to Leads Center",

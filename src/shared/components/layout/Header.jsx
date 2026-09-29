@@ -1,9 +1,8 @@
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Search, Plus, MoreHorizontal, Command, PanelLeft, Users } from 'lucide-react'
+import { Search, Plus, MoreHorizontal, Command, PanelLeft, Users, Moon, Sun } from 'lucide-react'
 import { usePageHeaderStore } from '../../../store/pageHeaderStore'
-import { useAuthStore } from '../../../store/authStore'
-import { Avatar } from '../ui/Avatar'
+import { useThemeStore } from '../../../store/themeStore'
 import { useNavigation } from '../../../app/navigation/useNavigation'
 import { NetworkStatusIndicator } from './NetworkStatusIndicator'
 import { MessengerLogoIcon, MessengerNavbarButton } from '../../../features/conversations/components/MessengerNavbarButton'
@@ -13,6 +12,7 @@ import { TasksNavbarButton } from '../../../features/tasks/components/TasksNavba
 import { InternalChatNavbarButton } from '../../../features/internal-chat'
 import { NotificationCenterButton } from '../../../features/notifications'
 import { LiveMeetingIndicator } from '../../../features/call-meetings'
+import { HeaderProfileMenu } from './HeaderProfileMenu'
 
 const PAGE_CHANNEL_ICONS = [
   {
@@ -39,7 +39,7 @@ export function Header({
 }) {
   const { t } = useTranslation()
   const location = useLocation()
-  const user = useAuthStore((s) => s.user)
+  const { isDark, toggleTheme } = useThemeStore()
   const { title: customTitle, icon: customIcon, actions } = usePageHeaderStore()
   const { activeItem } = useNavigation()
 
@@ -53,7 +53,7 @@ export function Header({
 
   return (
     <header
-      className="fixed top-0 end-0 start-0 z-20 flex items-center gap-3 px-4 border-b border-[var(--border)] bg-[var(--shell-surface)]"
+      className="fixed top-0 end-0 start-0 z-20 flex items-center gap-3 border-b border-[var(--border)] bg-[var(--shell-surface)] px-4 text-[var(--text)] shadow-sm"
       style={{
         height: 'var(--layout-header-height, 48px)',
         paddingInlineStart: collapsed
@@ -122,7 +122,7 @@ export function Header({
           className={[
             'inline-flex h-8 items-center gap-1.5 rounded-lg border px-2 text-xs font-black transition-colors',
             activeUsersSidebarOpen
-              ? 'border-[#7FDDE1] bg-[#F3FDFF] text-[#007A80]'
+              ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]'
               : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-2)]',
           ].join(' ')}
           aria-label={t('app.activeUsers')}
@@ -149,11 +149,11 @@ export function Header({
           <Command size={11} /> K
         </span>
 
-        {user && (
-          <div className="flex items-center gap-2 ps-1">
-            <Avatar name={user.name || user.login} size="sm" />
-          </div>
-        )}
+        <IconButton onClick={toggleTheme} aria-label={isDark ? t('common.lightMode') : t('common.darkMode')} title={isDark ? t('common.lightMode') : t('common.darkMode')}>
+          {isDark ? <Sun size={16} /> : <Moon size={16} />}
+        </IconButton>
+
+        <HeaderProfileMenu />
       </div>
     </header>
   )
