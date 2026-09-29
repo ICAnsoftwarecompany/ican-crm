@@ -30,6 +30,7 @@ export default {
     entitlements: 'Entitlements',
     contracts: 'Contracts',
     handoffs: 'Handoffs',
+    setup: 'Setup wizard',
     billing: 'Billing',
     deliveries: 'Deliveries & COD',
     subscriptions: 'Subscriptions',

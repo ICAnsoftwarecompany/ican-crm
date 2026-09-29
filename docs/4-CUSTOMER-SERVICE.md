@@ -6,7 +6,7 @@ Frontend domain doc for the Customer Service area. Business and backend contract
 **what the frontend has built, where it lives, and the rules for adding more**. Update it in the same
 change as the code (see [Phase log](#phase-log)).
 
-**Status:** PARTIAL — F0 Foundation, F1 Case core, F2 Service operations (**MVP-1**) and F3 Service context done. All data comes from the mock layer until the backend ships.
+**Status:** PARTIAL — F0 Foundation, F1 Case core, F2 Service operations (**MVP-1**), F3 Service context and F4 Billing & scheduling done. All data comes from the mock layer until the backend ships.
 
 **Naming.** Users see this area as **Customer Hub / إدارة العملاء** (sidebar section), with
 **Operations Center / مركز العمليات** as its home and **Services / الخدمات** as the customer-drawer tab —
@@ -55,7 +55,7 @@ code (`features/service/core/constants/serviceModules.js`) and is rendered live 
 | **F1** | Case core | Contacts & relationships, cases (list / board / detail, activities, timeline, notes), queues, Conversation → Case, My Work, customer drawer Service tab, Service navigation section | — | ✅ Done |
 | **F2** | Service operations | SLA display & escalation states, saved replies & macros, internal knowledge base, CSAT, dashboard & reports, settings (case types, queues, SLA, business calendar, escalation), saved views | **MVP-1** (standalone helpdesk) | ✅ Done |
 | **F3** | Service context | Pipeline editor (statuses/transitions per case type), item types & capabilities settings, service records (generic by type) with participants, components, entries, batches; assets, warranty, entitlements, contracts, handoffs, setup wizard | — | ✅ Done |
-| **F4** | Billing & scheduling | Payment plans, deal preview, schedules & payments, collections workspace, scheduling & capacity, work orders, courier/technician views | — | Planned |
+| **F4** | Billing & scheduling | Payment plans + preview engine (reusable calculator), schedules & payments, collections workspace, subscriptions lifecycle, scheduling & capacity, work orders, courier dispatch + POD, COD remittances | — | ✅ Done (see F4 log for what is left) |
 | **F5** | Portal & growth | Customer portal app (self / guardian / B2B / guest), imports, follow-up programs, portfolios, operations workspaces | **MVP-2** (pilot) | Planned |
 | **F6** | Knowledge & quality | Public KB & self-service, quality reviews, NPS/CES, template versioning, form & workflow builders | — | Planned |
 | **F7** | AI | Triage, suggested replies/articles, summaries, AI agent, health score | — | Planned |
@@ -94,6 +94,11 @@ src/features/service/          ← all business code (README.md inside)
 ├── contracts/                 ← F3: contracts, versions, signatures, amendments (README.md inside)
 ├── handoffs/                  ← F3: Sales → Service handoff inbox (README.md inside)
 ├── setup/                     ← F3: setup wizard (industry templates) (README.md inside)
+├── billing/                   ← F4: payment plans, preview, schedules, payments, collections (README.md inside)
+├── subscriptions/             ← F4: subscription lifecycle (README.md inside)
+├── scheduling/                ← F4: resources, reservations/holds, slots (README.md inside)
+├── work-orders/               ← F4: work orders & field visits (README.md inside)
+├── deliveries/                ← F4: courier dispatch, proof of delivery, COD remittances (README.md inside)
 └── <sub-module>/              ← one folder per sub-module as phases ship: records/, assets/ …
 
 src/pages/service/             ← thin route pages + serviceRoutes.js (README.md inside)
@@ -183,20 +188,25 @@ component → hook (React Query) → casesApi → createServiceApi('cases') → 
 | `/service/knowledge` | `ServiceKnowledgePage` — search, category/status filters, article list | F2 |
 | `/service/knowledge/:articleId` | `ServiceKnowledgeArticlePage` — editor; `new` creates a draft | F2 |
 | `/service/reports` | `ServiceReportsPage` — `?tab=overview|feedback&period=7d|30d|90d` | F2 |
-| `/service/settings/:section?` | `ServiceSettingsPage` — setup wizard, case types, queues, catalog (items, item types, record types, pipelines), contract types, SLA policies, business hours, escalation, saved replies, macros, KB categories | F2–F3 |
+| `/service/settings/:section?` | `ServiceSettingsPage` — setup wizard, case types, queues, catalog (items, item types, record types, pipelines), contract types, payment plans + assignments, scheduling resources, SLA policies, business hours, escalation, saved replies, macros, KB categories | F2–F4 |
 | `/service/records/:recordType?/:recordId?` | `ServiceRecordsPage` / `ServiceRecordDetailPage` inside `ServicesHubLayout` (Services hub) | F3 |
 | `/service/batches/:recordType?/:batchId?` | `ServiceBatchesPage` (Services hub) | F3 |
 | `/service/assets/:assetId?` | `ServiceAssetsPage` (Services hub, feature `assets`) | F3 |
 | `/service/entitlements` | `ServiceEntitlementsPage` (Services hub, feature `entitlements`) | F3 |
 | `/service/contracts/:contractId?` | `ServiceContractsPage` (Services hub) | F3 |
 | `/service/handoffs/:handoffId?` | `ServiceHandoffsPage` (Services hub) | F3 |
+| `/service/billing/:view?` (`schedules`, `collections`, `calculator`), `/service/billing/schedules/:scheduleId` | `ServiceBillingPage` (Services hub tab "Payments") | F4 |
+| `/service/subscriptions/:subscriptionId?` | `ServiceSubscriptionsPage` (Services hub, feature `subscriptions`) | F4 |
+| `/service/work-orders/:workOrderId?` | `ServiceWorkOrdersPage` (Services hub, feature `workOrders`) | F4 |
+| `/service/scheduling` | `ServiceSchedulingPage` (Services hub, features `scheduling` / `workOrders` / `courierAssignment`) | F4 |
+| `/service/deliveries` | `ServiceDeliveriesPage` (Services hub, feature `courierAssignment`) | F4 |
 | `/service/overview` | `ServiceOverviewPage` — manifest, mock template switcher, roadmap | F0 |
 
 - All Service routes are declared in `src/pages/service/serviceRoutes.js` and **lazy-loaded** (own chunks).
 - Sidebar section **Customer Hub** (`navigation.config.js`, id `customer-service`): Operations Center, Cases,
   Services, My Work, Knowledge Base, Reports, Operations Settings (7 items — the limit).
 - **Services hub**: one sidebar item; its tabs (`core/components/ServicesHubNav.jsx`) come from record types
-  (+ their batches) and features (`assets`, `entitlements`), then Contracts and Handoffs. New F4+ areas that
+  (+ their batches) and features (`assets`, `entitlements`), then Work orders, Scheduling, Deliveries, Subscriptions, Contracts, Handoffs and Payments (F4). New areas that
   belong to "what the customer has" (subscriptions, schedules, work orders) become tabs here, not sidebar items.
 - Sidebar section `customer-service` (`module: 'customer_service'`, label `nav.sections.customerService`)
   in `app/navigation/navigation.config.js`: Service Center, Cases, My Work. Keep it at 3–7 items;
@@ -258,6 +268,12 @@ the unified body `{ success:false, code, message, errors, meta:{ request_id } }`
 | `CRUD /contract-types`, `/contracts…` (+ send/sign/activate/terminate/cancel/renew/amendments) | See `contracts/README.md` | F3. |
 | `GET /service/handoffs`, `GET|PATCH /service/handoffs/{id}`, `POST …/accept|reject|reprocess` | See `handoffs/README.md` | F3. |
 | `GET /settings/templates`, `POST /settings/templates/{key}/apply { models, terminology, dry_run }` | Setup wizard | F3. Idempotent; dry run previews. |
+| `CRUD /billing/payment-plans` (`?item_id=` → plans for an item), `CRUD /billing/payment-plan-assignments`, `POST /billing/payment-plans/{id}/preview` | See `billing/README.md` | F4. Preview saves nothing; amounts only from the server. |
+| `GET /billing/schedules[/{id}]`, `POST /billing/schedules/{id}/payments|reschedule|cancel|payoff-quote|promises`, `…/reschedule/approve|reject`, `POST /billing/payments/{id}/reverse`, `POST /billing/lines/{id}/waive-fee`, `GET /billing/collections` | See `billing/README.md` | F4. List, promises, approve/reject, reverse and collections are **proposed**. |
+| `CRUD /subscriptions`, `POST /subscriptions/{id}/cancel|suspend|resume|renew`, `POST …/periods/{id}/pay` | See `subscriptions/README.md` | F4. Period pay is proposed (crm payments mode). |
+| `CRUD /scheduling/resources`, `GET /scheduling/availability`, `GET|POST /reservations`, `POST /reservations/{id}/confirm`, `DELETE /reservations/{id}` | See `scheduling/README.md` | F4. Resources CRUD + confirm proposed; 409 `RESERVATION_CONFLICT`. |
+| `CRUD /service/work-orders` (PATCH = assign + book slot), `POST …/on-the-way|check-in|check-out|complete|cancel` | See `work-orders/README.md` | F4. on-the-way / cancel proposed. |
+| `GET /service/deliveries`, `POST …/{recordId}/assign|out-for-delivery|attempts`, `CRUD /billing/cod-remittances` (+ `/pending`, `/{id}/pay`) | See `deliveries/README.md` | F4. Deliveries endpoints proposed. |
 
 ## Adding a sub-module
 
@@ -283,6 +299,50 @@ Copy into the phase log entry and tick honestly (write "not verified" when true)
 - [ ] Sub-module README + this doc + `3-FEATURES.md` section updated
 
 ## Phase log
+
+### F4 — Billing Lite, subscriptions, scheduling, work orders · 2026-09-30
+
+- **Added:**
+  - `billing/`: payment plans (components as rules, limits, interest, reservation fee) + plan assignments in settings;
+    reusable **PlanCalculator** / **PlanPreviewTable** (server preview; the Deals screen is **not** changed — it can
+    embed the calculator later); payment schedules created when a contract with `payment_plan_id` is signed
+    (contract create gained an optional plan); schedule detail (lines, late fees, payments, promises), record payment
+    (oldest first, fee before principal), reverse (negative record), waive late fee, payoff quote + settlement,
+    reschedule with approval (new version, old kept `rescheduled`), cancel; **collections** workspace (overdue,
+    due today, next 7 days, promises, aging 1–30 / 31–60 / 61–90 / 90+).
+  - `subscriptions/`: handoff processor now creates real subscriptions; lifecycle trial → active → past_due →
+    suspended → cancelled/expired, auto/manual renewal, cancel now or at period end, price change from next period,
+    billing periods with mark paid; linked entitlements follow suspension/expiry.
+  - `scheduling/`: resources (settings), day board per resource in the calendar time zone, holds that expire,
+    no double booking, reusable **SlotPicker**.
+  - `work-orders/`: create, schedule via slot (books a reservation), on the way, check-in, complete (outcome, parts,
+    labor, signature) — **completion consumes the linked entitlement into the ledger**; cancel releases the slot.
+  - `deliveries/`: courier dispatch (daily capacity), attempts + proof of delivery (signature / photo / OTP) as record
+    entries, COD collection check, failed after 3 attempts; COD remittances per merchant (fees, net, paid).
+  - Customer drawer Services tab: subscriptions and payment schedules sections. Hub tabs: Work orders, Scheduling,
+    Deliveries, Subscriptions, Payments (feature-driven).
+- **Outside the area:** shared `DataTable` bug fix — clicking a rendered cell tried to copy the React element and threw
+  "circular structure"; it now copies the accessor value (`DataTableBody.jsx`, `clipboardHelpers.js`).
+- **Mock layer:** `state/paymentPlanEngine.js`, `billingLedger.js`, `billingSchedules.js`, `subscriptionLifecycle.js`,
+  `schedulingEngine.js` (pure + tested); seeds for plans, schedules, subscriptions, resources/reservations/work orders,
+  deliveries/remittances. Jobs the server runs on a schedule (late fees, hold expiry, subscription lifecycle) run on read.
+- **Acceptance (spec §55 Phase 4) — demonstrated on the mock:** the real-estate example (§29.6) produces the table exactly
+  in amounts; lines always add up to the final price (property test); a hold expires automatically; the same technician /
+  unit cannot be booked twice for the same time; reschedule keeps the old schedule; completing a work order writes the
+  entitlement consumption to the ledger.
+- **Spec discrepancy to confirm:** in the §29.6 8-year example the last (32nd) quarterly installment is dated
+  **2034-07-01** in the spec table; 32 quarters from 2027-01-01 end on **2034-10-01** (2034-07-01 is the 31st).
+  The engine and its test use 2034-10-01.
+- **Not built in F4 (next / needs backend):** Deal payment tab + approvals engine (spec §29.7 — Deals screen untouched on
+  purpose), schedule transfer / resale (§29.11), ERP / gateway sync and webhooks (§29.15), receipt / photo / signature
+  uploads, suppliers, SLA on service records, delivery-issue case workflow, proration and pause for subscriptions.
+- **Mocked modules:** billing, subscriptions, scheduling, workOrders, deliveries (+ all earlier). **Live modules:** none.
+- **Tests:** payment plan engine (incl. property test), billing ledger, subscription lifecycle, scheduling engine and
+  handler tests for plans, schedules, subscriptions, scheduling/work orders and deliveries (681 tests, full suite green).
+- **Checklist:** lint ✅ · i18n ✅ · architecture ✅ · service gate ✅ · vitest ✅ · build ✅ · screenshots (AR light /
+  EN dark; devices, shipping) of plan settings, calculator, schedules, schedule detail + payment / payoff / reschedule
+  approval, collections, subscriptions list/detail, scheduling board + new reservation, work order flow, deliveries +
+  COD ✅ · customer drawer sections **not visually verified** (needs the real customers backend).
 
 ### F3 — Service context · 2026-09-29
 

@@ -29,6 +29,7 @@ export default {
     assets: 'الأصول',
     entitlements: 'الحقوق',
     contracts: 'العقود',
+    setup: 'معالج الإعداد',
     handoffs: 'التحويلات',
     billing: 'الأقساط',
     deliveries: 'التوصيل والتحصيل',

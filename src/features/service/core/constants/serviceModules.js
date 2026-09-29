@@ -68,11 +68,11 @@ export const SERVICE_MODULES = [
   { key: 'setup', folder: 'setup', phase: 3, status: 'done', backend: 'mock' },
 
   // F4 — Billing Lite & Scheduling
-  { key: 'billing', folder: 'billing', phase: 4, status: 'in_progress', backend: 'mock' },
-  { key: 'subscriptions', folder: 'subscriptions', phase: 4, status: 'in_progress', backend: 'mock' },
-  { key: 'deliveries', folder: 'deliveries', phase: 4, status: 'in_progress', backend: 'mock' },
-  { key: 'scheduling', folder: 'scheduling', phase: 4, status: 'in_progress', backend: 'mock' },
-  { key: 'workOrders', folder: 'work-orders', phase: 4, status: 'in_progress', backend: 'mock' },
+  { key: 'billing', folder: 'billing', phase: 4, status: 'done', backend: 'mock' },
+  { key: 'subscriptions', folder: 'subscriptions', phase: 4, status: 'done', backend: 'mock' },
+  { key: 'deliveries', folder: 'deliveries', phase: 4, status: 'done', backend: 'mock' },
+  { key: 'scheduling', folder: 'scheduling', phase: 4, status: 'done', backend: 'mock' },
+  { key: 'workOrders', folder: 'work-orders', phase: 4, status: 'done', backend: 'mock' },
 
   // F5 — Portal & Growth (MVP-2)
   { key: 'portal', folder: 'portal', phase: 5, status: 'planned', backend: 'mock' },
