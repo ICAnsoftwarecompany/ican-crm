@@ -130,7 +130,7 @@ export function TaskForm({
             value={form.title}
             onChange={(event) => updateField('title', event.target.value)}
             placeholder={t('tasks.form.titlePlaceholder')}
-            className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm text-[var(--text)] outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#00A8B0]/15"
+            className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-sm text-[var(--text)] outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#00A8B0]/15"
           />
         </label>
 
@@ -140,56 +140,56 @@ export function TaskForm({
             value={form.description}
             onChange={(event) => updateField('description', event.target.value)}
             rows={3}
-            className="min-h-20 resize-y rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#00A8B0]/15"
+            className="min-h-20 resize-y rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#00A8B0]/15"
           />
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
           {t('tasks.form.typeLabel')}
-          <select value={form.type} onChange={(event) => updateField('type', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm">
+          <select value={form.type} onChange={(event) => updateField('type', event.target.value)} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-sm">
             {taskTypes.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
           {t('tasks.form.priorityLabel')}
-          <select value={form.priority} onChange={(event) => updateField('priority', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm">
+          <select value={form.priority} onChange={(event) => updateField('priority', event.target.value)} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-sm">
             {taskPriorities.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
           {t('tasks.form.dateLabel')}
-          <input type="date" value={form.due_date} onChange={(event) => updateField('due_date', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm" />
+          <input type="date" value={form.due_date} onChange={(event) => updateField('due_date', event.target.value)} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-sm" />
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
           {t('tasks.form.timeLabel')}
-          <input type="time" value={form.due_time} onChange={(event) => updateField('due_time', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm" />
+          <input type="time" value={form.due_time} onChange={(event) => updateField('due_time', event.target.value)} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-sm" />
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
           {t('tasks.form.visibilityLabel')}
-          <select value={form.visibility} onChange={(event) => updateField('visibility', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm">
+          <select value={form.visibility} onChange={(event) => updateField('visibility', event.target.value)} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-sm">
             {taskVisibility.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
           {t('tasks.form.reminderTypeLabel')}
-          <select value={form.reminder_type} onChange={(event) => updateField('reminder_type', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm">
+          <select value={form.reminder_type} onChange={(event) => updateField('reminder_type', event.target.value)} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-sm">
             {reminderTypes.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
           {t('tasks.form.reminderBeforeLabel')}
-          <input type="number" min="0" value={form.reminder_before} onChange={(event) => updateField('reminder_before', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm" />
+          <input type="number" min="0" value={form.reminder_before} onChange={(event) => updateField('reminder_before', event.target.value)} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-sm" />
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
           {t('tasks.form.reminderUnitLabel')}
-          <select value={form.reminder_unit} onChange={(event) => updateField('reminder_unit', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm">
+          <select value={form.reminder_unit} onChange={(event) => updateField('reminder_unit', event.target.value)} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-sm">
             {reminderUnits.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </label>
@@ -198,19 +198,19 @@ export function TaskForm({
           <>
             <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
               taskable_type
-              <input value={form.taskable_type} onChange={(event) => updateField('taskable_type', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm" />
+              <input value={form.taskable_type} onChange={(event) => updateField('taskable_type', event.target.value)} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-sm" />
             </label>
 
             <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
               taskable_id
-              <input value={form.taskable_id} onChange={(event) => updateField('taskable_id', event.target.value)} className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm" />
+              <input value={form.taskable_id} onChange={(event) => updateField('taskable_id', event.target.value)} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-sm" />
             </label>
           </>
         )}
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)] sm:col-span-2">
           {t('tasks.form.usersLabel')}
-          <div className="max-h-28 overflow-auto rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] p-2">
+          <div className="max-h-28 overflow-auto rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-2">
             {users.length ? users.map((user) => {
               const checked = form.users.includes(Number(user.id))
               return (
@@ -225,7 +225,7 @@ export function TaskForm({
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)] sm:col-span-2">
           {t('tasks.form.teamsLabel')}
-          <div className="max-h-28 overflow-auto rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] p-2">
+          <div className="max-h-28 overflow-auto rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-2">
             {teams.length ? teams.map((team) => {
               const checked = form.teams.includes(Number(team.id))
               return (
@@ -240,7 +240,7 @@ export function TaskForm({
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)] sm:col-span-2">
           {t('tasks.form.attachmentsLabel')}
-          <input type="file" multiple onChange={handleAttachments} className="block h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-2 py-2 text-xs" />
+          <input type="file" multiple onChange={handleAttachments} className="block h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-2 py-2 text-xs" />
         </label>
       </div>
 

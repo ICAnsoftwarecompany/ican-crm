@@ -59,7 +59,7 @@ export function TaskBoard({
           <button
             type="button"
             onClick={() => onAddList?.()}
-            className="inline-flex h-[120px] w-[300px] shrink-0 items-center justify-center gap-2 rounded-2xl border border-dashed border-[#CFECEF] bg-[#F8FEFF] text-sm font-black text-[#007A80]"
+            className="inline-flex h-[120px] w-[300px] shrink-0 items-center justify-center gap-2 rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface-2)] text-sm font-black text-[var(--brand-accent)]"
           >
             <Plus size={16} />
             Add new list

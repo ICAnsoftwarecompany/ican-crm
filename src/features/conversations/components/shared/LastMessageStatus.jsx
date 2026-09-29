@@ -20,7 +20,7 @@ export function LastMessageStatus({ conversation }) {
   return (
     <CheckCheck
       size={14}
-      className={isRead ? 'shrink-0 text-[#0A7CFF]' : 'shrink-0 text-[#94A3B8]'}
+      className={isRead ? 'shrink-0 text-[#0A7CFF]' : 'shrink-0 text-[var(--text-muted)]'}
       aria-label={isRead ? 'seen' : 'delivered'}
     />
   )

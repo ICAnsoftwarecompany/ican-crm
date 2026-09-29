@@ -43,7 +43,7 @@ export function TaskCard({ task, onOpenTask, onQuickComplete, onEdit, onDelete }
   return (
     <article
       onClick={() => onOpenTask?.(task?.id)}
-      className="cursor-pointer rounded-xl border border-[#D7EEF0] bg-white p-2.5 shadow-sm transition-shadow hover:shadow-md"
+      className="cursor-pointer rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2.5 shadow-sm transition-shadow hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-2">
         <button
@@ -52,7 +52,7 @@ export function TaskCard({ task, onOpenTask, onQuickComplete, onEdit, onDelete }
             event.stopPropagation()
             onQuickComplete?.(task)
           }}
-          className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[#CBD5E1] bg-white text-[#007A80] transition-colors hover:border-[#00C2CB]"
+          className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--brand-accent)] transition-colors hover:border-[#00C2CB]"
           aria-label={t('tasks.board.markCompleteAriaLabel')}
           title={t('tasks.board.markCompleteTitle')}
         >
@@ -61,22 +61,22 @@ export function TaskCard({ task, onOpenTask, onQuickComplete, onEdit, onDelete }
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            <TypeIcon size={12} className="shrink-0 text-[#007A80]" />
+            <TypeIcon size={12} className="shrink-0 text-[var(--brand-accent)]" />
             <span className={`rounded-full border px-1.5 py-0.5 text-[9px] font-black ${priorityMeta.className}`}>{priorityMeta.label}</span>
           </div>
 
-          <h4 className="mt-1 line-clamp-2 text-[12px] font-black leading-5 text-[#0F172A]">{getTaskTitle(task, t)}</h4>
+          <h4 className="mt-1 line-clamp-2 text-[12px] font-black leading-5 text-[var(--text)]">{getTaskTitle(task, t)}</h4>
         </div>
 
         <TaskCardMenu onOpen={() => onOpenTask?.(task?.id)} onEdit={onEdit} onQuickComplete={() => onQuickComplete?.(task)} onDelete={onDelete} />
       </div>
 
-      <div className="mt-2 space-y-1.5 text-[10px] font-semibold text-[#475569]">
+      <div className="mt-2 space-y-1.5 text-[10px] font-semibold text-[var(--text-muted)]">
         {relatedEntity && (
           <div className="truncate">{relatedEntity}</div>
         )}
 
-        <div className="flex items-center gap-1.5 text-[#64748B]">
+        <div className="flex items-center gap-1.5 text-[var(--text-muted)]">
           <Clock3 size={11} />
           <span className={overdue ? 'font-black text-red-600' : ''}>{dueLabel}</span>
           {overdue && (
@@ -90,13 +90,13 @@ export function TaskCard({ task, onOpenTask, onQuickComplete, onEdit, onDelete }
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             {assignees.slice(0, 2).map((name, index) => (
-              <span key={`${name}-${index}`} className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#E8F9FA] px-1.5 text-[9px] font-black text-[#007A80]">
+              <span key={`${name}-${index}`} className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[var(--brand-accent-soft)] px-1.5 text-[9px] font-black text-[var(--brand-accent)]">
                 {name.slice(0, 2).toUpperCase()}
               </span>
             ))}
           </div>
 
-          <div className="flex items-center gap-2 text-[#64748B]">
+          <div className="flex items-center gap-2 text-[var(--text-muted)]">
             <span className="inline-flex items-center gap-1"><MessageSquareText size={11} />{task?.notes?.length || 0}</span>
             <span className="inline-flex items-center gap-1"><Paperclip size={11} />{task?.attachments?.length || 0}</span>
           </div>

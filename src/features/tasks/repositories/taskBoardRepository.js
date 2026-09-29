@@ -1,7 +1,7 @@
 const BOARD_DEFINITIONS = [
-  { id: 'main', name: 'Main Board', description: 'Core task flow', accent: 'bg-[#E8F9FA] text-[#007A80]' },
-  { id: 'sales', name: 'Sales Team', description: 'Sales follow-up pipeline', accent: 'bg-[#EEF2FF] text-[#4F46E5]' },
-  { id: 'followups', name: 'Follow-ups', description: 'Client follow-up queue', accent: 'bg-[#FFF7ED] text-[#C2410C]' },
+  { id: 'main', name: 'Main Board', description: 'Core task flow', accent: 'bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]' },
+  { id: 'sales', name: 'Sales Team', description: 'Sales follow-up pipeline', accent: 'bg-[#EEF2FF] text-[#4F46E5] dark:bg-[#27254f] dark:text-[#a5b4fc]' },
+  { id: 'followups', name: 'Follow-ups', description: 'Client follow-up queue', accent: 'bg-[#FFF7ED] text-[#C2410C] dark:bg-[#431f0d] dark:text-[#fdba74]' },
 ]
 
 const BOARD_LIST_TEMPLATES = {

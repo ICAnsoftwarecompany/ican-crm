@@ -31,17 +31,17 @@ function KanbanCard({ task, onOpenTask }) {
         event.dataTransfer.setData('task-id', String(task?.id || ''))
       }}
       onClick={() => onOpenTask?.(task?.id)}
-      className="cursor-grab rounded-xl border border-[#D7EEF0] bg-white p-2 shadow-sm active:cursor-grabbing"
+      className="cursor-grab rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-sm active:cursor-grabbing"
     >
       <div className="flex items-center gap-1.5">
-        <TypeIcon size={13} className="text-[#007A80]" />
-        <h4 className="truncate text-xs font-black text-[#0F172A]">{getTaskTitle(task, t)}</h4>
+        <TypeIcon size={13} className="text-[var(--brand-accent)]" />
+        <h4 className="truncate text-xs font-black text-[var(--text)]">{getTaskTitle(task, t)}</h4>
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-1 text-[10px] font-bold">
         <span className={`rounded-full px-1.5 py-0.5 ${statusMeta.tone}`}>{statusMeta.label}</span>
         <span className={`rounded-full border px-1.5 py-0.5 ${priorityMeta.className}`}>{priorityMeta.label}</span>
       </div>
-      <div className="mt-1 text-[10px] font-semibold text-[#64748B]">{dueLabel}</div>
+      <div className="mt-1 text-[10px] font-semibold text-[var(--text-muted)]">{dueLabel}</div>
     </div>
   )
 }
@@ -90,19 +90,19 @@ export function TaskKanbanView({ tasks = [], onOpenTask, onStatusChange }) {
             }}
             className={[
               'rounded-2xl border p-2',
-              isOver ? 'border-[#00C2CB] bg-[#F3FDFF]' : 'border-[#D7EEF0] bg-[#F8FEFF]',
+              isOver ? 'border-[#00C2CB] bg-[var(--brand-accent-soft)]' : 'border-[var(--border)] bg-[var(--surface-2)]',
             ].join(' ')}
           >
             <header className="mb-2 flex items-center justify-between">
-              <h3 className="text-xs font-black text-[#0F172A]">{statusMeta.label}</h3>
-              <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-black text-[#64748B]">{items.length}</span>
+              <h3 className="text-xs font-black text-[var(--text)]">{statusMeta.label}</h3>
+              <span className="rounded-full bg-[var(--surface)] px-2 py-0.5 text-[10px] font-black text-[var(--text-muted)]">{items.length}</span>
             </header>
 
             <div className="space-y-2">
               {items.length ? items.map((task) => (
                 <KanbanCard key={task.id || `${task.title}-${task.due_date || ''}`} task={task} onOpenTask={onOpenTask} />
               )) : (
-                <div className="rounded-xl border border-dashed border-[#CDEEEF] bg-white p-3 text-center text-[11px] font-semibold text-[#64748B]">
+                <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] p-3 text-center text-[11px] font-semibold text-[var(--text-muted)]">
                   {t('tasks.fallback.noTasks')}
                 </div>
               )}

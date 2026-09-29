@@ -41,7 +41,7 @@ import { InitialsAvatar } from './shared/InitialsAvatar'
 
 const GMAIL_AVATAR_TONE = {
   activeClassName: 'bg-[#D93025] text-white ring-4 ring-[#FCE8E6]',
-  idleClassName: 'bg-[#FCE8E6] text-[#B3261E]',
+  idleClassName: 'bg-[#FCE8E6] text-[#B3261E] dark:bg-[#3b2024] dark:text-[#fca5a5]',
 }
 
 function upsertGmailMessageIntoCache(current, incomingMessage) {
@@ -83,15 +83,15 @@ function GmailLoginRequired({ tenantId, compact = false }) {
 
   return (
     <div
-      className="flex items-center justify-center rounded-xl border border-dashed border-[#F4C7C3] bg-[#FFFBFA] p-5 text-center"
+      className="flex items-center justify-center rounded-xl border border-dashed border-[#F4C7C3] bg-[var(--surface-2)] p-5 text-center"
       style={{ minHeight: compact ? 260 : 420 }}
     >
       <div className="max-w-sm">
-        <span className="mx-auto mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FCE8E6] text-[#D93025]">
+        <span className="mx-auto mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FCE8E6] text-[#D93025] dark:bg-[#3b2024] dark:text-[#fca5a5]">
           <Mail size={22} />
         </span>
-        <h3 className="text-base font-black text-[#111827]">اربط حساب Gmail أولا</h3>
-        <p className="mt-2 text-sm font-semibold leading-6 text-[#64748B]">
+        <h3 className="text-base font-black text-[var(--text)]">اربط حساب Gmail أولا</h3>
+        <p className="mt-2 text-sm font-semibold leading-6 text-[var(--text-muted)]">
           لا يمكن عرض محادثات Gmail أو إرسال رسائل قبل تسجيل الدخول بحساب Google الخاص بالمستخدم.
         </p>
         <button
@@ -280,7 +280,7 @@ export function GmailConversationsWorkspace({
     <section className={`${panel ? 'h-full' : 'min-h-[360px] xl:sticky xl:top-16 xl:max-h-[calc(100vh-5rem)]'} overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)]`}>
       <header className="flex items-center justify-between gap-3 border-b border-[var(--border)] p-3">
         <div className="flex min-w-0 items-center gap-2">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#FCE8E6] text-[#D93025]">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#FCE8E6] text-[#D93025] dark:bg-[#3b2024] dark:text-[#fca5a5]">
             <GmailLogoIcon size={22} />
           </span>
           <div className="min-w-0">
@@ -290,11 +290,11 @@ export function GmailConversationsWorkspace({
         </div>
         {panel ? (
           <div className="flex items-center gap-1">
-            <button type="button" onClick={handleOpenPage} className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#D8E7EA] bg-white px-2 text-xs font-black text-[#D93025]">
+            <button type="button" onClick={handleOpenPage} className="inline-flex h-8 items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-black text-[#D93025]">
               <ExternalLink size={13} />
               فتح
             </button>
-            <button type="button" onClick={onClose} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#E5E7EB] bg-white text-[#64748B]">
+            <button type="button" onClick={onClose} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)]">
               <X size={15} />
             </button>
           </div>
@@ -303,13 +303,13 @@ export function GmailConversationsWorkspace({
 
       <GmailBusinessEmailsPanel enabled={open && hasMailbox} compact={panel} />
 
-      <div className="border-b border-[#EEF2F4] bg-white p-3">
-        <label className="flex h-10 items-center gap-2 rounded-lg border border-[#D8E7EA] bg-[#FBFEFF] px-3">
-          <Search size={15} className="shrink-0 text-[#64748B]" />
+      <div className="border-b border-[var(--border)] bg-[var(--surface)] p-3">
+        <label className="flex h-10 items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3">
+          <Search size={15} className="shrink-0 text-[var(--text-muted)]" />
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            className="min-w-0 flex-1 bg-transparent text-xs font-bold text-[#111827] outline-none placeholder:text-[#94A3B8]"
+            className="min-w-0 flex-1 bg-transparent text-xs font-bold text-[var(--text)] outline-none placeholder:text-[var(--text-muted)]"
             placeholder="بحث في Gmail..."
           />
         </label>
@@ -322,17 +322,17 @@ export function GmailConversationsWorkspace({
         resultCount={filteredConversations.length}
       />
 
-      <div className={`${panel ? 'max-h-[calc(100vh-17rem)]' : 'max-h-[calc(100vh-345px)] xl:max-h-[calc(100vh-16rem)]'} overflow-y-auto bg-[#F8FAFC] p-2`}>
+      <div className={`${panel ? 'max-h-[calc(100vh-17rem)]' : 'max-h-[calc(100vh-345px)] xl:max-h-[calc(100vh-16rem)]'} overflow-y-auto bg-[var(--surface-2)] p-2`}>
         {conversationsQuery.isLoading || mailboxesQuery.isLoading ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, index) => (
-              <div key={index} className="h-16 animate-pulse rounded-xl bg-white" />
+              <div key={index} className="h-16 animate-pulse rounded-xl bg-[var(--surface)]" />
             ))}
           </div>
         ) : null}
 
         {!conversationsQuery.isLoading && filteredConversations.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-[#F4C7C3] bg-white px-4 py-6 text-center text-sm font-bold text-[#64748B]">
+          <div className="rounded-xl border border-dashed border-[#F4C7C3] bg-[var(--surface)] px-4 py-6 text-center text-sm font-bold text-[var(--text-muted)]">
             لا توجد محادثات Gmail مطابقة.
           </div>
         ) : null}
@@ -358,7 +358,7 @@ export function GmailConversationsWorkspace({
               }}
               className={[
                 'mb-2 w-full rounded-lg border p-3 text-start transition-colors',
-                isActive ? 'border-[#D93025] bg-[#FCE8E6]' : 'border-[var(--border)] bg-white hover:border-[#F4C7C3]',
+                isActive ? 'border-[#D93025] bg-[#FCE8E6]' : 'border-[var(--border)] bg-[var(--surface)] hover:border-[#F4C7C3]',
               ].join(' ')}
             >
               <div className="flex items-start gap-3">
@@ -366,14 +366,14 @@ export function GmailConversationsWorkspace({
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center justify-between gap-2">
                     <span className="truncate text-sm font-black text-[var(--text)]">{title}</span>
-                    {isClosed ? <span className="rounded-full bg-[#FEF2F2] px-2 py-0.5 text-[10px] font-black text-[#B91C1C]">منتهية</span> : null}
+                    {isClosed ? <span className="rounded-full bg-[#FEF2F2] px-2 dark:bg-[#451E28] dark:text-[#FDA4AF] py-0.5 text-[10px] font-black text-[#B91C1C]">منتهية</span> : null}
                     <span className="shrink-0 text-[10px] font-semibold text-[var(--text-muted)]">{formatConversationTime(conversation.last_message_at)}</span>
                   </span>
                   <span className="mt-1 block truncate text-xs font-semibold text-[var(--text-muted)]">
                     {getGmailConversationSubtitle(conversation) || conversation.mailbox_email}
                   </span>
                   {conversation.assigned_user?.name ? (
-                    <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-black text-[#475569]">
+                    <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-[var(--surface)] px-2 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
                       <UserRound size={11} />
                       <span className="truncate">المسؤول: {conversation.assigned_user.name}</span>
                     </span>
@@ -387,7 +387,7 @@ export function GmailConversationsWorkspace({
                     event.stopPropagation()
                     setLinkDialogConversation(conversation)
                   }}
-                  className="mt-2 inline-flex h-8 items-center gap-1 rounded-lg border border-[#F4C7C3] bg-white px-2 text-[11px] font-black text-[#B3261E] transition hover:bg-[#FFF4F2]"
+                  className="mt-2 inline-flex h-8 items-center gap-1 rounded-lg border border-[#F4C7C3] bg-[var(--surface)] px-2 text-[11px] font-black text-[#B3261E] transition hover:bg-[#FFF4F2] dark:hover:bg-[#3b2024]"
                 >
                   <UserPlus size={13} />
                   تحويل عميل محتمل
@@ -403,8 +403,8 @@ export function GmailConversationsWorkspace({
   const chat = (
     <section className={`${panel ? 'h-full' : 'min-h-[520px] xl:sticky xl:top-16 xl:h-[calc(100vh-5rem)] xl:max-h-[calc(100vh-5rem)]'} flex flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)]`}>
       {panel && mode === 'chat' ? (
-        <div className="border-b border-[#EEF2F4] bg-white px-3 py-2">
-          <button type="button" onClick={() => setMode('list')} className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#D8E7EA] bg-white px-2 text-xs font-black text-[#D93025]">
+        <div className="border-b border-[var(--border)] bg-[var(--surface)] px-3 py-2">
+          <button type="button" onClick={() => setMode('list')} className="inline-flex h-8 items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-black text-[#D93025]">
             رجوع
           </button>
         </div>
@@ -447,7 +447,7 @@ export function GmailConversationsWorkspace({
   return (
     <>
       {panel ? (
-        <div className="h-full overflow-hidden bg-white">
+        <div className="h-full overflow-hidden bg-[var(--surface)]">
           {mode === 'list' ? list : chat}
         </div>
       ) : (

@@ -193,44 +193,44 @@ export function TaskDrawer({
       size="xl"
     >
       {infoQuery.isLoading && (
-        <div className="rounded-xl border border-[#D7EEF0] bg-[#F8FEFF] p-3 text-sm font-semibold text-[#64748B]">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm font-semibold text-[var(--text-muted)]">
           {t('tasks.drawer.loadingTask')}
         </div>
       )}
 
       {!infoQuery.isLoading && !task && (
-        <div className="rounded-xl border border-dashed border-[#D7EEF0] bg-[#F8FEFF] p-3 text-sm font-semibold text-[#64748B]">
+        <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm font-semibold text-[var(--text-muted)]">
           {t('tasks.drawer.noTaskData')}
         </div>
       )}
 
       {!infoQuery.isLoading && task && (
         <div className="space-y-4">
-          <section className="rounded-xl border border-[#D7EEF0] bg-[#F8FEFF] p-3">
+          <section className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white text-[#007A80]"><TypeIcon size={16} /></span>
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface)] text-[var(--brand-accent)]"><TypeIcon size={16} /></span>
               <span className={`rounded-full px-2 py-1 text-[11px] font-black ${statusMeta.tone}`}>{statusMeta.label}</span>
               <span className={`rounded-full border px-2 py-1 text-[11px] font-black ${priorityMeta.className}`}>{priorityMeta.label}</span>
-              <span className={`rounded-full bg-white px-2 py-1 text-[11px] font-bold ${overdue ? 'text-red-600' : 'text-[#64748B]'}`}>
+              <span className={`rounded-full bg-[var(--surface)] px-2 py-1 text-[11px] font-bold ${overdue ? 'text-red-600' : 'text-[var(--text-muted)]'}`}>
                 <CalendarClock size={13} className="me-1 inline" />
                 {dueLabel}
               </span>
             </div>
 
             {getTaskDescription(task) && (
-              <p className="mt-3 rounded-lg bg-white p-2 text-xs font-semibold leading-6 text-[#334155]">{getTaskDescription(task)}</p>
+              <p className="mt-3 rounded-lg bg-[var(--surface)] p-2 text-xs font-semibold leading-6 text-[var(--text)]">{getTaskDescription(task)}</p>
             )}
 
             <div className="mt-3 flex flex-wrap gap-2">
-              <button type="button" onClick={() => setIsEditing((v) => !v)} className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#D7EEF0] bg-white px-2 text-[11px] font-black text-[#007A80]">
+              <button type="button" onClick={() => setIsEditing((v) => !v)} className="inline-flex h-8 items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-[11px] font-black text-[var(--brand-accent)]">
                 <Pencil size={13} />
                 {isEditing ? t('tasks.drawer.cancelEdit') : t('actions.edit')}
               </button>
-              <button type="button" onClick={handleStatusChange} disabled={!canTransitionTask(task)} className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#D7EEF0] bg-white px-2 text-[11px] font-black text-[#007A80] disabled:opacity-50">
+              <button type="button" onClick={handleStatusChange} disabled={!canTransitionTask(task)} className="inline-flex h-8 items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-[11px] font-black text-[var(--brand-accent)] disabled:opacity-50">
                 <CheckCircle2 size={13} />
                 {getTaskQuickStatusLabel(task, t)}
               </button>
-              <button type="button" onClick={handleMarkRead} className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#D7EEF0] bg-white px-2 text-[11px] font-black text-[#007A80]">
+              <button type="button" onClick={handleMarkRead} className="inline-flex h-8 items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-[11px] font-black text-[var(--brand-accent)]">
                 <UserRound size={13} />
                 {t('tasks.drawer.markAsRead')}
               </button>
@@ -242,8 +242,8 @@ export function TaskDrawer({
           </section>
 
           {isEditing && (
-            <section className="rounded-xl border border-[#D7EEF0] bg-white p-3">
-              <h3 className="mb-2 text-sm font-black text-[#0F172A]">{t('tasks.drawer.editTaskTitle')}</h3>
+            <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
+              <h3 className="mb-2 text-sm font-black text-[var(--text)]">{t('tasks.drawer.editTaskTitle')}</h3>
               <TaskForm
                 initialValues={{
                   title: task.title || '',
@@ -268,34 +268,34 @@ export function TaskDrawer({
             </section>
           )}
 
-          <section className="rounded-xl border border-[#D7EEF0] bg-white p-3">
-            <h3 className="mb-2 text-sm font-black text-[#0F172A]">{t('tasks.drawer.notesTitle')}</h3>
+          <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
+            <h3 className="mb-2 text-sm font-black text-[var(--text)]">{t('tasks.drawer.notesTitle')}</h3>
             <div className="mb-2 flex gap-2">
               <input
                 value={noteText}
                 onChange={(event) => setNoteText(event.target.value)}
                 placeholder={t('tasks.drawer.addNotePlaceholder')}
-                className="h-9 flex-1 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-xs font-semibold"
+                className="h-9 flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-xs font-semibold"
               />
               <button type="button" onClick={handleAddNote} className="h-9 rounded-lg bg-[#007A80] px-3 text-xs font-black text-white">{t('actions.add')}</button>
             </div>
 
             <div className="space-y-2">
               {notes.length ? notes.map((note) => (
-                <div key={note.id || `${note.note}-${note.created_at || ''}`} className="rounded-lg border border-[#E5EEF0] bg-[#F8FEFF] p-2">
-                  <p className="text-xs font-semibold text-[#334155]">{note.note || note.content || ''}</p>
-                  <div className="mt-1 flex items-center justify-between text-[10px] font-bold text-[#64748B]">
+                <div key={note.id || `${note.note}-${note.created_at || ''}`} className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-2">
+                  <p className="text-xs font-semibold text-[var(--text)]">{note.note || note.content || ''}</p>
+                  <div className="mt-1 flex items-center justify-between text-[10px] font-bold text-[var(--text-muted)]">
                     <span>{note.created_at || note.createdAt || ''}</span>
                     {note.id && <button type="button" onClick={() => handleDeleteNote(note.id)} className="text-red-600">{t('actions.delete')}</button>}
                   </div>
                 </div>
-              )) : <div className="text-xs font-semibold text-[#64748B]">{t('tasks.drawer.noNotesYet')}</div>}
+              )) : <div className="text-xs font-semibold text-[var(--text-muted)]">{t('tasks.drawer.noNotesYet')}</div>}
             </div>
           </section>
 
-          <section className="rounded-xl border border-[#D7EEF0] bg-white p-3">
-            <h3 className="mb-2 text-sm font-black text-[#0F172A]">{t('tasks.drawer.attachmentsTitle')}</h3>
-            <label className="mb-2 inline-flex h-9 cursor-pointer items-center gap-1 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-xs font-black text-[#007A80]">
+          <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
+            <h3 className="mb-2 text-sm font-black text-[var(--text)]">{t('tasks.drawer.attachmentsTitle')}</h3>
+            <label className="mb-2 inline-flex h-9 cursor-pointer items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-xs font-black text-[var(--brand-accent)]">
               <Paperclip size={13} />
               {t('tasks.drawer.addAttachments')}
               <input type="file" multiple onChange={handleUploadAttachments} className="hidden" />
@@ -303,12 +303,12 @@ export function TaskDrawer({
 
             <div className="space-y-2">
               {attachments.length ? attachments.map((attachment) => (
-                <div key={attachment.id || attachment.path || attachment.url} className="flex items-center justify-between rounded-lg border border-[#E5EEF0] bg-[#F8FEFF] p-2">
+                <div key={attachment.id || attachment.path || attachment.url} className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-2">
                   <a
                     href={attachment.url || attachment.path || '#'}
                     target="_blank"
                     rel="noreferrer"
-                    className="truncate text-xs font-semibold text-[#0F172A] underline"
+                    className="truncate text-xs font-semibold text-[var(--text)] underline"
                   >
                     {attachment.name || attachment.file_name || attachment.url || t('tasks.drawer.attachmentFallback')}
                   </a>
@@ -316,7 +316,7 @@ export function TaskDrawer({
                     <button type="button" onClick={() => handleDeleteAttachment(attachment.id)} className="text-xs font-black text-red-600">{t('actions.delete')}</button>
                   )}
                 </div>
-              )) : <div className="text-xs font-semibold text-[#64748B]">{t('tasks.drawer.noAttachmentsYet')}</div>}
+              )) : <div className="text-xs font-semibold text-[var(--text-muted)]">{t('tasks.drawer.noAttachmentsYet')}</div>}
             </div>
           </section>
         </div>

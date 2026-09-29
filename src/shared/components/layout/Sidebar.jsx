@@ -1,12 +1,9 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronDown, LogOut, Moon, Pin, Sparkles, Sun } from 'lucide-react'
+import { ChevronDown, Pin, Sparkles } from 'lucide-react'
 import { cn } from '../../utils/cn'
-import { useAuthStore } from '../../../store/authStore'
-import { useThemeStore } from '../../../store/themeStore'
 import { useLocalStorage } from '../data-table/hooks/useLocalStorage'
 import { useNavigation } from '../../../app/navigation/useNavigation'
-import { Avatar } from '../ui/Avatar'
 
 function SidebarNavItem({ item, isActive, collapsed, t, isFavorite = false, onToggleFavorite }) {
   const Icon = item.icon
@@ -50,7 +47,7 @@ function SidebarNavItem({ item, isActive, collapsed, t, isFavorite = false, onTo
   )
 }
 
-function SidebarSection({ section, collapsed, activeItemId, activeSectionId, expanded, onToggle, favoriteIds, onToggleFavorite, t }) {
+function SidebarSection({ section, collapsed, activeItemId, activeSectionId, expanded, onToggle, favoriteIds, onToggleFavorite, t, isFirst = false }) {
   const isSingleAndBare = section.hideLabel
   const isActiveSection = section.id === activeSectionId
 
@@ -93,12 +90,12 @@ function SidebarSection({ section, collapsed, activeItemId, activeSectionId, exp
   const isExpanded = expanded
 
   return (
-    <div>
+    <section className={cn(!isFirst && 'border-t border-[var(--border)] pt-2')}>
       <button
         type="button"
         onClick={() => onToggle(section.id)}
         className={cn(
-          'flex w-full items-center justify-between rounded-md border-s-2 px-2 py-1 transition-colors',
+          'flex w-full items-center justify-between rounded-md border-s-2 px-2 py-2 transition-colors',
           isActiveSection
             ? 'border-[var(--brand-accent)] bg-[var(--shell-active)] font-semibold text-[var(--text)]'
             : 'border-transparent text-[var(--text-muted)] hover:bg-[var(--shell-hover)] hover:text-[var(--text)]'
@@ -116,7 +113,7 @@ function SidebarSection({ section, collapsed, activeItemId, activeSectionId, exp
       </button>
 
       {isExpanded && (
-        <div id={`sidebar-section-${section.id}`} className="mt-0.5 space-y-0.5">
+        <div id={`sidebar-section-${section.id}`} className="ms-2 mt-1 space-y-0.5 border-s border-[var(--border)] ps-1.5">
           {section.items.map((item) => (
             <SidebarNavItem
               key={item.id}
@@ -130,31 +127,17 @@ function SidebarSection({ section, collapsed, activeItemId, activeSectionId, exp
           ))}
         </div>
       )}
-    </div>
+    </section>
   )
 }
 
 export function Sidebar({ collapsed }) {
-  const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
-  const user = useAuthStore((s) => s.user)
-  const logout = useAuthStore((s) => s.logout)
-  const { isDark, toggleTheme } = useThemeStore()
+  const { t } = useTranslation()
   const { sections, activeItem, activeSectionId } = useNavigation()
   const [collapsedSections, setCollapsedSections] = useLocalStorage('main-sidebar-collapsed-sections', {})
   const [favoriteIds, setFavoriteIds] = useLocalStorage('main-sidebar-favorites', [])
   const visibleItems = sections.flatMap((section) => section.items)
   const favoriteItems = favoriteIds.map((id) => visibleItems.find((item) => item.id === id)).filter(Boolean)
-
-  const toggleLanguage = () => {
-    const next = i18n.resolvedLanguage?.startsWith('ar') ? 'en' : 'ar'
-    i18n.changeLanguage(next)
-  }
-
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
 
   const handleToggleSection = (sectionId) => {
     setCollapsedSections((current) => ({ ...current, [sectionId]: !current[sectionId] }))
@@ -188,9 +171,9 @@ export function Sidebar({ collapsed }) {
       </button>
 
       {/* App nav */}
-      <nav aria-label={t('nav.workspace', 'Workspace')} className="flex-1 py-2 space-y-3 overflow-y-auto scrollbar-thin px-3">
+      <nav aria-label={t('nav.workspace', 'Workspace')} className="flex-1 space-y-2 overflow-y-auto px-3 py-2 scrollbar-thin">
         {sections.map((section, index) => (
-          <div key={section.id} className="space-y-3">
+          <div key={section.id} className="space-y-2">
             <SidebarSection
               section={section}
               collapsed={collapsed}
@@ -201,6 +184,7 @@ export function Sidebar({ collapsed }) {
               favoriteIds={favoriteIds}
               onToggleFavorite={handleToggleFavorite}
               t={t}
+              isFirst={index === 0}
             />
             {index === 0 && favoriteItems.length > 0 && (
               <section className="border-t border-[var(--border)] pt-2" aria-label={t('nav.favorites')}>
@@ -225,50 +209,11 @@ export function Sidebar({ collapsed }) {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00C2CB]" />
             </span>
             <Sparkles size={12} />
-            AI نشط
+            {t('app.aiActive')}
           </div>
         </div>
       )}
 
-      {/* Bottom controls */}
-      <div className="border-t border-[var(--border)] p-3 space-y-0.5">
-        <button
-          onClick={toggleTheme}
-          className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[var(--text-muted)] hover:bg-[var(--shell-hover)] hover:text-[var(--text)] text-sm font-arabic transition-colors"
-        >
-          {isDark ? <Sun size={16} /> : <Moon size={16} />}
-          {!collapsed && (isDark ? t('common.lightMode') : t('common.darkMode'))}
-        </button>
-
-        <button
-          onClick={toggleLanguage}
-          className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[var(--text-muted)] hover:bg-[var(--shell-hover)] hover:text-[var(--text)] text-sm font-arabic transition-colors"
-        >
-          <span className="font-latin text-xs font-bold w-4 text-center">
-            {i18n.resolvedLanguage?.startsWith('ar') ? 'EN' : 'ع'}
-          </span>
-          {!collapsed && t('common.language')}
-        </button>
-
-        {user && (
-          <div className={cn('flex items-center gap-2.5 px-2 py-1.5', collapsed && 'justify-center')}>
-            <Avatar name={user.name || user.login} size="sm" />
-            {!collapsed && (
-              <p className="text-sm font-medium text-[var(--text)] truncate font-arabic">
-                {user.name || user.login}
-              </p>
-            )}
-          </div>
-        )}
-
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[var(--text-muted)] hover:bg-[#FEF2F2] hover:text-[#B91C1C] dark:hover:bg-[#451E28] dark:hover:text-[#FDA4AF] text-sm font-arabic transition-colors"
-        >
-          <LogOut size={16} />
-          {!collapsed && t('actions.logout')}
-        </button>
-      </div>
     </aside>
   )
 }

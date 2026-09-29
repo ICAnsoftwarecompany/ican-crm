@@ -65,18 +65,18 @@ export function MessengerConversationHoverPreview({ conversation }) {
         ? createPortal(
             <div
               dir="auto"
-              className="pointer-events-none fixed z-[9999] rounded-xl border border-[#CFE8EB] bg-white/95 p-3 text-start shadow-2xl backdrop-blur"
+              className="pointer-events-none fixed z-[9999] rounded-xl border border-[var(--border)] bg-[var(--surface)]/95 p-3 text-start shadow-2xl backdrop-blur"
               style={{
                 left: previewRect.left,
                 top: previewRect.top,
                 width: previewRect.width,
               }}
             >
-              <div className="mb-1 flex items-center gap-1 text-[10px] font-black text-[#007A80]">
+              <div className="mb-1 flex items-center gap-1 text-[10px] font-black text-[var(--brand-accent)]">
                 <MessageCircle size={12} />
                 <span>{'\u0622\u062e\u0631 \u0631\u0633\u0627\u0644\u0629 \u0645\u0646 \u0627\u0644\u0639\u0645\u064a\u0644'}</span>
               </div>
-              <div className="line-clamp-3 text-xs font-bold leading-5 text-[#0F172A]">
+              <div className="line-clamp-3 text-xs font-bold leading-5 text-[var(--text)]">
                 {preview}
               </div>
             </div>,

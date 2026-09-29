@@ -25,7 +25,7 @@ export function InitialsAvatar({
     >
       {getInitials(title, fallbackInitial)}
       {unreadCount > 0 ? (
-        <span className="absolute -top-1 -end-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[10px] font-black text-white ring-2 ring-white">
+        <span className="absolute -top-1 -end-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[10px] font-black text-white ring-2 ring-[var(--surface)]">
           {unreadCount > 99 ? '99+' : unreadCount}
         </span>
       ) : null}

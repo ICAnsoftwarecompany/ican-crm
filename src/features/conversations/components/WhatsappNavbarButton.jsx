@@ -26,8 +26,8 @@ export function WhatsappNavbarButton({ active = false, onClick }) {
       className={cn(
         'relative h-8 w-8 inline-flex items-center justify-center rounded-lg border transition-colors',
         active
-          ? 'border-[#25D366] bg-[#E9FFF2]'
-          : 'border-[#E5E7EB] bg-white hover:bg-[#E9FFF2]'
+          ? 'border-[#25D366] bg-[#E9FFF2] dark:bg-[#153a2a]'
+          : 'border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-2)]'
       )}
       aria-label="\u0645\u062d\u0627\u062f\u062b\u0627\u062a WhatsApp"
       title="\u0641\u062a\u062d WhatsApp \u0627\u0644\u0633\u0631\u064a\u0639"

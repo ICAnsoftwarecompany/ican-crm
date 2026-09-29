@@ -333,17 +333,17 @@ export function ConversationComposer({
       {error && <div className="mb-2 text-xs font-semibold text-red-600">{error}</div>}
 
       {replyToMessage ? (
-        <div className="mb-2 flex items-center gap-2 rounded-xl border border-[#D8EEF2] bg-[#F8FEFF] px-3 py-2">
+        <div className="mb-2 flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2">
           <div className="min-w-0 flex-1">
-            <div className="text-[10px] font-black text-[#00878D]">رد على رسالة</div>
-            <div className="truncate text-xs font-semibold text-[#334155]">
+            <div className="text-[10px] font-black text-[var(--brand-accent)]">رد على رسالة</div>
+            <div className="truncate text-xs font-semibold text-[var(--text)]">
               {replyToMessage.text || replyToMessage.attachments?.[0]?.type || 'مرفق'}
             </div>
           </div>
           <button
             type="button"
             onClick={onCancelReply}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-[#64748B] hover:bg-white hover:text-[#111827]"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-[var(--surface)] hover:text-[var(--text)]"
             title="إلغاء الرد"
           >
             <X size={14} />
@@ -352,18 +352,18 @@ export function ConversationComposer({
       ) : null}
 
       {attachment ? (
-        <div className="mb-2 rounded-xl border border-[#E5EEF0] bg-[#F8FAFC] px-3 py-2">
+        <div className="mb-2 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2">
           <div className="flex items-center gap-2">
             {attachment.type?.startsWith('audio/') ? (
               <Mic size={14} className="shrink-0 text-[#0A7CFF]" />
             ) : (
-              <Paperclip size={14} className="shrink-0 text-[#64748B]" />
+              <Paperclip size={14} className="shrink-0 text-[var(--text-muted)]" />
             )}
-            <div className="min-w-0 flex-1 truncate text-xs font-bold text-[#334155]">{attachment.name}</div>
+            <div className="min-w-0 flex-1 truncate text-xs font-bold text-[var(--text)]">{attachment.name}</div>
             <button
               type="button"
               onClick={clearAttachment}
-              className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-[#64748B] hover:bg-white hover:text-[#111827]"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-[var(--surface)] hover:text-[var(--text)]"
               title="إزالة المرفق"
             >
               <X size={14} />
@@ -399,7 +399,7 @@ export function ConversationComposer({
           <button
             type="button"
             onClick={stopRecording}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-white text-red-600 hover:bg-red-100"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--surface)] text-red-600 hover:bg-red-100"
             title="إيقاف التسجيل"
           >
             <Square size={13} fill="currentColor" />
@@ -408,13 +408,13 @@ export function ConversationComposer({
       ) : null}
 
       {showEmojiPicker ? (
-        <div className="mb-2 flex max-h-32 flex-wrap gap-1 overflow-y-auto rounded-2xl border border-[#D8EEF2] bg-white p-2 shadow-lg">
+        <div className="mb-2 flex max-h-32 flex-wrap gap-1 overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-lg">
           {EMOJIS.map((emoji) => (
             <button
               key={emoji}
               type="button"
               onClick={() => sendEmoji(emoji)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full text-lg transition-colors hover:bg-[#F1F5F9]"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full text-lg transition-colors hover:bg-[var(--surface-2)]"
               title={emoji}
             >
               {emoji}

@@ -49,18 +49,18 @@ function BusinessEmailRow({ account, email, savingKey, onSave }) {
   const isSaving = savingKey === emailKey
 
   return (
-    <div className="rounded-lg border border-[#E5EEF2] bg-white px-3 py-2">
+    <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate text-xs font-black text-[#111827]">{email.email}</p>
+          <p className="truncate text-xs font-black text-[var(--text)]">{email.email}</p>
           {email.display_name ? (
-            <p className="mt-0.5 truncate text-[11px] font-semibold text-[#64748B]">{email.display_name}</p>
+            <p className="mt-0.5 truncate text-[11px] font-semibold text-[var(--text-muted)]">{email.display_name}</p>
           ) : null}
         </div>
 
         <div className="flex shrink-0 items-center gap-1">
           {email.is_primary ? (
-            <span className="inline-flex h-6 items-center gap-1 rounded-full border border-[#BFDBFE] bg-[#EFF6FF] px-2 text-[10px] font-black text-[#1D4ED8]">
+            <span className="inline-flex h-6 items-center gap-1 rounded-full border border-[#BFDBFE] bg-[#EFF6FF] dark:bg-[#172554] px-2 text-[10px] font-black text-[#1D4ED8]">
               <ShieldCheck size={12} />
               أساسي
             </span>
@@ -72,10 +72,10 @@ function BusinessEmailRow({ account, email, savingKey, onSave }) {
       <div className="mt-2 flex items-center justify-between gap-2">
         <div className="flex min-w-0 flex-wrap items-center gap-1">
           {email.is_default ? (
-            <span className="rounded-full bg-[#F8FAFC] px-2 py-0.5 text-[10px] font-black text-[#475569]">افتراضي</span>
+            <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[10px] font-black text-[var(--text-muted)]">افتراضي</span>
           ) : null}
           {email.verification_status ? (
-            <span className="rounded-full bg-[#F0FDFA] px-2 py-0.5 text-[10px] font-black text-[#0F766E]">
+            <span className="rounded-full bg-[#F0FDFA] dark:bg-[#134e4a] px-2 py-0.5 text-[10px] font-black text-[var(--brand-accent)]">
               {email.verification_status}
             </span>
           ) : null}
@@ -86,7 +86,7 @@ function BusinessEmailRow({ account, email, savingKey, onSave }) {
             type="button"
             disabled={isSaving}
             onClick={() => onSave(account, [email], emailKey)}
-            className="inline-flex h-7 items-center gap-1 rounded-lg border border-[#F4C7C3] bg-white px-2 text-[11px] font-black text-[#B3261E] transition hover:bg-[#FFF4F2] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-7 items-center gap-1 rounded-lg border border-[#F4C7C3] bg-[var(--surface)] px-2 text-[11px] font-black text-[#B3261E] transition hover:bg-[#FFF4F2] dark:hover:bg-[#3b2024] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSaving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
             حفظ
@@ -130,19 +130,19 @@ export function GmailBusinessEmailsPanel({ enabled = true, compact = false }) {
   if (!enabled) return null
 
   return (
-    <section className="border-b border-[#EEF2F4] bg-[#FFFDFD]">
+    <section className="border-b border-[var(--border)] bg-[var(--surface)]">
       <button
         type="button"
         onClick={() => setExpanded((value) => !value)}
-        className="flex w-full items-center justify-between gap-3 px-3 py-2 text-start transition hover:bg-[#FFF7F6]"
+        className="flex w-full items-center justify-between gap-3 px-3 py-2 text-start transition hover:bg-[var(--surface-2)]"
       >
         <span className="flex min-w-0 items-center gap-2">
-          <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#FCE8E6] text-[#D93025]">
+          <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#FCE8E6] text-[#D93025] dark:bg-[#3b2024] dark:text-[#fca5a5]">
             <MailPlus size={17} />
           </span>
           <span className="min-w-0">
-            <span className="block truncate text-xs font-black text-[#111827]">إيميلات Gmail Business</span>
-            <span className="block truncate text-[11px] font-semibold text-[#64748B]">
+            <span className="block truncate text-xs font-black text-[var(--text)]">إيميلات Gmail Business</span>
+            <span className="block truncate text-[11px] font-semibold text-[var(--text-muted)]">
               {businessEmailsQuery.isLoading ? 'جاري التحميل...' : `${accounts.length} حساب - ${unsavedCount} غير محفوظ`}
             </span>
           </span>
@@ -153,7 +153,7 @@ export function GmailBusinessEmailsPanel({ enabled = true, compact = false }) {
               {unsavedCount > 99 ? '99+' : unsavedCount}
             </span>
           ) : null}
-          <ChevronDown size={15} className={cn('text-[#64748B] transition', expanded && 'rotate-180')} />
+          <ChevronDown size={15} className={cn('text-[var(--text-muted)] transition', expanded && 'rotate-180')} />
         </span>
       </button>
 
@@ -164,7 +164,7 @@ export function GmailBusinessEmailsPanel({ enabled = true, compact = false }) {
               type="button"
               onClick={() => businessEmailsQuery.refetch()}
               disabled={businessEmailsQuery.isFetching}
-              className="inline-flex h-7 items-center gap-1 rounded-lg border border-[#E5EEF2] bg-white px-2 text-[11px] font-black text-[#475569] disabled:opacity-60"
+              className="inline-flex h-7 items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-[11px] font-black text-[var(--text-muted)] disabled:opacity-60"
             >
               <RefreshCw size={12} className={cn(businessEmailsQuery.isFetching && 'animate-spin')} />
               تحديث
@@ -174,13 +174,13 @@ export function GmailBusinessEmailsPanel({ enabled = true, compact = false }) {
           {businessEmailsQuery.isLoading ? (
             <div className="space-y-2">
               {Array.from({ length: 2 }).map((_, index) => (
-                <div key={index} className="h-20 animate-pulse rounded-lg bg-white" />
+                <div key={index} className="h-20 animate-pulse rounded-lg bg-[var(--surface)]" />
               ))}
             </div>
           ) : null}
 
           {!businessEmailsQuery.isLoading && accounts.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-[#F4C7C3] bg-white px-3 py-4 text-center text-xs font-bold text-[#64748B]">
+            <div className="rounded-lg border border-dashed border-[#F4C7C3] bg-[var(--surface)] px-3 py-4 text-center text-xs font-bold text-[var(--text-muted)]">
               لا توجد إيميلات Business متاحة حاليا.
             </div>
           ) : null}
@@ -191,11 +191,11 @@ export function GmailBusinessEmailsPanel({ enabled = true, compact = false }) {
             const accountSavingKey = `account-${account.integration_id}`
 
             return (
-              <div key={account.integration_id || account.gmail_account} className="rounded-xl border border-[#F4C7C3] bg-[#FFFBFA] p-2">
+              <div key={account.integration_id || account.gmail_account} className="rounded-xl border border-[#F4C7C3] bg-[var(--surface-2)] p-2">
                 <div className="mb-2 flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="truncate text-xs font-black text-[#111827]">{account.gmail_account || 'Gmail account'}</p>
-                    <p className="text-[11px] font-semibold text-[#64748B]">
+                    <p className="truncate text-xs font-black text-[var(--text)]">{account.gmail_account || 'Gmail account'}</p>
+                    <p className="text-[11px] font-semibold text-[var(--text-muted)]">
                       Integration #{account.integration_id}
                     </p>
                   </div>

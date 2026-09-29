@@ -319,23 +319,23 @@ export function ConversationThread({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[#F8FEFF]">
-      <div className="border-b border-[#E5F7F8] bg-[linear-gradient(135deg,#F8FEFF_0%,#F1FBFD_100%)] px-3 py-2">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[var(--surface-2)]">
+      <div className="border-b border-[var(--border)] bg-[var(--surface-2)] px-3 py-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <button
             type="button"
             onClick={openContactDetails}
-            className="group inline-flex min-w-0 max-w-[68%] items-center gap-2 rounded-lg px-1.5 py-1 text-start transition hover:bg-white/70"
+            className="group inline-flex min-w-0 max-w-[68%] items-center gap-2 rounded-lg px-1.5 py-1 text-start transition hover:bg-[var(--surface)]/70"
             title="عرض بيانات جهة الاتصال"
           >
-            <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#DFF7F8] text-[11px] font-black text-[#007A80]">
+            <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#DFF7F8] text-[11px] font-black text-[var(--brand-accent)]">
               {avatarUrl ? <img src={avatarUrl} alt={title || 'جهة الاتصال'} className="h-full w-full object-cover" referrerPolicy="no-referrer" /> : (title?.trim()?.charAt(0) || '?').toUpperCase()}
             </span>
             <span className="min-w-0">
-              <span className="block truncate text-xs font-black text-[#0F172A] group-hover:text-[#0369A1]">{title || 'جهة الاتصال'}</span>
+              <span className="block truncate text-xs font-black text-[var(--text)] group-hover:text-[#0369A1]">{title || 'جهة الاتصال'}</span>
               <span className="block truncate text-[10px] font-semibold text-[var(--text-muted)]">{contactText}</span>
               {assignedUser?.name ? (
-                <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-[#F1F5F9] px-2 py-0.5 text-[10px] font-black text-[#475569]">
+                <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
                   <UserRound size={11} />
                   <span className="truncate">المسؤول: {assignedUser.name}</span>
                 </span>
@@ -351,8 +351,8 @@ export function ConversationThread({
                 disabled={isTogglingConversationStatus}
                 className={`inline-flex h-7 items-center gap-1 rounded-full border px-2 text-[10px] font-black transition disabled:cursor-not-allowed disabled:opacity-60 ${
                   isConversationClosed
-                    ? 'border-[#BEEFF2] bg-white text-[#007A80] hover:border-[#00C2CB] hover:bg-[#E8F9FA]'
-                    : 'border-[#FAD1D1] bg-white text-[#B91C1C] hover:border-[#FCA5A5] hover:bg-[#FEF2F2]'
+                    ? 'border-[var(--brand-accent)] bg-[var(--surface)] text-[var(--brand-accent)] hover:border-[#00C2CB] hover:bg-[var(--brand-accent-soft)]'
+                    : 'border-[#FAD1D1] bg-[var(--surface)] text-[#B91C1C] hover:border-[#FCA5A5] hover:bg-[#FEF2F2] dark:hover:bg-[#451E28]'
                 }`}
                 title={isConversationClosed ? 'إعادة فتح المحادثة' : 'إنهاء المحادثة'}
               >
@@ -370,7 +370,7 @@ export function ConversationThread({
               <button
                 type="button"
                 onClick={() => onConvertToLead?.(detailsSource)}
-                className="inline-flex h-7 items-center gap-1 rounded-full border border-[#BEEFF2] bg-white px-2 text-[10px] font-black text-[#007A80] transition hover:border-[#00C2CB] hover:bg-[#E8F9FA]"
+                className="inline-flex h-7 items-center gap-1 rounded-full border border-[var(--brand-accent)] bg-[var(--surface)] px-2 text-[10px] font-black text-[var(--brand-accent)] transition hover:border-[#00C2CB] hover:bg-[var(--brand-accent-soft)]"
                 title="تحويل عميل محتمل"
               >
                 <UserPlus size={12} />
@@ -381,7 +381,7 @@ export function ConversationThread({
             <button
               type="button"
               onClick={() => togglePanel('search')}
-              className={`relative inline-flex h-7 w-7 items-center justify-center rounded-full border transition ${openPanel === 'search' || hasSearchFilter ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]' : 'border-[#D7E8EB] bg-white text-[#64748B] hover:border-[#B9E5E9]'}`}
+              className={`relative inline-flex h-7 w-7 items-center justify-center rounded-full border transition ${openPanel === 'search' || hasSearchFilter ? 'border-[#00C2CB] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:border-[var(--border)]'}`}
               title="اختصار البحث"
             >
               <Search size={12} />
@@ -391,7 +391,7 @@ export function ConversationThread({
             <button
               type="button"
               onClick={() => togglePanel('date')}
-              className={`relative inline-flex h-7 w-7 items-center justify-center rounded-full border transition ${openPanel === 'date' || hasDateFilter ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]' : 'border-[#D7E8EB] bg-white text-[#64748B] hover:border-[#B9E5E9]'}`}
+              className={`relative inline-flex h-7 w-7 items-center justify-center rounded-full border transition ${openPanel === 'date' || hasDateFilter ? 'border-[#00C2CB] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:border-[var(--border)]'}`}
               title="اختصار التاريخ"
             >
               <CalendarDays size={12} />
@@ -401,7 +401,7 @@ export function ConversationThread({
             <button
               type="button"
               onClick={() => togglePanel('user')}
-              className={`relative inline-flex h-7 w-7 items-center justify-center rounded-full border transition ${openPanel === 'user' || hasUserFilter ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]' : 'border-[#D7E8EB] bg-white text-[#64748B] hover:border-[#B9E5E9]'}`}
+              className={`relative inline-flex h-7 w-7 items-center justify-center rounded-full border transition ${openPanel === 'user' || hasUserFilter ? 'border-[#00C2CB] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:border-[var(--border)]'}`}
               title="اختصار المستخدم"
             >
               <UserRound size={12} />
@@ -412,7 +412,7 @@ export function ConversationThread({
               <button
                 type="button"
                 onClick={clearFilters}
-                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[#FFD5D5] bg-white text-[#DC2626] transition hover:bg-[#FFF5F5]"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[#FFD5D5] bg-[var(--surface)] text-[#DC2626] transition hover:bg-[#FFF5F5] dark:hover:bg-[#450a0a]"
                 title="مسح كل الفلاتر"
               >
                 <X size={12} />
@@ -422,26 +422,26 @@ export function ConversationThread({
         </div>
 
         {openPanel && (
-          <div className="mt-2 rounded-lg border border-[#D8EEF2] bg-white p-2 shadow-sm">
+          <div className="mt-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 shadow-sm">
             {openPanel === 'search' && (
               <div className="grid grid-cols-1 gap-2 md:grid-cols-[minmax(0,1fr)_132px]">
                 <label className="relative">
-                  <Search size={14} className="pointer-events-none absolute start-2.5 top-1/2 -translate-y-1/2 text-[#6B7280]" />
+                  <Search size={14} className="pointer-events-none absolute start-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                   <input
                     type="search"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     placeholder="ابحث بالمحتوى أو المستخدم"
-                    className="h-8 w-full rounded-lg border border-[#D5E8EB] bg-white ps-8 pe-2 text-xs font-semibold text-[#111827] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#00C2CB]/20"
+                    className="h-8 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] ps-8 pe-2 text-xs font-semibold text-[var(--text)] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#00C2CB]/20"
                   />
                 </label>
 
                 <label className="relative">
-                  <Filter size={14} className="pointer-events-none absolute start-2.5 top-1/2 -translate-y-1/2 text-[#6B7280]" />
+                  <Filter size={14} className="pointer-events-none absolute start-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                   <select
                     value={searchScope}
                     onChange={(event) => setSearchScope(event.target.value)}
-                    className="h-8 w-full rounded-lg border border-[#D5E8EB] bg-white ps-8 pe-2 text-xs font-bold text-[#111827] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#00C2CB]/20"
+                    className="h-8 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] ps-8 pe-2 text-xs font-bold text-[var(--text)] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#00C2CB]/20"
                   >
                     <option value="all">شامل</option>
                     <option value="message">رسائل</option>
@@ -459,7 +459,7 @@ export function ConversationThread({
                   min={dateRange.first || undefined}
                   max={toDate || dateRange.last || undefined}
                   onChange={(event) => setFromDate(event.target.value)}
-                  className="h-8 w-full rounded-lg border border-[#D5E8EB] bg-white px-2 text-xs font-bold text-[#111827] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#00C2CB]/20"
+                  className="h-8 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-bold text-[var(--text)] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#00C2CB]/20"
                 />
                 <input
                   type="date"
@@ -467,7 +467,7 @@ export function ConversationThread({
                   min={fromDate || dateRange.first || undefined}
                   max={dateRange.last || undefined}
                   onChange={(event) => setToDate(event.target.value)}
-                  className="h-8 w-full rounded-lg border border-[#D5E8EB] bg-white px-2 text-xs font-bold text-[#111827] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#00C2CB]/20"
+                  className="h-8 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-bold text-[var(--text)] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#00C2CB]/20"
                 />
               </div>
             )}
@@ -477,20 +477,20 @@ export function ConversationThread({
                 <select
                   value={userFilter}
                   onChange={(event) => setUserFilter(event.target.value)}
-                  className="h-8 w-full rounded-lg border border-[#D5E8EB] bg-white px-2 text-xs font-bold text-[#111827] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#00C2CB]/20"
+                  className="h-8 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-bold text-[var(--text)] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#00C2CB]/20"
                 >
                   <option value="all">كل المستخدمين</option>
                   {participantOptions.map((option) => (
                     <option key={option.value} value={option.value}>{option.label}</option>
                   ))}
                 </select>
-                {userFilter !== 'all' ? <span className="inline-flex items-center rounded-lg bg-[#F2FAFB] px-2 text-[10px] font-black text-[#0F766E]">{selectedUserLabel}</span> : null}
+                {userFilter !== 'all' ? <span className="inline-flex items-center rounded-lg bg-[var(--brand-accent-soft)] px-2 text-[10px] font-black text-[var(--brand-accent)]">{selectedUserLabel}</span> : null}
               </div>
             )}
           </div>
         )}
 
-        <div className="mt-2 inline-flex rounded-full bg-[#ECF9FB] px-2.5 py-1 text-[10px] font-black text-[#0F766E]">
+        <div className="mt-2 inline-flex rounded-full bg-[var(--brand-accent-soft)] px-2.5 py-1 text-[10px] font-black text-[var(--brand-accent)]">
           {filteredMessages.length}/{messages.length}
         </div>
       </div>
@@ -516,13 +516,13 @@ export function ConversationThread({
 
       {viewMode === 'details' && (
         <div className="min-h-0 flex-1 overflow-y-auto p-3">
-          <div className="rounded-xl border border-[#CFE8EB] bg-white p-3 shadow-sm">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 shadow-sm">
             <div className="mb-3 flex items-center justify-between gap-2">
-              <h3 className="text-sm font-black text-[#0F172A]">بيانات جهة الاتصال</h3>
+              <h3 className="text-sm font-black text-[var(--text)]">بيانات جهة الاتصال</h3>
               <button
                 type="button"
                 onClick={() => setViewMode('chat')}
-                className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#D6E8EB] bg-white px-2 text-xs font-black text-[#0F766E] transition hover:border-[#00C2CB] hover:text-[#007A80]"
+                className="inline-flex h-8 items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-black text-[var(--brand-accent)] transition hover:border-[#00C2CB] hover:text-[var(--brand-accent)]"
               >
                 <ArrowRight size={14} />
                 عودة للمحادثة
@@ -531,44 +531,44 @@ export function ConversationThread({
 
             <div className="space-y-2">
               {detailsItems.map((item) => (
-                <div key={item.key} className="rounded-lg border border-[#E5F1F4] bg-[#FAFDFE] px-2.5 py-2">
-                  <div className="text-[10px] font-black text-[#64748B]">{item.label}</div>
-                  <div className="mt-0.5 break-all text-xs font-bold text-[#0F172A]">{item.value}</div>
+                <div key={item.key} className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-2.5 py-2">
+                  <div className="text-[10px] font-black text-[var(--text-muted)]">{item.label}</div>
+                  <div className="mt-0.5 break-all text-xs font-bold text-[var(--text)]">{item.value}</div>
                 </div>
               ))}
             </div>
 
             <div className="mt-3 space-y-2">
               {linkedCustomer ? (
-                <div className="rounded-lg border border-[#D8EEF2] bg-[#F8FEFF] px-3 py-2">
+                <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2">
                   <div className="mb-2 flex items-center justify-between gap-2">
-                    <div className="text-xs font-black text-[#0F172A]">{'\u0627\u0644\u0639\u0645\u064a\u0644 \u0627\u0644\u0645\u0631\u062a\u0628\u0637'}</div>
-                    <span className="rounded-full bg-[#ECFDF5] px-2 py-0.5 text-[10px] font-black text-[#047857]">
+                    <div className="text-xs font-black text-[var(--text)]">{'\u0627\u0644\u0639\u0645\u064a\u0644 \u0627\u0644\u0645\u0631\u062a\u0628\u0637'}</div>
+                    <span className="rounded-full bg-[#ECFDF5] dark:bg-[#052e16] px-2 py-0.5 text-[10px] font-black text-[#047857]">
                       {linkedCustomer.type || 'customer'}
                     </span>
                   </div>
                   <div className="grid grid-cols-1 gap-2 text-xs md:grid-cols-2">
                     <div>
-                      <div className="text-[10px] font-black text-[#64748B]">الاسم</div>
-                      <div className="font-bold text-[#0F172A]">{linkedCustomer.name || '-'}</div>
+                      <div className="text-[10px] font-black text-[var(--text-muted)]">الاسم</div>
+                      <div className="font-bold text-[var(--text)]">{linkedCustomer.name || '-'}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] font-black text-[#64748B]">الشركة</div>
-                      <div className="font-bold text-[#0F172A]">{linkedCustomer.company || '-'}</div>
+                      <div className="text-[10px] font-black text-[var(--text-muted)]">الشركة</div>
+                      <div className="font-bold text-[var(--text)]">{linkedCustomer.company || '-'}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] font-black text-[#64748B]">الهاتف</div>
-                      <div className="break-all font-bold text-[#0F172A]">{linkedCustomer.phone || '-'}</div>
+                      <div className="text-[10px] font-black text-[var(--text-muted)]">الهاتف</div>
+                      <div className="break-all font-bold text-[var(--text)]">{linkedCustomer.phone || '-'}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] font-black text-[#64748B]">البريد</div>
-                      <div className="break-all font-bold text-[#0F172A]">{linkedCustomer.email || '-'}</div>
+                      <div className="text-[10px] font-black text-[var(--text-muted)]">البريد</div>
+                      <div className="break-all font-bold text-[var(--text)]">{linkedCustomer.email || '-'}</div>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="rounded-lg border border-dashed border-[#BEEFF2] bg-[#F8FEFF] px-3 py-3">
-                  <div className="mb-2 text-xs font-black text-[#0F172A]">{'\u0644\u0627 \u064a\u0648\u062c\u062f \u0639\u0645\u064a\u0644 \u0645\u0631\u062a\u0628\u0637 \u0628\u0647\u0630\u0647 \u0627\u0644\u0645\u062d\u0627\u062f\u062b\u0629'}</div>
+                <div className="rounded-lg border border-dashed border-[var(--brand-accent)] bg-[var(--surface-2)] px-3 py-3">
+                  <div className="mb-2 text-xs font-black text-[var(--text)]">{'\u0644\u0627 \u064a\u0648\u062c\u062f \u0639\u0645\u064a\u0644 \u0645\u0631\u062a\u0628\u0637 \u0628\u0647\u0630\u0647 \u0627\u0644\u0645\u062d\u0627\u062f\u062b\u0629'}</div>
                   <button
                     type="button"
                     onClick={() => onConvertToLead?.(detailsSource)}
@@ -580,33 +580,33 @@ export function ConversationThread({
               )}
 
               {assignedUser ? (
-                <div className="rounded-lg border border-[#E5F1F4] bg-[#FAFDFE] px-3 py-2">
-                  <div className="text-[10px] font-black text-[#64748B]">المستخدم المسؤول</div>
-                  <div className="mt-1 text-xs font-black text-[#0F172A]">{assignedUser.name || '-'}</div>
-                  {assignedUser.email ? <div className="mt-0.5 break-all text-[11px] font-semibold text-[#64748B]">{assignedUser.email}</div> : null}
+                <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2">
+                  <div className="text-[10px] font-black text-[var(--text-muted)]">المستخدم المسؤول</div>
+                  <div className="mt-1 text-xs font-black text-[var(--text)]">{assignedUser.name || '-'}</div>
+                  {assignedUser.email ? <div className="mt-0.5 break-all text-[11px] font-semibold text-[var(--text-muted)]">{assignedUser.email}</div> : null}
                 </div>
               ) : null}
 
               {conversationUsers.length ? (
-                <div className="rounded-lg border border-[#E5F1F4] bg-[#FAFDFE] px-3 py-2">
+                <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2">
                   <div className="mb-2 flex items-center justify-between gap-2">
-                    <div className="text-[10px] font-black text-[#64748B]">مستخدمو المحادثة</div>
-                    <span className="rounded-full bg-[#F1F5F9] px-2 py-0.5 text-[10px] font-black text-[#64748B]">{conversationUsers.length}</span>
+                    <div className="text-[10px] font-black text-[var(--text-muted)]">مستخدمو المحادثة</div>
+                    <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[10px] font-black text-[var(--text-muted)]">{conversationUsers.length}</span>
                   </div>
                   <div className="space-y-2">
                     {conversationUsers.map((user) => (
-                      <div key={user.id || user.email || user.name} className="rounded-lg border border-[#E8F3F5] bg-white px-2.5 py-2">
+                      <div key={user.id || user.email || user.name} className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2.5 py-2">
                         <div className="flex items-center justify-between gap-2">
                           <div className="min-w-0">
-                            <div className="truncate text-xs font-black text-[#0F172A]">{user.name || '-'}</div>
-                            {user.email ? <div className="truncate text-[11px] font-semibold text-[#64748B]">{user.email}</div> : null}
+                            <div className="truncate text-xs font-black text-[var(--text)]">{user.name || '-'}</div>
+                            {user.email ? <div className="truncate text-[11px] font-semibold text-[var(--text-muted)]">{user.email}</div> : null}
                           </div>
                           {user.is_current ? (
-                            <span className="shrink-0 rounded-full bg-[#E8F9FA] px-2 py-0.5 text-[10px] font-black text-[#007A80]">حالي</span>
+                            <span className="shrink-0 rounded-full bg-[var(--brand-accent-soft)] px-2 py-0.5 text-[10px] font-black text-[var(--brand-accent)]">حالي</span>
                           ) : null}
                         </div>
                         {(user.started_at || user.last_activity_at) ? (
-                          <div className="mt-1 grid grid-cols-1 gap-1 text-[10px] font-semibold text-[#64748B] md:grid-cols-2">
+                          <div className="mt-1 grid grid-cols-1 gap-1 text-[10px] font-semibold text-[var(--text-muted)] md:grid-cols-2">
                             {user.started_at ? <span>بدأ: {formatDisplayDateTime(user.started_at)}</span> : null}
                             {user.last_activity_at ? <span>{'\u0622\u062e\u0631 \u0646\u0634\u0627\u0637'}: {formatDisplayDateTime(user.last_activity_at)}</span> : null}
                           </div>
@@ -625,21 +625,21 @@ export function ConversationThread({
               const count = section.items.length
 
               return (
-                <section key={section.key} className="rounded-xl border border-[#E5F1F4] bg-white p-3 shadow-sm">
+                <section key={section.key} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 shadow-sm">
                   <div className="mb-2 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#ECF9FB] text-[#007A80]">
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]">
                         <Icon size={15} />
                       </span>
-                      <h4 className="text-xs font-black text-[#0F172A]">{section.title}</h4>
+                      <h4 className="text-xs font-black text-[var(--text)]">{section.title}</h4>
                     </div>
-                    <span className="rounded-full bg-[#F1F5F9] px-2 py-0.5 text-[10px] font-black text-[#64748B]">
+                    <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
                       {count}
                     </span>
                   </div>
 
                   {count === 0 ? (
-                    <div className="rounded-lg border border-dashed border-[#D8EEF2] bg-[#FAFDFE] px-3 py-3 text-center text-xs font-bold text-[#94A3B8]">
+                    <div className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface-2)] px-3 py-3 text-center text-xs font-bold text-[var(--text-muted)]">
                       لا يوجد محتوى في هذا القسم
                     </div>
                   ) : null}
@@ -651,7 +651,7 @@ export function ConversationThread({
                           key={item.key}
                           type="button"
                           onClick={() => openDetailsGallery(item)}
-                          className="block aspect-square overflow-hidden rounded-lg border border-[#E5F1F4] bg-[#F8FAFC] text-start transition hover:border-[#00C2CB]"
+                          className="block aspect-square overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-2)] text-start transition hover:border-[#00C2CB]"
                           title={item.label}
                         >
                           <img src={item.url} alt={item.label || 'image'} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
@@ -667,12 +667,12 @@ export function ConversationThread({
                           key={item.key}
                           type="button"
                           onClick={() => openDetailsGallery(item)}
-                          className="relative block aspect-video overflow-hidden rounded-lg border border-[#E5F1F4] bg-black text-start transition hover:border-[#00C2CB]"
+                          className="relative block aspect-video overflow-hidden rounded-lg border border-[var(--border)] bg-black text-start transition hover:border-[#00C2CB]"
                           title={item.label}
                         >
                           <video src={item.url} className="h-full w-full object-cover opacity-80" muted />
                           <span className="absolute inset-0 flex items-center justify-center">
-                            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#0F172A] shadow">
+                            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--surface)]/90 text-[var(--text)] shadow">
                               <Play size={17} />
                             </span>
                           </span>
@@ -684,17 +684,17 @@ export function ConversationThread({
                   {section.key === 'audios' && count > 0 ? (
                     <div className="space-y-2">
                       {section.items.map((item) => (
-                        <div key={item.key} className="rounded-lg border border-[#D8EEF2] bg-[#F8FEFF] p-2">
-                          <div className="mb-1 flex items-center justify-between gap-2 text-[10px] font-black text-[#0F766E]">
+                        <div key={item.key} className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-2">
+                          <div className="mb-1 flex items-center justify-between gap-2 text-[10px] font-black text-[var(--brand-accent)]">
                             <button
                               type="button"
                               onClick={() => openDetailsGallery(item)}
-                              className="min-w-0 flex-1 truncate text-start transition hover:text-[#007A80]"
+                              className="min-w-0 flex-1 truncate text-start transition hover:text-[var(--brand-accent)]"
                               title="فتح في المعرض"
                             >
                               {item.label || 'Voice note'}
                             </button>
-                            {item.sizeLabel ? <span className="shrink-0 text-[#64748B]">{item.sizeLabel}</span> : null}
+                            {item.sizeLabel ? <span className="shrink-0 text-[var(--text-muted)]">{item.sizeLabel}</span> : null}
                           </div>
                           <audio src={item.url} controls className="h-9 w-full" />
                         </div>
@@ -709,11 +709,11 @@ export function ConversationThread({
                           key={item.key}
                           type="button"
                           onClick={() => openDetailsGallery(item)}
-                          className="flex w-full items-center gap-2 rounded-lg border border-[#E5F1F4] bg-[#FAFDFE] px-3 py-2 text-start text-xs font-bold text-[#334155] transition hover:border-[#00C2CB] hover:text-[#007A80]"
+                          className="flex w-full items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2 text-start text-xs font-bold text-[var(--text)] transition hover:border-[#00C2CB] hover:text-[var(--brand-accent)]"
                         >
                           <FileText size={14} className="shrink-0" />
                           <span className="min-w-0 flex-1 truncate">{item.label || 'file'}</span>
-                          {item.sizeLabel ? <span className="shrink-0 text-[10px] text-[#64748B]">{item.sizeLabel}</span> : null}
+                          {item.sizeLabel ? <span className="shrink-0 text-[10px] text-[var(--text-muted)]">{item.sizeLabel}</span> : null}
                           <ExternalLink size={13} className="shrink-0" />
                         </button>
                       ))}
@@ -728,7 +728,7 @@ export function ConversationThread({
                           href={item.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-2 rounded-lg border border-[#E5F1F4] bg-[#FAFDFE] px-3 py-2 text-xs font-bold text-[#334155] transition hover:border-[#00C2CB] hover:text-[#007A80]"
+                          className="flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2 text-xs font-bold text-[var(--text)] transition hover:border-[#00C2CB] hover:text-[var(--brand-accent)]"
                         >
                           <Link2 size={14} className="shrink-0" />
                           <span className="min-w-0 flex-1 truncate">{item.label}</span>
@@ -746,7 +746,7 @@ export function ConversationThread({
 
       {viewMode === 'chat' && (
         isConversationClosed ? (
-          <div className="border-t border-[#FDE2E2] bg-[#FFF7F7] px-3 py-2 text-center text-xs font-black text-[#B91C1C]">
+          <div className="border-t border-[#FDE2E2] bg-[#FFF7F7] dark:bg-[#450a0a] px-3 py-2 text-center text-xs font-black text-[#B91C1C]">
             {'\u0627\u0644\u0645\u062d\u0627\u062f\u062b\u0629 \u0645\u0646\u062a\u0647\u064a\u0629\u060c \u0627\u0641\u062a\u062d\u0647\u0627 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649 \u0644\u0625\u0631\u0633\u0627\u0644 \u0631\u0633\u0627\u0626\u0644 \u062c\u062f\u064a\u062f\u0629.'}
           </div>
         ) : null

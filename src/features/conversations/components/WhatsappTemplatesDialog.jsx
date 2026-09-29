@@ -264,13 +264,13 @@ export function WhatsappTemplatesDialog({
 
             <div className="space-y-2">
               {templatesQuery.isLoading ? (
-                <div className="rounded-lg bg-white px-3 py-4 text-center text-xs font-bold text-[var(--text-muted)]">جاري التحميل...</div>
+                <div className="rounded-lg bg-[var(--surface)] px-3 py-4 text-center text-xs font-bold text-[var(--text-muted)]">جاري التحميل...</div>
               ) : null}
               {templates.map((template) => {
                 const id = getEntityId(template)
                 const isActive = Number(template?.is_active) === 1 || template?.is_active === true
                 return (
-                  <div key={id || getTemplateName(template)} className="rounded-lg border border-[var(--border)] bg-white p-3">
+                  <div key={id || getTemplateName(template)} className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3">
                     <button
                       type="button"
                       onClick={() => {

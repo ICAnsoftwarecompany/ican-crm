@@ -20,7 +20,7 @@ export function MessengerConversationListPanel({
     <section className="min-h-[360px] rounded-lg border border-[var(--border)] bg-[var(--surface)] xl:sticky xl:top-16 xl:max-h-[calc(100vh-5rem)] xl:self-start xl:overflow-hidden">
       <header className="flex items-center justify-between gap-3 border-b border-[var(--border)] p-3">
         <div className="flex items-center gap-2">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#E8F9FA] text-[#00878D]">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]">
             <MessengerLogoIcon size={22} />
           </span>
           <div>
@@ -31,7 +31,7 @@ export function MessengerConversationListPanel({
         <button
           type="button"
           onClick={() => conversationsQuery.refetch()}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] text-[var(--text-muted)] transition-colors hover:bg-[#F8FAFC] hover:text-[var(--text)]"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
           title="تحديث المحادثات"
         >
           <RefreshCw size={15} />
@@ -56,7 +56,7 @@ export function MessengerConversationListPanel({
       >
         <div className="max-h-[calc(100vh-345px)] overflow-y-auto p-2 xl:max-h-[calc(100vh-16rem)]">
           {!conversationsQuery.isLoading && filteredConversations.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-[#CFE8EB] bg-[#FAFDFE] px-4 py-6 text-center text-sm font-bold text-[#64748B]">
+            <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface-2)] px-4 py-6 text-center text-sm font-bold text-[var(--text-muted)]">
               لا توجد محادثات مطابقة للفلاتر الحالية.
             </div>
           ) : null}

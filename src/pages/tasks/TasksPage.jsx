@@ -37,12 +37,12 @@ function SummaryCard({ title, value, active = false, onClick }) {
       className={[
         'rounded-xl border px-3 py-2 text-start transition-colors',
         active
-          ? 'border-[#7FDDE1] bg-[#F3FDFF]'
-          : 'border-[#D7EEF0] bg-white hover:bg-[#F8FEFF]',
+          ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)]'
+          : 'border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-2)]',
       ].join(' ')}
     >
-      <div className="text-[11px] font-bold text-[#64748B]">{title}</div>
-      <div className="mt-1 text-lg font-black text-[#0F172A]">{value}</div>
+      <div className="text-[11px] font-bold text-[var(--text-muted)]">{title}</div>
+      <div className="mt-1 text-lg font-black text-[var(--text)]">{value}</div>
     </button>
   )
 }
@@ -60,12 +60,12 @@ function TaskCard({ task }) {
   const TypeIcon = typeMeta.icon
 
   return (
-    <article className="rounded-xl border border-[#D7EEF0] bg-white p-3">
+    <article className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
-            <TypeIcon size={14} className="shrink-0 text-[#007A80]" />
-            <h3 className="truncate text-sm font-black text-[#0F172A]">{getTaskTitle(task, t)}</h3>
+            <TypeIcon size={14} className="shrink-0 text-[var(--brand-accent)]" />
+            <h3 className="truncate text-sm font-black text-[var(--text)]">{getTaskTitle(task, t)}</h3>
           </div>
         </div>
         <span className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[10px] font-black ${priorityMeta.className}`}>
@@ -75,7 +75,7 @@ function TaskCard({ task }) {
 
       <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] font-bold">
         <span className={`rounded-full px-2 py-1 ${statusMeta.tone}`}>{statusMeta.label}</span>
-        <span className={overdue ? 'text-red-600' : 'text-[#64748B]'}>{dueLabel}</span>
+        <span className={overdue ? 'text-red-600' : 'text-[var(--text-muted)]'}>{dueLabel}</span>
       </div>
     </article>
   )
@@ -193,7 +193,7 @@ export function TasksPage() {
           setCreateInitialValues(null)
           setIsCreateOpen(true)
         }}
-        className="h-8 px-2.5 inline-flex items-center gap-1.5 rounded-lg border border-[#E5E7EB] bg-white text-sm text-[#6B7280] hover:text-[#111827] hover:bg-[#F9FAFB] transition-colors"
+        className="h-8 px-2.5 inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-sm text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors"
       >
         <Plus size={14} />
         <span className="font-latin hidden lg:inline">{t('tasks.page.newTask')}</span>
@@ -235,9 +235,9 @@ export function TasksPage() {
   ), [mergedTasks, taskIdParam, visibleTasks])
 
   const boardItems = [
-    { id: 'main', name: t('tasks.page.mainBoard'), count: visibleTasks.length, accent: 'bg-[#E8F9FA] text-[#007A80]' },
-    { id: 'sales', name: t('tasks.page.salesTeamBoard'), count: Math.max(0, Math.ceil(visibleTasks.length / 2)), accent: 'bg-[#EEF2FF] text-[#4F46E5]' },
-    { id: 'followups', name: t('tasks.page.followUpsBoard'), count: Math.max(0, Math.ceil(visibleTasks.length / 3)), accent: 'bg-[#FFF7ED] text-[#C2410C]' },
+    { id: 'main', name: t('tasks.page.mainBoard'), count: visibleTasks.length, accent: 'bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]' },
+    { id: 'sales', name: t('tasks.page.salesTeamBoard'), count: Math.max(0, Math.ceil(visibleTasks.length / 2)), accent: 'bg-[#EEF2FF] text-[#4F46E5] dark:bg-[#27254f] dark:text-[#a5b4fc]' },
+    { id: 'followups', name: t('tasks.page.followUpsBoard'), count: Math.max(0, Math.ceil(visibleTasks.length / 3)), accent: 'bg-[#FFF7ED] text-[#C2410C] dark:bg-[#431f0d] dark:text-[#fdba74]' },
   ]
 
   const filterContent = (
@@ -252,12 +252,12 @@ export function TasksPage() {
       </div>
 
       <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <label className="grid gap-1 text-[11px] font-bold text-[#64748B]">
+        <label className="grid gap-1 text-[11px] font-bold text-[var(--text-muted)]">
           {t('tasks.page.statusFilterLabel')}
           <select
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
-            className="h-9 rounded-lg border border-[#D7EEF0] bg-white px-2 text-xs font-semibold"
+            className="h-9 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-semibold"
           >
             <option value="all">{t('activities.form.allStatuses')}</option>
             {statusOptions.map((status) => (
@@ -266,12 +266,12 @@ export function TasksPage() {
           </select>
         </label>
 
-        <label className="grid gap-1 text-[11px] font-bold text-[#64748B]">
+        <label className="grid gap-1 text-[11px] font-bold text-[var(--text-muted)]">
           {t('tasks.page.typeFilterLabel')}
           <select
             value={typeFilter}
             onChange={(event) => setTypeFilter(event.target.value)}
-            className="h-9 rounded-lg border border-[#D7EEF0] bg-white px-2 text-xs font-semibold"
+            className="h-9 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-semibold"
           >
             <option value="all">{t('tasks.page.allTypes')}</option>
             {typeOptions.map((type) => (
@@ -322,11 +322,11 @@ export function TasksPage() {
       >
         <section className="space-y-2">
           {tasksQuery.isLoading && (
-            <div className="rounded-xl border border-[#D7EEF0] bg-white p-4 text-sm font-semibold text-[#64748B]">{t('tasks.sidebarPanel.loadingTasks')}</div>
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text-muted)]">{t('tasks.sidebarPanel.loadingTasks')}</div>
           )}
 
           {!tasksQuery.isLoading && !visibleTasks.length && (
-            <div className="rounded-xl border border-dashed border-[#D7EEF0] bg-white p-4 text-sm font-semibold text-[#64748B]">
+            <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text-muted)]">
               {t('tasks.page.noMatchingTasksFiltered')}
             </div>
           )}

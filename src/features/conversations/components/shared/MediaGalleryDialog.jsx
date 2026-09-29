@@ -31,7 +31,7 @@ export function MediaGalleryDialog({ open, items = [], activeIndex = 0, onIndexC
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--surface)]/10 text-white transition hover:bg-[var(--surface)]/20"
             title="إغلاق"
           >
             <X size={18} />
@@ -43,8 +43,8 @@ export function MediaGalleryDialog({ open, items = [], activeIndex = 0, onIndexC
             <video src={item.url} controls autoPlay className="h-full w-full object-contain" />
           ) : item?.type === 'audio' ? (
             <div className="flex h-full w-full items-center justify-center p-6">
-              <div className="w-[min(520px,90vw)] rounded-2xl border border-white/10 bg-white/10 p-5 text-center text-white shadow-2xl">
-                <span className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/15">
+              <div className="w-[min(520px,90vw)] rounded-2xl border border-white/10 bg-[var(--surface)]/10 p-5 text-center text-white shadow-2xl">
+                <span className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-[var(--surface)]/15">
                   <Music size={30} />
                 </span>
                 <div className="mb-4 truncate text-sm font-black">{item.label || 'Voice note'}</div>
@@ -53,8 +53,8 @@ export function MediaGalleryDialog({ open, items = [], activeIndex = 0, onIndexC
             </div>
           ) : item?.type === 'file' || item?.type === 'link' ? (
             <div className="flex h-full w-full items-center justify-center p-6">
-              <div className="w-[min(520px,90vw)] rounded-2xl border border-white/10 bg-white/10 p-5 text-center text-white shadow-2xl">
-                <span className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/15">
+              <div className="w-[min(520px,90vw)] rounded-2xl border border-white/10 bg-[var(--surface)]/10 p-5 text-center text-white shadow-2xl">
+                <span className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-[var(--surface)]/15">
                   <FileText size={30} />
                 </span>
                 <div className="mb-2 truncate text-sm font-black">{item.label || item.url || 'File'}</div>
@@ -63,7 +63,7 @@ export function MediaGalleryDialog({ open, items = [], activeIndex = 0, onIndexC
                   href={item.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-white px-4 text-xs font-black text-slate-950 transition hover:bg-white/90"
+                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-[var(--surface)] px-4 text-xs font-black text-slate-950 transition hover:bg-[var(--surface)]/90"
                 >
                   <ExternalLink size={15} />
                   فتح الملف
@@ -84,7 +84,7 @@ export function MediaGalleryDialog({ open, items = [], activeIndex = 0, onIndexC
               <button
                 type="button"
                 onClick={goPrevious}
-                className="absolute start-4 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur transition hover:bg-white/25"
+                className="absolute start-4 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--surface)]/15 text-white backdrop-blur transition hover:bg-[var(--surface)]/25"
                 title="السابق"
               >
                 <ChevronRight size={22} />
@@ -92,7 +92,7 @@ export function MediaGalleryDialog({ open, items = [], activeIndex = 0, onIndexC
               <button
                 type="button"
                 onClick={goNext}
-                className="absolute end-4 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur transition hover:bg-white/25"
+                className="absolute end-4 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--surface)]/15 text-white backdrop-blur transition hover:bg-[var(--surface)]/25"
                 title="التالي"
               >
                 <ChevronLeft size={22} />

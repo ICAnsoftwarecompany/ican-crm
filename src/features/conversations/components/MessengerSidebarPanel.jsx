@@ -88,7 +88,7 @@ function ConversationAvatar({ title, imageUrl = '', active = false, unreadCount 
         dimensions,
         active
           ? 'bg-[#00A7B0] text-white ring-4 ring-[#DFF7F8]'
-          : 'bg-[#E8F9FA] text-[#007A80]',
+          : 'bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]',
       ].join(' ')}
     >
       {canShowImage ? (
@@ -103,7 +103,7 @@ function ConversationAvatar({ title, imageUrl = '', active = false, unreadCount 
         getInitials(title)
       )}
       {unreadCount > 0 && (
-        <span className="absolute -top-1 -end-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[10px] font-black text-white ring-2 ring-white">
+        <span className="absolute -top-1 -end-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[10px] font-black text-white ring-2 ring-[var(--surface)]">
           {unreadCount > 99 ? '99+' : unreadCount}
         </span>
       )}
@@ -117,7 +117,7 @@ function HeaderActions({ onOpenPage, onClose }) {
       <button
         type="button"
         onClick={onOpenPage}
-        className="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-[#D8E7EA] bg-white px-2 text-xs font-black text-[#00878D] transition-colors hover:bg-[#E8F9FA]"
+        className="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-black text-[var(--brand-accent)] transition-colors hover:bg-[var(--brand-accent-soft)]"
         title="فتح صفحة المحادثات"
       >
         <ExternalLink size={13} />
@@ -126,7 +126,7 @@ function HeaderActions({ onOpenPage, onClose }) {
       <button
         type="button"
         onClick={onClose}
-        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#E5E7EB] bg-white text-[#64748B] transition-colors hover:bg-[#F8FAFC] hover:text-[#111827]"
+        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
         title="إغلاق"
       >
         <X size={15} />
@@ -326,7 +326,7 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {} }) {
   return (
     <>
       <aside
-      className="fixed end-0 top-12 bottom-0 z-30 w-[min(390px,calc(100vw-72px))] border-s border-[#DDECEF] bg-white shadow-[-14px_0_30px_rgba(15,23,42,0.08)] transition-transform duration-300"
+      className="fixed end-0 top-12 bottom-0 z-30 w-[min(390px,calc(100vw-72px))] border-s border-[var(--border)] bg-[var(--surface)] shadow-[-14px_0_30px_rgba(15,23,42,0.08)] transition-transform duration-300"
       style={{
         transform: open ? 'translateX(0)' : `translateX(${isRtl ? '-100%' : '100%'})`,
       }}
@@ -335,27 +335,27 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {} }) {
       <div className="flex h-full flex-col overflow-hidden">
         {mode === 'list' ? (
           <>
-            <header className="border-b border-[#E5EEF0] bg-[#F8FEFF] p-3">
+            <header className="border-b border-[var(--border)] bg-[var(--surface-2)] p-3">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
-                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#E8F9FA] text-[#00878D]">
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]">
                     <MessengerLogoIcon size={22} />
                   </span>
                   <div className="min-w-0">
-                    <h2 className="truncate text-sm font-black text-[#111827]">محادثات ماسنجر</h2>
+                    <h2 className="truncate text-sm font-black text-[var(--text)]">محادثات ماسنجر</h2>
                   </div>
                 </div>
                 <HeaderActions onOpenPage={handleOpenPage} onClose={onClose} />
               </div>
             </header>
 
-            <div className="border-b border-[#EEF2F4] bg-white p-3">
-              <label className="flex h-10 items-center gap-2 rounded-lg border border-[#D8E7EA] bg-[#FBFEFF] px-3">
-                <Search size={15} className="shrink-0 text-[#64748B]" />
+            <div className="border-b border-[var(--border)] bg-[var(--surface)] p-3">
+              <label className="flex h-10 items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3">
+                <Search size={15} className="shrink-0 text-[var(--text-muted)]" />
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  className="min-w-0 flex-1 bg-transparent text-xs font-bold text-[#111827] outline-none placeholder:text-[#94A3B8]"
+                  className="min-w-0 flex-1 bg-transparent text-xs font-bold text-[var(--text)] outline-none placeholder:text-[var(--text-muted)]"
                   placeholder="بحث في المحادثات..."
                 />
               </label>
@@ -368,17 +368,17 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {} }) {
               resultCount={filteredConversations.length}
             />
 
-            <section className="min-h-0 flex-1 overflow-y-auto bg-[#F8FAFC] p-2">
+            <section className="min-h-0 flex-1 overflow-y-auto bg-[var(--surface-2)] p-2">
               {conversationsQuery.isLoading && (
                 <div className="space-y-2">
                   {Array.from({ length: 5 }).map((_, index) => (
-                    <div key={index} className="h-16 animate-pulse rounded-xl bg-white" />
+                    <div key={index} className="h-16 animate-pulse rounded-xl bg-[var(--surface)]" />
                   ))}
                 </div>
               )}
 
               {!conversationsQuery.isLoading && filteredConversations.length === 0 && (
-                <div className="rounded-xl border border-dashed border-[#CFE8EB] bg-white p-4 text-center text-xs font-bold text-[#64748B]">
+                <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] p-4 text-center text-xs font-bold text-[var(--text-muted)]">
                   {'\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u062d\u0627\u062f\u062b\u0627\u062a \u0645\u0637\u0627\u0628\u0642\u0629.'}
                 </div>
               )}
@@ -404,29 +404,29 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {} }) {
                         openConversation(id)
                       }
                     }}
-                    className="group relative mb-2 flex w-full items-center gap-3 rounded-xl border border-[#E5EEF0] bg-white p-3 text-start shadow-sm transition-colors hover:border-[#B8EFF2] hover:bg-[#F9FEFF]"
+                    className="group relative mb-2 flex w-full items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-start shadow-sm transition-colors hover:border-[#B8EFF2] hover:bg-[var(--surface-2)]"
                   >
                     <ConversationAvatar title={title} imageUrl={imageUrl} unreadCount={unreadCount} />
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center justify-between gap-2">
-                        <span className="truncate text-sm font-black text-[#111827]">{title}</span>
+                        <span className="truncate text-sm font-black text-[var(--text)]">{title}</span>
                         {isClosed ? (
-                          <span className="shrink-0 rounded-full bg-[#FEF2F2] px-2 py-0.5 text-[10px] font-black text-[#B91C1C]">
+                          <span className="shrink-0 rounded-full bg-[#FEF2F2] px-2 dark:bg-[#451E28] dark:text-[#FDA4AF] py-0.5 text-[10px] font-black text-[#B91C1C]">
                             {'\u0645\u0646\u062a\u0647\u064a\u0629'}
                           </span>
                         ) : null}
-                        <span className="shrink-0 text-[10px] font-bold text-[#94A3B8]">
+                        <span className="shrink-0 text-[10px] font-bold text-[var(--text-muted)]">
                           {formatTime(conversation.last_message_at)}
                         </span>
                       </span>
-                      <span className="mt-1 flex min-w-0 items-center gap-1 text-xs font-semibold text-[#64748B]">
+                      <span className="mt-1 flex min-w-0 items-center gap-1 text-xs font-semibold text-[var(--text-muted)]">
                         <LastMessageStatus conversation={conversation} />
                         <span className="min-w-0 truncate">
                           {getMessengerConversationSubtitle(conversation) || 'Messenger'}
                         </span>
                       </span>
                       {assignedUserName ? (
-                        <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-[#F1F5F9] px-2 py-0.5 text-[10px] font-black text-[#475569]">
+                        <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
                           <UserRound size={11} />
                           <span className="truncate">المسؤول: {assignedUserName}</span>
                         </span>
@@ -438,7 +438,7 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {} }) {
                             event.stopPropagation()
                             handleConvertToLead(conversation)
                           }}
-                          className="mt-2 inline-flex h-7 items-center gap-1 rounded-lg border border-[#BEEFF2] bg-white px-2 text-[10px] font-black text-[#007A80] transition hover:border-[#00C2CB] hover:bg-[#E8F9FA]"
+                          className="mt-2 inline-flex h-7 items-center gap-1 rounded-lg border border-[var(--brand-accent)] bg-[var(--surface)] px-2 text-[10px] font-black text-[var(--brand-accent)] transition hover:border-[#00C2CB] hover:bg-[var(--brand-accent-soft)]"
                         >
                           <UserPlus size={12} />
                           تحويل عميل محتمل
@@ -451,7 +451,7 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {} }) {
                             event.stopPropagation()
                             handleToggleConversationStatus(conversation)
                           }}
-                          className="mt-2 ms-2 inline-flex h-7 items-center gap-1 rounded-lg border border-[#BEEFF2] bg-white px-2 text-[10px] font-black text-[#007A80] transition hover:border-[#00C2CB] hover:bg-[#E8F9FA]"
+                          className="mt-2 ms-2 inline-flex h-7 items-center gap-1 rounded-lg border border-[var(--brand-accent)] bg-[var(--surface)] px-2 text-[10px] font-black text-[var(--brand-accent)] transition hover:border-[#00C2CB] hover:bg-[var(--brand-accent-soft)]"
                         >
                           {'\u0641\u062a\u062d \u0645\u0631\u0629 \u0623\u062e\u0631\u0649'}
                         </button>
@@ -465,10 +465,10 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {} }) {
           </>
         ) : (
           <>
-            <div className="border-b border-[#EEF2F4] bg-white px-3 py-2">
+            <div className="border-b border-[var(--border)] bg-[var(--surface)] px-3 py-2">
               <div className="flex gap-3 overflow-x-auto pb-1">
                 {conversationsQuery.isLoading && (
-                  <div className="h-16 min-w-14 animate-pulse rounded-2xl bg-[#F1F5F9]" />
+                  <div className="h-16 min-w-14 animate-pulse rounded-2xl bg-[var(--surface-2)]" />
                 )}
                 {storyConversations.map((conversation) => {
                   const id = getMessengerConversationId(conversation)
@@ -491,7 +491,7 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {} }) {
                         unreadCount={Number(conversation.unread_count || 0)}
                         size="lg"
                       />
-                      <span className="mt-1 block truncate text-[10px] font-bold text-[#64748B]">
+                      <span className="mt-1 block truncate text-[10px] font-bold text-[var(--text-muted)]">
                         {title}
                       </span>
                     </button>
@@ -509,7 +509,7 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {} }) {
                   <button
                     type="button"
                     onClick={() => setMode('list')}
-                    className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[#D7E8EB] bg-white text-[#64748B] transition hover:border-[#B9E5E9] hover:text-[#0F172A]"
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] transition hover:border-[var(--border)] hover:text-[var(--text)]"
                     title="الرجوع للمحادثات"
                   >
                     <ChevronRight size={13} />
@@ -517,7 +517,7 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {} }) {
                   <button
                     type="button"
                     onClick={handleOpenPage}
-                    className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[#D7E8EB] bg-white text-[#64748B] transition hover:border-[#B9E5E9] hover:text-[#0F172A]"
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] transition hover:border-[var(--border)] hover:text-[var(--text)]"
                     title="فتح صفحة المحادثات"
                   >
                     <ExternalLink size={13} />
@@ -525,7 +525,7 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {} }) {
                   <button
                     type="button"
                     onClick={onClose}
-                    className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[#D7E8EB] bg-white text-[#64748B] transition hover:border-[#B9E5E9] hover:text-[#0F172A]"
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] transition hover:border-[var(--border)] hover:text-[var(--text)]"
                     title="إغلاق"
                   >
                     <X size={13} />

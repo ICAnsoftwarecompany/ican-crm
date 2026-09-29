@@ -99,14 +99,14 @@ function getCustomerTypeMeta(customer = {}) {
   if (isDeal) {
     return {
       label: 'Customer service',
-      className: 'border-[#BBF7D0] bg-[#F0FDF4] text-[#047857]',
+      className: 'border-[#BBF7D0] bg-[#F0FDF4] dark:bg-[#052e16] text-[#047857]',
       icon: BriefcaseBusiness,
     }
   }
 
   return {
     label: customer.lead_type || 'Lead',
-    className: 'border-[#FED7AA] bg-[#FFF7ED] text-[#C2410C]',
+    className: 'border-[#FED7AA] bg-[#FFF7ED] text-[#C2410C] dark:bg-[#431f0d] dark:text-[#fdba74]',
     icon: UsersRound,
   }
 }
@@ -140,29 +140,29 @@ function CustomerChoiceCard({ customer, active, onSelect }) {
       onClick={() => onSelect(customer)}
       className={[
         'w-full rounded-xl border p-3 text-start transition',
-        active ? 'border-[#00A8B0] bg-[#E8F9FA] shadow-sm' : 'border-[#E5EEF0] bg-white hover:border-[#B8EFF2] hover:bg-[#FBFEFF]',
+        active ? 'border-[#00A8B0] bg-[var(--brand-accent-soft)] shadow-sm' : 'border-[var(--border)] bg-[var(--surface)] hover:border-[#B8EFF2] hover:bg-[var(--surface-2)]',
       ].join(' ')}
     >
       <span className="flex items-start gap-3">
-        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F1FBFD] text-[#00878D]">
+        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]">
           {active ? <Check size={18} /> : <UsersRound size={18} />}
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-2">
-            <span className="truncate text-sm font-black text-[#0F172A]">{name}</span>
+            <span className="truncate text-sm font-black text-[var(--text)]">{name}</span>
             <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-black ${typeMeta.className}`}>
               <TypeIcon size={11} />
               {typeMeta.label}
             </span>
             {Number(customer.is_deal || 0) === 0 ? (
-              <span className="rounded-full bg-[#F8FAFC] px-2 py-0.5 text-[10px] font-bold text-[#64748B]">
+              <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[10px] font-bold text-[var(--text-muted)]">
                 is_deal: 0
               </span>
             ) : null}
           </span>
-          {subtitle ? <span className="mt-1 block truncate text-xs font-semibold text-[#64748B]">{subtitle}</span> : null}
+          {subtitle ? <span className="mt-1 block truncate text-xs font-semibold text-[var(--text-muted)]">{subtitle}</span> : null}
           {customer.source || customer.lead?.source ? (
-            <span className="mt-1 block truncate text-[11px] font-bold text-[#00878D]">
+            <span className="mt-1 block truncate text-[11px] font-bold text-[var(--brand-accent)]">
               المصدر: {customer.source || customer.lead?.source}
             </span>
           ) : null}
@@ -384,41 +384,41 @@ export function MessengerLinkCustomerDialog({
   return (
     <div className="fixed inset-0 z-[90] flex items-end justify-center bg-slate-950/35 p-2 sm:items-center sm:p-4" role="presentation" onClick={closeDialog}>
       <div
-        className="max-h-[calc(100vh-1rem)] w-full max-w-3xl overflow-hidden rounded-2xl bg-white shadow-2xl"
+        className="max-h-[calc(100vh-1rem)] w-full max-w-3xl overflow-hidden rounded-2xl bg-[var(--surface)] shadow-2xl"
         role="dialog"
         aria-modal="true"
         onClick={(event) => event.stopPropagation()}
       >
-        <header className="flex items-center justify-between gap-3 border-b border-[#E5EEF0] bg-[#F8FEFF] px-4 py-3">
+        <header className="flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface-2)] px-4 py-3">
           <div className="min-w-0">
-            <h2 className="text-base font-black text-[#0F172A]">ربط المحادثة بعميل</h2>
-            <p className="mt-1 truncate text-xs font-semibold text-[#64748B]">
+            <h2 className="text-base font-black text-[var(--text)]">ربط المحادثة بعميل</h2>
+            <p className="mt-1 truncate text-xs font-semibold text-[var(--text-muted)]">
               اختار عميل موجود أو أنشئ عميل جديد ثم اربطه بالمحادثة.
             </p>
           </div>
           <button
             type="button"
             onClick={closeDialog}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#D8E7EA] bg-white text-[#64748B] transition hover:bg-[#F8FAFC] hover:text-[#0F172A]"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] transition hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
             title="إغلاق"
           >
             <X size={17} />
           </button>
         </header>
 
-        <div className="border-b border-[#EEF2F4] bg-white px-4 pt-3">
-          <div className="inline-flex rounded-xl border border-[#D8EEF2] bg-[#F8FEFF] p-1">
+        <div className="border-b border-[var(--border)] bg-[var(--surface)] px-4 pt-3">
+          <div className="inline-flex rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-1">
             <button
               type="button"
               onClick={() => setMode('select')}
-              className={`h-9 rounded-lg px-3 text-xs font-black transition ${mode === 'select' ? 'bg-[#00A8B0] text-white shadow-sm' : 'text-[#64748B] hover:bg-white'}`}
+              className={`h-9 rounded-lg px-3 text-xs font-black transition ${mode === 'select' ? 'bg-[#00A8B0] text-white shadow-sm' : 'text-[var(--text-muted)] hover:bg-[var(--surface)]'}`}
             >
               اختيار عميل
             </button>
             <button
               type="button"
               onClick={() => setMode('create')}
-              className={`h-9 rounded-lg px-3 text-xs font-black transition ${mode === 'create' ? 'bg-[#00A8B0] text-white shadow-sm' : 'text-[#64748B] hover:bg-white'}`}
+              className={`h-9 rounded-lg px-3 text-xs font-black transition ${mode === 'create' ? 'bg-[#00A8B0] text-white shadow-sm' : 'text-[var(--text-muted)] hover:bg-[var(--surface)]'}`}
             >
               إنشاء عميل جديد
             </button>
@@ -434,12 +434,12 @@ export function MessengerLinkCustomerDialog({
 
           {mode === 'select' ? (
             <div className="space-y-3">
-              <label className="flex h-11 items-center gap-2 rounded-xl border border-[#D8E7EA] bg-[#FBFEFF] px-3">
-                <Search size={16} className="shrink-0 text-[#64748B]" />
+              <label className="flex h-11 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3">
+                <Search size={16} className="shrink-0 text-[var(--text-muted)]" />
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  className="min-w-0 flex-1 bg-transparent text-sm font-bold text-[#0F172A] outline-none placeholder:text-[#94A3B8]"
+                  className="min-w-0 flex-1 bg-transparent text-sm font-bold text-[var(--text)] outline-none placeholder:text-[var(--text-muted)]"
                   placeholder="بحث باسم العميل أو الهاتف أو البريد أو الشركة"
                 />
               </label>
@@ -447,12 +447,12 @@ export function MessengerLinkCustomerDialog({
               <div className="grid max-h-[420px] gap-2 overflow-y-auto pe-1">
                 {customersQuery.isLoading ? (
                   Array.from({ length: 5 }).map((_, index) => (
-                    <div key={index} className="h-20 animate-pulse rounded-xl bg-[#F1F5F9]" />
+                    <div key={index} className="h-20 animate-pulse rounded-xl bg-[var(--surface-2)]" />
                   ))
                 ) : null}
 
                 {!customersQuery.isLoading && customers.length === 0 ? (
-                  <div className="rounded-xl border border-dashed border-[#CFE8EB] bg-[#FAFDFE] px-4 py-6 text-center text-sm font-bold text-[#64748B]">
+                  <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface-2)] px-4 py-6 text-center text-sm font-bold text-[var(--text-muted)]">
                     لا يوجد عملاء مطابقين. يمكنك إنشاء عميل جديد من التاب الثاني.
                   </div>
                 ) : null}
@@ -469,72 +469,72 @@ export function MessengerLinkCustomerDialog({
             </div>
           ) : (
             <form id="messenger-create-customer-form" onSubmit={handleCreateSubmit} className="grid gap-3 sm:grid-cols-2">
-              <label className="grid gap-1.5 text-sm font-bold text-[#0F172A]">
+              <label className="grid gap-1.5 text-sm font-bold text-[var(--text)]">
                 الاسم
                 <input
                   value={form.name}
                   onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-                  className="h-10 rounded-xl border border-[#D8E7EA] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                  className="h-10 rounded-xl border border-[var(--border)] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                 />
               </label>
-              <label className="grid gap-1.5 text-sm font-bold text-[#0F172A]">
+              <label className="grid gap-1.5 text-sm font-bold text-[var(--text)]">
                 الهاتف
                 <input
                   value={form.phone}
                   onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
-                  className="h-10 rounded-xl border border-[#D8E7EA] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                  className="h-10 rounded-xl border border-[var(--border)] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                 />
               </label>
-              <label className="grid gap-1.5 text-sm font-bold text-[#0F172A]">
+              <label className="grid gap-1.5 text-sm font-bold text-[var(--text)]">
                 البريد الإلكتروني
                 <input
                   type="email"
                   value={form.email}
                   onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-                  className="h-10 rounded-xl border border-[#D8E7EA] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                  className="h-10 rounded-xl border border-[var(--border)] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                 />
               </label>
-              <label className="grid gap-1.5 text-sm font-bold text-[#0F172A]">
+              <label className="grid gap-1.5 text-sm font-bold text-[var(--text)]">
                 الشركة
                 <input
                   value={form.company}
                   onChange={(event) => setForm((current) => ({ ...current, company: event.target.value }))}
-                  className="h-10 rounded-xl border border-[#D8E7EA] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                  className="h-10 rounded-xl border border-[var(--border)] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                 />
               </label>
-              <label className="grid gap-1.5 text-sm font-bold text-[#0F172A]">
+              <label className="grid gap-1.5 text-sm font-bold text-[var(--text)]">
                 النوع
                 <select
                   value={form.type}
                   onChange={(event) => setForm((current) => ({ ...current, type: event.target.value }))}
-                  className="h-10 rounded-xl border border-[#D8E7EA] bg-white px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                  className="h-10 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                 >
                   <option value="lead">Lead</option>
                   <option value="customer">Customer</option>
                 </select>
               </label>
-              <label className="grid gap-1.5 text-sm font-bold text-[#0F172A]">
+              <label className="grid gap-1.5 text-sm font-bold text-[var(--text)]">
                 المصدر
                 <input
                   value={form.source}
                   onChange={(event) => setForm((current) => ({ ...current, source: event.target.value }))}
-                  className="h-10 rounded-xl border border-[#D8E7EA] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                  className="h-10 rounded-xl border border-[var(--border)] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                 />
               </label>
 
-              <div className="sm:col-span-2 rounded-2xl border border-[#E5EEF0] bg-[#FBFEFF] p-3">
+              <div className="sm:col-span-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-3">
                 <div className="mb-3 flex items-center justify-between gap-2">
-                  <h3 className="text-sm font-black text-[#0F172A]">بيانات التصنيف والربط</h3>
-                  <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-black text-[#64748B]">API fields</span>
+                  <h3 className="text-sm font-black text-[var(--text)]">بيانات التصنيف والربط</h3>
+                  <span className="rounded-full bg-[var(--surface)] px-2 py-0.5 text-[10px] font-black text-[var(--text-muted)]">API fields</span>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-3">
-                  <label className="grid gap-1.5 text-xs font-black text-[#0F172A]">
+                  <label className="grid gap-1.5 text-xs font-black text-[var(--text)]">
                     الحالة status_type_id
                     <select
                       value={form.status_type_id}
                       onChange={(event) => updateForm('status_type_id', event.target.value)}
-                      className="h-10 rounded-xl border border-[#D8E7EA] bg-white px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                      className="h-10 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                     >
                       <option value="">بدون حالة</option>
                       {statuses.map((status) => (
@@ -543,12 +543,12 @@ export function MessengerLinkCustomerDialog({
                     </select>
                   </label>
 
-                  <label className="grid gap-1.5 text-xs font-black text-[#0F172A]">
+                  <label className="grid gap-1.5 text-xs font-black text-[var(--text)]">
                     التاج tag_id
                     <select
                       value={form.tag_id}
                       onChange={(event) => updateForm('tag_id', event.target.value)}
-                      className="h-10 rounded-xl border border-[#D8E7EA] bg-white px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                      className="h-10 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                     >
                       <option value="">بدون تاج</option>
                       {tags.map((tag) => (
@@ -557,12 +557,12 @@ export function MessengerLinkCustomerDialog({
                     </select>
                   </label>
 
-                  <label className="grid gap-1.5 text-xs font-black text-[#0F172A]">
+                  <label className="grid gap-1.5 text-xs font-black text-[var(--text)]">
                     السيلز agent_id
                     <select
                       value={form.agent_id}
                       onChange={(event) => updateForm('agent_id', event.target.value)}
-                      className="h-10 rounded-xl border border-[#D8E7EA] bg-white px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                      className="h-10 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                     >
                       <option value="">بدون سيلز</option>
                       {users.map((userItem) => (
@@ -571,34 +571,34 @@ export function MessengerLinkCustomerDialog({
                     </select>
                   </label>
 
-                  <label className="grid gap-1.5 text-xs font-black text-[#0F172A]">
+                  <label className="grid gap-1.5 text-xs font-black text-[var(--text)]">
                     lead_id
                     <input
                       value={form.lead_id}
                       onChange={(event) => updateForm('lead_id', event.target.value)}
                       placeholder="null"
-                      className="h-10 rounded-xl border border-[#D8E7EA] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                      className="h-10 rounded-xl border border-[var(--border)] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                     />
                   </label>
 
-                  <label className="grid gap-1.5 text-xs font-black text-[#0F172A]">
+                  <label className="grid gap-1.5 text-xs font-black text-[var(--text)]">
                     linked_type
                     <select
                       value={form.linked_type}
                       onChange={(event) => updateForm('linked_type', event.target.value)}
-                      className="h-10 rounded-xl border border-[#D8E7EA] bg-white px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                      className="h-10 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                     >
                       <option value="automation">automation</option>
                       <option value="manual">manual</option>
                     </select>
                   </label>
 
-                  <label className="grid gap-1.5 text-xs font-black text-[#0F172A]">
+                  <label className="grid gap-1.5 text-xs font-black text-[var(--text)]">
                     linked_by
                     <select
                       value={form.linked_by}
                       onChange={(event) => updateForm('linked_by', event.target.value)}
-                      className="h-10 rounded-xl border border-[#D8E7EA] bg-white px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                      className="h-10 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                     >
                       <option value="">بدون مستخدم</option>
                       {users.map((userItem) => (
@@ -607,25 +607,25 @@ export function MessengerLinkCustomerDialog({
                     </select>
                   </label>
 
-                  <label className="grid gap-1.5 text-xs font-black text-[#0F172A] sm:col-span-3">
+                  <label className="grid gap-1.5 text-xs font-black text-[var(--text)] sm:col-span-3">
                     link_date
                     <input
                       type="date"
                       value={form.link_date}
                       onChange={(event) => updateForm('link_date', event.target.value)}
-                      className="h-10 rounded-xl border border-[#D8E7EA] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                      className="h-10 rounded-xl border border-[var(--border)] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                     />
                   </label>
                 </div>
               </div>
 
-              <div className="sm:col-span-2 rounded-2xl border border-[#E5EEF0] bg-white p-3">
+              <div className="sm:col-span-2 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3">
                 <div className="mb-3 flex items-center justify-between gap-2">
-                  <h3 className="text-sm font-black text-[#0F172A]">attributes</h3>
+                  <h3 className="text-sm font-black text-[var(--text)]">attributes</h3>
                   <button
                     type="button"
                     onClick={addAttribute}
-                    className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] px-2 text-xs font-black text-[#007A80] transition hover:bg-[#E8F9FA]"
+                    className="inline-flex h-8 items-center gap-1 rounded-lg border border-[var(--brand-accent)] bg-[var(--surface-2)] px-2 text-xs font-black text-[var(--brand-accent)] transition hover:bg-[var(--brand-accent-soft)]"
                   >
                     <Plus size={13} />
                     إضافة خانة
@@ -639,13 +639,13 @@ export function MessengerLinkCustomerDialog({
                         value={attribute.key}
                         onChange={(event) => updateAttribute(index, 'key', event.target.value)}
                         placeholder="budget"
-                        className="h-10 rounded-xl border border-[#D8E7EA] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                        className="h-10 rounded-xl border border-[var(--border)] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                       />
                       <input
                         value={attribute.value}
                         onChange={(event) => updateAttribute(index, 'value', event.target.value)}
                         placeholder="5000-10000"
-                        className="h-10 rounded-xl border border-[#D8E7EA] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                        className="h-10 rounded-xl border border-[var(--border)] px-3 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                       />
                       <button
                         type="button"
@@ -660,13 +660,13 @@ export function MessengerLinkCustomerDialog({
                 </div>
               </div>
 
-              <div className="sm:col-span-2 rounded-2xl border border-[#E5EEF0] bg-[#FBFEFF] p-3">
+              <div className="sm:col-span-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-3">
                 <div className="mb-3 flex items-center justify-between gap-2">
-                  <h3 className="text-sm font-black text-[#0F172A]">interesteds</h3>
+                  <h3 className="text-sm font-black text-[var(--text)]">interesteds</h3>
                   <button
                     type="button"
                     onClick={addInterested}
-                    className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#BEEFF2] bg-white px-2 text-xs font-black text-[#007A80] transition hover:bg-[#E8F9FA]"
+                    className="inline-flex h-8 items-center gap-1 rounded-lg border border-[var(--brand-accent)] bg-[var(--surface)] px-2 text-xs font-black text-[var(--brand-accent)] transition hover:bg-[var(--brand-accent-soft)]"
                   >
                     <Plus size={13} />
                     إضافة اهتمام
@@ -675,13 +675,13 @@ export function MessengerLinkCustomerDialog({
 
                 <div className="space-y-2">
                   {interesteds.map((interested, index) => (
-                    <div key={index} className="grid gap-2 rounded-xl border border-[#E8F3F5] bg-white p-2 sm:grid-cols-[minmax(0,1fr)_130px_auto]">
-                      <label className="grid gap-1 text-xs font-black text-[#64748B]">
+                    <div key={index} className="grid gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 sm:grid-cols-[minmax(0,1fr)_130px_auto]">
+                      <label className="grid gap-1 text-xs font-black text-[var(--text-muted)]">
                         product_id
                         <select
                           value={interested.product_id}
                           onChange={(event) => updateInterested(index, 'product_id', event.target.value)}
-                          className="h-10 rounded-xl border border-[#D8E7EA] bg-white px-3 text-sm text-[#0F172A] outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                          className="h-10 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 text-sm text-[var(--text)] outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                         >
                           <option value="">بدون منتج</option>
                           {products.map((product) => (
@@ -689,12 +689,12 @@ export function MessengerLinkCustomerDialog({
                           ))}
                         </select>
                       </label>
-                      <label className="grid gap-1 text-xs font-black text-[#64748B]">
+                      <label className="grid gap-1 text-xs font-black text-[var(--text-muted)]">
                         interest_level
                         <select
                           value={interested.interest_level}
                           onChange={(event) => updateInterested(index, 'interest_level', event.target.value)}
-                          className="h-10 rounded-xl border border-[#D8E7EA] bg-white px-3 text-sm text-[#0F172A] outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                          className="h-10 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 text-sm text-[var(--text)] outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                         >
                           <option value="low">low</option>
                           <option value="medium">medium</option>
@@ -709,13 +709,13 @@ export function MessengerLinkCustomerDialog({
                       >
                         <Trash2 size={15} />
                       </button>
-                      <label className="grid gap-1 text-xs font-black text-[#64748B] sm:col-span-3">
+                      <label className="grid gap-1 text-xs font-black text-[var(--text-muted)] sm:col-span-3">
                         note
                         <input
                           value={interested.note}
                           onChange={(event) => updateInterested(index, 'note', event.target.value)}
                           placeholder="مهتم بالشحن الدولي"
-                          className="h-10 rounded-xl border border-[#D8E7EA] px-3 text-sm text-[#0F172A] outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                          className="h-10 rounded-xl border border-[var(--border)] px-3 text-sm text-[var(--text)] outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                         />
                       </label>
                     </div>
@@ -723,25 +723,25 @@ export function MessengerLinkCustomerDialog({
                 </div>
               </div>
 
-              <label className="grid gap-1.5 text-sm font-bold text-[#0F172A] sm:col-span-2">
+              <label className="grid gap-1.5 text-sm font-bold text-[var(--text)] sm:col-span-2">
                 ملاحظة
                 <textarea
                   value={form.note}
                   onChange={(event) => setForm((current) => ({ ...current, note: event.target.value }))}
                   rows={3}
-                  className="rounded-xl border border-[#D8E7EA] px-3 py-2 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
+                  className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#BEEFF2]"
                 />
               </label>
             </form>
           )}
         </div>
 
-        <footer className="flex flex-col-reverse gap-2 border-t border-[#E5EEF0] bg-[#FBFEFF] px-4 py-3 sm:flex-row sm:justify-end">
+        <footer className="flex flex-col-reverse gap-2 border-t border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={closeDialog}
             disabled={isSaving}
-            className="h-10 rounded-xl border border-[#D8E7EA] bg-white px-4 text-sm font-black text-[#64748B] transition hover:bg-[#F8FAFC] disabled:cursor-not-allowed disabled:opacity-60"
+            className="h-10 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 text-sm font-black text-[var(--text-muted)] transition hover:bg-[var(--surface-2)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             إلغاء
           </button>

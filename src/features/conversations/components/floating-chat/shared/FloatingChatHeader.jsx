@@ -50,7 +50,7 @@ export function FloatingChatHeader({
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 items-center gap-2">
           <div className="truncate text-sm font-black text-[var(--text)]">نافذة المحادثة</div>
-          <span className="shrink-0 rounded-full bg-[#E8F9FA] px-2 py-0.5 text-[10px] font-bold text-[#007A80]">
+          <span className="shrink-0 rounded-full bg-[var(--brand-accent-soft)] px-2 py-0.5 text-[10px] font-bold text-[var(--brand-accent)]">
             {channelLabel}
           </span>
         </div>

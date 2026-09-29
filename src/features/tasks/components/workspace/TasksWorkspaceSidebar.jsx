@@ -12,9 +12,9 @@ function getSmartViews(t) {
 
 function getDefaultBoards(t) {
   return [
-    { id: 'main', name: t('tasks.page.mainBoard'), accent: 'bg-[#E8F9FA] text-[#007A80]' },
-    { id: 'sales', name: t('tasks.page.salesTeamBoard'), accent: 'bg-[#EEF2FF] text-[#4F46E5]' },
-    { id: 'followups', name: t('tasks.page.followUpsBoard'), accent: 'bg-[#FFF7ED] text-[#C2410C]' },
+    { id: 'main', name: t('tasks.page.mainBoard'), accent: 'bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]' },
+    { id: 'sales', name: t('tasks.page.salesTeamBoard'), accent: 'bg-[#EEF2FF] text-[#4F46E5] dark:bg-[#27254f] dark:text-[#a5b4fc]' },
+    { id: 'followups', name: t('tasks.page.followUpsBoard'), accent: 'bg-[#FFF7ED] text-[#C2410C] dark:bg-[#431f0d] dark:text-[#fdba74]' },
   ]
 }
 
@@ -37,7 +37,7 @@ export function TasksWorkspaceSidebar({
 
   return (
     <aside className={[
-      'w-full rounded-2xl border border-[#D7EEF0] bg-[#F8FEFF] p-3 shadow-sm transition-all duration-200',
+      'w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-3 shadow-sm transition-all duration-200',
       collapsed ? 'xl:w-[76px]' : 'xl:w-[280px]',
     ].join(' ')}>
       <div className={[
@@ -46,8 +46,8 @@ export function TasksWorkspaceSidebar({
       ].join(' ')}>
         {!collapsed && (
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#64748B]">{t('nav.tasks')}</p>
-            <h2 className="text-base font-black text-[#0F172A]">{t('tasks.workspace.title')}</h2>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">{t('nav.tasks')}</p>
+            <h2 className="text-base font-black text-[var(--text)]">{t('tasks.workspace.title')}</h2>
           </div>
         )}
 
@@ -55,7 +55,7 @@ export function TasksWorkspaceSidebar({
           <button
             type="button"
             onClick={onToggleCollapse}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#D7EEF0] bg-white text-[#64748B]"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)]"
             aria-label={collapsed ? t('tasks.workspace.expandSidebar') : t('tasks.workspace.collapseSidebar')}
           >
             <ToggleIcon size={14} />
@@ -65,7 +65,7 @@ export function TasksWorkspaceSidebar({
             <button
               type="button"
               onClick={onAddBoard}
-              className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#D7EEF0] bg-white px-2 text-[11px] font-black text-[#007A80]"
+              className="inline-flex h-8 items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-[11px] font-black text-[var(--brand-accent)]"
             >
               <Plus size={13} />
               {t('tasks.workspace.addBoard')}
@@ -77,7 +77,7 @@ export function TasksWorkspaceSidebar({
       {!collapsed && (
         <div className="space-y-4">
           <section>
-            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#64748B]">{t('tasks.workspace.smartViews')}</p>
+            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.16em] text-[var(--text-muted)]">{t('tasks.workspace.smartViews')}</p>
             <div className="space-y-1.5">
               {smartViews.map(({ id, label, icon: Icon }) => {
                 const active = activeSmartView === id
@@ -89,15 +89,15 @@ export function TasksWorkspaceSidebar({
                     className={[
                       'flex w-full items-center justify-between rounded-xl border px-2.5 py-2 text-left text-xs font-black transition-colors',
                       active
-                        ? 'border-[#7FDDE1] bg-[#F3FDFF] text-[#007A80]'
-                        : 'border-transparent bg-transparent text-[#475569] hover:border-[#D7EEF0] hover:bg-white',
+                        ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]'
+                        : 'border-transparent bg-transparent text-[var(--text-muted)] hover:border-[var(--border)] hover:bg-[var(--surface)]',
                     ].join(' ')}
                   >
                     <span className="flex items-center gap-2">
                       <Icon size={14} />
                       {label}
                     </span>
-                    <span className="rounded-full bg-white px-1.5 py-0.5 text-[10px] font-black text-[#64748B]">
+                    <span className="rounded-full bg-[var(--surface)] px-1.5 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
                       {metrics?.[id === 'all' ? 'total' : id === 'today' ? 'today' : id === 'overdue' ? 'overdue' : 'inProgress'] || 0}
                     </span>
                   </button>
@@ -107,7 +107,7 @@ export function TasksWorkspaceSidebar({
           </section>
 
           <section>
-            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#64748B]">{t('tasks.workspace.myBoards')}</p>
+            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.16em] text-[var(--text-muted)]">{t('tasks.workspace.myBoards')}</p>
             <div className="space-y-1.5">
               {resolvedBoards.map((board) => {
                 const active = activeBoardId === board.id
@@ -119,15 +119,15 @@ export function TasksWorkspaceSidebar({
                     className={[
                       'flex w-full items-center justify-between rounded-xl border px-2.5 py-2 text-left text-xs font-black transition-colors',
                       active
-                        ? 'border-[#7FDDE1] bg-[#F3FDFF] text-[#007A80]'
-                        : 'border-transparent bg-transparent text-[#475569] hover:border-[#D7EEF0] hover:bg-white',
+                        ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]'
+                        : 'border-transparent bg-transparent text-[var(--text-muted)] hover:border-[var(--border)] hover:bg-[var(--surface)]',
                     ].join(' ')}
                   >
                     <span className="flex items-center gap-2">
-                      <span className={`inline-flex h-2.5 w-2.5 rounded-full ${board.accent || 'bg-[#E8F9FA] text-[#007A80]'}`} />
+                      <span className={`inline-flex h-2.5 w-2.5 rounded-full ${board.accent || 'bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]'}`} />
                       {board.name}
                     </span>
-                    <span className="rounded-full bg-white px-1.5 py-0.5 text-[10px] font-black text-[#64748B]">
+                    <span className="rounded-full bg-[var(--surface)] px-1.5 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
                       {board.count || 0}
                     </span>
                   </button>

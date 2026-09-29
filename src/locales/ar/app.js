@@ -4,6 +4,13 @@ export default {
   "activeUsers": "المستخدمون النشطون",
   "active": "نشط",
   "more": "المزيد",
+  "aiActive": "الذكاء الاصطناعي نشط",
+  "profile": {
+    "openMenu": "فتح قائمة الحساب",
+    "account": "الحساب",
+    "username": "اسم المستخدم",
+    "email": "البريد الإلكتروني"
+  },
   "notFoundTitle": "الصفحة غير موجودة",
   "notFoundDescription": "الرابط الذي تحاول فتحه غير متاح أو تغيّر.",
   "backToLeads": "الرجوع إلى مركز العملاء المحتملين",
