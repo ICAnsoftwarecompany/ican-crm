@@ -23,6 +23,8 @@ export default {
     reports: 'التقارير',
     settings: 'الإعدادات',
     savedViews: 'العروض المحفوظة',
+    catalog: 'الكتالوج والقدرات',
+    pipelines: 'المراحل',
     records: 'سجلات الخدمة',
     assets: 'الأصول',
     entitlements: 'الحقوق',

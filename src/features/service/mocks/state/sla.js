@@ -66,7 +66,7 @@ export function computeSla(item, now = Date.now()) {
 
   let state
   if (done) state = metrics.some((entry) => entry.state === 'breached') ? 'breached' : 'met'
-  else if (policy.pause_on_pending_customer && status?.key === 'pending_customer') state = 'paused'
+  else if (policy.pause_on_pending_customer && (status?.sla_behavior === 'pause' || status?.key === 'pending_customer')) state = 'paused'
   else state = metrics.reduce((worst, entry) => (RANK[entry.state] > RANK[worst] ? entry.state : worst), 'met')
   if (state === 'met' && running.length) state = 'on_track'
 

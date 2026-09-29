@@ -83,7 +83,8 @@ export function touch(item) {
 
 /** Validates and applies a pipeline transition (shared by /transition and macros). */
 export function applyTransition(item, toStatusId, body = {}) {
-  const transition = getPipeline().transitions.find(
+  const type = getCollection('caseTypes').find((entry) => entry.id === item.type_id)
+  const transition = (getPipeline(type?.pipeline_id) || getPipeline()).transitions.find(
     (entry) => entry.from === item.status_id && entry.to === toStatusId
   )
   if (!transition) throw new MockHttpError(409, 'CASE_TRANSITION_NOT_ALLOWED', 'This status change is not allowed.')

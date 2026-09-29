@@ -9,6 +9,7 @@ import settings from './service/settings.js'
 import sla from './service/sla.js'
 import knowledge from './service/knowledge.js'
 import insights from './service/insights.js'
+import catalogConfig from './service/catalogConfig.js'
 
 /**
  * نصوص إدارة العملاء (Customer Hub) — جذر المفاتيح `service.*`.
@@ -26,5 +27,6 @@ export default {
   ...sla,
   ...knowledge,
   ...insights,
+  ...catalogConfig,
   terms,
 }

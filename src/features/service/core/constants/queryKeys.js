@@ -37,6 +37,12 @@ export const serviceKeys = {
   reportOverview: (period) => [...serviceKeys.all, 'reports', 'overview', period],
   feedbackResponses: (params) => [...serviceKeys.all, 'feedback', params ?? {}],
 
+  // Catalog (F3)
+  catalog: () => [...serviceKeys.all, 'catalog'],
+  capabilityRegistry: () => [...serviceKeys.catalog(), 'capabilities'],
+  serviceModels: () => [...serviceKeys.catalog(), 'service-models'],
+  catalogItems: (params) => [...serviceKeys.catalog(), 'items', params ?? {}],
+
   // Saved views (F2) — per entity (e.g. service_case)
   savedViews: (entity) => [...serviceKeys.all, 'saved-views', entity],
 }

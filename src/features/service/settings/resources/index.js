@@ -6,6 +6,12 @@ import {
   slaPoliciesResource,
 } from './operationsResources'
 import { kbCategoriesResource, macrosResource, savedRepliesResource } from './communicationResources'
+import { itemTypesResource, pipelinesResource, recordTypesResource } from './catalogResources'
+import { Package } from 'lucide-react'
+import { CatalogItemsPanel } from '../../catalog/components/CatalogItemsPanel'
+
+/** A section can also be a custom panel (`component`) instead of a CRUD list. */
+const catalogItemsSection = { key: 'catalogItems', icon: Package, i18nKey: 'service.settings.resources.catalogItems', component: CatalogItemsPanel }
 
 /**
  * Every configuration screen under /service/settings/:section.
@@ -15,6 +21,7 @@ import { kbCategoriesResource, macrosResource, savedRepliesResource } from './co
  */
 export const SETTINGS_GROUPS = [
   { key: 'cases', resources: [caseTypesResource, queuesResource] },
+  { key: 'catalog', resources: [catalogItemsSection, itemTypesResource, recordTypesResource, pipelinesResource] },
   { key: 'sla', resources: [slaPoliciesResource, businessCalendarsResource, escalationRulesResource] },
   { key: 'communication', resources: [savedRepliesResource, macrosResource] },
   { key: 'knowledge', resources: [kbCategoriesResource] },
@@ -31,6 +38,10 @@ const SECTION_SLUGS = {
   savedReplies: 'saved-replies',
   macros: 'macros',
   kbCategories: 'kb-categories',
+  catalogItems: 'catalog-items',
+  itemTypes: 'item-types',
+  recordTypes: 'record-types',
+  pipelines: 'pipelines',
 }
 
 /** URL slug for a resource (kebab-case, stable). */

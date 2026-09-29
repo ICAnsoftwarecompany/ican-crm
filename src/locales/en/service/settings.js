@@ -15,6 +15,7 @@ export default {
     allTypes: 'All request types',
     allPriorities: 'All priorities',
     actions: {
+      addRow: 'Add row',
       save: 'Save',
       edit: 'Edit',
       delete: 'Delete',
@@ -27,16 +28,40 @@ export default {
       deleted: 'Deleted',
     },
     validation: {
+      invalid: 'This value is not valid',
+      depends_on: 'An enabled capability needs another one',
+      initial: 'Choose exactly one initial status',
       required: 'This field is required',
       taken: 'This key is already used',
     },
     groups: {
+      catalog: 'Catalog',
       communication: 'Communication',
       knowledge: 'Knowledge',
       cases: 'Requests',
       sla: 'Service levels',
     },
     resources: {
+      catalogItems: {
+        title: 'Products & services',
+        one: 'item',
+        description: 'Service setup of each catalog item: its type, what a sale creates and attached services.',
+      },
+      itemTypes: {
+        title: 'Item types',
+        one: 'item type',
+        description: 'Kinds of things you sell (air conditioner, travel package, school year) and the capabilities they have.',
+      },
+      recordTypes: {
+        title: 'Service record types',
+        one: 'record type',
+        description: 'What customers own or book after the sale (booking, shipment, enrollment) and its participants, components and entries.',
+      },
+      pipelines: {
+        title: 'Pipelines',
+        one: 'pipeline',
+        description: 'Statuses and allowed moves for requests and service records. Each save creates a new version.',
+      },
       savedReplies: {
         title: 'Saved replies',
         one: 'saved reply',
@@ -79,6 +104,8 @@ export default {
       },
     },
     fields: {
+      min: 'Min',
+      max: 'Max',
       title: 'Title',
       body: 'Text',
       description: 'Description',

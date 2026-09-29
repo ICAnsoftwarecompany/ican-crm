@@ -51,7 +51,18 @@ export const serviceEndpoints = {
     savedReplies: `${SERVICE_API}/saved-replies`,
     macros: `${SERVICE_API}/macros`,
     kbCategories: `${SERVICE_API}/kb/categories`,
+    // F3 — catalog & records configuration (spec §25, §33.2, §11)
+    itemTypes: `${TENANT_API}/catalog/item-types`,
+    recordTypes: `${SERVICE_API}/record-types`,
+    pipelines: `${TENANT_API}/pipelines`,
   },
+
+  // Catalog (F3) — capability registry + model presets are code-owned (read-only; proposed endpoints).
+  // Items = the existing Products & Services joined with `service_config`; only that part is edited here.
+  catalogCapabilities: `${TENANT_API}/catalog/capabilities`,
+  catalogServiceModels: `${TENANT_API}/catalog/service-models`,
+  catalogItems: `${TENANT_API}/catalog/items`,
+  catalogItem: (itemId) => `${TENANT_API}/catalog/items/${itemId}`,
 
   // Knowledge base (F2) — CRUD + publish (kb.publish permission). New articles start as drafts.
   kbArticles: `${SERVICE_API}/kb/articles`,

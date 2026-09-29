@@ -15,6 +15,7 @@ export default {
     allTypes: 'كل أنواع الطلبات',
     allPriorities: 'كل الأولويات',
     actions: {
+      addRow: 'إضافة صف',
       save: 'حفظ',
       edit: 'تعديل',
       delete: 'حذف',
@@ -27,16 +28,40 @@ export default {
       deleted: 'تم الحذف',
     },
     validation: {
+      invalid: 'القيمة غير صحيحة',
+      depends_on: 'قدرة مفعّلة تحتاج قدرة أخرى',
+      initial: 'اختر حالة بداية واحدة فقط',
       required: 'هذا الحقل مطلوب',
       taken: 'هذا المفتاح مستخدم بالفعل',
     },
     groups: {
+      catalog: 'الكتالوج',
       communication: 'التواصل',
       knowledge: 'المعرفة',
       cases: 'الطلبات',
       sla: 'مستويات الخدمة',
     },
     resources: {
+      catalogItems: {
+        title: 'المنتجات والخدمات',
+        one: 'عنصر',
+        description: 'إعداد الخدمة لكل عنصر في الكتالوج: نوعه، وما يُنشئه البيع، والخدمات المرفقة.',
+      },
+      itemTypes: {
+        title: 'أنواع العناصر',
+        one: 'نوع عنصر',
+        description: 'أنواع ما تبيعه (تكييف، باقة سياحية، سنة دراسية) والقدرات التي يحتاجها.',
+      },
+      recordTypes: {
+        title: 'أنواع سجلات الخدمة',
+        one: 'نوع سجل',
+        description: 'ما يملكه العميل أو يحجزه بعد البيع (حجز، شحنة، قيد) ومشاركوه ومكوناته ومدخلاته.',
+      },
+      pipelines: {
+        title: 'المراحل',
+        one: 'مسار مراحل',
+        description: 'الحالات والانتقالات المسموحة للطلبات وسجلات الخدمة. كل حفظ ينشئ نسخة جديدة.',
+      },
       savedReplies: {
         title: 'الردود المحفوظة',
         one: 'رد محفوظ',
@@ -79,6 +104,8 @@ export default {
       },
     },
     fields: {
+      min: 'الأدنى',
+      max: 'الأقصى',
       title: 'العنوان',
       body: 'النص',
       description: 'الوصف',

@@ -15,6 +15,7 @@ export default {
     },
   },
   errors: {
+    PIPELINE_STATUS_IN_USE: 'A status you removed is still used by requests or records. Move them first or keep the status.',
     generic: 'Something went wrong. Please try again.',
     CONFLICT_VERSION: 'Someone else changed this record. The latest version was loaded, please try again.',
     CASE_TRANSITION_NOT_ALLOWED: 'This status change is not allowed from the current status.',

@@ -59,21 +59,24 @@ export function ResourceFormDialog({ resource, open, item, ctx, onClose }) {
       open={open}
       onClose={onClose}
       size="lg"
+      className={resource.dialogClassName}
       title={t(item ? 'service.settings.edit' : 'service.settings.create', { resource: t(`${resource.i18nKey}.one`) })}
       description={t(`${resource.i18nKey}.description`)}
       submitText={t('service.settings.actions.save')}
       loading={mutation.isPending}
       onSubmit={submit}
     >
-      {rows.map((row, index) => (
+      {rows.filter((row) => row.fields.some((field) => !field.hiddenWhen?.(values))).map((row, index) => (
         <div key={row.row || index} className={row.fields.length > 1 ? 'grid gap-3 sm:grid-cols-2' : undefined}>
-          {row.fields.map((field) => (
+          {row.fields.filter((field) => !field.hiddenWhen?.(values)).map((field) => (
             <ResourceField
               key={field.name}
               field={field}
               ctx={ctx}
               value={values[field.name]}
               error={fieldError(field.name)}
+              values={values}
+              onPatch={(patch) => setValues((current) => ({ ...current, ...patch }))}
               onChange={(next) => setValues((current) => ({ ...current, [field.name]: next }))}
             />
           ))}

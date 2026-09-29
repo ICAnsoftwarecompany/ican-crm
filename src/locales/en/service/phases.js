@@ -23,6 +23,8 @@ export default {
     reports: 'Reports',
     settings: 'Settings',
     savedViews: 'Saved views',
+    catalog: 'Catalog & capabilities',
+    pipelines: 'Pipelines',
     records: 'Service records',
     assets: 'Assets',
     entitlements: 'Entitlements',

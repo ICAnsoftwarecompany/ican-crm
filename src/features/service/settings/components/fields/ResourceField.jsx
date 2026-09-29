@@ -128,7 +128,7 @@ export function DurationField({ label, value, onChange, error }) {
  * Field: { name, type: text|textarea|localized|localizedTextarea|select|checkboxes|switch|number|duration|custom,
  *          labelKey, hintKey?, options?(ctx), component? (custom) }
  */
-export function ResourceField({ field, value, onChange, error, ctx }) {
+export function ResourceField({ field, value, onChange, error, ctx, values, onPatch }) {
   const { t } = useTranslation()
   const label = t(field.labelKey)
   const hint = field.hintKey ? t(field.hintKey, field.hintValues) : undefined
@@ -149,7 +149,7 @@ export function ResourceField({ field, value, onChange, error, ctx }) {
         </label>
       )
     case 'select':
-      return <Select label={label} options={options} value={value ?? ''} onChange={(next) => onChange(next || null)} error={error} placeholder={field.placeholderKey ? t(field.placeholderKey) : undefined} />
+      return <Select label={label} options={options} value={value ?? ''} onChange={(next) => onChange(next || null)} error={error} placeholder={field.placeholderKey ? t(field.placeholderKey) : undefined} disabled={field.disabledWhen?.(values)} />
     case 'checkboxes':
       return <CheckboxGroupField label={label} value={value} options={options} onChange={onChange} hint={hint} />
     case 'switch':
@@ -160,7 +160,7 @@ export function ResourceField({ field, value, onChange, error, ctx }) {
       return <DurationField label={label} value={value} onChange={onChange} error={error} />
     case 'custom': {
       const Component = field.component
-      return <Component label={label} value={value} onChange={onChange} error={error} ctx={ctx} />
+      return <Component label={label} hint={hint} value={value} onChange={onChange} error={error} ctx={ctx} values={values} onPatch={onPatch} field={field} />
     }
     default:
       return <Input label={label} value={value ?? ''} dir={field.ltr ? 'ltr' : undefined} error={error} hint={hint} onChange={(event) => onChange(event.target.value)} />

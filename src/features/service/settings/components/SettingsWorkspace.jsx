@@ -45,7 +45,9 @@ export function SettingsWorkspace({ section, basePath }) {
         ))}
       </nav>
       <div className="min-w-0">
-        {resource ? (
+        {resource?.component ? (
+          <resource.component key={resource.key} resource={resource} />
+        ) : resource ? (
           <ResourceSettingsPanel key={resource.key} resource={resource} />
         ) : (
           <EmptyState title={t('service.settings.notFound')} />
