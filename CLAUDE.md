@@ -72,7 +72,7 @@ Legacy/transitional (don't copy these patterns, don't add to them):
 | Calendar | `shared/components/calendar` (engine) + `features/calendar` (sources) | [Calendar](docs/1-ARCHITECTURE.md#calendar) |
 | Realtime | `src/realtime` | [Realtime](docs/1-ARCHITECTURE.md#realtime) |
 | Translations | `src/locales` | [i18n](docs/1-ARCHITECTURE.md#i18n) |
-| Customer Service / Service Operations (phases F0–F7) | `features/service` (+ `README.md` per sub-module), `pages/service`, `locales/*/service*` | [4-CUSTOMER-SERVICE.md](docs/4-CUSTOMER-SERVICE.md) (phases, rules, phase log), backend spec [docs/customer-service/](docs/customer-service/SERVICE-MASTER-SPEC.md) |
+| Customer Hub = Customer Service / Service Operations (UI name "Customer Hub / إدارة العملاء"; code name `service`; phases F0–F7) | `features/service` (+ `README.md` per sub-module), `pages/service`, `locales/*/service*` | [4-CUSTOMER-SERVICE.md](docs/4-CUSTOMER-SERVICE.md) (phases, rules, phase log), backend spec [docs/customer-service/](docs/customer-service/SERVICE-MASTER-SPEC.md) |
 
 Do not confuse: **campaigns** (paid Meta ads) ≠ **outreach-campaigns** (sending messages).
 `integrations` (connection capabilities) and `meta-integrations` (Meta APIs) overlap — ask before moving code between them.

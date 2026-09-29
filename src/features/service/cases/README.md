@@ -21,15 +21,16 @@ Tenants rename it (Ticket, Request…) through terminology — always show it wi
 | `api/casesApi.js` | All case endpoints (via `createServiceApi('cases')`). Response shape documented at the top. |
 | `hooks/useCases.js` | `useCaseSetup`, `useCaseSummary`, `useCaseList` (infinite), `useCase`, `useCaseActivities`, `useCaseMutations`, `useCustomerLookup`. |
 | `hooks/useCaseTransitionFlow.jsx` | One flow for every status change: runs directly, or opens the dialog when the transition has `required_fields`. |
-| `constants/caseViews.js` | View keys, board categories, priorities, severities. |
+| `constants/caseViews.js` | View keys (incl. `sla_at_risk`, `sla_breached`), Operations Center counter views, board categories, priorities, severities. |
 | `utils/caseStatus.js` | Pure helpers: allowed transitions from the pipeline, tone classes. Tested. |
-| `components/CasesWorkspace.jsx` | Toolbar + view tabs + table/board. |
+| `components/CasesWorkspace.jsx` | Toolbar + view tabs + saved views + filters + table/board. URL: `?view=&q=&mode=&priority=&queue=&type=&saved=`. |
+| `components/CaseFilters.jsx`, `SavedViewTabs.jsx` | F2: server filters (priority/queue/type) and saved views (`../saved-views`). |
 | `components/CasesTable.jsx`, `CasesBoard.jsx` | List on DataTable (cursor mode) / board on PipelineBoard. |
 | `components/CaseCreateDialog.jsx` | Customer lookup, subject, type, priority, queue, description. |
 | `components/CreateCaseFromConversationButton.jsx` | Thread-header action for conversations. |
 | `components/CaseTransitionDialog.jsx` | Collects transition fields (resolution code + summary). |
 | `components/CaseBadges.jsx`, `CaseTypeIcon.jsx`, `CaseViewTabs.jsx` | Small UI. Type icons are an allowlist. |
-| `components/detail/*` | Detail view, activity feed, composer, properties panel, transition menu. |
+| `components/detail/*` | Detail view (header with SLA badge + macro menu; side: SLA panel, CSAT card, properties, suggested articles, contacts), activity feed (incl. `sla_escalated`, `macro_applied`), composer (with saved replies), transition menu. |
 
 ## Rules
 
@@ -61,5 +62,5 @@ Tenants rename it (Ticket, Request…) through terminology — always show it wi
 ## Open issues
 
 - Board shows loaded pages only ("Load more" appends).
-- DataTable column filters work on loaded rows; server-side filters beyond view/search arrive with saved views (F2).
-- SLA badges, macros and saved replies arrive in F2.
+- DataTable column filters work on loaded rows; server-side filters are priority/queue/type (F2).
+- Pipeline (statuses/transitions) is not editable yet — editor planned for F3.

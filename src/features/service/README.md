@@ -1,4 +1,6 @@
-# features/service — Customer Service (Service Operations)
+# features/service — Customer Hub (Service Operations)
+
+User-facing name: **Customer Hub / إدارة العملاء**; the code keeps the technical name `service`.
 
 Everything business-related for Customer Service lives here. Start with
 [docs/4-CUSTOMER-SERVICE.md](../../../docs/4-CUSTOMER-SERVICE.md) (phases, rules, phase log).
@@ -10,11 +12,17 @@ Everything business-related for Customer Service lives here. Start with
 | `index.js` | Public surface — the only import path for pages and other features | F0 | — |
 | `core/` | Transport (mock/live), capabilities & terminology, service-wide UI, constants, utils (`localizeLabel`, `serviceErrors`) | F0 | [core/README.md](core/README.md) |
 | `mocks/` | Demo backend: axios adapter, router, in-memory db, industry templates, handlers | F0 | [mocks/README.md](mocks/README.md) |
-| `cases/` | Cases: workspace (views, list, board), detail, create, transitions, conversation → case. Queues live in case setup until F2 | F1 ✅ | [cases/README.md](cases/README.md) |
+| `cases/` | Cases: workspace (views, list, board), detail, create, transitions, conversation → case. Queues/types are edited in `settings/` | F1 ✅ | [cases/README.md](cases/README.md) |
 | `my-work/` | My Work read model + Service Center counters | F1 ✅ | [my-work/README.md](my-work/README.md) |
 | `contacts/` | Contacts & relationships under a customer | F1 ✅ | [contacts/README.md](contacts/README.md) |
 | `customer-360/` | Service tab in the customer drawer | F1 ✅ | [customer-360/README.md](customer-360/README.md) |
-| `sla/`, `replies/`, `knowledge/`, `feedback/`, `reports/`, `settings/` | Operations (MVP-1) | F2 | added with the code |
+| `settings/` | Generic settings framework + resource definitions (case types, queues, SLA, calendars, escalation, replies, macros, KB categories) | F2 ✅ | [settings/README.md](settings/README.md) |
+| `sla/` | SLA badge and panel (server-computed) | F2 ✅ | [sla/README.md](sla/README.md) |
+| `replies/` | Saved reply picker, macro menu | F2 ✅ | [replies/README.md](replies/README.md) |
+| `knowledge/` | Knowledge base + suggested articles | F2 ✅ | [knowledge/README.md](knowledge/README.md) |
+| `feedback/` | CSAT list, score, case card | F2 ✅ | [feedback/README.md](feedback/README.md) |
+| `reports/` | Reports dashboard | F2 ✅ | [reports/README.md](reports/README.md) |
+| `saved-views/` | Saved views per entity | F2 ✅ | [saved-views/README.md](saved-views/README.md) |
 | `records/`, `assets/`, `entitlements/`, `contracts/`, `handoffs/` | Service context | F3 | added with the code |
 | `billing/`, `scheduling/`, `work-orders/` | Billing & scheduling | F4 | added with the code |
 | `portal/`, `imports/`, `follow-ups/`, `portfolios/` | Portal & growth (MVP-2) | F5 | added with the code |

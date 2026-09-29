@@ -20,7 +20,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 - [AI agent](#ai-agent)
 - [Products and services](#products-and-services)
 - [Settings and appearance](#settings-and-appearance)
-- [Customer Service](#customer-service)
+- [Customer Hub (Customer Service)](#customer-hub-customer-service)
 
 ---
 
@@ -194,9 +194,9 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 - **API:** definitions, users and integrations APIs (see [2-SALES.md → Statuses, tags and pipeline](2-SALES.md#statuses-tags-and-pipeline), [2-SALES.md → Teams and users](2-SALES.md#teams-and-users), [Integrations](#integrations)); branding has no backend yet. Proposed: `GET /api/tenant/branding` → `{ brandPrimary, brandAccent }`, `PUT /api/tenant/branding` (6-digit hex, tenant-scoped); only `brandingApi.js` should change.
 - **Known issues:** brand colors do not sync across devices/users; only `Button` and `SettingsSidebar` read brand tokens — screens with hardcoded brand hex do not follow the picked colors.
 
-## Customer Service
+## Customer Hub (Customer Service)
 
-**Status:** PARTIAL — F0 Foundation and F1 Case core done (mock data only). Full domain doc: [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md).
+**Status:** PARTIAL — F0 Foundation, F1 Case core and F2 Service operations (MVP-1) done (mock data only). User-facing name **Customer Hub / إدارة العملاء**; code name stays `service`. Full domain doc: [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md).
 
 **What it does:** Service Operations after the sale — cases/tickets, SLA, service records (bookings, shipments, enrollments, projects), assets and warranty, entitlements, contracts, installments, scheduling, work orders, follow-ups and a customer portal. Works with Sales (contract → handoff) or standalone. Industries are configuration: screens render from the tenant capabilities manifest.
 
@@ -208,15 +208,21 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 |---|---|---|---|
 | Capabilities manifest, terminology, industry templates (demo) | F0 | CURRENT | mock |
 | Service overview `/service` (roadmap, template switcher) | F0 | CURRENT | mock |
-| Service Center `/service` (counters, My Work preview) | F1 | CURRENT | mock |
+| Operations Center `/service` (counters incl. SLA at risk / breached, My Work preview) | F1–F2 | CURRENT | mock |
 | Cases `/service/cases` (views, list, board, create) and case detail (timeline, reply, internal note, status, properties) | F1 | CURRENT | mock |
-| Queues (filter + assign; settings in F2) | F1 | CURRENT | mock |
+| Queues (filter + assign) | F1 | CURRENT | mock |
 | My Work `/service/my-work` | F1 | CURRENT | mock |
 | Contacts & relationships (case detail, drawer) | F1 | CURRENT | mock |
 | Conversation → Case (thread header in `/conversations`) | F1 | CURRENT | mock |
-| Customer drawer **Service** tab | F1 | CURRENT | mock |
-| SLA & escalation, replies & macros, internal KB, CSAT, reports, settings (MVP-1) | F2 | PLANNED | — |
-| Catalog capabilities, service records, assets, warranty, entitlements, contracts, handoffs | F3 | PLANNED | — |
+| Customer drawer **Services** tab | F1 | CURRENT | mock |
+| Operations settings `/service/settings/*` (case types, queues, SLA policies, business hours, escalation, saved replies, macros, KB categories) | F2 | CURRENT | mock |
+| SLA on cases (badge, panel, views, escalation timeline) | F2 | CURRENT | mock |
+| Saved replies in the composer, macros on the case | F2 | CURRENT | mock |
+| Knowledge base `/service/knowledge` + suggested articles on cases | F2 | CURRENT | mock |
+| CSAT on cases + feedback list | F2 | CURRENT | mock |
+| Reports `/service/reports` (KPIs, trend, breakdowns, agents) | F2 | CURRENT | mock |
+| Case filters + saved views (private / shared) | F2 | CURRENT | mock |
+| Pipeline editor, catalog capabilities, service records, assets, warranty, entitlements, contracts, handoffs | F3 | PLANNED | — |
 | Payment plans & installments, collections, scheduling, work orders, COD | F4 | PLANNED | — |
 | Customer portal, imports, follow-up programs, portfolios (MVP-2) | F5 | PLANNED | — |
 | Public KB, quality, template versioning, builders | F6 | PLANNED | — |
@@ -226,6 +232,6 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 **API:** all calls go through `createServiceApi(moduleKey)`; while a module is `backend: 'mock'` the request is served by `features/service/mocks` with the real URL and error shape. Contract: [customer-service/SERVICE-MASTER-SPEC.md](customer-service/SERVICE-MASTER-SPEC.md) §51–52.
 
-**Navigation:** section Customer Service (`module: 'customer_service'`): Service Center, Cases, My Work.
+**Navigation:** section Customer Hub (`module: 'customer_service'`): Operations Center, Cases, My Work, Knowledge Base, Reports, Operations Settings.
 
-**Known issues:** SLA, saved views, macros and settings screens arrive in F2; the board shows loaded pages only; Conversation → Case and the drawer Service tab were not visually verified against the real backend.
+**Known issues:** the pipeline (statuses/transitions) editor arrives in F3; SLA in the mock uses wall-clock time (the backend owns business-time SLA); the board shows loaded pages only; Conversation → Case and the drawer Service tab were not visually verified against the real backend.
