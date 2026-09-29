@@ -55,13 +55,13 @@ export function buildCases(manifest) {
   const random = createRandom(`cases-${manifest.template}`)
   const statuses = setup.case_types[0].pipeline.statuses
 
-  return Array.from({ length: 28 }, (_, index) => {
+  const buildCase = (index, random, status, openedHours) => {
     const type = random.pick(setup.case_types)
-    const status = pickStatus(random, statuses)
-    // Mostly recent cases so the SLA states (on track / at risk / breached) all show up.
-    const openedHours = random.chance(0.6) ? random.int(1, 30) : random.int(1, 240)
     const resolved = status.category === 'resolved' || status.category === 'closed'
     const assignee = random.chance(0.8) ? random.pick(setup.agents) : null
+    // Fractional hours: first response 5 min–3 h after opening; resolution 1–72 h later.
+    const firstResponseAfter = Math.min(random.int(5, 180) / 60, openedHours)
+    const resolvedAfter = Math.min(random.chance(0.75) ? random.int(1, 6) : random.int(6, 72), openedHours)
     return {
       id: `case-${index + 1}`,
       case_number: `CS-2026-${String(1040 + index).padStart(5, '0')}`,
@@ -79,16 +79,31 @@ export function buildCases(manifest) {
       source_channel: random.pick(CHANNELS),
       conversation_id: null,
       opened_at: hoursAgo(openedHours),
-      first_response_at: status.key === 'new' ? null : hoursAgo(openedHours - 1),
-      resolved_at: resolved ? hoursAgo(random.int(0, Math.max(openedHours - 2, 0))) : null,
-      closed_at: status.category === 'closed' ? hoursAgo(0) : null,
-      updated_at: hoursAgo(random.int(0, Math.min(openedHours, 48))),
+      first_response_at: status.key === 'new' ? null : hoursAgo(openedHours - firstResponseAfter),
+      resolved_at: resolved ? hoursAgo(openedHours - resolvedAfter) : null,
+      closed_at: status.category === 'closed' ? hoursAgo(Math.max(openedHours - resolvedAfter - 48, 0)) : null,
+      updated_at: resolved ? hoursAgo(openedHours - resolvedAfter) : hoursAgo(random.int(0, Math.min(openedHours, 48))),
       resolution_code: resolved ? 'fixed' : null,
       resolution_summary: resolved ? 'تم حل المشكلة ومتابعة العميل' : null,
-      reopened_count: 0,
+      reopened_count: resolved && random.chance(0.08) ? 1 : 0,
       version: 1,
     }
+  }
+
+  // Current work: mostly recent so the SLA states (on track / at risk / breached) all show up.
+  const current = Array.from({ length: 28 }, (_, index) => {
+    const status = pickStatus(random, statuses)
+    const openedHours = random.chance(0.5) ? random.int(1, 48) : random.int(1, 240)
+    return buildCase(index, random, status, openedHours)
   })
+
+  // History (last ~90 days, resolved/closed) so reports and CSAT have volume.
+  const history = createRandom(`cases-history-${manifest.template}`)
+  const done = statuses.filter((status) => ['st-resolved', 'st-closed'].includes(status.id))
+  const past = Array.from({ length: 70 }, (_, offset) =>
+    buildCase(28 + offset, history, history.pick([done[1], done[1], done[0]]), history.int(24 * 3, 24 * 88))
+  )
+  return [...current, ...past]
 }
 
 export function buildActivities(manifest) {

@@ -22,6 +22,7 @@ export default {
       all: 'الكل',
     },
     categories: { open: 'مفتوح', in_progress: 'قيد التنفيذ', pending: 'بالانتظار', resolved: 'تم الحل' },
+    filters: { anyPriority: 'كل الأولويات', anyQueue: 'كل الطوابير', anyType: 'كل الأنواع' },
     board: { empty: 'لا يوجد شيء هنا' },
     fields: {
       number: 'الرقم',

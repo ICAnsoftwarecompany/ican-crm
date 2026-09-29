@@ -57,4 +57,11 @@ export const serviceEndpoints = {
   kbArticles: `${SERVICE_API}/kb/articles`,
   kbArticle: (articleId) => `${SERVICE_API}/kb/articles/${articleId}`,
   kbArticlePublish: (articleId) => `${SERVICE_API}/kb/articles/${articleId}/publish`,
+
+  // Feedback & reports (F2) — spec §42, §51 (`/service/reports/{report_key}`).
+  feedbackResponses: `${SERVICE_API}/feedback/responses`,
+  reportOverview: `${SERVICE_API}/reports/overview`,
+
+  // Saved views (F2) — core, cross-module (spec §51 `CRUD /saved-views`); filtered by `entity`.
+  savedViews: `${TENANT_API}/saved-views`,
 }

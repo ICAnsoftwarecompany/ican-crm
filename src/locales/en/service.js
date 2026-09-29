@@ -8,6 +8,7 @@ import contacts from './service/contacts.js'
 import settings from './service/settings.js'
 import sla from './service/sla.js'
 import knowledge from './service/knowledge.js'
+import insights from './service/insights.js'
 
 /**
  * Customer Hub (Service Operations) copy — key root `service.*`.
@@ -25,5 +26,6 @@ export default {
   ...settings,
   ...sla,
   ...knowledge,
+  ...insights,
   terms,
 }

@@ -52,9 +52,10 @@ export const SERVICE_MODULES = [
   { key: 'sla', folder: 'sla', phase: 2, status: 'done', backend: 'mock' },
   { key: 'replies', folder: 'replies', phase: 2, status: 'done', backend: 'mock' },
   { key: 'knowledge', folder: 'knowledge', phase: 2, status: 'done', backend: 'mock' },
-  { key: 'feedback', folder: 'feedback', phase: 2, status: 'planned', backend: 'mock' },
-  { key: 'reports', folder: 'reports', phase: 2, status: 'planned', backend: 'mock' },
-  { key: 'settings', folder: 'settings', phase: 2, status: 'in_progress', backend: 'mock' },
+  { key: 'feedback', folder: 'feedback', phase: 2, status: 'done', backend: 'mock' },
+  { key: 'reports', folder: 'reports', phase: 2, status: 'done', backend: 'mock' },
+  { key: 'settings', folder: 'settings', phase: 2, status: 'done', backend: 'mock' },
+  { key: 'savedViews', folder: 'saved-views', phase: 2, status: 'done', backend: 'mock' },
 
   // F3 — Service Context
   { key: 'records', folder: 'records', phase: 3, status: 'planned', backend: 'mock' },

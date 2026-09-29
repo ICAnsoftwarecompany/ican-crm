@@ -3,6 +3,7 @@ import { getCollection, registerSeed } from '../db'
 import { MockHttpError, notFound } from '../errors'
 import { findStatus, getCaseSetup, getPipeline } from '../state/caseConfig'
 import { computeSla, escalationActivities } from '../state/sla'
+import { findCaseCsat } from '../state/feedback'
 import { buildActivities, buildCases, buildCustomers } from '../seeds/casesSeed'
 import { getMockCurrentUser, mockId } from '../seeds/seedUtils'
 import { matchesSearch, nowIso, paginate } from '../utils'
@@ -43,6 +44,7 @@ export function serializeCase(item) {
     queue: queue ? { id: queue.id, label: queue.label } : null,
     assignee: assignee ? { id: assignee.id, name: assignee.name } : null,
     sla: computeSla(item),
+    csat: findCaseCsat(item.id),
   }
 }
 

@@ -22,6 +22,7 @@ export default {
     feedback: 'التقييمات',
     reports: 'التقارير',
     settings: 'الإعدادات',
+    savedViews: 'العروض المحفوظة',
     records: 'سجلات الخدمة',
     assets: 'الأصول',
     entitlements: 'الحقوق',

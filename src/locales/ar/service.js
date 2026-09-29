@@ -8,6 +8,7 @@ import contacts from './service/contacts.js'
 import settings from './service/settings.js'
 import sla from './service/sla.js'
 import knowledge from './service/knowledge.js'
+import insights from './service/insights.js'
 
 /**
  * نصوص إدارة العملاء (Customer Hub) — جذر المفاتيح `service.*`.
@@ -24,5 +25,6 @@ export default {
   ...settings,
   ...sla,
   ...knowledge,
+  ...insights,
   terms,
 }

@@ -6,6 +6,7 @@ export default {
   serviceCases: 'الطلبات',
   serviceMyWork: 'شغلي',
   serviceKnowledge: 'قاعدة المعرفة',
+  serviceReports: 'التقارير',
   serviceSettings: 'إعدادات التشغيل',
   deals: 'الصفقات',
   "sections": {

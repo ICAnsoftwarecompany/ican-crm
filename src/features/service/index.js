@@ -50,3 +50,7 @@ export { SlaBadge, SlaPanel } from './sla'
 // F2 — Saved replies, macros, knowledge base
 export { SavedReplyPicker, MacroMenu } from './replies'
 export { KnowledgeWorkspace, ArticleEditor, useKbArticle } from './knowledge'
+
+// F2 — Reports & feedback
+export { ReportsWorkspace } from './reports'
+export { FeedbackList, CsatScore } from './feedback'

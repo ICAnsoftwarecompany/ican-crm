@@ -16,6 +16,7 @@ import { CaseTransitionMenu } from './CaseTransitionMenu'
 import { SlaBadge, SlaPanel } from '../../../sla'
 import { MacroMenu } from '../../../replies'
 import { SuggestedArticlesPanel } from '../../../knowledge'
+import { CaseCsatCard } from '../../../feedback'
 
 /** Full case screen: header + transitions, timeline + composer, properties. */
 export function CaseDetailView({ caseId }) {
@@ -76,6 +77,7 @@ export function CaseDetailView({ caseId }) {
               </section>
               <div className="grid content-start gap-4">
                 <SlaPanel sla={caseItem.sla} />
+                <CaseCsatCard csat={caseItem.csat} />
                 <CasePropertiesPanel caseItem={caseItem} setup={setup.data} />
                 <SuggestedArticlesPanel caseId={caseItem.id} />
                 <CustomerContactsPanel customerId={caseItem.customer?.id} compact />

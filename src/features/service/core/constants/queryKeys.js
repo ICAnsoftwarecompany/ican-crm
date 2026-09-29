@@ -32,4 +32,11 @@ export const serviceKeys = {
   kbArticles: (params) => [...serviceKeys.kb(), 'articles', params ?? {}],
   kbArticle: (articleId) => [...serviceKeys.kb(), 'article', String(articleId)],
   caseSuggestedArticles: (caseId) => [...serviceKeys.kb(), 'suggested', String(caseId)],
+
+  // Reports & feedback (F2)
+  reportOverview: (period) => [...serviceKeys.all, 'reports', 'overview', period],
+  feedbackResponses: (params) => [...serviceKeys.all, 'feedback', params ?? {}],
+
+  // Saved views (F2) — per entity (e.g. service_case)
+  savedViews: (entity) => [...serviceKeys.all, 'saved-views', entity],
 }

@@ -22,6 +22,7 @@ export default {
       all: 'All',
     },
     categories: { open: 'Open', in_progress: 'In progress', pending: 'Waiting', resolved: 'Resolved' },
+    filters: { anyPriority: 'Any priority', anyQueue: 'Any queue', anyType: 'Any type' },
     board: { empty: 'Nothing here' },
     fields: {
       number: 'Number',

@@ -15,10 +15,13 @@ import { CaseCreateDialog } from './CaseCreateDialog'
 import { CaseViewTabs } from './CaseViewTabs'
 import { CasesBoard } from './CasesBoard'
 import { CasesTable } from './CasesTable'
+import { CaseFilters } from './CaseFilters'
+import { SavedViewTabs } from './SavedViewTabs'
 
 /**
  * Cases workspace: view tabs (server views + counts), search, list/board.
- * State lives in the URL (?view=&mode=&q=) so views are shareable.
+ * State lives in the URL (?view=&mode=&q=&priority=&queue=&type=&saved=) so
+ * views are shareable; a saved view is just a named set of these params.
  */
 export function CasesWorkspace() {
   const { t } = useTranslation()
@@ -32,7 +35,14 @@ export function CasesWorkspace() {
 
   const setup = useCaseSetup()
   const summary = useCaseSummary()
-  const list = useCaseList({ view, search: debouncedSearch || undefined })
+  const filters = { priority: params.get('priority') || '', queue: params.get('queue') || '', type: params.get('type') || '' }
+  const list = useCaseList({
+    view,
+    search: debouncedSearch || undefined,
+    priority: filters.priority || undefined,
+    queue_id: filters.queue || undefined,
+    type_id: filters.type || undefined,
+  })
   const { requestTransition, transitionDialog } = useCaseTransitionFlow(setup.data)
 
   const updateParams = (changes) => {
@@ -40,6 +50,22 @@ export function CasesWorkspace() {
     Object.entries(changes).forEach(([key, value]) => (value ? next.set(key, value) : next.delete(key)))
     setParams(next, { replace: true })
   }
+  // Any manual change leaves the saved view (its chip un-highlights).
+  const updateFilters = (changes) => updateParams({ ...changes, saved: '' })
+  const applySavedView = (savedView) => {
+    const saved = savedView.filters || {}
+    setSearch(saved.search || '')
+    updateParams({
+      saved: savedView.id,
+      view: saved.view && saved.view !== DEFAULT_CASE_VIEW ? saved.view : '',
+      q: saved.search || '',
+      priority: saved.priority || '',
+      queue: saved.queue_id || '',
+      type: saved.type_id || '',
+    })
+  }
+  const currentFilters = { view, search: debouncedSearch, priority: filters.priority, queue_id: filters.queue, type_id: filters.type }
+  const hasFilters = Boolean(debouncedSearch || filters.priority || filters.queue || filters.type || view !== DEFAULT_CASE_VIEW)
 
   const modeButton = (value, Icon, label) => (
     <button
@@ -67,7 +93,7 @@ export function CasesWorkspace() {
             value={search}
             onChange={(event) => {
               setSearch(event.target.value)
-              updateParams({ q: event.target.value })
+              updateFilters({ q: event.target.value })
             }}
             placeholder={t('service.cases.searchPlaceholder')}
             aria-label={t('service.cases.searchPlaceholder')}
@@ -86,7 +112,11 @@ export function CasesWorkspace() {
         </div>
       </div>
 
-      <CaseViewTabs view={view} onChange={(key) => updateParams({ view: key === DEFAULT_CASE_VIEW ? '' : key })} counts={summary.data?.views} />
+      <CaseViewTabs view={view} onChange={(key) => updateFilters({ view: key === DEFAULT_CASE_VIEW ? '' : key })} counts={summary.data?.views} />
+      <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:items-center">
+        <SavedViewTabs activeId={params.get('saved')} currentFilters={currentFilters} canSave={hasFilters} onSelect={applySavedView} />
+        <CaseFilters setup={setup.data} values={filters} onChange={updateFilters} />
+      </div>
 
       {mode === 'list' ? (
         <CasesTable query={list} emptyMessage={emptyMessage} />

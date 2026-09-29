@@ -43,6 +43,11 @@
   --calendar-social:    #D946EF;
 
   /* Service operations (features/service) — SLA state and case priority */
+  /* Charts — categorical slots (validated for CVD on --surface, light + dark) */
+  --chart-1:            #2a78d6;
+  --chart-2:            #eb6834;
+  --chart-grid:         #E5E7EB;
+
   --sla-on-track:       #10B981;
   --sla-at-risk:        #F59E0B;
   --sla-breached:       #EF4444;
@@ -78,6 +83,10 @@
   --calendar-meetings:  #38BDF8;
   --calendar-calls:     #FBBF24;
   --calendar-social:    #E879F9;
+
+  --chart-1:            #3987e5;
+  --chart-2:            #d95926;
+  --chart-grid:         #1F2937;
 
   --sla-on-track:       #34D399;
   --sla-at-risk:        #FBBF24;

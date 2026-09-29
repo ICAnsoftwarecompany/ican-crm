@@ -57,6 +57,7 @@ import {
   ListChecks,
   Settings2,
   BookOpen,
+  BarChart3,
 } from 'lucide-react'
 
 /** @type {NavigationSection[]} */
@@ -206,6 +207,12 @@ export const navigationConfig = [
         icon: BookOpen,
         path: '/service/knowledge',
         activePatterns: ['/service/knowledge', '/service/knowledge/*'],
+      },
+      {
+        id: 'service-reports',
+        labelKey: 'nav.serviceReports',
+        icon: BarChart3,
+        path: '/service/reports',
       },
       {
         id: 'service-settings',

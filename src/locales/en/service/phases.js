@@ -22,6 +22,7 @@ export default {
     feedback: 'Feedback',
     reports: 'Reports',
     settings: 'Settings',
+    savedViews: 'Saved views',
     records: 'Service records',
     assets: 'Assets',
     entitlements: 'Entitlements',

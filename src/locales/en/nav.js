@@ -6,6 +6,7 @@ export default {
   serviceCases: 'Cases',
   serviceMyWork: 'My Work',
   serviceKnowledge: 'Knowledge Base',
+  serviceReports: 'Reports',
   serviceSettings: 'Operations Settings',
   deals: 'Deals',
   "sections": {
