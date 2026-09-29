@@ -5,7 +5,7 @@ import { labelOptions, listOf, listText } from './resourceHelpers'
 
 export const RESOURCE_TYPES = ['technician', 'courier', 'guide', 'room', 'vehicle', 'seats', 'unit']
 const L = () => ({ ar: '', en: '' })
-const tags = (text) => String(text || '').split(/[,\u060C]/).map((entry) => entry.trim()).filter(Boolean)
+export const splitTags = (text) => String(text || '').split(/[,\u060C]/).map((entry) => entry.trim()).filter(Boolean)
 
 /** Scheduling resources (spec §19.1): anything with time and capacity — technician, courier, room, vehicle, seats. */
 export const schedulingResourcesResource = {
@@ -18,7 +18,7 @@ export const schedulingResourcesResource = {
   invalidates: [serviceKeys.scheduling()],
   emptyValue: () => ({ name: L(), type: 'technician', capacity: 1, calendar_id: 'cal-main', skills_text: '', zones_text: '', vehicle: '', daily_capacity: null, status: 'active' }),
   fromItem: (item) => ({ ...item, skills_text: (item.skills || []).join(', '), zones_text: (item.zones || []).join(', '), active: item.status !== 'inactive' }),
-  toPayload: ({ skills_text: skills, zones_text: zones, active, ...values }) => ({ ...values, capacity: Number(values.capacity) || 1, skills: tags(skills), zones: tags(zones), status: active === false ? 'inactive' : 'active' }),
+  toPayload: ({ skills_text: skills, zones_text: zones, active, ...values }) => ({ ...values, capacity: Number(values.capacity) || 1, skills: splitTags(skills), zones: splitTags(zones), status: active === false ? 'inactive' : 'active' }),
   fields: [
     { name: 'name', type: 'localized', labelKey: 'service.settings.fields.name' },
     { name: 'type', type: 'select', labelKey: 'service.scheduling.fields.type', row: 'a', options: (ctx) => RESOURCE_TYPES.map((value) => ({ value, label: ctx.t(`service.scheduling.types.${value}`) })) },

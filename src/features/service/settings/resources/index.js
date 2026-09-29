@@ -10,6 +10,7 @@ import { itemTypesResource, pipelinesResource, recordTypesResource } from './cat
 import { contractTypesResource } from './contractResources'
 import { paymentPlansResource, planAssignmentsResource } from './billingResources'
 import { schedulingResourcesResource } from './schedulingResources'
+import { portalAccountsSection, portalBrandingSection, portalPoliciesResource, requestCatalogResource } from './portalResources'
 import { Package, Wand2 } from 'lucide-react'
 import { SetupWizardPanel } from '../../setup/components/SetupWizardPanel'
 import { CatalogItemsPanel } from '../../catalog/components/CatalogItemsPanel'
@@ -31,6 +32,7 @@ export const SETTINGS_GROUPS = [
   { key: 'contracts', resources: [contractTypesResource] },
   { key: 'billing', resources: [paymentPlansResource, planAssignmentsResource] },
   { key: 'scheduling', resources: [schedulingResourcesResource] },
+  { key: 'portal', resources: [portalAccountsSection, portalPoliciesResource, requestCatalogResource, portalBrandingSection] },
   { key: 'sla', resources: [slaPoliciesResource, businessCalendarsResource, escalationRulesResource] },
   { key: 'communication', resources: [savedRepliesResource, macrosResource] },
   { key: 'knowledge', resources: [kbCategoriesResource] },
@@ -56,6 +58,10 @@ const SECTION_SLUGS = {
   paymentPlans: 'payment-plans',
   planAssignments: 'plan-assignments',
   schedulingResources: 'scheduling-resources',
+  portalAccounts: 'portal-accounts',
+  portalPolicies: 'portal-policies',
+  requestCatalog: 'request-catalog',
+  portalBranding: 'portal-branding',
 }
 
 /** URL slug for a resource (kebab-case, stable). */

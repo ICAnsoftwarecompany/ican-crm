@@ -15,6 +15,9 @@ export default {
     },
   },
   errors: {
+    PORTAL_ACCOUNT_EXISTS: 'Someone already has a portal account with this phone or email. Add access to that account instead.',
+    MEMBERSHIP_EXISTS: 'This account can already access this customer.',
+    PORTAL_ACCOUNT_ACTIVE: 'This account is already active.',
     DELIVERY_INVALID_STATE: 'This step is not available for the shipment status.',
     COURIER_AT_CAPACITY: 'This courier is full for today. Choose another one.',
     NOTHING_TO_REMIT: 'No collected COD waiting for this merchant.',

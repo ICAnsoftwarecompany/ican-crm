@@ -15,11 +15,12 @@ import { useServiceCapabilities } from '../../core/capabilities/useServiceCapabi
 import { EntitlementsList } from '../../entitlements/components/EntitlementsList'
 import { CustomerAssetsSection, CustomerContractsSection, CustomerRecordsSection } from './CustomerHubSections'
 import { CustomerPaymentsSection, CustomerSubscriptionsSection } from './CustomerPaymentsSection'
+import { PortalAccountsPanel } from '../../portal-admin/components/PortalAccountsPanel'
 
 /**
  * "Service" tab of the customer drawer / page (Customer 360).
  * Cases, service records (per type), assets and entitlements (when the
- * tenant has them), contracts and contacts. Payment schedules arrive in F4.
+ * tenant has them), contracts, subscriptions, payment schedules, contacts and portal access.
  *
  * @param {{ customer: { id: string|number, name?: string, phone?: string } }} props
  */
@@ -93,6 +94,13 @@ export function CustomerServiceTab({ customer }) {
       {customerId && <CustomerPaymentsSection customer={{ id: customerId }} />}
 
       <CustomerContactsPanel customerId={customerId} />
+
+      {customerId && hasFeature('portal') && (
+        <section className="grid gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">
+          <h2 className="text-sm font-semibold text-[var(--text)]">{t('service.portal.customerAccess')}</h2>
+          <PortalAccountsPanel customer={{ id: customerId, name: customer?.name || '', phone: customer?.phone }} />
+        </section>
+      )}
 
       <CaseCreateDialog
         open={createOpen}

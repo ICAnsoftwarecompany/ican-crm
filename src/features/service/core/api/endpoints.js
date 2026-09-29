@@ -94,6 +94,13 @@ export const serviceEndpoints = {
   deliveries: `${SERVICE_API}/deliveries`,
   codRemittances: `${TENANT_API}/billing/cod-remittances`,
 
+  // Portal administration (F5, spec §43–44): policies + request catalog are §51 CRUD; accounts, memberships and
+  // portal settings are proposed staff endpoints. The portal app itself calls PORTAL_API (see features/portal).
+  portalPolicies: `${TENANT_API}/portal/policies`,
+  requestCatalog: `${SERVICE_API}/catalog-items`,
+  portalSettings: `${TENANT_API}/portal/settings`,
+  portalAccounts: `${TENANT_API}/portal/accounts`,
+
   // Setup wizard (F3, spec §47.2): industry templates + apply (with dry run).
   setupTemplates: `${TENANT_API}/settings/templates`,
   // Billing Lite (F4) — preview never saves; schedules are created from signed contracts.

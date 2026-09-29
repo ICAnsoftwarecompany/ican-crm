@@ -35,6 +35,7 @@ export default {
       taken: 'This key is already used',
     },
     groups: {
+      portal: 'Customer portal',
       scheduling: 'Scheduling',
       billing: 'Payments',
       general: 'General',
@@ -46,6 +47,26 @@ export default {
       sla: 'Service levels',
     },
     resources: {
+      portalAccounts: {
+        title: 'Portal accounts',
+        one: 'portal account',
+        description: 'People who sign in to the customer portal and which customers they can access (self, guardian, company user).',
+      },
+      portalPolicies: {
+        title: 'Portal policies',
+        one: 'policy',
+        description: 'What a portal user may view or do, per object. Every membership uses one policy.',
+      },
+      requestCatalog: {
+        title: 'Request catalog',
+        one: 'catalog service',
+        description: 'Services customers can request from the portal. Each request opens a case of the chosen type.',
+      },
+      portalBranding: {
+        title: 'Portal branding',
+        one: 'settings',
+        description: 'Name, logo, color, welcome text, visible sections and sign-in options of the customer portal.',
+      },
       schedulingResources: {
         title: 'Resources',
         one: 'resource',

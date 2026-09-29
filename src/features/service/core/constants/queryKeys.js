@@ -95,6 +95,11 @@ export const serviceKeys = {
   deliveryList: (params) => [...serviceKeys.deliveries(), 'list', params ?? {}],
   remittances: (params) => [...serviceKeys.deliveries(), 'remittances', params ?? {}],
 
+  // Portal admin (F5)
+  portalAdmin: () => [...serviceKeys.all, 'portal-admin'],
+  portalAccounts: (params) => [...serviceKeys.portalAdmin(), 'accounts', params ?? {}],
+  portalSettings: () => [...serviceKeys.portalAdmin(), 'settings'],
+
   // Saved views (F2) — per entity (e.g. service_case)
   savedViews: (entity) => [...serviceKeys.all, 'saved-views', entity],
 }
