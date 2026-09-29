@@ -35,6 +35,7 @@ export default {
       taken: 'This key is already used',
     },
     groups: {
+      contracts: 'Contracts',
       catalog: 'Catalog',
       communication: 'Communication',
       knowledge: 'Knowledge',
@@ -42,6 +43,11 @@ export default {
       sla: 'Service levels',
     },
     resources: {
+      contractTypes: {
+        title: 'Contract types',
+        one: 'contract type',
+        description: 'Sales, maintenance, booking or enrollment contracts: signature, renewal and the handoff checklist.',
+      },
       catalogItems: {
         title: 'Products & services',
         one: 'item',

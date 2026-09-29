@@ -263,8 +263,9 @@ export function buildCatalogItems(manifest) {
       service_config: {
         item_type_id: typeKey ? `it-${typeKey}` : null,
         capability_overrides: [],
-        fulfillment: {
-          creates: creates || 'none',
+        // Items never configured for service have no fulfillment → a sale of them needs review.
+        fulfillment: creates && {
+          creates,
           record_type_id: type?.record ? `rt-${type.record}` : null,
           default_queue_id: null,
           allowed_case_type_ids: [],

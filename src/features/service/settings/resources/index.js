@@ -7,6 +7,7 @@ import {
 } from './operationsResources'
 import { kbCategoriesResource, macrosResource, savedRepliesResource } from './communicationResources'
 import { itemTypesResource, pipelinesResource, recordTypesResource } from './catalogResources'
+import { contractTypesResource } from './contractResources'
 import { Package } from 'lucide-react'
 import { CatalogItemsPanel } from '../../catalog/components/CatalogItemsPanel'
 
@@ -22,6 +23,7 @@ const catalogItemsSection = { key: 'catalogItems', icon: Package, i18nKey: 'serv
 export const SETTINGS_GROUPS = [
   { key: 'cases', resources: [caseTypesResource, queuesResource] },
   { key: 'catalog', resources: [catalogItemsSection, itemTypesResource, recordTypesResource, pipelinesResource] },
+  { key: 'contracts', resources: [contractTypesResource] },
   { key: 'sla', resources: [slaPoliciesResource, businessCalendarsResource, escalationRulesResource] },
   { key: 'communication', resources: [savedRepliesResource, macrosResource] },
   { key: 'knowledge', resources: [kbCategoriesResource] },
@@ -42,6 +44,7 @@ const SECTION_SLUGS = {
   itemTypes: 'item-types',
   recordTypes: 'record-types',
   pipelines: 'pipelines',
+  contractTypes: 'contract-types',
 }
 
 /** URL slug for a resource (kebab-case, stable). */

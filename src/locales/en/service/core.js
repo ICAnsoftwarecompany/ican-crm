@@ -15,6 +15,12 @@ export default {
     },
   },
   errors: {
+    CONTRACT_LOCKED: 'Signed contracts cannot be edited. Add an amendment instead.',
+    CONTRACT_INVALID_STATE: 'This action is not available in the contract\'s current status.',
+    CONTRACT_NOT_SIGNABLE: 'Send the contract before signing it.',
+    ALREADY_SIGNED: 'This party already signed.',
+    HANDOFF_HAS_ERRORS: 'Resolve the items that need review before accepting.',
+    HANDOFF_INVALID_STATE: 'This handoff was already handled.',
     ENTITLEMENT_NOT_AVAILABLE: 'This entitlement cannot be used (used up, expired or suspended).',
     RECORD_TRANSITION_NOT_ALLOWED: 'This status change is not allowed for this record.',
     DOCUMENT_NOT_UPLOADED: 'Upload the document before verifying it.',

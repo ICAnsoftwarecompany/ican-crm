@@ -15,8 +15,8 @@ export function buildAssetsState(manifest) {
   const customers = buildCustomers(manifest)
   const items = buildCatalogItems(manifest)
   const cases = buildCases(manifest)
-  const assetItems = items.filter((item) => item.service_config.fulfillment.creates === 'asset')
-  const planItems = items.filter((item) => item.service_config.fulfillment.creates === 'subscription')
+  const assetItems = items.filter((item) => item.service_config.fulfillment?.creates === 'asset')
+  const planItems = items.filter((item) => item.service_config.fulfillment?.creates === 'subscription')
 
   const assets = []
   const warranties = []

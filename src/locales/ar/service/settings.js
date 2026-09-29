@@ -35,6 +35,7 @@ export default {
       taken: 'هذا المفتاح مستخدم بالفعل',
     },
     groups: {
+      contracts: 'العقود',
       catalog: 'الكتالوج',
       communication: 'التواصل',
       knowledge: 'المعرفة',
@@ -42,6 +43,11 @@ export default {
       sla: 'مستويات الخدمة',
     },
     resources: {
+      contractTypes: {
+        title: 'أنواع العقود',
+        one: 'نوع عقد',
+        description: 'عقود البيع أو الصيانة أو الحجز أو الالتحاق: التوقيع والتجديد وقائمة مهام التسليم.',
+      },
       catalogItems: {
         title: 'المنتجات والخدمات',
         one: 'عنصر',

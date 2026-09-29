@@ -15,6 +15,12 @@ export default {
     },
   },
   errors: {
+    CONTRACT_LOCKED: 'العقد الموقّع لا يُعدّل. أضف ملحقًا بدلًا من ذلك.',
+    CONTRACT_INVALID_STATE: 'هذا الإجراء غير متاح في حالة العقد الحالية.',
+    CONTRACT_NOT_SIGNABLE: 'أرسل العقد أولًا قبل توقيعه.',
+    ALREADY_SIGNED: 'هذا الطرف وقّع بالفعل.',
+    HANDOFF_HAS_ERRORS: 'عالج البنود التي تحتاج مراجعة قبل القبول.',
+    HANDOFF_INVALID_STATE: 'تم التعامل مع هذا التسليم بالفعل.',
     ENTITLEMENT_NOT_AVAILABLE: 'لا يمكن استخدام هذا الاستحقاق (مستنفد أو منتهٍ أو موقوف).',
     RECORD_TRANSITION_NOT_ALLOWED: 'تغيير الحالة هذا غير مسموح لهذا السجل.',
     DOCUMENT_NOT_UPLOADED: 'ارفع المستند أولًا قبل اعتماده.',

@@ -55,6 +55,7 @@ export const serviceEndpoints = {
     itemTypes: `${TENANT_API}/catalog/item-types`,
     recordTypes: `${SERVICE_API}/record-types`,
     pipelines: `${TENANT_API}/pipelines`,
+    contractTypes: `${TENANT_API}/contract-types`,
   },
 
   // Catalog (F3) — capability registry + model presets are code-owned (read-only; proposed endpoints).
@@ -72,6 +73,10 @@ export const serviceEndpoints = {
   assets: `${SERVICE_API}/assets`,
   warranties: `${SERVICE_API}/warranties`,
   entitlements: `${SERVICE_API}/entitlements`,
+
+  // Contracts (shared module, spec §27) and Sales → Service handoffs (§32).
+  contracts: `${TENANT_API}/contracts`,
+  handoffs: `${SERVICE_API}/handoffs`,
 
   // Knowledge base (F2) — CRUD + publish (kb.publish permission). New articles start as drafts.
   kbArticles: `${SERVICE_API}/kb/articles`,

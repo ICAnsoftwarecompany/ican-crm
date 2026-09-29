@@ -4,7 +4,6 @@
  * HERE (not in app/router/index.jsx) to keep merges with other areas clean.
  *
  * Planned routes (add each when its phase ships):
- *   F3  /service/contracts, /service/handoffs (inside the Services hub)
  *   F4  /service/billing, /service/scheduling, /service/work-orders
  *   F5  /service/follow-ups, /service/portfolios, /service/imports  (+ separate portal app)
  */
@@ -33,6 +32,8 @@ export const serviceRoutes = {
         { path: 'batches/:recordType?/:batchId?', lazy: page(() => import('./ServiceBatchesPage'), 'ServiceBatchesPage') },
         { path: 'assets/:assetId?', lazy: page(() => import('./ServiceAssetsPage'), 'ServiceAssetsPage') },
         { path: 'entitlements', lazy: page(() => import('./ServiceEntitlementsPage'), 'ServiceEntitlementsPage') },
+        { path: 'contracts/:contractId?', lazy: page(() => import('./ServiceContractsPage'), 'ServiceContractsPage') },
+        { path: 'handoffs/:handoffId?', lazy: page(() => import('./ServiceHandoffsPage'), 'ServiceHandoffsPage') },
       ],
     },
     // F0 — capabilities, demo template switcher, roadmap

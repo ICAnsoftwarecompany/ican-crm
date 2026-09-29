@@ -62,3 +62,7 @@ export { ServicesHubNav } from './core/components/ServicesHubNav'
 // F3 — Assets, warranty, entitlements
 export { AssetsWorkspace, AssetDetailView } from './assets'
 export { EntitlementsList, CaseCoveragePanel } from './entitlements'
+
+// F3 — Contracts & handoffs
+export { ContractsWorkspace, ContractDetailView } from './contracts'
+export { HandoffsWorkspace, HandoffDetailView } from './handoffs'

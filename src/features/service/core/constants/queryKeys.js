@@ -62,6 +62,14 @@ export const serviceKeys = {
   entitlementDetail: (id) => [...serviceKeys.entitlements(), 'detail', String(id)],
   entitlementCheck: (params) => [...serviceKeys.entitlements(), 'check', params ?? {}],
 
+  // Contracts & handoffs (F3)
+  contracts: () => [...serviceKeys.all, 'contracts'],
+  contractList: (params) => [...serviceKeys.contracts(), 'list', params ?? {}],
+  contractDetail: (id) => [...serviceKeys.contracts(), 'detail', String(id)],
+  handoffs: () => [...serviceKeys.all, 'handoffs'],
+  handoffList: (params) => [...serviceKeys.handoffs(), 'list', params ?? {}],
+  handoffDetail: (id) => [...serviceKeys.handoffs(), 'detail', String(id)],
+
   // Saved views (F2) — per entity (e.g. service_case)
   savedViews: (entity) => [...serviceKeys.all, 'saved-views', entity],
 }
