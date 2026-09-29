@@ -9,6 +9,7 @@ export function CustomersPageHeader({
   onTrash,
   trashActive = false,
   onTableSettings,
+  viewToggle = null,
 }) {
   return (
     <header className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2">
@@ -20,14 +21,17 @@ export function CustomersPageHeader({
           )}
         </div>
 
-        <CustomersPageActions
-          onAdd={onAdd}
-          onImport={onImport}
-          onExport={onExport}
-          onTrash={onTrash}
-          trashActive={trashActive}
-          onTableSettings={onTableSettings}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          {viewToggle}
+          <CustomersPageActions
+            onAdd={onAdd}
+            onImport={onImport}
+            onExport={onExport}
+            onTrash={onTrash}
+            trashActive={trashActive}
+            onTableSettings={onTableSettings}
+          />
+        </div>
       </div>
     </header>
   )
