@@ -81,6 +81,9 @@ export const serviceEndpoints = {
   contracts: `${TENANT_API}/contracts`,
   handoffs: `${SERVICE_API}/handoffs`,
 
+  // Subscriptions (spec §30, §51 `CRUD /subscriptions (+ /cancel, /suspend, /resume, /renew)`).
+  subscriptions: `${TENANT_API}/subscriptions`,
+
   // Setup wizard (F3, spec §47.2): industry templates + apply (with dry run).
   setupTemplates: `${TENANT_API}/settings/templates`,
   // Billing Lite (F4) — preview never saves; schedules are created from signed contracts.

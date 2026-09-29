@@ -15,6 +15,10 @@ export default {
     },
   },
   errors: {
+    SUBSCRIPTION_INVALID_STATE: 'This action is not available in the current subscription status.',
+    SUBSCRIPTION_HAS_DUES: 'Pay the overdue periods to reactivate this subscription.',
+    SUBSCRIPTION_AUTO_RENEWS: 'This subscription renews automatically.',
+    PERIOD_ALREADY_PAID: 'This period is already paid.',
     SCHEDULE_NOT_ACTIVE: 'This payment schedule is no longer active.',
     PAYMENT_NOT_REVERSIBLE: 'This payment cannot be reversed.',
     NO_LATE_FEE: 'There is no late fee to waive on this line.',

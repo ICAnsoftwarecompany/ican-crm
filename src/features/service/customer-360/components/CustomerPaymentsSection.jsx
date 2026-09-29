@@ -1,11 +1,14 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Wallet } from 'lucide-react'
+import { Repeat, Wallet } from 'lucide-react'
 import { ResourceState } from '../../../../shared/components/data/ResourceState'
 import { useScheduleList } from '../../billing/api/schedulesApi'
 import { ScheduleStatusBadge } from '../../billing/components/ScheduleStatusBadge'
 import { useMoney } from '../../billing/utils/money'
 import { Section, rowClass } from './CustomerHubSections'
+import { useSubscriptionList } from '../../subscriptions/api/subscriptionsApi'
+import { SubscriptionStatusBadge } from '../../subscriptions/components/SubscriptionStatusBadge'
+import { localizeLabel } from '../../core/utils/localizeLabel'
 
 /** Customer 360: payment schedules with outstanding / overdue (Billing Lite, F4). */
 export function CustomerPaymentsSection({ customer }) {
@@ -29,6 +32,32 @@ export function CustomerPaymentsSection({ customer }) {
                   )}
                 </span>
                 <ScheduleStatusBadge status={schedule.status} />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </ResourceState>
+    </Section>
+  )
+}
+
+/** Customer 360: subscriptions with their status and amount due (F4). */
+export function CustomerSubscriptionsSection({ customer }) {
+  const { t, i18n } = useTranslation()
+  const money = useMoney('EGP', 0)
+  const subscriptions = useSubscriptionList({ customer_id: String(customer.id) })
+  return (
+    <Section icon={Repeat} title={t('service.hub.subscriptions')}>
+      <ResourceState isLoading={subscriptions.isLoading} error={subscriptions.error} onRetry={subscriptions.refetch} empty={!subscriptions.subscriptions.length} emptyTitle={t('service.subscriptions.empty')}>
+        <ul className="grid gap-2">
+          {subscriptions.subscriptions.map((entry) => (
+            <li key={entry.id}>
+              <Link to={`/service/subscriptions/${entry.id}`} className={rowClass}>
+                <span className="min-w-0 flex-1 text-sm text-[var(--text)]">
+                  {localizeLabel(entry.item_name, i18n.language, entry.item_id)}
+                  {entry.amount_due > 0 && <span className="ms-2 text-xs font-semibold text-sla-breached"><span dir="ltr">{money(entry.amount_due)}</span></span>}
+                </span>
+                <SubscriptionStatusBadge status={entry.status} />
               </Link>
             </li>
           ))}

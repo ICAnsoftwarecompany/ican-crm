@@ -68,4 +68,5 @@ export { ContractsWorkspace, ContractDetailView } from './contracts'
 export { HandoffsWorkspace, HandoffDetailView } from './handoffs'
 
 // F4 — Billing Lite
+export { SubscriptionsWorkspace, SubscriptionDetailView } from './subscriptions'
 export { PlanCalculator, PlanPreviewTable, BillingNav, SchedulesList, ScheduleDetailView, CollectionsWorkspace } from './billing'

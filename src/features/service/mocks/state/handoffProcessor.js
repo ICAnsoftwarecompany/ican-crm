@@ -2,6 +2,7 @@ import { getCollection } from '../db'
 import { mockId } from '../seeds/seedUtils'
 import { getPipeline } from './caseConfig'
 import { nowIso } from '../utils'
+import { addBillingPeriod, createSubscriptionRecord } from './subscriptionLifecycle'
 
 /**
  * Mock of the backend Handoff Processor (spec §32). Idempotent per
@@ -84,6 +85,21 @@ function createForLine(contract, line) {
   } else if (creates === 'subscription') {
     const entitlements = capability(item, 'entitlements')
     const subscriptionId = mockId('sub')
+    const recurrence = capability(item, 'recurrence')?.config || {}
+    const subscription = createSubscriptionRecord({
+      id: subscriptionId,
+      number: `SUB-${contract.contract_number.slice(-3)}-${getCollection('subscriptions').length + 1}`,
+      customer,
+      item,
+      recurrence: { every: Number(recurrence.every) || 1, unit: recurrence.unit || 'month', auto_renew: recurrence.auto_renew !== false, grace_days: recurrence.grace_days ?? 7 },
+      price: line.unit_price,
+      contract,
+    })
+    const start = (contract.start_date || nowIso()).slice(0, 10)
+    subscription.started_at = `${start}T00:00:00.000Z`
+    subscription.events.push({ type: 'started', from: null, to: 'active', occurred_at: subscription.started_at, reason: null })
+    addBillingPeriod(subscription, start)
+    getCollection('subscriptions').unshift(subscription)
     created.push({ type: 'subscription', id: subscriptionId, label: item.name })
     if (entitlements) {
       const entitlementId = mockId('ent')

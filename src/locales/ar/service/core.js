@@ -15,6 +15,10 @@ export default {
     },
   },
   errors: {
+    SUBSCRIPTION_INVALID_STATE: 'هذا الإجراء غير متاح في حالة الاشتراك الحالية.',
+    SUBSCRIPTION_HAS_DUES: 'ادفع الفترات المتأخرة لإعادة تفعيل الاشتراك.',
+    SUBSCRIPTION_AUTO_RENEWS: 'هذا الاشتراك بيتجدد تلقائيًا.',
+    PERIOD_ALREADY_PAID: 'هذه الفترة مدفوعة بالفعل.',
     SCHEDULE_NOT_ACTIVE: 'جدول السداد ده لم يعد نشطًا.',
     PAYMENT_NOT_REVERSIBLE: 'لا يمكن عكس هذه الدفعة.',
     NO_LATE_FEE: 'لا توجد غرامة تأخير للإعفاء على هذا البند.',

@@ -77,6 +77,11 @@ export const serviceKeys = {
   scheduleDetail: (id) => [...serviceKeys.billing(), 'schedule', String(id)],
   collections: (params) => [...serviceKeys.billing(), 'collections', params ?? {}],
 
+  // Subscriptions (F4)
+  subscriptions: () => [...serviceKeys.all, 'subscriptions'],
+  subscriptionList: (params) => [...serviceKeys.subscriptions(), 'list', params ?? {}],
+  subscriptionDetail: (id) => [...serviceKeys.subscriptions(), 'detail', String(id)],
+
   // Saved views (F2) — per entity (e.g. service_case)
   savedViews: (entity) => [...serviceKeys.all, 'saved-views', entity],
 }

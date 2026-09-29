@@ -31,6 +31,7 @@ export default {
     contracts: 'العقود',
     handoffs: 'التحويلات',
     billing: 'الأقساط',
+    subscriptions: 'الاشتراكات',
     scheduling: 'المواعيد',
     workOrders: 'أوامر العمل',
     portal: 'البوابة',
