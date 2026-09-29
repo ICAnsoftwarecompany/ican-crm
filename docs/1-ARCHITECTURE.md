@@ -13,6 +13,7 @@ Status labels used in all three docs: **CURRENT** (verified code in use) · **PA
 - [Routes and navigation](#routes-and-navigation)
 - [Tenant, auth, httpClient and api_password](#tenant-auth-httpclient-and-api_password)
 - [Realtime](#realtime)
+- [Notification center](#notification-center)
 - [i18n](#i18n)
 - [RTL and LTR](#rtl-and-ltr)
 - [Theme and dark mode](#theme-and-dark-mode)
@@ -87,6 +88,25 @@ app / pages  ->  features  ->  shared / services
 - Domain hooks: `useWhatsappRealtime`, `useMessengerRealtime`, `useGmailRealtime` (conversations), `useCustomersTableRealtime`, `useTableFormatRulesRealtime`.
 - Two patterns exist: some hooks update React Query caches directly (`useCustomersTableRealtime`, `useTableFormatRulesRealtime`); the conversation hooks resolve payloads and hand events to consumers that update caches (details in [3-FEATURES.md → Conversations](3-FEATURES.md#conversations)). Keep query keys that realtime handlers update stable.
 
+## Notification center
+
+**Status:** CURRENT · **Owner:** `features/notifications` · **Shell entry:** `NotificationCenterButton` in `Header.jsx`
+
+> **Documentation update:** 2026-09-30 01:00 (Africa/Cairo)
+
+- Persistent notifications use the backend as the source of truth: API → React Query cache → reusable notification list UI. Keys are `QUERY_KEYS.notifications.unread` and `.history` in `shared/constants/queryKeys.js`.
+- API (`features/notifications/api/notificationsApi.js`): `GET /api/tenant/notifications/center/unread`, `GET .../history`, `GET .../read/{id}`, and `POST .../read/many` with `{ ids }`. There is no delete, archive, preferences or read-all endpoint. “Read all” collects unread IDs and calls `read/many`; never invent an endpoint.
+- `normalizeNotification.js` is the boundary between backend payloads and UI. The stable model contains `id`, `type`, `category`, `title/titleKey`, `message`, `icon`, entity metadata, `target`, read state, timestamps and `raw`. Components must not branch on raw payload shapes.
+- `notificationRegistry.js` owns type metadata and route resolution. Add a type there plus AR/EN copy; unknown types use the general fallback and never crash. Targets must use routes registered in `app/router/index.jsx`; invalid backend URLs are ignored.
+- Backend `data.icon` values are resolved by `notificationIcons.js` to Lucide icons and theme-aware `--notification-*` color variables. `severity` may override the icon tone. `alertable_type === App\\Models\\Lead` is presented as Lead Management; every other alertable type is presented as Customer Management.
+- The quick panel type filter uses the registry's supported backend types and translated labels. Filtering is client-side over the currently loaded API page; it does not invent unsupported API parameters.
+- `useTenantNotificationsRealtime` remains the sole `.notification.created` consumer on the existing Echo connection. It normalizes and upserts by notification ID into unread/history caches. Fetch completion merges with current cache to prevent a realtime event received during loading from being overwritten.
+- Each persistent realtime event plays `/notifications/NewNotification.mp3` through `features/notifications/utils/notificationSound.js`, deduplicated by notification ID. The reusable lazy Audio factory lives in `shared/utils/createNotificationSound.js`; channel sound exports remain backward compatible.
+- Read mutations are optimistic across both caches and roll back with an error toast on failure. The unread badge is derived from the unread query and is capped visually at `99+`.
+- The existing Zustand `notificationCenterStore` remains a **legacy client-state compatibility layer** for panel open state and temporary/channel notifications used by conversation navbar badges. It is not the persistent notification history source. Do not move Sonner toasts into backend history.
+- UI is split into `NotificationCenterPanel`, `NotificationList`, and `NotificationItem`; it supports All/Unread, Today/Yesterday/Earlier grouping, loading/empty/error/retry, RTL/LTR, theme variables, Escape/outside close and keyboard-native buttons. This list/item layer is reusable for a future `/notifications` route; no full page route exists today.
+- Backend limitations: no pagination contract is exposed yet, so current lists are client-grouped and sorted newest-first. When pagination arrives, preserve server page order and extend the query shape instead of flattening pages blindly.
+
 ## i18n
 
 - One i18next namespace, `common` (`src/i18n.js`, `defaultNS: 'common'`). Resources are split into per-domain modules: `src/locales/{ar,en}/<domain>.js`, each `export default { ... }` holding the subtree of its top-level key. The file name **is** the top-level key: `t('customers.table.name')` → `customers.js` → `table.name`. Never call `useTranslation('customers')`.
@@ -114,6 +134,13 @@ app / pages  ->  features  ->  shared / services
 - Tenant brand colors: see [3-FEATURES.md → Settings and appearance](3-FEATURES.md#settings-and-appearance).
 
 ## Conventions
+
+> **Documentation change timestamp:** 2026-09-30 00:02 (Africa/Cairo)
+
+- Every addition or modification inside `docs/**/*.md` must include a nearby timestamp using the exact format `YYYY-MM-DD HH:mm (Africa/Cairo)`.
+- Put the timestamp directly below the changed heading, or beside the changed table/list entry when only one entry changed. Do not rely on a single file-level “last updated” value for documents whose sections evolve independently.
+- Use the actual Cairo time at the moment of the edit. Updating documentation content without adding or refreshing its nearby timestamp is an incomplete change.
+- Example: `> **Documentation update:** 2026-09-30 00:02 (Africa/Cairo)`.
 
 - Components `PascalCase.jsx`; hooks `useX.js`; API modules `xApi.js`; tests `*.test.js(x)` next to the code.
 - Relative imports inside a feature; `@/` maps to `src/`.
@@ -224,6 +251,7 @@ One checklist for every change (human or AI). Report anything you could not veri
 - [ ] RTL + LTR and light + dark verified, or explicitly reported as not verified.
 - [ ] Existing APIs, payloads, query keys used by realtime, and routes remain compatible.
 - [ ] Update the relevant section in docs/2-SALES.md or docs/3-FEATURES.md in the same change. Do not create new .md files; add a section instead. Architecture or rule changes update this file.
+- [ ] Every changed section in `docs/**/*.md` has a nearby `YYYY-MM-DD HH:mm (Africa/Cairo)` timestamp reflecting the current edit.
 - [ ] **Exception — Customer Service:** it is large and phased, so it has its own doc `docs/4-CUSTOMER-SERVICE.md` (phase log updated every phase), backend specs in `docs/customer-service/`, and a `README.md` in each `features/service/*` sub-module folder and in `pages/service/`. Keep those in sync in the same change.
 
 ## Adding a new module

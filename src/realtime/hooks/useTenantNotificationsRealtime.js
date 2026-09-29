@@ -1,10 +1,14 @@
 import { useCallback, useMemo } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useAuthStore } from '../../store/authStore'
 import { resolveTenantId } from '../../services/tenantResolver'
 import { useNotificationCenterStore } from '../../features/notifications'
-import { buildNotificationFromPayload, detectNotificationChannel } from '../../features/notifications/utils/notificationPayloads'
-import { playWhatsappNotificationSound } from '../../features/conversations/utils/notificationSound'
+import { normalizeNotification } from '../../features/notifications/utils/normalizeNotification'
+import { upsertNotification } from '../../features/notifications/utils/notificationCache'
+import { QUERY_KEYS } from '../../shared/constants/queryKeys'
+import { buildNotificationFromPayload } from '../../features/notifications/utils/notificationPayloads'
+import { playNewNotificationSound } from '../../features/notifications/utils/notificationSound'
 import { useRealtimeChannel } from './useRealtimeChannel'
 
 function normalizeValue(value) {
@@ -77,45 +81,6 @@ function getNotificationActionUrl(payload = {}) {
   return payload.action_url || payload.notification?.action_url || payload.data?.action_url || ''
 }
 
-function getWhatsappSoundKey(payload = {}) {
-  const data = payload.data && typeof payload.data === 'object' ? payload.data : {}
-  const message = payload.message || data.message || payload.whatsapp_message || data.whatsapp_message || {}
-  return (
-    message.id ||
-    message.message_id ||
-    message.whatsapp_message_id ||
-    payload.message_id ||
-    payload.whatsapp_message_id ||
-    data.message_id ||
-    data.whatsapp_message_id ||
-    payload.id ||
-    data.id ||
-    ''
-  )
-}
-
-function shouldPlayWhatsappSound(payload = {}) {
-  if (detectNotificationChannel(payload) !== 'whatsapp') return false
-
-  const data = payload.data && typeof payload.data === 'object' ? payload.data : {}
-  const eventText = [
-    payload.type,
-    payload.event,
-    payload.action,
-    data.type,
-    data.event,
-    data.action,
-  ].filter(Boolean).join(' ').toLowerCase()
-
-  return !(
-    eventText.includes('reaction') ||
-    eventText.includes('read') ||
-    eventText.includes('seen') ||
-    eventText.includes('delivered') ||
-    eventText.includes('status')
-  )
-}
-
 export function useTenantNotificationsRealtime({
   tenantId = '',
   userId = '',
@@ -125,6 +90,7 @@ export function useTenantNotificationsRealtime({
   onNotification,
 } = {}) {
   const user = useAuthStore((state) => state.user)
+  const queryClient = useQueryClient()
   const addNotification = useNotificationCenterStore((state) => state.addNotification)
   const resolvedTenantId = useMemo(
     () => resolveTenantId(user, tenantId),
@@ -143,9 +109,12 @@ export function useTenantNotificationsRealtime({
     (payload = {}) => {
       console.log('Notification received:', payload)
       addNotification(buildNotificationFromPayload(payload, { persistent: true }))
-      if (shouldPlayWhatsappSound(payload)) {
-        playWhatsappNotificationSound(getWhatsappSoundKey(payload))
+      const persistentNotification = normalizeNotification(payload)
+      if (persistentNotification.id) {
+        queryClient.setQueryData(QUERY_KEYS.notifications.unread, (current = []) => upsertNotification(current, persistentNotification))
+        queryClient.setQueryData(QUERY_KEYS.notifications.history, (current) => current ? upsertNotification(current, persistentNotification) : current)
       }
+      playNewNotificationSound(persistentNotification.id || payload.id || payload.created_at)
       onNotification?.(payload)
 
       if (!showToast) return
@@ -167,7 +136,7 @@ export function useTenantNotificationsRealtime({
           : undefined,
       })
     },
-    [addNotification, onNotification, shouldToast, showToast]
+    [addNotification, onNotification, queryClient, shouldToast, showToast]
   )
 
   const realtime = useRealtimeChannel({

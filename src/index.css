@@ -57,6 +57,22 @@
   --priority-high:      #F59E0B;
   --priority-urgent:    #EF4444;
 
+  /* Notification icon and severity tones */
+  --notification-critical:      #DC2626;
+  --notification-danger:        #E11D48;
+  --notification-high:          #EA580C;
+  --notification-warning:       #D97706;
+  --notification-medium:        #7C3AED;
+  --notification-success:       #059669;
+  --notification-low:           #0284C7;
+  --notification-info:          #2563EB;
+  --notification-sales:         #7C3AED;
+  --notification-tasks:         #4F46E5;
+  --notification-calendar:      #0284C7;
+  --notification-communication: #0891B2;
+  --notification-marketing:     #C026D3;
+  --notification-system:        #64748B;
+
   /* Sidebar */
   --sidebar-width:      240px;
   --sidebar-collapsed:  64px;
@@ -96,6 +112,21 @@
   --priority-normal:    #60A5FA;
   --priority-high:      #FBBF24;
   --priority-urgent:    #F87171;
+
+  --notification-critical:      #F87171;
+  --notification-danger:        #FB7185;
+  --notification-high:          #FB923C;
+  --notification-warning:       #FBBF24;
+  --notification-medium:        #C4B5FD;
+  --notification-success:       #34D399;
+  --notification-low:           #38BDF8;
+  --notification-info:          #60A5FA;
+  --notification-sales:         #C4B5FD;
+  --notification-tasks:         #A5B4FC;
+  --notification-calendar:      #38BDF8;
+  --notification-communication: #67E8F9;
+  --notification-marketing:     #F0ABFC;
+  --notification-system:        #94A3B8;
 }
 
 * {

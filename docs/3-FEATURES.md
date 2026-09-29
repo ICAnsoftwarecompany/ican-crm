@@ -156,13 +156,16 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 ## Notifications
 
-**Status:** PARTIAL (client-side center, fed by realtime)
+**Status:** CURRENT (persistent API center + realtime cache updates)
 
-- **What it does:** notification center in the header (`NotificationCenterButton`, `NotificationCenterPanel`) backed by a Zustand store persisted in localStorage (`ican-notification-center-items`, capped list). Items are added by realtime handlers — tenant notifications (`useTenantNotificationsRealtime`) and channel message events (`buildWhatsappMessageNotification`, `buildGmailMessageNotification` in `utils/notificationPayloads.js`) — each with an `actionUrl` (e.g. `/conversations?channel=whatsapp&whatsappConversation={id}`).
-- **Key files:** `features/notifications/` (`components/`, `store/notificationCenterStore.js`, `utils/notificationPayloads.js`, `index.js`); `realtime/hooks/useTenantNotificationsRealtime.js`.
-- **API:** none (no list/read endpoints); realtime channel `tenant.{tenantId}.notifications.{userId}`, event `.notification.created`.
-- **Used by:** `Header`, conversation realtime hooks, tenant notification realtime.
-- **Known issues:** no server-side history or read state; workflow "send notification" action not backed.
+> **Documentation update:** 2026-09-30 01:00 (Africa/Cairo)
+
+- **What it does:** responsive notification center in the header with an unread badge, All/Unread views, translated type filter, backend-driven colored icons, severity and Lead/Customer Management badges, time grouping, relative timestamps, optimistic single/bulk read actions and safe navigation to registered CRM routes. Unknown backend types and icons use safe fallbacks.
+- **Architecture:** the persistent source of truth is React Query (`QUERY_KEYS.notifications.unread|history`). `normalizeNotification` and `notificationRegistry` isolate payload differences from UI; `notificationCache` deduplicates by ID and merges API/realtime races. `useTenantNotificationsRealtime` uses the existing Echo subscription, upserts `.notification.created` events into the caches and plays `/notifications/NewNotification.mp3` once per notification ID. The Zustand store remains only for panel open state and legacy temporary conversation notifications; those items are not mixed into API history.
+- **Key files:** `features/notifications/api/notificationsApi.js`, `hooks/useNotifications.js`, `components/{NotificationCenterButton,NotificationCenterPanel,NotificationList,NotificationItem}.jsx`, `utils/{normalizeNotification,notificationRegistry,notificationCache,notificationTime}.js`; `realtime/hooks/useTenantNotificationsRealtime.js`; locale `notifications.js`.
+- **API:** `GET /api/tenant/notifications/center/unread`, `GET .../history`, `GET .../read/{id}`, `POST .../read/many` with `{ ids }`; realtime channel `tenant.{tenantId}.notifications.{userId}`, event `.notification.created`.
+- **Used by:** `Header`, tenant notification realtime; conversation-specific temporary badges continue using their compatibility store.
+- **Known issues:** backend exposes no pagination, delete/archive/preferences/read-all endpoints. There is no full `/notifications` page yet; the list/item components are ready for reuse when one is added. The legacy localStorage notification list remains until all channel badges move to their own server-backed unread sources.
 
 ## AI agent
 
