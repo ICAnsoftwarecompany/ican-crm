@@ -7,6 +7,7 @@ import { localizeLabel } from '../../core/utils/localizeLabel'
 import { useServiceTerminology } from '../../core/capabilities/useServiceCapabilities'
 import { CasePriorityBadge, CaseStatusBadge } from './CaseBadges'
 import { CaseTypeIcon } from './CaseTypeIcon'
+import { SlaBadge } from '../../sla'
 
 /**
  * Case list on the shared DataTable. Server-side view/search; rows are
@@ -27,6 +28,7 @@ export function CasesTable({ query, emptyMessage }) {
         queue_label: localizeLabel(item.queue?.label, language, '-'),
         assignee_name: item.assignee?.name || '',
         customer_name: item.customer?.name || '',
+        sla_due: item.sla?.next_due_at || '',
       })),
     [query.cases, language]
   )
@@ -67,6 +69,14 @@ export function CasesTable({ query, emptyMessage }) {
         accessor: 'priority',
         filterType: 'select',
         render: (row) => <CasePriorityBadge priority={row.priority} />,
+      },
+      {
+        id: 'sla',
+        header: t('service.sla.column'),
+        accessor: 'sla_due',
+        sortable: true,
+        width: 140,
+        render: (row) => <SlaBadge sla={row.sla} />,
       },
       { id: 'queue', header: t('service.cases.fields.queue'), accessor: 'queue_label', filterType: 'select' },
       {

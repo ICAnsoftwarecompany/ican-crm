@@ -15,6 +15,8 @@ export default {
       waiting_customer: 'بانتظار العميل',
       waiting_internal: 'بانتظار فريق داخلي',
       high_priority: 'أولوية عالية',
+      sla_at_risk: 'مهددة بالتأخير',
+      sla_breached: 'متأخرة',
       resolved: 'تم حلها',
       closed: 'المغلقة',
       all: 'الكل',

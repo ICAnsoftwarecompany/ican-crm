@@ -7,6 +7,7 @@ import { formatRelativeTime } from '../../../../shared/utils/dateTime'
 import { CASE_BOARD_CATEGORIES } from '../constants/caseViews'
 import { findTransitionToCategory } from '../utils/caseStatus'
 import { CasePriorityBadge, CaseStatusBadge } from './CaseBadges'
+import { SlaBadge } from '../../sla'
 import { CaseTypeIcon } from './CaseTypeIcon'
 
 const CATEGORY_COLOR = {
@@ -58,7 +59,10 @@ export function CasesBoard({ cases, setup, onRequestTransition }) {
         <PipelineCard>
           <div className="mb-1 flex items-center justify-between gap-2">
             <span dir="ltr" className="font-mono text-[11px] text-[var(--text-muted)]">{item.case_number}</span>
-            <CasePriorityBadge priority={item.priority} showLabel={false} />
+            <span className="flex items-center gap-2">
+              <SlaBadge sla={item.sla} />
+              <CasePriorityBadge priority={item.priority} showLabel={false} />
+            </span>
           </div>
           <Link to={`/service/cases/${item.id}`} className="flex items-start gap-2 text-sm font-medium text-[var(--text)] hover:underline">
             <CaseTypeIcon icon={item.type?.icon} className="mt-0.5 shrink-0 text-[var(--text-muted)]" />

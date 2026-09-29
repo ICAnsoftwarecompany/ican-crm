@@ -15,6 +15,8 @@ export default {
       waiting_customer: 'Waiting on customer',
       waiting_internal: 'Waiting internally',
       high_priority: 'High priority',
+      sla_at_risk: 'SLA at risk',
+      sla_breached: 'SLA breached',
       resolved: 'Resolved',
       closed: 'Closed',
       all: 'All',

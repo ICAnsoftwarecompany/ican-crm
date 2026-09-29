@@ -13,6 +13,7 @@ import { CaseComposer } from './CaseComposer'
 import { CasePropertiesPanel } from './CasePropertiesPanel'
 import { CustomerContactsPanel } from '../../../contacts/components/CustomerContactsPanel'
 import { CaseTransitionMenu } from './CaseTransitionMenu'
+import { SlaBadge, SlaPanel } from '../../../sla'
 
 /** Full case screen: header + transitions, timeline + composer, properties. */
 export function CaseDetailView({ caseId }) {
@@ -47,6 +48,7 @@ export function CaseDetailView({ caseId }) {
                   <span dir="ltr" className="font-mono">{caseItem.case_number}</span>
                   <CaseStatusBadge status={caseItem.status} />
                   <CasePriorityBadge priority={caseItem.priority} />
+                  <SlaBadge sla={caseItem.sla} />
                 </div>
                 <h1 className="flex items-center gap-2 text-lg font-bold text-[var(--text)]">
                   <CaseTypeIcon icon={caseItem.type?.icon} size={18} className="shrink-0 text-[var(--text-muted)]" />
@@ -68,6 +70,7 @@ export function CaseDetailView({ caseId }) {
                 <CaseComposer caseItem={caseItem} disabled={!isCaseOpen(caseItem) && caseItem.status?.category !== 'resolved'} />
               </section>
               <div className="grid content-start gap-4">
+                <SlaPanel sla={caseItem.sla} />
                 <CasePropertiesPanel caseItem={caseItem} setup={setup.data} />
                 <CustomerContactsPanel customerId={caseItem.customer?.id} compact />
               </div>

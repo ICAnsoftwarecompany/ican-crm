@@ -43,3 +43,6 @@ export { CustomerServiceTab } from './customer-360'
 
 // F2 — Settings (case types, queues, SLA, calendars, escalation)
 export { SettingsWorkspace, useResourceList } from './settings'
+
+// F2 — SLA presentation
+export { SlaBadge, SlaPanel } from './sla'

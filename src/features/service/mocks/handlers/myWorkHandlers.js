@@ -1,6 +1,7 @@
 import { serviceEndpoints } from '../../core/api/endpoints'
 import { getCollection } from '../db'
 import { findStatus } from '../state/caseConfig'
+import { computeSla } from '../state/sla'
 import { getMockCurrentUser, hoursAgo } from '../seeds/seedUtils'
 
 /**
@@ -37,7 +38,7 @@ export const myWorkHandlers = [
           customer: { id: item.customer.id, name: item.customer.name },
           priority: item.priority,
           status: { key: status.key, label: status.label, category: status.category },
-          due_at: null,
+          due_at: computeSla(item)?.next_due_at ?? null,
           updated_at: item.updated_at,
         }))
       const tasks = mockTasks().map((task) => ({

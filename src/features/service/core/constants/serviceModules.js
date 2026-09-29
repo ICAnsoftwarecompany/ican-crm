@@ -49,7 +49,7 @@ export const SERVICE_MODULES = [
   { key: 'customer360', folder: 'customer-360', phase: 1, status: 'done', backend: 'mock' },
 
   // F2 — Service Operations (MVP-1)
-  { key: 'sla', folder: 'sla', phase: 2, status: 'planned', backend: 'mock' },
+  { key: 'sla', folder: 'sla', phase: 2, status: 'done', backend: 'mock' },
   { key: 'replies', folder: 'replies', phase: 2, status: 'planned', backend: 'mock' },
   { key: 'knowledge', folder: 'knowledge', phase: 2, status: 'planned', backend: 'mock' },
   { key: 'feedback', folder: 'feedback', phase: 2, status: 'planned', backend: 'mock' },

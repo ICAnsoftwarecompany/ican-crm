@@ -2,6 +2,7 @@ import { SERVICE_API, serviceEndpoints } from '../../core/api/endpoints'
 import { getCollection, registerSeed } from '../db'
 import { MockHttpError, notFound } from '../errors'
 import { findStatus, getCaseSetup, getPipeline } from '../state/caseConfig'
+import { computeSla, escalationActivities } from '../state/sla'
 import { buildActivities, buildCases, buildCustomers } from '../seeds/casesSeed'
 import { getMockCurrentUser, mockId } from '../seeds/seedUtils'
 import { matchesSearch, nowIso, paginate } from '../utils'
@@ -22,6 +23,8 @@ const VIEW_FILTERS = {
   waiting_customer: (item) => findStatus(item.status_id)?.key === 'pending_customer',
   waiting_internal: (item) => findStatus(item.status_id)?.key === 'pending_internal',
   high_priority: (item) => VIEW_FILTERS.open(item) && ['high', 'urgent'].includes(item.priority),
+  sla_at_risk: (item) => VIEW_FILTERS.open(item) && computeSla(item)?.state === 'at_risk',
+  sla_breached: (item) => VIEW_FILTERS.open(item) && computeSla(item)?.state === 'breached',
   resolved: (item) => findStatus(item.status_id)?.category === 'resolved',
   closed: (item) => ['closed', 'cancelled'].includes(findStatus(item.status_id)?.category),
   all: () => true,
@@ -39,6 +42,7 @@ function serializeCase(item) {
     status: status ? { id: status.id, key: status.key, label: status.label, category: status.category } : null,
     queue: queue ? { id: queue.id, label: queue.label } : null,
     assignee: assignee ? { id: assignee.id, name: assignee.name } : null,
+    sla: computeSla(item),
   }
 }
 
@@ -75,6 +79,10 @@ function touch(item) {
   item.updated_at = nowIso()
 }
 
+const byUpdated = (a, b) => String(b.updated_at).localeCompare(String(a.updated_at))
+const bySlaDue = (a, b) =>
+  String(computeSla(a)?.next_due_at || '9999').localeCompare(String(computeSla(b)?.next_due_at || '9999'))
+
 function listCases(query) {
   const filterView = VIEW_FILTERS[query.view] || VIEW_FILTERS.open
   const items = getCollection('cases')
@@ -84,7 +92,7 @@ function listCases(query) {
     .filter((item) => !query.priority || item.priority === query.priority)
     .filter((item) => !query.customer_id || item.customer.id === String(query.customer_id))
     .filter((item) => matchesSearch([item.case_number, item.subject, item.customer.name, item.customer.phone], query.search))
-    .sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)))
+    .sort(query.sort === 'sla_due' || String(query.view).startsWith('sla_') ? bySlaDue : byUpdated)
   const page = paginate(items, query)
   return { data: page.data.map(serializeCase), meta: page.meta }
 }
@@ -254,10 +262,9 @@ export const casesHandlers = [
     method: 'GET',
     path: `${SERVICE_API}/cases/:caseId/activities`,
     handler: ({ params }) => {
-      getCase(params.caseId)
       const agents = setup().agents
-      const items = getCollection('caseActivities')
-        .filter((entry) => entry.case_id === params.caseId)
+      const stored = getCollection('caseActivities').filter((entry) => entry.case_id === params.caseId)
+      const items = [...stored, ...escalationActivities(getCase(params.caseId))]
         .map((entry) => ({
           ...entry,
           author: entry.author?.type === 'user' && !entry.author.name

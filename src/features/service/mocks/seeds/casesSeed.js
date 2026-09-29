@@ -58,7 +58,8 @@ export function buildCases(manifest) {
   return Array.from({ length: 28 }, (_, index) => {
     const type = random.pick(setup.case_types)
     const status = pickStatus(random, statuses)
-    const openedHours = random.int(1, 240)
+    // Mostly recent cases so the SLA states (on track / at risk / breached) all show up.
+    const openedHours = random.chance(0.6) ? random.int(1, 30) : random.int(1, 240)
     const resolved = status.category === 'resolved' || status.category === 'closed'
     const assignee = random.chance(0.8) ? random.pick(setup.agents) : null
     return {

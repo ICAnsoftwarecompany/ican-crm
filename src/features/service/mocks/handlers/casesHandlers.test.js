@@ -83,3 +83,48 @@ describe('cases mock handlers', () => {
     expect(after).toContain('delivery_issue')
   })
 })
+
+describe('SLA (mock engine)', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    resetMockDb()
+  })
+
+  it('attaches an sla object with both metrics to every case', async () => {
+    const { data } = await request('get', base, null, { view: 'all', per_page: 100 })
+    data.data.forEach((item) => {
+      expect(item.sla).toBeTruthy()
+      expect(['on_track', 'at_risk', 'breached', 'paused', 'met']).toContain(item.sla.state)
+      expect(item.sla.first_response.due_at).toBeTruthy()
+      expect(item.sla.resolution.target_minutes).toBeGreaterThan(0)
+    })
+  })
+
+  it('sla views only contain open cases in that state and match the summary', async () => {
+    const summary = (await request('get', `${base}/summary`)).data.data.views
+    for (const view of ['sla_at_risk', 'sla_breached']) {
+      const { data } = await request('get', base, null, { view, per_page: 100 })
+      expect(data.meta.total).toBe(summary[view])
+      data.data.forEach((item) => expect(item.sla.state).toBe(view.replace('sla_', '')))
+    }
+  })
+
+  it('a new urgent case is on track and uses the urgent policy', async () => {
+    const setup = (await request('get', `${base}/setup`)).data.data
+    const created = await request('post', base, { subject: 'Urgent', type_id: setup.case_types[0].id, customer_id: 'cust-1', priority: 'urgent' })
+    expect(created.data.data.sla).toMatchObject({ state: 'on_track', policy: { id: 'sla-urgent' } })
+    expect(created.data.data.sla.first_response.target_minutes).toBe(30)
+  })
+
+  it('pauses while waiting for the customer', async () => {
+    const { data } = await request('get', base, null, { view: 'waiting_customer', per_page: 100 })
+    data.data.forEach((item) => expect(item.sla.state).toBe('paused'))
+  })
+
+  it('adds fired escalation steps to the timeline of breached cases', async () => {
+    const { data } = await request('get', base, null, { view: 'sla_breached', per_page: 1 })
+    if (!data.data.length) return
+    const activities = (await request('get', `${base}/${data.data[0].id}/activities`)).data.data
+    expect(activities.some((entry) => entry.type === 'sla_escalated' && entry.metadata.percent === 100)).toBe(true)
+  })
+})

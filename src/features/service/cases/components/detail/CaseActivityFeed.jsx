@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { ArrowLeftRight, CirclePlus, Lock, PencilLine, UserRoundCheck } from 'lucide-react'
+import { ArrowLeftRight, CirclePlus, Lock, PencilLine, Siren, UserRoundCheck } from 'lucide-react'
 import { cn } from '../../../../../shared/utils/cn'
 import { formatRelativeTime } from '../../../../../shared/utils/dateTime'
 import { localizeLabel } from '../../../core/utils/localizeLabel'
@@ -35,11 +35,21 @@ function SystemEvent({ activity, language }) {
         ),
       }),
     },
+    sla_escalated: {
+      icon: Siren,
+      tone: meta.percent >= 100 ? 'text-sla-breached' : 'text-sla-at-risk',
+      text: t('service.sla.activity.escalated', {
+        percent: meta.percent,
+        action: t(`service.settings.escalation.actions.${meta.action}`, { defaultValue: meta.action }),
+        target: t(`service.settings.escalation.targets.${meta.target}`, { defaultValue: meta.target }),
+        metric: t(`service.sla.metrics.${meta.metric || 'resolution'}`),
+      }),
+    },
   }[activity.type] || { icon: CirclePlus, text: activity.type }
   const Icon = config.icon
 
   return (
-    <li className="flex items-center gap-2 px-1 text-xs text-[var(--text-muted)]">
+    <li className={cn('flex items-center gap-2 px-1 text-xs', config.tone || 'text-[var(--text-muted)]')}>
       <Icon size={14} aria-hidden="true" className="shrink-0" />
       <span className="min-w-0 flex-1">{config.text}</span>
       <time dateTime={activity.occurred_at}>{formatRelativeTime(activity.occurred_at, language)}</time>
