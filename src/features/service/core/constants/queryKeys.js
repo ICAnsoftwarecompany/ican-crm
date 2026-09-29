@@ -90,6 +90,11 @@ export const serviceKeys = {
   workOrderList: (params) => [...serviceKeys.workOrders(), 'list', params ?? {}],
   workOrderDetail: (id) => [...serviceKeys.workOrders(), 'detail', String(id)],
 
+  // Deliveries & COD (F4)
+  deliveries: () => [...serviceKeys.all, 'deliveries'],
+  deliveryList: (params) => [...serviceKeys.deliveries(), 'list', params ?? {}],
+  remittances: (params) => [...serviceKeys.deliveries(), 'remittances', params ?? {}],
+
   // Saved views (F2) — per entity (e.g. service_case)
   savedViews: (entity) => [...serviceKeys.all, 'saved-views', entity],
 }

@@ -1,3 +1,4 @@
+import { isValidElement } from 'react'
 /**
  * Copy text to clipboard
  */
@@ -83,6 +84,8 @@ function formatCellValue(value) {
     if (Array.isArray(value)) {
       return value.join(', ')
     }
+    // Rendered cells (React elements) hold circular fiber refs; they have no plain-text value to copy.
+    if (isValidElement(value)) return ''
     return JSON.stringify(value)
   }
 

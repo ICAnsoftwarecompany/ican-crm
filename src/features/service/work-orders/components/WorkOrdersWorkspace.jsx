@@ -60,6 +60,7 @@ export function WorkOrdersWorkspace({ detailPath }) {
         onRetry={query.refetch}
         emptyMessage={t('service.workOrders.empty')}
         onRowClick={(row) => navigate(detailPath(row))}
+        onRowDoubleClick={(row) => navigate(detailPath(row))}
         hasNextPage={Boolean(query.hasNextPage)}
         isFetchingNextPage={query.isFetchingNextPage}
         onLoadMore={() => query.fetchNextPage()}

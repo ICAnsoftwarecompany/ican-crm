@@ -465,7 +465,7 @@ export function DataTableBody({
     const contentNode = (
       <div
         className={contentClassName}
-        onClick={(e) => handleCellClick(e, rawValue, rowKey, col.id)}
+        onClick={(e) => handleCellClick(e, getCellValue(row, col.accessor), rowKey, col.id)}
       >
         {rawValue}
       </div>
@@ -786,7 +786,7 @@ export function DataTableBody({
                       'dt-cell-content block w-full min-w-0 max-w-full cursor-pointer whitespace-normal break-words transition-colors',
                       copiedCellKey === `${rowKey}::${col.id}` && 'bg-green-100'
                     )}
-                    onClick={(e) => handleCellClick(e, rawValue, rowKey, col.id)}
+                    onClick={(e) => handleCellClick(e, getCellValue(row, col.accessor), rowKey, col.id)}
                   >
                     {rawValue}
                   </div>
@@ -796,7 +796,7 @@ export function DataTableBody({
                       'dt-cell-content block w-full min-w-0 max-w-full cursor-pointer whitespace-normal break-words transition-colors',
                       copiedCellKey === `${rowKey}::${col.id}` && 'bg-green-100'
                     )}
-                    onClick={(e) => handleCellClick(e, rawValue, rowKey, col.id)}
+                    onClick={(e) => handleCellClick(e, getCellValue(row, col.accessor), rowKey, col.id)}
                   >
                     {rawValue}
                   </div>

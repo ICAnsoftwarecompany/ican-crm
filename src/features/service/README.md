@@ -35,6 +35,7 @@ Everything business-related for Customer Service lives here. Start with
 | `subscriptions/` | Subscription lifecycle | F4 | `subscriptions/README.md` |
 | `scheduling/` | Resources, reservations, slots | F4 | `scheduling/README.md` |
 | `work-orders/` | Work orders & field visits | F4 | `work-orders/README.md` |
+| `deliveries/` | Courier dispatch, proof of delivery, COD remittances | F4 | `deliveries/README.md` |
 | `portal/`, `imports/`, `follow-ups/`, `portfolios/` | Portal & growth (MVP-2) | F5 | added with the code |
 | `quality/`, `templates/` | Knowledge & quality | F6 | added with the code |
 | `ai/` | AI | F7 | added with the code |

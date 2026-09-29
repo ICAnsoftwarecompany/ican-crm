@@ -17,6 +17,7 @@ export default {
     confirmMessage: 'سيُضاف إعداد القالب. الطلبات والسجلات والعقود الحالية تبقى كما هي.',
   },
   hub: {
+    deliveries: 'التوصيل',
     workOrders: 'أوامر العمل',
     scheduling: 'المواعيد',
     subscriptions: 'الاشتراكات',

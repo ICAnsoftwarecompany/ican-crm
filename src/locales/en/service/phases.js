@@ -31,6 +31,7 @@ export default {
     contracts: 'Contracts',
     handoffs: 'Handoffs',
     billing: 'Billing',
+    deliveries: 'Deliveries & COD',
     subscriptions: 'Subscriptions',
     scheduling: 'Scheduling',
     workOrders: 'Work orders',

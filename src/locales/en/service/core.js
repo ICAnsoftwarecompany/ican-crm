@@ -15,6 +15,10 @@ export default {
     },
   },
   errors: {
+    DELIVERY_INVALID_STATE: 'This step is not available for the shipment status.',
+    COURIER_AT_CAPACITY: 'This courier is full for today. Choose another one.',
+    NOTHING_TO_REMIT: 'No collected COD waiting for this merchant.',
+    REMITTANCE_INVALID_STATE: 'This remittance was already paid.',
     RESERVATION_CONFLICT: 'This slot was just booked. Pick another one.',
     RESERVATION_NOT_HOLD: 'Only a hold can be confirmed.',
     RESERVATION_NOT_ACTIVE: 'This reservation is no longer active.',

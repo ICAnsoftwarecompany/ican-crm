@@ -90,6 +90,9 @@ export const serviceEndpoints = {
   schedulingAvailability: `${TENANT_API}/scheduling/availability`,
   reservations: `${TENANT_API}/reservations`,
   workOrders: `${SERVICE_API}/work-orders`,
+  // Courier dispatch + proof of delivery (spec §38.4, proposed) and COD remittances (§51 `CRUD /billing/cod-remittances`).
+  deliveries: `${SERVICE_API}/deliveries`,
+  codRemittances: `${TENANT_API}/billing/cod-remittances`,
 
   // Setup wizard (F3, spec §47.2): industry templates + apply (with dry run).
   setupTemplates: `${TENANT_API}/settings/templates`,

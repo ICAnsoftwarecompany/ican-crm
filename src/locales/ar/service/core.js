@@ -15,6 +15,10 @@ export default {
     },
   },
   errors: {
+    DELIVERY_INVALID_STATE: 'الخطوة دي غير متاحة لحالة الشحنة.',
+    COURIER_AT_CAPACITY: 'المندوب ده وصل لأقصى عدد شحنات النهارده. اختر مندوب تاني.',
+    NOTHING_TO_REMIT: 'لا يوجد تحصيل في انتظار التسوية لهذا التاجر.',
+    REMITTANCE_INVALID_STATE: 'التسوية دي اتدفعت بالفعل.',
     RESERVATION_CONFLICT: 'الموعد ده اتحجز حالًا. اختر موعد تاني.',
     RESERVATION_NOT_HOLD: 'التأكيد متاح للحجز المبدئي فقط.',
     RESERVATION_NOT_ACTIVE: 'هذا الحجز لم يعد نشطًا.',

@@ -96,6 +96,7 @@ export function CollectionsWorkspace({ detailPath }) {
         onRetry={query.refetch}
         emptyMessage={t(`service.billing.collectionsEmpty.${view}`)}
         onRowClick={(row) => navigate(detailPath({ id: row.schedule_id }))}
+        onRowDoubleClick={(row) => navigate(detailPath({ id: row.schedule_id }))}
         enableSorting
         enableFiltering
         enableExport

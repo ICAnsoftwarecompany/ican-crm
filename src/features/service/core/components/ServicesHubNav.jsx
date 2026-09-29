@@ -22,6 +22,7 @@ export function ServicesHubNav({ basePath = '/service' }) {
     ...types.filter((type) => type.batch_enabled).map((type) => ({ key: `b-${type.key}`, to: `${basePath}/batches/${type.key}`, label: localizeLabel(type.batch_label, language, t('service.records.fields.batch')) })),
     hasFeature('assets') && { key: 'assets', to: `${basePath}/assets`, label: t('service.hub.assets') },
     hasFeature('entitlements') && { key: 'entitlements', to: `${basePath}/entitlements`, label: t('service.hub.entitlements') },
+    hasFeature('courierAssignment') && { key: 'deliveries', to: `${basePath}/deliveries`, label: t('service.hub.deliveries') },
     hasFeature('workOrders') && { key: 'work-orders', to: `${basePath}/work-orders`, label: t('service.hub.workOrders') },
     (hasFeature('scheduling') || hasFeature('workOrders') || hasFeature('courierAssignment')) && { key: 'scheduling', to: `${basePath}/scheduling`, label: t('service.hub.scheduling') },
     hasFeature('subscriptions') && { key: 'subscriptions', to: `${basePath}/subscriptions`, label: t('service.hub.subscriptions') },

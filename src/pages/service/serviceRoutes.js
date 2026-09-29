@@ -35,6 +35,7 @@ export const serviceRoutes = {
         { path: 'handoffs/:handoffId?', lazy: page(() => import('./ServiceHandoffsPage'), 'ServiceHandoffsPage') },
         // F4
         { path: 'billing/:view?', lazy: page(() => import('./ServiceBillingPage'), 'ServiceBillingPage') },
+        { path: 'deliveries', lazy: page(() => import('./ServiceDeliveriesPage'), 'ServiceDeliveriesPage') },
         { path: 'scheduling', lazy: page(() => import('./ServiceSchedulingPage'), 'ServiceSchedulingPage') },
         { path: 'work-orders/:workOrderId?', lazy: page(() => import('./ServiceWorkOrdersPage'), 'ServiceWorkOrdersPage') },
         { path: 'subscriptions/:subscriptionId?', lazy: page(() => import('./ServiceSubscriptionsPage'), 'ServiceSubscriptionsPage') },

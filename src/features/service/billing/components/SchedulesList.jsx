@@ -60,6 +60,7 @@ export function SchedulesList({ detailPath, customerId }) {
         onRetry={query.refetch}
         emptyMessage={t('service.billing.empty')}
         onRowClick={(row) => navigate(detailPath(row))}
+        onRowDoubleClick={(row) => navigate(detailPath(row))}
         hasNextPage={Boolean(query.hasNextPage)}
         isFetchingNextPage={query.isFetchingNextPage}
         onLoadMore={() => query.fetchNextPage()}
