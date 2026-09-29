@@ -5,6 +5,7 @@ import { Menu } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { AppDrawer } from '../../shared/components/overlays/AppDrawer'
 import { Button } from '../../shared/components/ui/Button'
+import { useLocalStorage } from '../../shared/components/data-table/hooks/useLocalStorage'
 import { cn } from '../../shared/utils/cn'
 import { SocialMediaSubSidebar } from './components/SocialMediaSubSidebar'
 
@@ -22,12 +23,12 @@ export function SocialMediaPage() {
   const { t } = useTranslation()
   const user = useAuthStore((state) => state.user)
   const [mobileNavigationOpen, setMobileNavigationOpen] = useState(false)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useLocalStorage('social-media-sidebar-collapsed', false)
 
   return (
     <div
       className={cn(
-        '-m-6 grid h-[calc(100vh-var(--layout-header-height,48px))] overflow-hidden border-t border-[var(--border)] bg-[var(--surface-2)] lg:grid',
+        'grid h-[calc(100vh-var(--layout-header-height,48px)-3rem)] min-h-0 overflow-hidden bg-[var(--surface-2)] lg:gap-3',
         sidebarCollapsed ? 'lg:grid-cols-[64px_minmax(0,1fr)]' : 'lg:grid-cols-[260px_minmax(0,1fr)]'
       )}
     >
@@ -39,7 +40,7 @@ export function SocialMediaPage() {
         />
       </aside>
 
-      <section className="flex min-h-0 min-w-0 flex-col bg-[var(--surface)]">
+      <section className="flex min-h-0 min-w-0 flex-col bg-[var(--surface-2)]">
         <header className="flex items-center gap-2 border-b border-[var(--border)] p-3 lg:hidden">
           <Button variant="outline" size="icon" onClick={() => setMobileNavigationOpen(true)} aria-label={t('socialMedia.center.openNavigation')}>
             <Menu size={16} />
@@ -47,13 +48,13 @@ export function SocialMediaPage() {
           <h1 className="text-sm font-bold text-[var(--text)]">{t('socialMedia.center.title')}</h1>
         </header>
 
-        <main className="min-h-0 flex-1 overflow-y-auto p-4">
+        <main className="min-h-0 flex-1 overflow-y-auto bg-[var(--surface-2)] p-4">
           <Outlet />
         </main>
       </section>
 
       <AppDrawer open={mobileNavigationOpen} onClose={() => setMobileNavigationOpen(false)} title={t('socialMedia.center.title')} size="sm">
-        <SocialMediaSubSidebar enabledModules={user?.modules} onNavigate={() => setMobileNavigationOpen(false)} />
+        <SocialMediaSubSidebar enabledModules={user?.modules} onNavigate={() => setMobileNavigationOpen(false)} framed={false} />
       </AppDrawer>
     </div>
   )

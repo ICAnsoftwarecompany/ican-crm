@@ -7,6 +7,7 @@ import { useFacebookIntegrations } from '../../features/meta-integrations/hooks/
 import { CAMPAIGN_NAV_ITEMS, CampaignCenterProvider, getCampaignPlatform, getVisibleCampaignPlatforms, platformHasCapability, userHasCampaignPermission } from '../../features/campaigns'
 import { AppDrawer } from '../../shared/components/overlays/AppDrawer'
 import { ResourceState } from '../../shared/components/data/ResourceState'
+import { useLocalStorage } from '../../shared/components/data-table/hooks/useLocalStorage'
 import { cn } from '../../shared/utils/cn'
 import { CampaignSubSidebar } from './components/CampaignSubSidebar'
 import { CampaignCenterHeader } from './components/CampaignCenterHeader'
@@ -23,7 +24,7 @@ export function CampaignsPage() {
   const platforms = useMemo(() => getVisibleCampaignPlatforms(user?.modules), [user?.modules])
   const platform = getCampaignPlatform(platformId)
   const [mobileNavigationOpen, setMobileNavigationOpen] = useState(false)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useLocalStorage('campaigns-sidebar-collapsed', false)
   const integrationsQuery = useFacebookIntegrations(tenantId, { enabled: platformId === 'meta' })
   const integrations = integrationsQuery.data || {}
   const accounts = platformId === 'meta' ? integrations.ad_accounts || [] : []
@@ -67,11 +68,11 @@ export function CampaignsPage() {
       onToggleCollapse={() => setSidebarCollapsed((current) => !current)}
     />
   )
-  const mobileNavigation = <CampaignSubSidebar platforms={platforms} activePlatformId={platform.id} permissions={user?.permissions} connectionByPlatform={connectionByPlatform} onNavigate={() => setMobileNavigationOpen(false)} />
+  const mobileNavigation = <CampaignSubSidebar platforms={platforms} activePlatformId={platform.id} permissions={user?.permissions} connectionByPlatform={connectionByPlatform} onNavigate={() => setMobileNavigationOpen(false)} framed={false} />
 
   return (
     <CampaignCenterProvider value={context}>
-      <div className={cn('-m-3 h-[calc(100vh-4rem)] overflow-hidden border-t border-[var(--border)] bg-[var(--surface-2)] sm:-m-4 lg:grid', sidebarCollapsed ? 'lg:grid-cols-[64px_minmax(0,1fr)]' : 'lg:grid-cols-[260px_minmax(0,1fr)]')}>
+      <div className={cn('h-[calc(100vh-var(--layout-header-height,48px)-3rem)] min-h-0 overflow-hidden bg-[var(--surface-2)] lg:grid lg:gap-3', sidebarCollapsed ? 'lg:grid-cols-[64px_minmax(0,1fr)]' : 'lg:grid-cols-[260px_minmax(0,1fr)]')}>
         <aside className="hidden h-full min-h-0 overflow-hidden lg:block">{desktopNavigation}</aside>
         <section className="flex min-h-0 min-w-0 flex-col bg-[var(--surface-2)]">
           <CampaignCenterHeader
@@ -82,7 +83,7 @@ export function CampaignsPage() {
             connectionStatus={connectionStatus}
             onOpenNavigation={() => setMobileNavigationOpen(true)}
           />
-          <main className="min-h-0 min-w-0 flex-1 overflow-y-auto p-3 sm:p-4">
+          <main className="min-h-0 min-w-0 flex-1 overflow-y-auto bg-[var(--surface-2)] p-3 sm:p-4">
             {platform.id === 'meta' && integrationsQuery.isLoading
               ? <ResourceState isLoading />
               : accessDenied ? <CampaignUnavailableState reason="permission" /> : <Outlet context={context} />}

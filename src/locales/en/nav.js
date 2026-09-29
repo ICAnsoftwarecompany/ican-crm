@@ -17,7 +17,7 @@ export default {
     "customerHub": "Customer Hub",
     "workspace": "Workspace",
     "insights": "Insights",
-    "automation": "Automation",
+    "automation": "Automation Center",
     "administration": "Administration"
   },
   "dashboard": "Dashboard",
@@ -32,6 +32,7 @@ export default {
   "opportunityCenter": "Opportunity Center",
   "outreachCampaigns": "Outreach Campaigns",
   "automation": "Automation Center",
+  "automationOverview": "Overview",
   "leadGeneration": "Lead Generation",
   "tasks": "Tasks",
   "calendar": "Calendar",

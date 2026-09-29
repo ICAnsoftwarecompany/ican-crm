@@ -163,6 +163,33 @@ body {
     background-clip: padding-box;
   }
 
+  .scrollbar-sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--text-muted) 28%, transparent) transparent;
+  }
+
+  .scrollbar-sidebar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-sidebar::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--text-muted) 24%, transparent);
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+  }
+
+  .scrollbar-sidebar:hover::-webkit-scrollbar-thumb,
+  .scrollbar-sidebar:focus-within::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--brand-primary) 48%, transparent);
+    background-clip: padding-box;
+  }
+
   .scrollbar-elegant {
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 194, 203, 0.18) transparent;

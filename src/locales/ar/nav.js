@@ -17,7 +17,7 @@ export default {
     "customerHub": "إدارة العملاء",
     "workspace": "مساحة العمل",
     "insights": "التقارير",
-    "automation": "الأتمتة",
+    "automation": "مركز الأتمتة",
     "administration": "الإدارة"
   },
   "dashboard": "لوحة التحكم",
@@ -32,6 +32,7 @@ export default {
   "opportunityCenter": "مركز الفرص",
   "outreachCampaigns": "حملات التواصل",
   "automation": "مركز الأتمتة",
+  "automationOverview": "نظرة عامة",
   "leadGeneration": "توليد العملاء المحتملين",
   "tasks": "المهام",
   "calendar": "التقويم",
