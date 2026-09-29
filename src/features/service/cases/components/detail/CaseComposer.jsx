@@ -4,6 +4,7 @@ import { Lock, Send } from 'lucide-react'
 import { Button } from '../../../../../shared/components/ui/Button'
 import { cn } from '../../../../../shared/utils/cn'
 import { useCaseMutations } from '../../hooks/useCases'
+import { SavedReplyPicker } from '../../../replies'
 
 /**
  * Reply to the customer (goes out on the case channel; the backend applies
@@ -48,9 +49,16 @@ export function CaseComposer({ caseItem, disabled }) {
         isNote ? 'border-dashed border-status-contacted' : 'border-[var(--border)]'
       )}
     >
-      <div role="tablist" className="flex w-fit gap-1 rounded-lg bg-[var(--surface-2)] p-0.5">
-        {tab('reply', Send, t('service.cases.composer.reply'))}
-        {tab('note', Lock, t('service.cases.composer.note'))}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div role="tablist" className="flex w-fit gap-1 rounded-lg bg-[var(--surface-2)] p-0.5">
+          {tab('reply', Send, t('service.cases.composer.reply'))}
+          {tab('note', Lock, t('service.cases.composer.note'))}
+        </div>
+        <SavedReplyPicker
+          caseItem={caseItem}
+          disabled={disabled}
+          onPick={(text) => setBody((current) => (current.trim() ? `${current.trimEnd()}\n${text}` : text))}
+        />
       </div>
       <textarea
         value={body}

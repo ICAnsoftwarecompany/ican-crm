@@ -56,6 +56,7 @@ import {
   Inbox,
   ListChecks,
   Settings2,
+  BookOpen,
 } from 'lucide-react'
 
 /** @type {NavigationSection[]} */
@@ -198,6 +199,13 @@ export const navigationConfig = [
         labelKey: 'nav.serviceMyWork',
         icon: ListChecks,
         path: '/service/my-work',
+      },
+      {
+        id: 'service-knowledge',
+        labelKey: 'nav.serviceKnowledge',
+        icon: BookOpen,
+        path: '/service/knowledge',
+        activePatterns: ['/service/knowledge', '/service/knowledge/*'],
       },
       {
         id: 'service-settings',

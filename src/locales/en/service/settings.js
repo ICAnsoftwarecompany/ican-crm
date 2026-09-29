@@ -12,6 +12,7 @@ export default {
     agentsCount: 'Agents: {{count}}',
     holidaysCount: 'Holidays: {{count}}',
     slaTargets: 'First response {{first}} · Resolution {{resolution}}',
+    allTypes: 'All request types',
     allPriorities: 'All priorities',
     actions: {
       save: 'Save',
@@ -30,10 +31,27 @@ export default {
       taken: 'This key is already used',
     },
     groups: {
+      communication: 'Communication',
+      knowledge: 'Knowledge',
       cases: 'Requests',
       sla: 'Service levels',
     },
     resources: {
+      savedReplies: {
+        title: 'Saved replies',
+        one: 'saved reply',
+        description: 'Ready answers agents insert into replies. Variables are filled automatically.',
+      },
+      macros: {
+        title: 'Macros',
+        one: 'macro',
+        description: 'One click runs several actions on a request: reply, change status, priority, internal note.',
+      },
+      kbCategories: {
+        title: 'Knowledge categories',
+        one: 'category',
+        description: 'Groups for knowledge base articles and who can see them.',
+      },
       caseTypes: {
         title: 'Request types',
         one: 'request type',
@@ -61,6 +79,12 @@ export default {
       },
     },
     fields: {
+      title: 'Title',
+      body: 'Text',
+      description: 'Description',
+      channels: 'Channels',
+      visibility: 'Visible to',
+      variablesHint: 'Available variables: {{variables}}',
       label: 'Name',
       name: 'Name',
       key: 'Key',
@@ -94,6 +118,14 @@ export default {
       start: 'From',
       end: 'To',
       date: 'Date',
+    },
+    macro: {
+      reply: 'Send reply',
+      setStatus: 'Change status to',
+      setPriority: 'Change priority to',
+      note: 'Add internal note',
+      noChange: 'No change',
+      actions: { reply: 'Reply', set_status: 'Status', set_priority: 'Priority', add_note: 'Note' },
     },
     strategies: {
       manual: 'Manual',

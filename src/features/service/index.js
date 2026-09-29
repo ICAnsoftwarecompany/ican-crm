@@ -46,3 +46,7 @@ export { SettingsWorkspace, useResourceList } from './settings'
 
 // F2 — SLA presentation
 export { SlaBadge, SlaPanel } from './sla'
+
+// F2 — Saved replies, macros, knowledge base
+export { SavedReplyPicker, MacroMenu } from './replies'
+export { KnowledgeWorkspace, ArticleEditor, useKbArticle } from './knowledge'

@@ -30,7 +30,7 @@ const VIEW_FILTERS = {
   all: () => true,
 }
 
-function serializeCase(item) {
+export function serializeCase(item) {
   const config = setup()
   const type = getCollection('caseTypes').find((entry) => entry.id === item.type_id)
   const status = findStatus(item.status_id)
@@ -46,19 +46,19 @@ function serializeCase(item) {
   }
 }
 
-function getCase(caseId) {
+export function getCase(caseId) {
   const found = getCollection('cases').find((item) => item.id === caseId)
   if (!found) throw notFound('Case')
   return found
 }
 
-function assertVersion(item, version) {
+export function assertVersion(item, version) {
   if (version != null && Number(version) !== item.version) {
     throw new MockHttpError(409, 'CONFLICT_VERSION', 'This case was changed by someone else. Reload and try again.')
   }
 }
 
-function addActivity(caseId, activity) {
+export function addActivity(caseId, activity) {
   const me = getMockCurrentUser()
   const entry = {
     id: mockId('act'),
@@ -74,9 +74,36 @@ function addActivity(caseId, activity) {
   return entry
 }
 
-function touch(item) {
+export function touch(item) {
   item.version += 1
   item.updated_at = nowIso()
+}
+
+/** Validates and applies a pipeline transition (shared by /transition and macros). */
+export function applyTransition(item, toStatusId, body = {}) {
+  const transition = getPipeline().transitions.find(
+    (entry) => entry.from === item.status_id && entry.to === toStatusId
+  )
+  if (!transition) throw new MockHttpError(409, 'CASE_TRANSITION_NOT_ALLOWED', 'This status change is not allowed.')
+  const missing = transition.required_fields.filter((field) => !String(body[field] || '').trim())
+  if (missing.length) {
+    throw new MockHttpError(422, 'VALIDATION_FAILED', 'Validation failed', Object.fromEntries(missing.map((field) => [field, ['required']])))
+  }
+  const from = findStatus(item.status_id)
+  const to = findStatus(toStatusId)
+  if (to.category === 'resolved') {
+    item.resolved_at = nowIso()
+    item.resolution_code = body.resolution_code
+    item.resolution_summary = body.resolution_summary
+  }
+  if (to.category === 'closed') item.closed_at = nowIso()
+  if (from.category === 'resolved' && OPEN_CATEGORIES.includes(to.category)) item.reopened_count += 1
+  item.status_id = to.id
+  touch(item)
+  addActivity(item.id, {
+    type: 'status_change',
+    metadata: { from: { key: from.key, label: from.label }, to: { key: to.key, label: to.label } },
+  })
 }
 
 const byUpdated = (a, b) => String(b.updated_at).localeCompare(String(a.updated_at))
@@ -213,29 +240,7 @@ export const casesHandlers = [
     handler: ({ params, body = {} }) => {
       const item = getCase(params.caseId)
       assertVersion(item, body.version)
-      const transition = getPipeline().transitions.find(
-        (entry) => entry.from === item.status_id && entry.to === body.to_status_id
-      )
-      if (!transition) throw new MockHttpError(409, 'CASE_TRANSITION_NOT_ALLOWED', 'This status change is not allowed.')
-      const missing = transition.required_fields.filter((field) => !String(body[field] || '').trim())
-      if (missing.length) {
-        throw new MockHttpError(422, 'VALIDATION_FAILED', 'Validation failed', Object.fromEntries(missing.map((field) => [field, ['required']])))
-      }
-      const from = findStatus(item.status_id)
-      const to = findStatus(body.to_status_id)
-      if (to.category === 'resolved') {
-        item.resolved_at = nowIso()
-        item.resolution_code = body.resolution_code
-        item.resolution_summary = body.resolution_summary
-      }
-      if (to.category === 'closed') item.closed_at = nowIso()
-      if (from.category === 'resolved' && OPEN_CATEGORIES.includes(to.category)) item.reopened_count += 1
-      item.status_id = to.id
-      touch(item)
-      addActivity(item.id, {
-        type: 'status_change',
-        metadata: { from: { key: from.key, label: from.label }, to: { key: to.key, label: to.label } },
-      })
+      applyTransition(item, body.to_status_id, body)
       return { data: serializeCase(item) }
     },
   },

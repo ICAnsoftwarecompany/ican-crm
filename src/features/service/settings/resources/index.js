@@ -5,6 +5,7 @@ import {
   queuesResource,
   slaPoliciesResource,
 } from './operationsResources'
+import { kbCategoriesResource, macrosResource, savedRepliesResource } from './communicationResources'
 
 /**
  * Every configuration screen under /service/settings/:section.
@@ -15,6 +16,8 @@ import {
 export const SETTINGS_GROUPS = [
   { key: 'cases', resources: [caseTypesResource, queuesResource] },
   { key: 'sla', resources: [slaPoliciesResource, businessCalendarsResource, escalationRulesResource] },
+  { key: 'communication', resources: [savedRepliesResource, macrosResource] },
+  { key: 'knowledge', resources: [kbCategoriesResource] },
 ]
 
 export const SETTINGS_RESOURCES = SETTINGS_GROUPS.flatMap((group) => group.resources)
@@ -25,6 +28,9 @@ const SECTION_SLUGS = {
   slaPolicies: 'sla-policies',
   businessCalendars: 'business-calendars',
   escalationRules: 'escalation-rules',
+  savedReplies: 'saved-replies',
+  macros: 'macros',
+  kbCategories: 'kb-categories',
 }
 
 /** URL slug for a resource (kebab-case, stable). */

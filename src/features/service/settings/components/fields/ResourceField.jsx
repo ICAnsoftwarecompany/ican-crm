@@ -19,7 +19,7 @@ function FieldError({ error }) {
 }
 
 /** Tenant label in both languages: `{ ar, en }`. */
-export function LocalizedTextField({ label, value, onChange, error, multiline = false }) {
+export function LocalizedTextField({ label, value, onChange, error, hint, multiline = false }) {
   const { t } = useTranslation()
   const current = value && typeof value === 'object' ? value : { ar: '', en: '' }
   const setLang = (lang) => (event) => onChange({ ...current, [lang]: event.target.value })
@@ -52,6 +52,7 @@ export function LocalizedTextField({ label, value, onChange, error, multiline = 
           )
         )}
       </div>
+      {hint && <p className="text-xs text-[var(--text-muted)]">{hint}</p>}
       <FieldError error={error} />
     </fieldset>
   )
@@ -130,14 +131,14 @@ export function DurationField({ label, value, onChange, error }) {
 export function ResourceField({ field, value, onChange, error, ctx }) {
   const { t } = useTranslation()
   const label = t(field.labelKey)
-  const hint = field.hintKey ? t(field.hintKey) : undefined
+  const hint = field.hintKey ? t(field.hintKey, field.hintValues) : undefined
   const options = typeof field.options === 'function' ? field.options(ctx) : field.options || []
 
   switch (field.type) {
     case 'localized':
-      return <LocalizedTextField label={label} value={value} onChange={onChange} error={error} />
+      return <LocalizedTextField label={label} value={value} onChange={onChange} error={error} hint={hint} />
     case 'localizedTextarea':
-      return <LocalizedTextField label={label} value={value} onChange={onChange} error={error} multiline />
+      return <LocalizedTextField label={label} value={value} onChange={onChange} error={error} hint={hint} multiline />
     case 'textarea':
       return (
         <label className="grid gap-1.5 text-sm font-medium text-[var(--text)]">

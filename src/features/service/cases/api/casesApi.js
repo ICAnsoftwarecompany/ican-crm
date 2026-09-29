@@ -11,7 +11,8 @@ const unwrap = (response) => response.data?.data ?? response.data
  * type: {id,key,label,icon}, status: {id,key,label,category}, priority, severity,
  * queue: {id,label}|null, assignee: {id,name}|null, source_channel, conversation_id,
  * opened_at, first_response_at, resolved_at, closed_at, updated_at,
- * resolution_code, resolution_summary, reopened_count, version }
+ * resolution_code, resolution_summary, reopened_count, version,
+ * sla: see features/service/sla/README.md }
  *
  * Tenant labels (type/status/queue) are `{ ar, en }` → render with localizeLabel().
  */
@@ -31,5 +32,7 @@ export const casesApi = {
   activities: async (caseId) => unwrap(await api.get(serviceEndpoints.caseActivities(caseId))),
   reply: async (caseId, payload) => unwrap(await api.post(serviceEndpoints.caseReply(caseId), payload)),
   addNote: async (caseId, payload) => unwrap(await api.post(serviceEndpoints.caseNotes(caseId), payload)),
+  /** @param {{ macro_id: string, version: number, language?: string }} payload → updated case */
+  applyMacro: async (caseId, payload) => unwrap(await api.post(serviceEndpoints.caseApplyMacro(caseId), payload)),
   lookupCustomers: async (search) => unwrap(await api.get(serviceEndpoints.customerLookup, { params: { search } })),
 }

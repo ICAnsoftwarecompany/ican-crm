@@ -19,6 +19,10 @@ export const serviceEndpoints = {
   caseActivities: (caseId) => `${SERVICE_API}/cases/${caseId}/activities`,
   caseReply: (caseId) => `${SERVICE_API}/cases/${caseId}/reply`,
   caseNotes: (caseId) => `${SERVICE_API}/cases/${caseId}/notes`,
+  // F2 — run a macro (ordered actions: reply, set_status, set_priority, add_note) atomically.
+  caseApplyMacro: (caseId) => `${SERVICE_API}/cases/${caseId}/apply-macro`,
+  // F2 — published KB articles relevant to the case (type + subject). Proposed contract.
+  caseSuggestedArticles: (caseId) => `${SERVICE_API}/cases/${caseId}/suggested-articles`,
   // Setup data a case screen needs in one call: case types (with pipelines),
   // queues, agents and resolution codes. Split per settings module in F2.
   caseSetup: `${SERVICE_API}/cases/setup`,
@@ -48,4 +52,9 @@ export const serviceEndpoints = {
     macros: `${SERVICE_API}/macros`,
     kbCategories: `${SERVICE_API}/kb/categories`,
   },
+
+  // Knowledge base (F2) — CRUD + publish (kb.publish permission). New articles start as drafts.
+  kbArticles: `${SERVICE_API}/kb/articles`,
+  kbArticle: (articleId) => `${SERVICE_API}/kb/articles/${articleId}`,
+  kbArticlePublish: (articleId) => `${SERVICE_API}/kb/articles/${articleId}/publish`,
 }

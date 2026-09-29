@@ -19,7 +19,7 @@ export function ResourceFormDialog({ resource, open, item, ctx, onClose }) {
 
   useEffect(() => {
     if (open) {
-      setValues(item ? { ...resource.emptyValue(), ...item } : resource.emptyValue())
+      setValues(item ? { ...resource.emptyValue(), ...(resource.fromItem ? resource.fromItem(item) : item) } : resource.emptyValue())
       create.reset()
       update.reset()
     }
@@ -34,7 +34,10 @@ export function ResourceFormDialog({ resource, open, item, ctx, onClose }) {
         onClose()
       },
       onError: (error) => {
-        if (error?.response?.status !== 422) toast.error(getServiceErrorMessage(error, t))
+        // 422 errors on fields the form shows are rendered inline; anything else (e.g. macro `actions`) is toasted.
+        const shown = new Set(resource.fields.map((field) => field.name))
+        const hidden = Object.keys(getServiceFieldErrors(error)).some((name) => !shown.has(name))
+        if (error?.response?.status !== 422 || hidden) toast.error(getServiceErrorMessage(error, t))
       },
     })
   }

@@ -14,6 +14,8 @@ import { CasePropertiesPanel } from './CasePropertiesPanel'
 import { CustomerContactsPanel } from '../../../contacts/components/CustomerContactsPanel'
 import { CaseTransitionMenu } from './CaseTransitionMenu'
 import { SlaBadge, SlaPanel } from '../../../sla'
+import { MacroMenu } from '../../../replies'
+import { SuggestedArticlesPanel } from '../../../knowledge'
 
 /** Full case screen: header + transitions, timeline + composer, properties. */
 export function CaseDetailView({ caseId }) {
@@ -56,7 +58,10 @@ export function CaseDetailView({ caseId }) {
                 </h1>
                 {caseItem.description && <p className="mt-1 text-sm text-[var(--text-muted)]">{caseItem.description}</p>}
               </div>
-              <CaseTransitionMenu caseItem={caseItem} setup={setup.data} onSelect={requestTransition} disabled={isTransitioning} />
+              <div className="flex shrink-0 flex-wrap items-center gap-2">
+                <MacroMenu caseItem={caseItem} disabled={!isCaseOpen(caseItem)} />
+                <CaseTransitionMenu caseItem={caseItem} setup={setup.data} onSelect={requestTransition} disabled={isTransitioning} />
+              </div>
             </header>
 
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -72,6 +77,7 @@ export function CaseDetailView({ caseId }) {
               <div className="grid content-start gap-4">
                 <SlaPanel sla={caseItem.sla} />
                 <CasePropertiesPanel caseItem={caseItem} setup={setup.data} />
+                <SuggestedArticlesPanel caseId={caseItem.id} />
                 <CustomerContactsPanel customerId={caseItem.customer?.id} compact />
               </div>
             </div>

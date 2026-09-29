@@ -50,8 +50,8 @@ export const SERVICE_MODULES = [
 
   // F2 — Service Operations (MVP-1)
   { key: 'sla', folder: 'sla', phase: 2, status: 'done', backend: 'mock' },
-  { key: 'replies', folder: 'replies', phase: 2, status: 'planned', backend: 'mock' },
-  { key: 'knowledge', folder: 'knowledge', phase: 2, status: 'planned', backend: 'mock' },
+  { key: 'replies', folder: 'replies', phase: 2, status: 'done', backend: 'mock' },
+  { key: 'knowledge', folder: 'knowledge', phase: 2, status: 'done', backend: 'mock' },
   { key: 'feedback', folder: 'feedback', phase: 2, status: 'planned', backend: 'mock' },
   { key: 'reports', folder: 'reports', phase: 2, status: 'planned', backend: 'mock' },
   { key: 'settings', folder: 'settings', phase: 2, status: 'in_progress', backend: 'mock' },

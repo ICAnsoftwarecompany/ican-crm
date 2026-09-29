@@ -26,4 +26,10 @@ export const serviceKeys = {
 
   // Settings (F2) — one list per configuration resource (caseTypes, queues, slaPolicies…)
   settings: (resourceKey) => [...serviceKeys.all, 'settings', resourceKey],
+
+  // Knowledge base (F2)
+  kb: () => [...serviceKeys.all, 'kb'],
+  kbArticles: (params) => [...serviceKeys.kb(), 'articles', params ?? {}],
+  kbArticle: (articleId) => [...serviceKeys.kb(), 'article', String(articleId)],
+  caseSuggestedArticles: (caseId) => [...serviceKeys.kb(), 'suggested', String(caseId)],
 }

@@ -5,6 +5,7 @@ export default {
   serviceCenter: 'مركز العمليات',
   serviceCases: 'الطلبات',
   serviceMyWork: 'شغلي',
+  serviceKnowledge: 'قاعدة المعرفة',
   serviceSettings: 'إعدادات التشغيل',
   deals: 'الصفقات',
   "sections": {

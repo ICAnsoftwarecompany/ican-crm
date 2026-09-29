@@ -12,6 +12,7 @@ export default {
     agentsCount: 'الموظفون: {{count}}',
     holidaysCount: 'العطلات: {{count}}',
     slaTargets: 'أول رد {{first}} · الحل {{resolution}}',
+    allTypes: 'كل أنواع الطلبات',
     allPriorities: 'كل الأولويات',
     actions: {
       save: 'حفظ',
@@ -30,10 +31,27 @@ export default {
       taken: 'هذا المفتاح مستخدم بالفعل',
     },
     groups: {
+      communication: 'التواصل',
+      knowledge: 'المعرفة',
       cases: 'الطلبات',
       sla: 'مستويات الخدمة',
     },
     resources: {
+      savedReplies: {
+        title: 'الردود المحفوظة',
+        one: 'رد محفوظ',
+        description: 'ردود جاهزة يضيفها الموظف في الرد، والمتغيرات تُملأ تلقائيًا.',
+      },
+      macros: {
+        title: 'الإجراءات السريعة',
+        one: 'إجراء سريع',
+        description: 'ضغطة واحدة تنفذ عدة إجراءات على الطلب: رد، تغيير حالة، أولوية، ملاحظة داخلية.',
+      },
+      kbCategories: {
+        title: 'تصنيفات المعرفة',
+        one: 'تصنيف',
+        description: 'مجموعات مقالات قاعدة المعرفة ومن يمكنه رؤيتها.',
+      },
       caseTypes: {
         title: 'أنواع الطلبات',
         one: 'نوع طلب',
@@ -61,6 +79,12 @@ export default {
       },
     },
     fields: {
+      title: 'العنوان',
+      body: 'النص',
+      description: 'الوصف',
+      channels: 'القنوات',
+      visibility: 'مرئي لـ',
+      variablesHint: 'المتغيرات المتاحة: {{variables}}',
       label: 'الاسم',
       name: 'الاسم',
       key: 'المفتاح',
@@ -94,6 +118,14 @@ export default {
       start: 'من',
       end: 'إلى',
       date: 'التاريخ',
+    },
+    macro: {
+      reply: 'إرسال رد',
+      setStatus: 'تغيير الحالة إلى',
+      setPriority: 'تغيير الأولوية إلى',
+      note: 'إضافة ملاحظة داخلية',
+      noChange: 'بدون تغيير',
+      actions: { reply: 'رد', set_status: 'حالة', set_priority: 'أولوية', add_note: 'ملاحظة' },
     },
     strategies: {
       manual: 'يدوي',

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { ArrowLeftRight, CirclePlus, Lock, PencilLine, Siren, UserRoundCheck } from 'lucide-react'
+import { ArrowLeftRight, CirclePlus, Lock, PencilLine, Siren, UserRoundCheck, Zap } from 'lucide-react'
 import { cn } from '../../../../../shared/utils/cn'
 import { formatRelativeTime } from '../../../../../shared/utils/dateTime'
 import { localizeLabel } from '../../../core/utils/localizeLabel'
@@ -34,6 +34,10 @@ function SystemEvent({ activity, language }) {
           Object.keys(meta.changes || {}).map((field) => t(`service.cases.fields.${field}`, { defaultValue: field }))
         ),
       }),
+    },
+    macro_applied: {
+      icon: Zap,
+      text: t('service.replies.activity.macroApplied', { actor, name: localizeLabel(meta.macro?.name, language, meta.macro?.id) }),
     },
     sla_escalated: {
       icon: Siren,

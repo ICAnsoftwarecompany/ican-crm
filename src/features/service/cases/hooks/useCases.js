@@ -94,7 +94,9 @@ export function useCaseMutations() {
   const reply = useMutation({ mutationFn: ({ caseId, body }) => casesApi.reply(caseId, { body }), onSuccess: activityRefresh, onError })
   const addNote = useMutation({ mutationFn: ({ caseId, body }) => casesApi.addNote(caseId, { body }), onSuccess: activityRefresh, onError })
 
-  return { create, update, transition, assign, reply, addNote }
+  const applyMacro = useMutation({ mutationFn: ({ caseId, ...payload }) => casesApi.applyMacro(caseId, payload), onSuccess: refresh, onError })
+
+  return { create, update, transition, assign, reply, addNote, applyMacro }
 }
 
 export function useCustomerLookup(search) {
