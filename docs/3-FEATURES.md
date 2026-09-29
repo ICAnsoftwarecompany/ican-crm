@@ -17,6 +17,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 - [Workflow engine and automation](#workflow-engine-and-automation)
 - [Integrations](#integrations)
 - [Notifications](#notifications)
+- [Operational alerts](#operational-alerts)
 - [AI agent](#ai-agent)
 - [Products and services](#products-and-services)
 - [Settings and appearance](#settings-and-appearance)
@@ -166,6 +167,19 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 - **API:** `GET /api/tenant/notifications/center/unread`, `GET .../history`, `GET .../read/{id}`, `POST .../read/many` with `{ ids }`; realtime channel `tenant.{tenantId}.notifications.{userId}`, event `.notification.created`.
 - **Used by:** `Header`, tenant notification realtime; conversation-specific temporary badges continue using their compatibility store.
 - **Known issues:** backend exposes no pagination, delete/archive/preferences/read-all endpoints. There is no full `/notifications` page yet; the list/item components are ready for reuse when one is added. The legacy localStorage notification list remains until all channel badges move to their own server-backed unread sources.
+
+## Operational alerts
+
+> **Documentation update:** 2026-09-30 01:14 (Africa/Cairo)
+
+**Status:** CURRENT
+
+- **What it does:** compact centered card stack for SLA and operational risks, oldest-to-newest overlap with a direction-aware desktop fan interaction, independent warning indicator in Header, progressive disclosure after four alerts, full active-alert Drawer, severity summary, entity navigation and optimistic Acknowledge.
+- **Architecture:** `features/alerts` owns its API, React Query cache, stable normalization model, registry, priority sorting and session-only new-ID sound detection. Alerts use `open/acknowledged/resolved`, never notification `read/unread` state.
+- **API:** `GET /api/tenant/alerts`; `POST /api/tenant/alerts/{id}/acknowledge`. No Resolve/history endpoints are assumed.
+- **Sound:** `/Alerts/NewAlert.mp3` plays only when a new ID appears after initial load. Existing Alerts returned on refresh are silent. No alert realtime contract currently exists.
+- **Used by:** `MainLayout` (`AlertsStack`) and `Header` (`AlertsIndicator`). Full documentation: `src/features/alerts/Alerts_README_AR.md`.
+- **Known issues:** active API has no documented pagination; no realtime event; no Resolve action or user sound preferences.
 
 ## AI agent
 

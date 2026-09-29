@@ -4,6 +4,10 @@ export const QUERY_KEYS = {
     unread: ['notifications', 'unread'],
     history: ['notifications', 'history'],
   },
+  alerts: {
+    all: ['alerts'],
+    active: ['alerts', 'active'],
+  },
   leads: {
     all: ['leads'],
     list: (filters) => ['leads', 'list', filters],

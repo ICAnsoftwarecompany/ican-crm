@@ -14,6 +14,7 @@ Status labels used in all three docs: **CURRENT** (verified code in use) · **PA
 - [Tenant, auth, httpClient and api_password](#tenant-auth-httpclient-and-api_password)
 - [Realtime](#realtime)
 - [Notification center](#notification-center)
+- [Operational alerts](#operational-alerts)
 - [i18n](#i18n)
 - [RTL and LTR](#rtl-and-ltr)
 - [Theme and dark mode](#theme-and-dark-mode)
@@ -106,6 +107,18 @@ app / pages  ->  features  ->  shared / services
 - The existing Zustand `notificationCenterStore` remains a **legacy client-state compatibility layer** for panel open state and temporary/channel notifications used by conversation navbar badges. It is not the persistent notification history source. Do not move Sonner toasts into backend history.
 - UI is split into `NotificationCenterPanel`, `NotificationList`, and `NotificationItem`; it supports All/Unread, Today/Yesterday/Earlier grouping, loading/empty/error/retry, RTL/LTR, theme variables, Escape/outside close and keyboard-native buttons. This list/item layer is reusable for a future `/notifications` route; no full page route exists today.
 - Backend limitations: no pagination contract is exposed yet, so current lists are client-grouped and sorted newest-first. When pagination arrives, preserve server page order and extend the query shape instead of flattening pages blindly.
+
+## Operational alerts
+
+> **Documentation update:** 2026-09-30 01:14 (Africa/Cairo)
+
+**Status:** CURRENT · **Owner:** `features/alerts` · **Shell entries:** `AlertsIndicator` in Header and `AlertsStack` in MainLayout
+
+- Alerts are operational conditions requiring acknowledgment, not persistent notifications. They have their own API, React Query key (`QUERY_KEYS.alerts.active`), normalization, registry, sound and UI. Never model them as read/unread or merge them into Notification Center.
+- API: `GET /api/tenant/alerts`; `POST /api/tenant/alerts/{id}/acknowledge`. No Resolve endpoint exists, so no frontend Resolve action is allowed.
+- `AlertsStack` renders at most four compact cards centered above page content, stacked oldest-to-newest with the newest in front. Desktop hover/focus fans them along the logical inline direction, so Arabic expands RTL and English LTR. All active alerts remain available in an `AppDrawer`; Header uses a distinct warning indicator and derives its count from the active query.
+- First fetch is silent. Later query results are compared by ID and `/Alerts/NewAlert.mp3` plays only for IDs first observed during the session. No realtime event is assumed until Backend documents a channel/event.
+- Permanent feature documentation: `src/features/alerts/Alerts_README_AR.md`.
 
 ## i18n
 

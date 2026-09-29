@@ -26,6 +26,7 @@ import branding from './branding.js'
 import dealWorkspace from './dealWorkspace.js'
 import service from './service.js'
 import notifications from './notifications.js'
+import alerts from './alerts.js'
 
 export default {
   app,
@@ -56,4 +57,5 @@ export default {
   dealWorkspace,
   service,
   notifications,
+  alerts,
 }
