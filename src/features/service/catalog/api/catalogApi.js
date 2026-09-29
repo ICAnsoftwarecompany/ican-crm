@@ -27,8 +27,8 @@ const STATIC = { staleTime: 30 * 60 * 1000 }
 export const useCapabilityRegistry = () => useQuery({ queryKey: serviceKeys.capabilityRegistry(), queryFn: catalogApi.capabilities, ...STATIC })
 export const useServiceModels = () => useQuery({ queryKey: serviceKeys.serviceModels(), queryFn: catalogApi.serviceModels, ...STATIC })
 
-export function useCatalogItems(params) {
-  return useQuery({ queryKey: serviceKeys.catalogItems(params), queryFn: () => catalogApi.items(params), placeholderData: (previous) => previous })
+export function useCatalogItems(params, { enabled = true } = {}) {
+  return useQuery({ queryKey: serviceKeys.catalogItems(params), queryFn: () => catalogApi.items(params), placeholderData: (previous) => previous, enabled })
 }
 
 export function useUpdateServiceConfig() {

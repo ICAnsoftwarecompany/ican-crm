@@ -13,6 +13,7 @@ import catalogConfig from './service/catalogConfig.js'
 import records from './service/records.js'
 import assets from './service/assets.js'
 import contracts from './service/contracts.js'
+import billing from './service/billing.js'
 
 /**
  * نصوص إدارة العملاء (Customer Hub) — جذر المفاتيح `service.*`.
@@ -34,5 +35,6 @@ export default {
   ...records,
   ...assets,
   ...contracts,
+  ...billing,
   terms,
 }

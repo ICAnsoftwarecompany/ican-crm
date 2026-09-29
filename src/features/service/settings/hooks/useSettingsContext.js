@@ -4,6 +4,7 @@ import { serviceKeys } from '../../core/constants/queryKeys'
 import { useCaseSetup } from '../../cases/hooks/useCases'
 import { createResourceApi } from '../api/settingsApi'
 import { getSettingsResource } from '../resources'
+import { useCatalogItems } from '../../catalog/api/catalogApi'
 
 /**
  * Everything a settings form needs for its options: the resource's own list,
@@ -13,7 +14,9 @@ import { getSettingsResource } from '../resources'
 export function useSettingsContext(resource) {
   const { t, i18n } = useTranslation()
   const setup = useCaseSetup()
-  const keys = [resource.key, ...(resource.dependsOn || [])]
+  const needsCatalog = (resource.dependsOn || []).includes('catalogItems')
+  const catalog = useCatalogItems({}, { enabled: needsCatalog })
+  const keys = [resource.key, ...(resource.dependsOn || [])].filter((key) => getSettingsResource(key)?.endpoint)
   const results = useQueries({
     queries: keys.map((key) => {
       const definition = getSettingsResource(key)
@@ -25,5 +28,5 @@ export function useSettingsContext(resource) {
     }),
   })
   const lists = Object.fromEntries(keys.map((key, index) => [key, results[index]]))
-  return { t, language: i18n.language, lists, setup: setup.data }
+  return { t, language: i18n.language, lists, setup: setup.data, catalogItems: catalog.data || [] }
 }

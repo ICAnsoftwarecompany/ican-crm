@@ -17,6 +17,7 @@ export default {
     confirmMessage: 'Configuration from the template will be added. Your existing requests, records and contracts are kept.',
   },
   hub: {
+    billing: 'Payments',
     title: 'Services',
     assets: 'Assets',
     entitlements: 'Entitlements',

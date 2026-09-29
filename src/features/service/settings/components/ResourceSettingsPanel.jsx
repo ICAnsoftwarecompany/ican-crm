@@ -68,7 +68,7 @@ export function ResourceSettingsPanel({ resource }) {
             <li key={item.id} className="flex items-start gap-3 px-4 py-3">
               <div className="min-w-0 flex-1">
                 <p className="flex flex-wrap items-center gap-2 text-sm font-medium text-[var(--text)]">
-                  {localizeLabel(item[resource.titleField || 'label'], i18n.language, item.key || item.title || '-')}
+                  {resource.title ? resource.title(item, ctx) : localizeLabel(item[resource.titleField || 'label'], i18n.language, item.key || item.title || '-')}
                   {item.active === false && (
                     <span className="rounded-full bg-[var(--surface-2)] px-2 text-[11px] text-[var(--text-muted)]">{t('service.settings.inactive')}</span>
                   )}

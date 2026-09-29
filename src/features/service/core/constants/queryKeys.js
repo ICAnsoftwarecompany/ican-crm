@@ -70,6 +70,13 @@ export const serviceKeys = {
   handoffList: (params) => [...serviceKeys.handoffs(), 'list', params ?? {}],
   handoffDetail: (id) => [...serviceKeys.handoffs(), 'detail', String(id)],
 
+  // Billing Lite (F4)
+  billing: () => [...serviceKeys.all, 'billing'],
+  plansForItem: (itemId) => [...serviceKeys.billing(), 'plans-for-item', String(itemId)],
+  scheduleList: (params) => [...serviceKeys.billing(), 'schedules', params ?? {}],
+  scheduleDetail: (id) => [...serviceKeys.billing(), 'schedule', String(id)],
+  collections: (params) => [...serviceKeys.billing(), 'collections', params ?? {}],
+
   // Saved views (F2) — per entity (e.g. service_case)
   savedViews: (entity) => [...serviceKeys.all, 'saved-views', entity],
 }

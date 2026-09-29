@@ -35,6 +35,7 @@ export default {
       taken: 'This key is already used',
     },
     groups: {
+      billing: 'Payments',
       general: 'General',
       contracts: 'Contracts',
       catalog: 'Catalog',
@@ -44,6 +45,16 @@ export default {
       sla: 'Service levels',
     },
     resources: {
+      paymentPlans: {
+        title: 'Payment plans',
+        one: 'payment plan',
+        description: 'Rules, not amounts: down payment, installments, delivery and outside-the-price components. The server turns them into dated lines.',
+      },
+      planAssignments: {
+        title: 'Plan assignments',
+        one: 'assignment',
+        description: 'Which plans an item type or a single item offers. The nearest scope wins and an item can exclude a plan.',
+      },
       setup: {
         title: 'Setup wizard',
         one: 'setup',

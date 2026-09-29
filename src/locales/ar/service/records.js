@@ -17,6 +17,7 @@ export default {
     confirmMessage: 'سيُضاف إعداد القالب. الطلبات والسجلات والعقود الحالية تبقى كما هي.',
   },
   hub: {
+    billing: 'المدفوعات',
     title: 'الخدمات',
     assets: 'الأصول',
     entitlements: 'الاستحقاقات',

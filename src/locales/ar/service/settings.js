@@ -35,6 +35,7 @@ export default {
       taken: 'هذا المفتاح مستخدم بالفعل',
     },
     groups: {
+      billing: 'المدفوعات',
       general: 'عام',
       contracts: 'العقود',
       catalog: 'الكتالوج',
@@ -44,6 +45,16 @@ export default {
       sla: 'مستويات الخدمة',
     },
     resources: {
+      paymentPlans: {
+        title: 'خطط السداد',
+        one: 'خطة سداد',
+        description: 'قواعد وليست مبالغ: مقدم وأقساط واستلام ومكونات خارج السعر. السيرفر يحوّلها لبنود بتواريخ.',
+      },
+      planAssignments: {
+        title: 'ربط الخطط',
+        one: 'ربط',
+        description: 'أي خطط متاحة لنوع صنف أو لصنف معيّن. الأقرب يكسب، ويمكن استثناء خطة من صنف.',
+      },
       setup: {
         title: 'معالج الإعداد',
         one: 'إعداد',

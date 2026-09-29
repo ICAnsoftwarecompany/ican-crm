@@ -56,6 +56,9 @@ export const serviceEndpoints = {
     recordTypes: `${SERVICE_API}/record-types`,
     pipelines: `${TENANT_API}/pipelines`,
     contractTypes: `${TENANT_API}/contract-types`,
+    // F4 — Billing Lite (spec §29): plan library + where plans apply.
+    paymentPlans: `${TENANT_API}/billing/payment-plans`,
+    planAssignments: `${TENANT_API}/billing/payment-plan-assignments`,
   },
 
   // Catalog (F3) — capability registry + model presets are code-owned (read-only; proposed endpoints).
@@ -80,6 +83,9 @@ export const serviceEndpoints = {
 
   // Setup wizard (F3, spec §47.2): industry templates + apply (with dry run).
   setupTemplates: `${TENANT_API}/settings/templates`,
+  // Billing Lite (F4) — preview never saves; schedules are created from signed contracts.
+  paymentPlanPreview: (planId) => `${TENANT_API}/billing/payment-plans/${planId}/preview`,
+
   setupApply: (key) => `${TENANT_API}/settings/templates/${key}/apply`,
 
   // Knowledge base (F2) — CRUD + publish (kb.publish permission). New articles start as drafts.

@@ -132,7 +132,7 @@ export function ResourceField({ field, value, onChange, error, ctx, values, onPa
   const { t } = useTranslation()
   const label = t(field.labelKey)
   const hint = field.hintKey ? t(field.hintKey, field.hintValues) : undefined
-  const options = typeof field.options === 'function' ? field.options(ctx) : field.options || []
+  const options = typeof field.options === 'function' ? field.options(ctx, values) : field.options || []
 
   switch (field.type) {
     case 'localized':

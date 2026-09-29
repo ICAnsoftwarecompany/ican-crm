@@ -66,3 +66,6 @@ export { EntitlementsList, CaseCoveragePanel } from './entitlements'
 // F3 — Contracts & handoffs
 export { ContractsWorkspace, ContractDetailView } from './contracts'
 export { HandoffsWorkspace, HandoffDetailView } from './handoffs'
+
+// F4 — Billing Lite
+export { PlanCalculator, PlanPreviewTable } from './billing'

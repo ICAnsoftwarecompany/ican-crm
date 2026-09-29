@@ -34,6 +34,8 @@ export const serviceRoutes = {
         { path: 'entitlements', lazy: page(() => import('./ServiceEntitlementsPage'), 'ServiceEntitlementsPage') },
         { path: 'contracts/:contractId?', lazy: page(() => import('./ServiceContractsPage'), 'ServiceContractsPage') },
         { path: 'handoffs/:handoffId?', lazy: page(() => import('./ServiceHandoffsPage'), 'ServiceHandoffsPage') },
+        // F4
+        { path: 'billing', lazy: page(() => import('./ServiceBillingPage'), 'ServiceBillingPage') },
       ],
     },
     // F0 — capabilities, demo template switcher, roadmap

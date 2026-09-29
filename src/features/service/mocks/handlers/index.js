@@ -1,4 +1,5 @@
 import { assetsHandlers } from './assetsHandlers'
+import { billingHandlers } from './billingHandlers'
 import { capabilitiesHandlers } from './capabilitiesHandlers'
 import { casesHandlers } from './casesHandlers'
 import { catalogHandlers } from './catalogHandlers'
@@ -18,6 +19,7 @@ import { setupHandlers } from './setupHandlers'
  */
 export const mockRoutes = [
   ...assetsHandlers,
+  ...billingHandlers,
   ...capabilitiesHandlers,
   ...casesHandlers,
   ...catalogHandlers,

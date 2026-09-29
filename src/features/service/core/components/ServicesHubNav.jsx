@@ -24,6 +24,7 @@ export function ServicesHubNav({ basePath = '/service' }) {
     hasFeature('entitlements') && { key: 'entitlements', to: `${basePath}/entitlements`, label: t('service.hub.entitlements') },
     { key: 'contracts', to: `${basePath}/contracts`, label: t('service.hub.contracts') },
     { key: 'handoffs', to: `${basePath}/handoffs`, label: t('service.hub.handoffs') },
+    { key: 'billing', to: `${basePath}/billing`, label: t('service.hub.billing') },
   ].filter(Boolean)
 
   return (
