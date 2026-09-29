@@ -1,5 +1,21 @@
 /** `service.hub.*` and `service.records.*` (F3). */
 export default {
+  setup: {
+    steps: 'Setup steps',
+    stepNames: { template: 'Industry', models: 'Business models', terms: 'Terminology', review: 'Review & apply' },
+    current: '(current)',
+    entities: { customer: 'Customers are called', case: 'Requests are called', record: 'Service records are called', batch: 'Batches are called' },
+    termsHint: 'Names only: you can rename anything later, and tenants can use their own labels.',
+    reviewIntro: 'Applying "{{template}}" creates this configuration (existing data is kept):',
+    preview: { case_types: 'Request types', queues: 'Queues', record_types: 'Record types', item_types: 'Item types', sla_policies: 'SLA policies' },
+    safeNote: 'Safe to repeat: applying again does not duplicate anything that already exists.',
+    back: 'Back',
+    next: 'Next',
+    apply: 'Apply template',
+    applied: 'Template applied',
+    confirmTitle: 'Apply this template?',
+    confirmMessage: 'Configuration from the template will be added. Your existing requests, records and contracts are kept.',
+  },
   hub: {
     title: 'Services',
     assets: 'Assets',

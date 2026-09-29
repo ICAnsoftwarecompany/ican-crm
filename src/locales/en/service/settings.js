@@ -35,6 +35,7 @@ export default {
       taken: 'This key is already used',
     },
     groups: {
+      general: 'General',
       contracts: 'Contracts',
       catalog: 'Catalog',
       communication: 'Communication',
@@ -43,6 +44,11 @@ export default {
       sla: 'Service levels',
     },
     resources: {
+      setup: {
+        title: 'Setup wizard',
+        one: 'setup',
+        description: 'Start from an industry template: request types, queues, record types, item types and SLA in one step. Everything stays editable.',
+      },
       contractTypes: {
         title: 'Contract types',
         one: 'contract type',

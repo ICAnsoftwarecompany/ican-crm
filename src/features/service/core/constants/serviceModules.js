@@ -65,6 +65,7 @@ export const SERVICE_MODULES = [
   { key: 'entitlements', folder: 'entitlements', phase: 3, status: 'done', backend: 'mock' },
   { key: 'contracts', folder: 'contracts', phase: 3, status: 'done', backend: 'mock' },
   { key: 'handoffs', folder: 'handoffs', phase: 3, status: 'done', backend: 'mock' },
+  { key: 'setup', folder: 'setup', phase: 3, status: 'done', backend: 'mock' },
 
   // F4 — Billing Lite & Scheduling
   { key: 'billing', folder: 'billing', phase: 4, status: 'planned', backend: 'mock' },

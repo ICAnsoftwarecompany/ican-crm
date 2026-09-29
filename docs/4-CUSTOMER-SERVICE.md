@@ -6,7 +6,7 @@ Frontend domain doc for the Customer Service area. Business and backend contract
 **what the frontend has built, where it lives, and the rules for adding more**. Update it in the same
 change as the code (see [Phase log](#phase-log)).
 
-**Status:** PARTIAL — F0 Foundation, F1 Case core and F2 Service operations (**MVP-1**) done. All data comes from the mock layer until the backend ships.
+**Status:** PARTIAL — F0 Foundation, F1 Case core, F2 Service operations (**MVP-1**) and F3 Service context done. All data comes from the mock layer until the backend ships.
 
 **Naming.** Users see this area as **Customer Hub / إدارة العملاء** (sidebar section), with
 **Operations Center / مركز العمليات** as its home and **Services / الخدمات** as the customer-drawer tab —
@@ -54,7 +54,7 @@ code (`features/service/core/constants/serviceModules.js`) and is rendered live 
 | **F0** | Foundation | Module structure, mock transport, capabilities + terminology, locale module, SLA/priority theme tokens, `check:service` gate, docs | — | ✅ Done |
 | **F1** | Case core | Contacts & relationships, cases (list / board / detail, activities, timeline, notes), queues, Conversation → Case, My Work, customer drawer Service tab, Service navigation section | — | ✅ Done |
 | **F2** | Service operations | SLA display & escalation states, saved replies & macros, internal knowledge base, CSAT, dashboard & reports, settings (case types, queues, SLA, business calendar, escalation), saved views | **MVP-1** (standalone helpdesk) | ✅ Done |
-| **F3** | Service context | Pipeline editor (statuses/transitions per case type), item types & capabilities settings, service records (generic by type) with participants, components, entries, batches; assets, warranty, entitlements, contracts, handoffs, setup wizard | — | Planned |
+| **F3** | Service context | Pipeline editor (statuses/transitions per case type), item types & capabilities settings, service records (generic by type) with participants, components, entries, batches; assets, warranty, entitlements, contracts, handoffs, setup wizard | — | ✅ Done |
 | **F4** | Billing & scheduling | Payment plans, deal preview, schedules & payments, collections workspace, scheduling & capacity, work orders, courier/technician views | — | Planned |
 | **F5** | Portal & growth | Customer portal app (self / guardian / B2B / guest), imports, follow-up programs, portfolios, operations workspaces | **MVP-2** (pilot) | Planned |
 | **F6** | Knowledge & quality | Public KB & self-service, quality reviews, NPS/CES, template versioning, form & workflow builders | — | Planned |
@@ -86,6 +86,14 @@ src/features/service/          ← all business code (README.md inside)
 ├── feedback/                  ← F2: CSAT list, score chip, case card (README.md inside)
 ├── reports/                   ← F2: reports dashboard (README.md inside)
 ├── saved-views/               ← F2: saved views per entity (README.md inside)
+├── catalog/                   ← F3: capability registry UI, item types editor, catalog items service config (README.md inside)
+├── pipelines/                 ← F3: pipeline editor (statuses + transitions) (README.md inside)
+├── records/                   ← F3: service records, participants, components, entries, documents, batches (README.md inside)
+├── assets/                    ← F3: assets & warranty (README.md inside)
+├── entitlements/              ← F3: entitlements, ledger, case coverage (README.md inside)
+├── contracts/                 ← F3: contracts, versions, signatures, amendments (README.md inside)
+├── handoffs/                  ← F3: Sales → Service handoff inbox (README.md inside)
+├── setup/                     ← F3: setup wizard (industry templates) (README.md inside)
 └── <sub-module>/              ← one folder per sub-module as phases ship: records/, assets/ …
 
 src/pages/service/             ← thin route pages + serviceRoutes.js (README.md inside)
@@ -175,12 +183,21 @@ component → hook (React Query) → casesApi → createServiceApi('cases') → 
 | `/service/knowledge` | `ServiceKnowledgePage` — search, category/status filters, article list | F2 |
 | `/service/knowledge/:articleId` | `ServiceKnowledgeArticlePage` — editor; `new` creates a draft | F2 |
 | `/service/reports` | `ServiceReportsPage` — `?tab=overview|feedback&period=7d|30d|90d` | F2 |
-| `/service/settings/:section?` | `ServiceSettingsPage` — case types, queues, SLA policies, business hours, escalation, saved replies, macros, KB categories | F2 |
+| `/service/settings/:section?` | `ServiceSettingsPage` — setup wizard, case types, queues, catalog (items, item types, record types, pipelines), contract types, SLA policies, business hours, escalation, saved replies, macros, KB categories | F2–F3 |
+| `/service/records/:recordType?/:recordId?` | `ServiceRecordsPage` / `ServiceRecordDetailPage` inside `ServicesHubLayout` (Services hub) | F3 |
+| `/service/batches/:recordType?/:batchId?` | `ServiceBatchesPage` (Services hub) | F3 |
+| `/service/assets/:assetId?` | `ServiceAssetsPage` (Services hub, feature `assets`) | F3 |
+| `/service/entitlements` | `ServiceEntitlementsPage` (Services hub, feature `entitlements`) | F3 |
+| `/service/contracts/:contractId?` | `ServiceContractsPage` (Services hub) | F3 |
+| `/service/handoffs/:handoffId?` | `ServiceHandoffsPage` (Services hub) | F3 |
 | `/service/overview` | `ServiceOverviewPage` — manifest, mock template switcher, roadmap | F0 |
 
 - All Service routes are declared in `src/pages/service/serviceRoutes.js` and **lazy-loaded** (own chunks).
 - Sidebar section **Customer Hub** (`navigation.config.js`, id `customer-service`): Operations Center, Cases,
-  My Work, Knowledge Base, Reports, Operations Settings.
+  Services, My Work, Knowledge Base, Reports, Operations Settings (7 items — the limit).
+- **Services hub**: one sidebar item; its tabs (`core/components/ServicesHubNav.jsx`) come from record types
+  (+ their batches) and features (`assets`, `entitlements`), then Contracts and Handoffs. New F4+ areas that
+  belong to "what the customer has" (subscriptions, schedules, work orders) become tabs here, not sidebar items.
 - Sidebar section `customer-service` (`module: 'customer_service'`, label `nav.sections.customerService`)
   in `app/navigation/navigation.config.js`: Service Center, Cases, My Work. Keep it at 3–7 items;
   deeper destinations (settings, records, reports) go inside `/service` pages or an internal sidebar (F2).
@@ -231,6 +248,16 @@ the unified body `{ success:false, code, message, errors, meta:{ request_id } }`
 | `GET /service/reports/overview?period=` | See `reports/README.md` | F2. Spec `/service/reports/{report_key}`. |
 | `GET /service/feedback/responses?score=&period=&page=` | See `feedback/README.md` | F2. Proposed read endpoint (spec has `POST /feedback/responses`). |
 | `CRUD /saved-views?entity=` | `{ entity, name, filters, visibility: private|shared, owner_id }` | F2. Core, cross-module. |
+| `GET /catalog/capabilities`, `GET /catalog/service-models` | Capability registry (`config_fields`) and model presets A–H | F3. Code-owned on the backend; proposed read endpoints. |
+| `CRUD /catalog/item-types` | `{ key, name, kind, service_model_preset, capabilities[{code,version,config}], record_type_id, default_case_type_ids[], active }` | F3. Unknown capability / missing `depends_on` → 422. |
+| `GET /catalog/items`, `PATCH /catalog/items/{id} { service_config }` | Existing Products & Services + service config (type, fulfillment, relations) | F3. Product fields stay on the existing Products endpoints (unchanged). |
+| `CRUD /pipelines` | Statuses + transitions; every save = new version; `tmp-*` status ids remapped by the server | F3. Status in use removed → 409 `PIPELINE_STATUS_IN_USE`. Case types gain `pipeline_id`. |
+| `CRUD /service/record-types` | `{ key, label, icon, pipeline_id, participant_roles[{key,label,min,max}], component_types[], entry_types[], batch_enabled, batch_label, fields[], portal_visible }` | F3. |
+| `/service/records…`, `/service/batches…` | See `records/README.md` | F3. |
+| `/service/assets…`, `/service/warranties/{id}/void`, `/service/entitlements…` (+ `/check`, `/{id}/transactions`) | See `assets/README.md`, `entitlements/README.md` | F3. |
+| `CRUD /contract-types`, `/contracts…` (+ send/sign/activate/terminate/cancel/renew/amendments) | See `contracts/README.md` | F3. |
+| `GET /service/handoffs`, `GET|PATCH /service/handoffs/{id}`, `POST …/accept|reject|reprocess` | See `handoffs/README.md` | F3. |
+| `GET /settings/templates`, `POST /settings/templates/{key}/apply { models, terminology, dry_run }` | Setup wizard | F3. Idempotent; dry run previews. |
 
 ## Adding a sub-module
 
@@ -256,6 +283,44 @@ Copy into the phase log entry and tick honestly (write "not verified" when true)
 - [ ] Sub-module README + this doc + `3-FEATURES.md` section updated
 
 ## Phase log
+
+### F3 — Service context · 2026-09-29
+
+- **Added:**
+  - `catalog/` + `pipelines/`: capability registry rendered from backend `config_fields`, model presets (A–H only
+    pre-select capabilities), item types, record types (participant roles, component/entry types, batches, field
+    schema), pipeline editor (statuses + transition matrix, versioned), catalog items' service config
+    (type, fulfillment, attached services) — **without touching the existing Products screens or endpoints**.
+  - `records/`: Services hub, records per type (views, table, create), detail tabs derived from configuration
+    (overview + tenant fields, participants with min/max, components with supplier status and margin, entries,
+    required documents upload/verify/reject, timeline + customer updates), batches with bulk status.
+  - `assets/` + `entitlements/`: assets with warranty state, detail (warranties/void, entitlements, service
+    history, ownership transfer), entitlements with ledger balance and manual movements, case **Coverage** panel.
+  - `contracts/` + `handoffs/`: contract types, contracts (versions, signatures, immutable signed snapshot,
+    amendments applying only the difference, renew/terminate), handoff inbox and detail (created entities,
+    needs_review + reprocess, checklist, promises, accept/return to sales).
+  - `setup/`: setup wizard (template → models → terminology → dry-run review → apply).
+  - Customer drawer **Services** tab now shows records per type, assets, entitlements and contracts.
+  - Sidebar: one **Services** item (hub) — section stays at 7 items.
+- **Outside the area:** none (Products, Sales and Conversations code unchanged).
+- **Mock layer:** `state/handoffProcessor.js` (idempotent, needs_review on unconfigured lines, amendments as
+  difference), pipelines collection with versions, seeds for catalog/records/assets/contracts per template.
+- **Acceptance (spec §55 Phase 3) — demonstrated on the mock:** a signed contract for a B-model product with
+  attached installation creates asset + warranty + entitlement + work order; a line without setup →
+  `needs_review` without failing the rest; reprocessing is idempotent; an amendment applies only the new line;
+  the same code runs the tourism template (booking record). *Subscription* is represented by an id +
+  entitlement until the subscriptions module (F4).
+- **Mocked modules:** all of the above + catalog, pipelines, records, assets, entitlements, contracts, handoffs,
+  setup. **Live modules:** none.
+- **Tests:** catalog/pipelines/records/assets/contracts/setup handlers, capability helpers, pipeline editing
+  helpers, record type helpers (95 service tests; full suite green).
+- **Checklist:** lint ✅ · i18n ✅ · architecture ✅ · service gate ✅ · vitest ✅ · build ✅ · screenshots
+  (AR light / EN dark, AR dark on school) of catalog settings + dialogs, pipeline editor, records list/detail
+  tabs (tourism, school, shipping), batch detail, assets list/detail, entitlements, case coverage, contracts
+  list/detail, handoff inbox/detail, setup wizard + apply ✅ · customer drawer Services tab **not visually
+  verified** (needs the real customers backend) · document builder / PDF (spec §28) **not in F3**.
+- **Open decisions:** merge the service config into the Products form later (needs a backend change to the
+  product endpoints); status `customer_label` for the portal (F5); custom fields engine for record `fields` (F6).
 
 ### F2 — Service operations (MVP-1) · 2026-09-29
 

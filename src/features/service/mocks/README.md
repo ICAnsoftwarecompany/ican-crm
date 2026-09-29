@@ -19,11 +19,17 @@ weighs on the main bundle. Remove a module's mocks only after it has run `live` 
 | `handlers/settingsHandlers.js` | F2 CRUD: case types, queues, SLA policies, business calendars, escalation rules (409 `RESOURCE_IN_USE` when in use). |
 | `handlers/communicationHandlers.js` | F2: saved replies, macros, KB categories/articles (+ publish), `apply-macro` (atomic), suggested articles. |
 | `handlers/insightsHandlers.js` | F2: reports overview, feedback responses, saved views. |
+| `handlers/catalogHandlers.js` | F3: capability registry, model presets, item types, record types, pipelines (versioned, tmp status ids), catalog items service config. |
+| `handlers/recordsHandlers.js` | F3: records (views, nested participants/components/entries/documents/timeline/updates), batches + bulk status. |
+| `handlers/assetsHandlers.js` | F3: assets (transfer), warranties (void), entitlements (ledger balance, check, transactions). |
+| `handlers/contractsHandlers.js` | F3: contract types, contracts lifecycle + amendments, handoffs (accept/reject/reprocess). |
+| `handlers/setupHandlers.js` | F3: industry templates + apply (dry run). |
+| `state/handoffProcessor.js` | F3: mock of the backend handoff processor (idempotent; needs_review; amendments as difference). |
 | `crud.js` | `crudHandlers({ collection, path, prefix, validate, serialize, canDelete })` → list/create/get/update/delete routes; `required`, `requiredLabel`. |
 | `state/caseConfig.js` | Editable case config (types, queues, static lists) + `getCaseSetup()`, `findStatus()`, `getPipeline()`. |
 | `state/sla.js` | Mock SLA engine (`computeSla`, escalation activities). Wall-clock time; output shape = contract. |
 | `state/feedback.js` | CSAT seed + `findCaseCsat()`. |
-| `seeds/` | Deterministic seeds per template: `caseSetupSeed` (types, pipeline, queues, agents, resolution codes), `casesSeed` (customers, 28 current + 70 historical cases, activities), `contactsSeed`, `operationsSeed` (SLA, calendars, escalation), `communicationSeed` (replies, macros, KB), `feedbackSeed` (CSAT); `seedUtils` (seeded random, current user). |
+| `seeds/` | Deterministic seeds per template: `caseSetupSeed` (types, pipeline, queues, agents, resolution codes), `casesSeed` (customers, 28 current + 70 historical cases, activities), `contactsSeed`, `operationsSeed` (SLA, calendars, escalation), `communicationSeed` (replies, macros, KB), `feedbackSeed` (CSAT), `catalogSeed`, `recordsSeed`, `assetsSeed`, `contractsSeed` (F3); `seedUtils` (seeded random, current user). |
 | `utils.js` | `paginate` (Laravel meta), `matchesSearch`, `nowIso`. |
 
 ## Writing handlers

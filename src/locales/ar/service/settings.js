@@ -35,6 +35,7 @@ export default {
       taken: 'هذا المفتاح مستخدم بالفعل',
     },
     groups: {
+      general: 'عام',
       contracts: 'العقود',
       catalog: 'الكتالوج',
       communication: 'التواصل',
@@ -43,6 +44,11 @@ export default {
       sla: 'مستويات الخدمة',
     },
     resources: {
+      setup: {
+        title: 'معالج الإعداد',
+        one: 'إعداد',
+        description: 'ابدأ من قالب مجال: أنواع الطلبات والطوابير وأنواع السجلات وأنواع العناصر ومستويات الخدمة في خطوة واحدة. كل شيء يبقى قابلًا للتعديل.',
+      },
       contractTypes: {
         title: 'أنواع العقود',
         one: 'نوع عقد',

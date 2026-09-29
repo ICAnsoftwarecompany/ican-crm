@@ -21,6 +21,7 @@ export default {
   },
   customer: {
     openCount: '{{count}} مفتوح',
+    noRecords: 'لا يوجد {{type}} لهذا العميل بعد',
     noCases: 'لا توجد {{entity}} للعميل ده',
   },
 }

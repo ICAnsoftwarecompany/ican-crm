@@ -11,7 +11,7 @@ import { ResourceSettingsPanel } from './ResourceSettingsPanel'
  */
 export function SettingsWorkspace({ section, basePath }) {
   const { t } = useTranslation()
-  const firstSlug = getSettingsSlug(SETTINGS_GROUPS[0].resources[0].key)
+  const firstSlug = getSettingsSlug((SETTINGS_GROUPS.find((group) => group.key === 'cases') || SETTINGS_GROUPS[0]).resources[0].key)
   if (!section) return <Navigate to={`${basePath}/${firstSlug}`} replace />
   const resource = getSettingsResource(section)
 

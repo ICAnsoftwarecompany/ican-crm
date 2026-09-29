@@ -23,7 +23,14 @@ Everything business-related for Customer Service lives here. Start with
 | `feedback/` | CSAT list, score, case card | F2 ✅ | [feedback/README.md](feedback/README.md) |
 | `reports/` | Reports dashboard | F2 ✅ | [reports/README.md](reports/README.md) |
 | `saved-views/` | Saved views per entity | F2 ✅ | [saved-views/README.md](saved-views/README.md) |
-| `records/`, `assets/`, `entitlements/`, `contracts/`, `handoffs/` | Service context | F3 | added with the code |
+| `catalog/` | Capability registry UI, item types editor field, catalog items' service config | F3 ✅ | [catalog/README.md](catalog/README.md) |
+| `pipelines/` | Pipeline editor (statuses + transitions) | F3 ✅ | [pipelines/README.md](pipelines/README.md) |
+| `records/` | Service records (participants, components, entries, documents, timeline) + batches | F3 ✅ | [records/README.md](records/README.md) |
+| `assets/` | Assets & warranty | F3 ✅ | [assets/README.md](assets/README.md) |
+| `entitlements/` | Entitlements, ledger, case coverage | F3 ✅ | [entitlements/README.md](entitlements/README.md) |
+| `contracts/` | Contracts: versions, signatures, amendments | F3 ✅ | [contracts/README.md](contracts/README.md) |
+| `handoffs/` | Sales → Service handoff inbox | F3 ✅ | [handoffs/README.md](handoffs/README.md) |
+| `setup/` | Setup wizard (industry templates) | F3 ✅ | [setup/README.md](setup/README.md) |
 | `billing/`, `scheduling/`, `work-orders/` | Billing & scheduling | F4 | added with the code |
 | `portal/`, `imports/`, `follow-ups/`, `portfolios/` | Portal & growth (MVP-2) | F5 | added with the code |
 | `quality/`, `templates/` | Knowledge & quality | F6 | added with the code |

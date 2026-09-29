@@ -11,17 +11,21 @@ import { CasePriorityBadge, CaseStatusBadge } from '../../cases/components/CaseB
 import { useCaseList } from '../../cases/hooks/useCases'
 import { isCaseOpen } from '../../cases/utils/caseStatus'
 import { CustomerContactsPanel } from '../../contacts/components/CustomerContactsPanel'
+import { useServiceCapabilities } from '../../core/capabilities/useServiceCapabilities'
+import { EntitlementsList } from '../../entitlements/components/EntitlementsList'
+import { CustomerAssetsSection, CustomerContractsSection, CustomerRecordsSection } from './CustomerHubSections'
 
 /**
  * "Service" tab of the customer drawer / page (Customer 360).
- * F1: cases + contacts. Later phases add records, assets, contracts,
- * entitlements and payment schedules as extra sections here.
+ * Cases, service records (per type), assets and entitlements (when the
+ * tenant has them), contracts and contacts. Payment schedules arrive in F4.
  *
  * @param {{ customer: { id: string|number, name?: string, phone?: string } }} props
  */
 export function CustomerServiceTab({ customer }) {
   const { t, i18n } = useTranslation()
   const term = useServiceTerminology()
+  const { hasFeature } = useServiceCapabilities()
   const [createOpen, setCreateOpen] = useState(false)
   const customerId = customer?.id != null ? String(customer.id) : ''
   const cases = useCaseList({ view: 'all', customer_id: customerId })
@@ -74,6 +78,16 @@ export function CustomerServiceTab({ customer }) {
           </ul>
         </ResourceState>
       </section>
+
+      {customerId && <CustomerRecordsSection customer={{ id: customerId, name: customer?.name, phone: customer?.phone }} />}
+      {customerId && hasFeature('assets') && <CustomerAssetsSection customer={{ id: customerId }} />}
+      {customerId && hasFeature('entitlements') && (
+        <section className="grid gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">
+          <h2 className="text-sm font-semibold text-[var(--text)]">{t('service.hub.entitlements')}</h2>
+          <EntitlementsList params={{ customer_id: customerId }} showCustomer={false} />
+        </section>
+      )}
+      {customerId && <CustomerContractsSection customer={{ id: customerId }} />}
 
       <CustomerContactsPanel customerId={customerId} />
 

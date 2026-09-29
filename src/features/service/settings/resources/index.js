@@ -8,10 +8,12 @@ import {
 import { kbCategoriesResource, macrosResource, savedRepliesResource } from './communicationResources'
 import { itemTypesResource, pipelinesResource, recordTypesResource } from './catalogResources'
 import { contractTypesResource } from './contractResources'
-import { Package } from 'lucide-react'
+import { Package, Wand2 } from 'lucide-react'
+import { SetupWizardPanel } from '../../setup/components/SetupWizardPanel'
 import { CatalogItemsPanel } from '../../catalog/components/CatalogItemsPanel'
 
 /** A section can also be a custom panel (`component`) instead of a CRUD list. */
+const setupSection = { key: 'setup', icon: Wand2, i18nKey: 'service.settings.resources.setup', component: SetupWizardPanel }
 const catalogItemsSection = { key: 'catalogItems', icon: Package, i18nKey: 'service.settings.resources.catalogItems', component: CatalogItemsPanel }
 
 /**
@@ -21,6 +23,7 @@ const catalogItemsSection = { key: 'catalogItems', icon: Package, i18nKey: 'serv
  * Later sub-modules (replies, knowledge…) append their own resources.
  */
 export const SETTINGS_GROUPS = [
+  { key: 'general', resources: [setupSection] },
   { key: 'cases', resources: [caseTypesResource, queuesResource] },
   { key: 'catalog', resources: [catalogItemsSection, itemTypesResource, recordTypesResource, pipelinesResource] },
   { key: 'contracts', resources: [contractTypesResource] },
@@ -45,6 +48,7 @@ const SECTION_SLUGS = {
   recordTypes: 'record-types',
   pipelines: 'pipelines',
   contractTypes: 'contract-types',
+  setup: 'setup',
 }
 
 /** URL slug for a resource (kebab-case, stable). */

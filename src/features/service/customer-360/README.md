@@ -10,3 +10,6 @@ profile — it adds a tab to the one that exists.
 - F1 sections: the customer's cases (open count, list, new case) and contacts.
 - Each later phase adds one section here: service records and batches (F3), assets / warranty /
   entitlements / contracts (F3), payment schedules (F4), feedback (F2), portfolio owner (F5).
+
+
+**F3:** the tab also shows service records per record type (with *New*), assets and entitlements (when the tenant has those features) and contracts — `components/CustomerHubSections.jsx`. Payment schedules arrive in F4.

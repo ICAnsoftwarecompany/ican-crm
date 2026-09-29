@@ -32,4 +32,4 @@ export const namesOf = (ids = [], options = []) =>
 
 /** Locale-aware "a, b and c" (Arabic comma in ar) without literal punctuation. */
 export const listText = (items = [], language = 'en') =>
-  items.length ? new Intl.ListFormat(language, { style: 'narrow', type: 'unit' }).format(items) : ''
+  items.length ? new Intl.ListFormat(language, { style: 'short', type: 'unit' }).format(items) : ''

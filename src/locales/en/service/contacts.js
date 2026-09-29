@@ -21,6 +21,7 @@ export default {
   },
   customer: {
     openCount: '{{count}} open',
+    noRecords: 'No {{type}} for this customer yet',
     noCases: 'No {{entity}} for this customer yet',
   },
 }

@@ -15,6 +15,11 @@ Route composition only — pages assemble components from `features/service` (im
 | `ServiceKnowledgeArticlePage.jsx` | `/service/knowledge/:articleId` — article editor (`new` creates). | F2 |
 | `ServiceReportsPage.jsx` | `/service/reports` — overview dashboard + feedback tab. | F2 |
 | `ServiceSettingsPage.jsx` | `/service/settings/:section?` — operations settings (internal nav). | F2 |
+| `ServicesHubLayout.jsx` | Services hub shell (tabs from `ServicesHubNav`) for the F3 routes below. | F3 |
+| `ServiceRecordsPage.jsx`, `ServiceRecordDetailPage.jsx` | `/service/records/:recordType?`, `/service/records/:recordType/:recordId`. | F3 |
+| `ServiceBatchesPage.jsx` | `/service/batches/:recordType?/:batchId?`. | F3 |
+| `ServiceAssetsPage.jsx`, `ServiceEntitlementsPage.jsx` | `/service/assets/:assetId?`, `/service/entitlements`. | F3 |
+| `ServiceContractsPage.jsx`, `ServiceHandoffsPage.jsx` | `/service/contracts/:contractId?`, `/service/handoffs/:handoffId?`. | F3 |
 | `ServiceOverviewPage.jsx` | `/service/overview` — capabilities, mock template switcher, roadmap. | F0 |
 
 Add a page: create `<Name>Page.jsx`, add a lazy child route in `serviceRoutes.js`, list it in the

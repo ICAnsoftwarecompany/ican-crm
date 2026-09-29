@@ -78,6 +78,10 @@ export const serviceEndpoints = {
   contracts: `${TENANT_API}/contracts`,
   handoffs: `${SERVICE_API}/handoffs`,
 
+  // Setup wizard (F3, spec §47.2): industry templates + apply (with dry run).
+  setupTemplates: `${TENANT_API}/settings/templates`,
+  setupApply: (key) => `${TENANT_API}/settings/templates/${key}/apply`,
+
   // Knowledge base (F2) — CRUD + publish (kb.publish permission). New articles start as drafts.
   kbArticles: `${SERVICE_API}/kb/articles`,
   kbArticle: (articleId) => `${SERVICE_API}/kb/articles/${articleId}`,

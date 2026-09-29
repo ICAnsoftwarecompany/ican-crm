@@ -196,7 +196,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 ## Customer Hub (Customer Service)
 
-**Status:** PARTIAL — F0 Foundation, F1 Case core and F2 Service operations (MVP-1) done (mock data only). User-facing name **Customer Hub / إدارة العملاء**; code name stays `service`. Full domain doc: [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md).
+**Status:** PARTIAL — F0 Foundation, F1 Case core, F2 Service operations (MVP-1) and F3 Service context done (mock data only). User-facing name **Customer Hub / إدارة العملاء**; code name stays `service`. Full domain doc: [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md).
 
 **What it does:** Service Operations after the sale — cases/tickets, SLA, service records (bookings, shipments, enrollments, projects), assets and warranty, entitlements, contracts, installments, scheduling, work orders, follow-ups and a customer portal. Works with Sales (contract → handoff) or standalone. Industries are configuration: screens render from the tenant capabilities manifest.
 
@@ -222,7 +222,11 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 | CSAT on cases + feedback list | F2 | CURRENT | mock |
 | Reports `/service/reports` (KPIs, trend, breakdowns, agents) | F2 | CURRENT | mock |
 | Case filters + saved views (private / shared) | F2 | CURRENT | mock |
-| Pipeline editor, catalog capabilities, service records, assets, warranty, entitlements, contracts, handoffs | F3 | PLANNED | — |
+| Setup wizard (industry templates) | F3 | CURRENT | mock |
+| Catalog service setup: capabilities, item types, record types, pipelines (editor), catalog items' fulfillment & attached services | F3 | CURRENT | mock |
+| Services hub `/service/records…`: service records (participants, components, entries, documents, timeline, customer updates) and batches | F3 | CURRENT | mock |
+| Assets & warranty, entitlements with ledger, case coverage | F3 | CURRENT | mock |
+| Contracts (versions, signatures, amendments) and Sales → Service handoffs | F3 | CURRENT | mock |
 | Payment plans & installments, collections, scheduling, work orders, COD | F4 | PLANNED | — |
 | Customer portal, imports, follow-up programs, portfolios (MVP-2) | F5 | PLANNED | — |
 | Public KB, quality, template versioning, builders | F6 | PLANNED | — |
@@ -232,6 +236,6 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 **API:** all calls go through `createServiceApi(moduleKey)`; while a module is `backend: 'mock'` the request is served by `features/service/mocks` with the real URL and error shape. Contract: [customer-service/SERVICE-MASTER-SPEC.md](customer-service/SERVICE-MASTER-SPEC.md) §51–52.
 
-**Navigation:** section Customer Hub (`module: 'customer_service'`): Operations Center, Cases, My Work, Knowledge Base, Reports, Operations Settings.
+**Navigation:** section Customer Hub (`module: 'customer_service'`): Operations Center, Cases, Services (hub with tabs), My Work, Knowledge Base, Reports, Operations Settings.
 
-**Known issues:** the pipeline (statuses/transitions) editor arrives in F3; SLA in the mock uses wall-clock time (the backend owns business-time SLA); the board shows loaded pages only; Conversation → Case and the drawer Service tab were not visually verified against the real backend.
+**Known issues:** document builder/PDF for contracts not built yet; service config lives in the Customer Hub, not in the Products form; SLA in the mock uses wall-clock time (the backend owns business-time SLA); the board shows loaded pages only; Conversation → Case and the drawer Service tab were not visually verified against the real backend.

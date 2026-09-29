@@ -33,6 +33,7 @@ const definitions = {
 }
 
 export const MOCK_TEMPLATE_KEYS = Object.keys(definitions)
+export const MOCK_TEMPLATE_DEFINITIONS = definitions
 export const DEFAULT_MOCK_TEMPLATE = 'devices'
 
 /** @param {string} key */

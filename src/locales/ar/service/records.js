@@ -1,5 +1,21 @@
 /** `service.hub.*` و `service.records.*` (F3). */
 export default {
+  setup: {
+    steps: 'خطوات الإعداد',
+    stepNames: { template: 'المجال', models: 'نماذج العمل', terms: 'المسميات', review: 'مراجعة وتطبيق' },
+    current: '(الحالي)',
+    entities: { customer: 'اسم العملاء', case: 'اسم الطلبات', record: 'اسم سجلات الخدمة', batch: 'اسم الدفعات' },
+    termsHint: 'المسميات فقط: يمكنك تغيير أي اسم لاحقًا، وكل شركة يمكنها استخدام مسمياتها.',
+    reviewIntro: 'تطبيق "{{template}}" يُنشئ هذا الإعداد (البيانات الحالية تبقى كما هي):',
+    preview: { case_types: 'أنواع الطلبات', queues: 'الطوابير', record_types: 'أنواع السجلات', item_types: 'أنواع العناصر', sla_policies: 'سياسات مستوى الخدمة' },
+    safeNote: 'آمن للتكرار: إعادة التطبيق لا تكرر أي شيء موجود.',
+    back: 'السابق',
+    next: 'التالي',
+    apply: 'تطبيق القالب',
+    applied: 'تم تطبيق القالب',
+    confirmTitle: 'تطبيق هذا القالب؟',
+    confirmMessage: 'سيُضاف إعداد القالب. الطلبات والسجلات والعقود الحالية تبقى كما هي.',
+  },
   hub: {
     title: 'الخدمات',
     assets: 'الأصول',
