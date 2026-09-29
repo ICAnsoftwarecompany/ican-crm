@@ -64,6 +64,10 @@ export const serviceEndpoints = {
   catalogItems: `${TENANT_API}/catalog/items`,
   catalogItem: (itemId) => `${TENANT_API}/catalog/items/${itemId}`,
 
+  // Service records & batches (F3, spec §33). Nested: participants, components, entries, documents, timeline, updates.
+  records: `${SERVICE_API}/records`,
+  batches: `${SERVICE_API}/batches`,
+
   // Knowledge base (F2) — CRUD + publish (kb.publish permission). New articles start as drafts.
   kbArticles: `${SERVICE_API}/kb/articles`,
   kbArticle: (articleId) => `${SERVICE_API}/kb/articles/${articleId}`,

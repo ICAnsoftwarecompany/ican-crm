@@ -75,6 +75,7 @@ const TEMPLATES = {
     recordTypes: [
       {
         key: 'service_contract',
+        fields: [['visits_per_year', L('زيارات في السنة', 'Visits per year'), 'number'], ['covered_units', L('عدد الأجهزة المغطاة', 'Covered units'), 'number']],
         label: L('عقد صيانة', 'Maintenance contract'),
         icon: 'FileText',
         statuses: [
@@ -108,6 +109,7 @@ const TEMPLATES = {
     recordTypes: [
       {
         key: 'booking',
+        fields: [['destination', L('الوجهة', 'Destination'), 'text'], ['rooms', L('عدد الغرف', 'Rooms'), 'number']],
         label: L('حجز', 'Booking'),
         icon: 'CalendarClock',
         statuses: [
@@ -139,6 +141,7 @@ const TEMPLATES = {
     recordTypes: [
       {
         key: 'enrollment',
+        fields: [['grade', L('الصف', 'Grade'), 'text'], ['academic_year', L('العام الدراسي', 'Academic year'), 'text']],
         label: L('قيد دراسي', 'Enrollment'),
         icon: 'FileText',
         statuses: [
@@ -169,6 +172,7 @@ const TEMPLATES = {
     recordTypes: [
       {
         key: 'shipment',
+        fields: [['city', L('المدينة', 'City'), 'text'], ['cod_amount', L('مبلغ التحصيل', 'COD amount'), 'money'], ['weight_kg', L('الوزن (كجم)', 'Weight (kg)'), 'number']],
         label: L('شحنة', 'Shipment'),
         icon: 'Truck',
         statuses: [
@@ -222,6 +226,7 @@ export function buildRecordTypes(manifest) {
     entry_types: type.entries.map(([key, label]) => ({ key, label })),
     batch_enabled: Boolean(type.batch),
     batch_label: type.batch?.label || { ar: '', en: '' },
+    fields: (type.fields || []).map(([key, label, fieldType]) => ({ key, label, type: fieldType })),
     portal_visible: true,
     active: true,
   }))

@@ -54,3 +54,7 @@ export { KnowledgeWorkspace, ArticleEditor, useKbArticle } from './knowledge'
 // F2 — Reports & feedback
 export { ReportsWorkspace } from './reports'
 export { FeedbackList, CsatScore } from './feedback'
+
+// F3 — Service records & batches
+export { RecordsWorkspace, RecordDetailView, BatchesWorkspace, BatchDetailView, useRecordsSetup, findRecordType } from './records'
+export { ServicesHubNav } from './core/components/ServicesHubNav'

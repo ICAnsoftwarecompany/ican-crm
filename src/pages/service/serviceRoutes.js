@@ -4,7 +4,7 @@
  * HERE (not in app/router/index.jsx) to keep merges with other areas clean.
  *
  * Planned routes (add each when its phase ships):
- *   F3  /service/records/:recordType, /service/assets, /service/contracts, /service/handoffs
+ *   F3  /service/assets, /service/entitlements, /service/contracts, /service/handoffs (inside the Services hub)
  *   F4  /service/billing, /service/scheduling, /service/work-orders
  *   F5  /service/follow-ups, /service/portfolios, /service/imports  (+ separate portal app)
  */
@@ -24,6 +24,15 @@ export const serviceRoutes = {
     { path: 'knowledge', lazy: page(() => import('./ServiceKnowledgePage'), 'ServiceKnowledgePage') },
     { path: 'knowledge/:articleId', lazy: page(() => import('./ServiceKnowledgeArticlePage'), 'ServiceKnowledgeArticlePage') },
     { path: 'settings/:section?', lazy: page(() => import('./ServiceSettingsPage'), 'ServiceSettingsPage') },
+    // F3 — Services hub (one sidebar item, tabs in ServicesHubLayout)
+    {
+      lazy: page(() => import('./ServicesHubLayout'), 'ServicesHubLayout'),
+      children: [
+        { path: 'records/:recordType?', lazy: page(() => import('./ServiceRecordsPage'), 'ServiceRecordsPage') },
+        { path: 'records/:recordType/:recordId', lazy: page(() => import('./ServiceRecordDetailPage'), 'ServiceRecordDetailPage') },
+        { path: 'batches/:recordType?/:batchId?', lazy: page(() => import('./ServiceBatchesPage'), 'ServiceBatchesPage') },
+      ],
+    },
     // F0 — capabilities, demo template switcher, roadmap
     { path: 'overview', lazy: page(() => import('./ServiceOverviewPage'), 'ServiceOverviewPage') },
   ],

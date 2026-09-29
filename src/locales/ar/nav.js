@@ -4,6 +4,7 @@ export default {
   unpinPage: 'إزالة من المفضلة',
   serviceCenter: 'مركز العمليات',
   serviceCases: 'الطلبات',
+  serviceHub: 'الخدمات',
   serviceMyWork: 'شغلي',
   serviceKnowledge: 'قاعدة المعرفة',
   serviceReports: 'التقارير',

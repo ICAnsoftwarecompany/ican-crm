@@ -43,6 +43,16 @@ export const serviceKeys = {
   serviceModels: () => [...serviceKeys.catalog(), 'service-models'],
   catalogItems: (params) => [...serviceKeys.catalog(), 'items', params ?? {}],
 
+  // Service records & batches (F3)
+  records: () => [...serviceKeys.all, 'records'],
+  recordsSetup: () => [...serviceKeys.records(), 'setup'],
+  recordList: (params) => [...serviceKeys.records(), 'list', params ?? {}],
+  recordSummary: (params) => [...serviceKeys.records(), 'summary', params ?? {}],
+  recordDetail: (recordId) => [...serviceKeys.records(), 'detail', String(recordId)],
+  recordSection: (recordId, section) => [...serviceKeys.records(), 'section', String(recordId), section],
+  batches: (params) => [...serviceKeys.records(), 'batches', params ?? {}],
+  batchDetail: (batchId) => [...serviceKeys.records(), 'batch', String(batchId)],
+
   // Saved views (F2) — per entity (e.g. service_case)
   savedViews: (entity) => [...serviceKeys.all, 'saved-views', entity],
 }

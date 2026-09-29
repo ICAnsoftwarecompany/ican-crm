@@ -4,6 +4,7 @@ export default {
   unpinPage: 'Remove from favorites',
   serviceCenter: 'Operations Center',
   serviceCases: 'Cases',
+  serviceHub: 'Services',
   serviceMyWork: 'My Work',
   serviceKnowledge: 'Knowledge Base',
   serviceReports: 'Reports',

@@ -5,6 +5,7 @@ import { communicationHandlers } from './communicationHandlers'
 import { contactsHandlers } from './contactsHandlers'
 import { insightsHandlers } from './insightsHandlers'
 import { myWorkHandlers } from './myWorkHandlers'
+import { recordsHandlers } from './recordsHandlers'
 import { settingsHandlers } from './settingsHandlers'
 
 /**
@@ -20,5 +21,6 @@ export const mockRoutes = [
   ...contactsHandlers,
   ...insightsHandlers,
   ...myWorkHandlers,
+  ...recordsHandlers,
   ...settingsHandlers,
 ]

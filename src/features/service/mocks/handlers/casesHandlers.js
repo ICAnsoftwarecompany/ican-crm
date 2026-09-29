@@ -131,7 +131,7 @@ function listCases(query) {
  * Mock-only: a real customer id (from the drawer or a linked conversation) is
  * unknown to the demo data, so adopt it as a placeholder instead of failing.
  */
-function findOrAdoptCustomer(customerId) {
+export function findOrAdoptCustomer(customerId) {
   if (customerId == null || customerId === '') return null
   const customers = getCollection('customers')
   const id = String(customerId)

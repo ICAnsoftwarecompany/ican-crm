@@ -10,6 +10,7 @@ import sla from './service/sla.js'
 import knowledge from './service/knowledge.js'
 import insights from './service/insights.js'
 import catalogConfig from './service/catalogConfig.js'
+import records from './service/records.js'
 
 /**
  * Customer Hub (Service Operations) copy — key root `service.*`.
@@ -29,5 +30,6 @@ export default {
   ...knowledge,
   ...insights,
   ...catalogConfig,
+  ...records,
   terms,
 }

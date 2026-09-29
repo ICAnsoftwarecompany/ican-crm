@@ -58,6 +58,7 @@ import {
   Settings2,
   BookOpen,
   BarChart3,
+  Layers3,
 } from 'lucide-react'
 
 /** @type {NavigationSection[]} */
@@ -194,6 +195,13 @@ export const navigationConfig = [
         icon: Inbox,
         path: '/service/cases',
         activePatterns: ['/service/cases', '/service/cases/*'],
+      },
+      {
+        id: 'service-hub',
+        labelKey: 'nav.serviceHub',
+        icon: Layers3,
+        path: '/service/records',
+        activePatterns: ['/service/records', '/service/records/*', '/service/batches/*', '/service/assets/*', '/service/entitlements/*', '/service/contracts/*', '/service/handoffs/*', '/service/batches', '/service/assets', '/service/entitlements', '/service/contracts', '/service/handoffs'],
       },
       {
         id: 'service-my-work',
