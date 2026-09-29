@@ -13,6 +13,7 @@ import { InternalChatNavbarButton } from '../../../features/internal-chat'
 import { NotificationCenterButton } from '../../../features/notifications'
 import { LiveMeetingIndicator } from '../../../features/call-meetings'
 import { HeaderProfileMenu } from './HeaderProfileMenu'
+import { AlertsIndicator } from '../../../features/alerts'
 
 const PAGE_CHANNEL_ICONS = [
   {
@@ -90,6 +91,8 @@ export function Header({
         <LiveMeetingIndicator />
 
         <NotificationCenterButton />
+
+        <AlertsIndicator />
 
         <MessengerNavbarButton
           active={messengerSidebarOpen}

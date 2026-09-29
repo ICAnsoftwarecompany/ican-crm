@@ -14,6 +14,7 @@ import { ActiveUsersSidebarPanel } from '../../../features/users/components/Acti
 import { InternalChatSidebarPanel } from '../../../features/internal-chat'
 import { OPEN_MESSENGER_SIDEBAR_EVENT } from '../../../features/conversations/constants/messengerSidebarEvents'
 import { OPEN_WHATSAPP_SIDEBAR_EVENT } from '../../../features/conversations/constants/whatsappSidebarEvents'
+import { AlertsStack } from '../../../features/alerts'
 
 export function MainLayout() {
   const { i18n } = useTranslation()
@@ -113,6 +114,7 @@ export function MainLayout() {
         style={{
           '--messenger-sidebar-width': 'min(390px, calc(100vw - 72px))',
           '--tasks-sidebar-width': 'min(390px, calc(100vw - 72px))',
+          '--layout-sidebar-current': collapsed ? 'var(--sidebar-collapsed)' : 'var(--sidebar-width)',
           paddingInlineEnd: 'calc(var(--layout-right-sidebar-offset, 0px) + var(--layout-page-drawer-offset, 0px))',
         }}
       >
@@ -203,6 +205,7 @@ export function MainLayout() {
         />
 
         <main className="min-h-screen" style={{ paddingTop: 'var(--layout-header-height, 48px)' }}>
+          <AlertsStack />
           <div className="p-6">
             <Outlet />
           </div>

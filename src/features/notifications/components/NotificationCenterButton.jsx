@@ -1,15 +1,18 @@
 import { Bell } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '../../../shared/utils/cn'
 import {
-  selectNotificationUnreadCount,
   useNotificationCenterStore,
 } from '../store/notificationCenterStore'
+import { useUnreadNotifications } from '../hooks/useNotifications'
 import { NotificationCenterPanel } from './NotificationCenterPanel'
 
 export function NotificationCenterButton() {
+  const { t } = useTranslation()
   const open = useNotificationCenterStore((state) => state.open)
   const toggleOpen = useNotificationCenterStore((state) => state.toggleOpen)
-  const unreadCount = useNotificationCenterStore(selectNotificationUnreadCount)
+  const { data: unread = [] } = useUnreadNotifications()
+  const unreadCount = unread.length
 
   return (
     <div className="relative" data-notification-center-root>
@@ -22,8 +25,10 @@ export function NotificationCenterButton() {
             ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]'
             : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
         )}
-        aria-label="مركز التنبيهات"
-        title="مركز التنبيهات"
+        aria-label={t('notifications.bellLabel', { count: unreadCount })}
+        aria-expanded={open}
+        aria-haspopup="dialog"
+        title={t('notifications.title')}
       >
         <Bell size={16} />
         {unreadCount > 0 ? (

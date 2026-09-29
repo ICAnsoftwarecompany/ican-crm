@@ -13,6 +13,42 @@ export default {
   "restored": "Customer restored",
   "active": "Active Leads",
   "trash": "Trash",
+  "pipeline": {
+    "viewMode": {
+      "label": "View mode",
+      "table": "Table",
+      "pipeline": "Pipeline"
+    },
+    "unstaged": "No status",
+    "searchPlaceholder": "Search by name, phone or email",
+    "shownCount": "{{count}} leads shown",
+    "clearSelection": "Clear selection ({{count}})",
+    "emptyColumn": "No leads in this status",
+    "loadMore": "Load more leads",
+    "loadError": "Could not load the pipeline.",
+    "retry": "Retry",
+    "noStatusesTitle": "No active statuses",
+    "noStatusesDescription": "Add lead statuses to show them as pipeline columns.",
+    "manageStatuses": "Manage statuses",
+    "card": {
+      "actions": "Lead actions",
+      "openDetails": "Open details",
+      "openLeadPage": "Open lead page",
+      "openHint": "Click to open details, or Ctrl/Cmd + click for the full page"
+    },
+    "toasts": {
+      "missingLead": "This customer has no linked lead, so its status can't be changed.",
+      "moveFailed": "Could not move the lead; it was returned to its previous status.",
+      "cannotUnstage": "A lead's status can't be cleared. Move it to another status instead."
+    },
+    "activity": {
+      "title": "Status changed to {{status}}",
+      "reasonTitle": "Reason for changing status to {{status}}",
+      "description": "Lead status changed to {{status}} from the pipeline",
+      "followUpCall": "Status follow-up call",
+      "followUpMeeting": "Status follow-up meeting"
+    }
+  },
   "nav": {
     "organization": "Organization",
     "tools": "Tools",
