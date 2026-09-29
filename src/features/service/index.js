@@ -40,3 +40,6 @@ export { MyWorkList, ServiceCenterCounters, useMyWork } from './my-work'
 // F1 — Contacts & Customer 360
 export { CustomerContactsPanel, useCustomerContacts } from './contacts'
 export { CustomerServiceTab } from './customer-360'
+
+// F2 — Settings (case types, queues, SLA, calendars, escalation)
+export { SettingsWorkspace, useResourceList } from './settings'

@@ -5,9 +5,10 @@ import terms from './service/terms.js'
 import cases from './service/cases.js'
 import workspace from './service/workspace.js'
 import contacts from './service/contacts.js'
+import settings from './service/settings.js'
 
 /**
- * نصوص خدمة العملاء — جذر المفاتيح `service.*`.
+ * نصوص إدارة العملاء (Customer Hub) — جذر المفاتيح `service.*`.
  * مقسمة حسب الموضوع داخل ./service/ (المجلد ليس Locale Module؛ الملف ده
  * بس هو المسجل في index.js). أضف ملف جزء لكل Sub-module لما يكبر.
  */
@@ -18,5 +19,6 @@ export default {
   ...cases,
   ...workspace,
   ...contacts,
+  ...settings,
   terms,
 }

@@ -5,9 +5,10 @@ import terms from './service/terms.js'
 import cases from './service/cases.js'
 import workspace from './service/workspace.js'
 import contacts from './service/contacts.js'
+import settings from './service/settings.js'
 
 /**
- * Service Operations copy — key root `service.*`.
+ * Customer Hub (Service Operations) copy — key root `service.*`.
  * Split by concern under ./service/ (this folder is not a locale module;
  * only this file is registered in index.js). Add a new part file per
  * sub-module when it grows (e.g. ./service/cases.js → `service.cases.*`).
@@ -19,5 +20,6 @@ export default {
   ...cases,
   ...workspace,
   ...contacts,
+  ...settings,
   terms,
 }

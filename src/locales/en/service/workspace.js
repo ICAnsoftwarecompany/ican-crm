@@ -1,6 +1,6 @@
 export default {
   center: {
-    title: 'Service Center',
+    title: 'Operations Center',
     subtitle: 'Your queue at a glance: what needs attention now and what is assigned to you.',
     myWork: 'My work',
     viewAll: 'View all',

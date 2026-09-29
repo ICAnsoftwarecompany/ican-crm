@@ -55,6 +55,7 @@ import {
   Headset,
   Inbox,
   ListChecks,
+  Settings2,
 } from 'lucide-react'
 
 /** @type {NavigationSection[]} */
@@ -168,13 +169,13 @@ export const navigationConfig = [
     ],
   },
 
-  // Customer Service (Service Operations) — features/service, built in
+  // Customer Hub (Service Operations after the sale) — features/service, built in
   // phases F0–F7 (docs/4-CUSTOMER-SERVICE.md). Keep 3–7 items here; deeper
   // destinations (settings, records, reports) live inside /service pages.
   {
     id: 'customer-service',
     type: 'section',
-    labelKey: 'nav.sections.customerService',
+    labelKey: 'nav.sections.customerHub',
     module: 'customer_service',
     items: [
       {
@@ -197,6 +198,13 @@ export const navigationConfig = [
         labelKey: 'nav.serviceMyWork',
         icon: ListChecks,
         path: '/service/my-work',
+      },
+      {
+        id: 'service-settings',
+        labelKey: 'nav.serviceSettings',
+        icon: Settings2,
+        path: '/service/settings',
+        activePatterns: ['/service/settings', '/service/settings/*'],
       },
     ],
   },

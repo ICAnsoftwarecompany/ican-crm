@@ -23,7 +23,7 @@ import {
  * rendered (unknown names fall back to Inbox) — the bundle never imports the
  * whole icon set. Add an icon here when a template needs a new one.
  */
-const ICONS = {
+export const CASE_TYPE_ICONS = {
   Banknote,
   Bus,
   CalendarClock,
@@ -43,6 +43,6 @@ const ICONS = {
 }
 
 export function CaseTypeIcon({ icon, size = 16, className }) {
-  const Icon = ICONS[icon] || Inbox
+  const Icon = CASE_TYPE_ICONS[icon] || Inbox
   return <Icon size={size} className={className} aria-hidden="true" />
 }

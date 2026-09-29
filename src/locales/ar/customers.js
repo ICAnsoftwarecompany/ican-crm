@@ -297,7 +297,7 @@ export default {
       "tabs": {
         "home": "بيانات العميل",
         "timeline": "الخط الزمني",
-        "service": "خدمة العملاء",
+        "service": "الخدمات",
         "interests": "الاهتمامات",
         "notes": "الملاحظات",
         "tasks": "المهام",

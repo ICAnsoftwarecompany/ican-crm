@@ -23,4 +23,7 @@ export const serviceKeys = {
   // Contacts (F1)
   contacts: (customerId) => [...serviceKeys.all, 'contacts', String(customerId)],
   contactsSetup: () => [...serviceKeys.all, 'contacts-setup'],
+
+  // Settings (F2) — one list per configuration resource (caseTypes, queues, slaPolicies…)
+  settings: (resourceKey) => [...serviceKeys.all, 'settings', resourceKey],
 }

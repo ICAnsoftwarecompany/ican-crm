@@ -1,5 +1,5 @@
 export default {
-  title: 'Customer Service',
+  title: 'Customer Hub',
   overview: {
     title: 'Service Operations',
     subtitle: 'What this workspace enables, how it is named, and where each part of the build stands.',
@@ -23,10 +23,11 @@ export default {
     FORBIDDEN: 'You do not have permission to do this.',
     FEATURE_DISABLED: 'This feature is not enabled for your workspace.',
     MOCK_ROUTE_NOT_FOUND: 'Demo data is not available for this action yet.',
+    RESOURCE_IN_USE: 'This item is in use by other records. Deactivate it instead of deleting it.',
   },
   mock: {
     title: 'Demo data',
-    description: '{{count}} of {{total}} service modules use demo data until the backend is ready.',
+    description: '{{count}} of {{total}} Customer Hub modules use demo data until the backend is ready.',
     template: 'Industry preview',
     templates: {
       devices: 'Devices & maintenance',

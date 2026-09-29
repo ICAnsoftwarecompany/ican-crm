@@ -1,20 +1,18 @@
 import { SERVICE_API, serviceEndpoints } from '../../core/api/endpoints'
 import { getCollection, registerSeed } from '../db'
 import { MockHttpError, notFound } from '../errors'
-import { buildCaseSetup } from '../seeds/caseSetupSeed'
+import { findStatus, getCaseSetup, getPipeline } from '../state/caseConfig'
 import { buildActivities, buildCases, buildCustomers } from '../seeds/casesSeed'
 import { getMockCurrentUser, mockId } from '../seeds/seedUtils'
 import { matchesSearch, nowIso, paginate } from '../utils'
 
-registerSeed('caseSetup', (manifest) => [buildCaseSetup(manifest)])
 registerSeed('customers', buildCustomers)
 registerSeed('cases', buildCases)
 registerSeed('caseActivities', buildActivities)
 
 const OPEN_CATEGORIES = ['open', 'in_progress', 'pending']
 
-const setup = () => getCollection('caseSetup')[0]
-const findStatus = (statusId) => setup().case_types[0].pipeline.statuses.find((status) => status.id === statusId)
+const setup = getCaseSetup
 
 /** Server-side view filters (backend owns these definitions). */
 const VIEW_FILTERS = {
@@ -31,7 +29,7 @@ const VIEW_FILTERS = {
 
 function serializeCase(item) {
   const config = setup()
-  const type = config.case_types.find((entry) => entry.id === item.type_id)
+  const type = getCollection('caseTypes').find((entry) => entry.id === item.type_id)
   const status = findStatus(item.status_id)
   const queue = config.queues.find((entry) => entry.id === item.queue_id)
   const assignee = config.agents.find((entry) => entry.id === item.assignee_id)
@@ -207,7 +205,7 @@ export const casesHandlers = [
     handler: ({ params, body = {} }) => {
       const item = getCase(params.caseId)
       assertVersion(item, body.version)
-      const transition = setup().case_types[0].pipeline.transitions.find(
+      const transition = getPipeline().transitions.find(
         (entry) => entry.from === item.status_id && entry.to === body.to_status_id
       )
       if (!transition) throw new MockHttpError(409, 'CASE_TRANSITION_NOT_ALLOWED', 'This status change is not allowed.')

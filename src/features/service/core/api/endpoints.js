@@ -35,4 +35,17 @@ export const serviceEndpoints = {
   // customer endpoints; served by the Service mock until the backend ships them.
   customerContacts: (customerId) => `${TENANT_API}/customers/${customerId}/contacts`,
   contactsSetup: `${TENANT_API}/contacts/setup`,
+
+  // Settings (F2) — tenant configuration resources. Each is a plain CRUD:
+  // GET list, POST, GET/PATCH/DELETE /{id}. Case types and queues feed cases/setup.
+  settings: {
+    caseTypes: `${SERVICE_API}/case-types`,
+    queues: `${SERVICE_API}/queues`,
+    slaPolicies: `${SERVICE_API}/sla-policies`,
+    businessCalendars: `${SERVICE_API}/business-calendars`,
+    escalationRules: `${SERVICE_API}/escalation-rules`,
+    savedReplies: `${SERVICE_API}/saved-replies`,
+    macros: `${SERVICE_API}/macros`,
+    kbCategories: `${SERVICE_API}/kb/categories`,
+  },
 }

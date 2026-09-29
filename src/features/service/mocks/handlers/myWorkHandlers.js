@@ -1,6 +1,6 @@
 import { serviceEndpoints } from '../../core/api/endpoints'
 import { getCollection } from '../db'
-import { buildCaseSetup } from '../seeds/caseSetupSeed'
+import { findStatus } from '../state/caseConfig'
 import { getMockCurrentUser, hoursAgo } from '../seeds/seedUtils'
 
 /**
@@ -24,11 +24,9 @@ export const myWorkHandlers = [
     path: serviceEndpoints.myWork,
     handler: () => {
       const me = getMockCurrentUser()
-      const setup = getCollection('caseSetup')[0] || buildCaseSetup({ template: 'devices' })
-      const statuses = setup.case_types[0].pipeline.statuses
       const caseItems = getCollection('cases')
         .filter((item) => item.assignee_id === me.id)
-        .map((item) => ({ item, status: statuses.find((status) => status.id === item.status_id) }))
+        .map((item) => ({ item, status: findStatus(item.status_id) }))
         .filter(({ status }) => OPEN_CATEGORIES.includes(status?.category))
         .map(({ item, status }) => ({
           id: `wi-${item.id}`,
