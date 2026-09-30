@@ -18,20 +18,46 @@ export default {
     "bindingHint": "يمكن ربط النشاط بعميل محتمل أو عميل أو صفقة من داخل النموذج."
   },
   "reports": {
-    "byAssignee": "حسب الموظف المسؤول",
-    "byPriority": "حسب الأولوية",
-    "columns": {
-      "assignee": "الموظف",
-      "total": "الإجمالي",
+    "kpis": {
+      "total": {
+        "call": "المكالمات في الفترة",
+        "meeting": "الاجتماعات في الفترة"
+      },
       "completed": "مكتملة",
+      "completionRate": "نسبة الإنجاز",
       "overdue": "متأخرة",
-      "completionRate": "نسبة الإنجاز"
+      "unreadMessages": "رسائل غير مقروءة",
+      "activeConversations": "محادثات نشطة في الفترة",
+      "activeChannels": "قنوات بها محادثات",
+      "groups": "مجموعات"
     },
-    "unassigned": "غير مسند",
-    "noPriority": "بدون أولوية",
-    "emptyTitle": "لا توجد بيانات للتقارير بعد",
-    "emptyDescription": "ستظهر التقارير بعد تسجيل أول نشاط.",
-    "clientSideNote": "تُحسب التقارير من آخر 200 سجل في المتصفح إلى أن يتوفر تقرير مجمّع من الباك إند."
+    "charts": {
+      "perDay": {
+        "call": "المكالمات يوميًا حسب الحالة",
+        "meeting": "الاجتماعات يوميًا حسب الحالة"
+      },
+      "byAssignee": "حسب الموظف المسؤول",
+      "byPriority": "حسب الأولوية",
+      "byOutcome": "حسب النتيجة",
+      "conversationActivity": "نشاط المحادثات يوميًا حسب القناة",
+      "unreadByChannel": "غير المقروء حسب القناة",
+      "conversationsByChannel": "توزيع المحادثات على القنوات",
+      "chatActivity": "نشاط الشات الداخلي يوميًا",
+      "byConversationType": "فردية ومجموعات",
+      "unreadByConversation": "أكثر المحادثات بها رسائل غير مقروءة"
+    },
+    "series": {
+      "call": "مكالمات",
+      "meeting": "اجتماعات",
+      "unread": "غير مقروءة",
+      "conversations": "محادثات"
+    },
+    "conversationTypes": {
+      "group": "مجموعات",
+      "direct": "فردية"
+    },
+    "noOutcomes": "لا توجد نتائج مسجلة في هذه الفترة",
+    "noUnread": "لا توجد رسائل غير مقروءة"
   },
   "modules": {
     "conversations": {
@@ -54,13 +80,7 @@ export default {
       },
       "reports": {
         "title": "تقارير المحادثات",
-        "description": "أداء الرد والقنوات والموظفين.",
-        "items": {
-          "responseTime": "متوسط وقت أول رد",
-          "volume": "عدد المحادثات حسب القناة",
-          "unanswered": "المحادثات بدون رد",
-          "agents": "أداء كل موظف"
-        }
+        "description": "أداء الرد والقنوات والموظفين."
       },
       "customization": {
         "description": "تخصيص صندوق المحادثات.",
@@ -118,10 +138,7 @@ export default {
       },
       "reports": {
         "title": "تقارير المكالمات",
-        "description": "حجم المكالمات ونتائجها وأداء الفريق.",
-        "items": {
-          "volume": "عدد المكالمات"
-        }
+        "description": "حجم المكالمات ونتائجها وأداء الفريق."
       },
       "customization": {
         "description": "تخصيص المكالمات لتناسب طريقة عمل فريقك.",
@@ -175,10 +192,7 @@ export default {
       },
       "reports": {
         "title": "تقارير الاجتماعات",
-        "description": "عدد الاجتماعات ونتائجها وأداء الفريق.",
-        "items": {
-          "volume": "عدد الاجتماعات"
-        }
+        "description": "عدد الاجتماعات ونتائجها وأداء الفريق."
       },
       "customization": {
         "description": "تخصيص الاجتماعات لتناسب فريقك.",
@@ -235,13 +249,7 @@ export default {
       },
       "reports": {
         "title": "تقارير الشات الداخلي",
-        "description": "نشاط الفريق على الشات.",
-        "items": {
-          "activity": "عدد الرسائل حسب الفترة",
-          "groups": "أكثر المجموعات نشاطًا",
-          "response": "متوسط وقت الرد بين الزملاء",
-          "unread": "الرسائل غير المقروءة لكل موظف"
-        }
+        "description": "نشاط الفريق على الشات."
       },
       "customization": {
         "description": "تخصيص الشات الداخلي.",

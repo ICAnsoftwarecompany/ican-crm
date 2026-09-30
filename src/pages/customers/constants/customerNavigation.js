@@ -1,5 +1,6 @@
 import {
   ArrowLeftRight,
+  BarChart3,
   BellRing,
   Bot,
   CalendarClock,
@@ -23,8 +24,9 @@ export const LEADS_CENTER_ROUTE = '/LeadsCenter'
  * - Activities & appointments moved into the first group, under "Inactive".
  * - Sales teams moved to the main sidebar (Sales → under Proposals); its route is unchanged.
  * - "Multi-status view" and "Proposal builder" removed from the sidebar (routes still exist:
- *   the status board is reachable from the main table's view switch, proposals from the main sidebar).
+ *   the status board opens from the multi-view button in the main table's status tabs, proposals from the main sidebar).
  * - Footer: Automation, AI setup, Settings.
+ * - Tools: Reports & statistics (shared reports engine) added first.
  */
 export function getCustomerNavigationGroups(t) {
   return [
@@ -53,6 +55,7 @@ export function getCustomerNavigationGroups(t) {
       id: 'tools',
       label: t('customers.nav.tools'),
       items: [
+        { to: `${LEADS_CENTER_ROUTE}/reports`, label: t('customers.nav.reports'), icon: BarChart3 },
         { to: `${LEADS_CENTER_ROUTE}/import-export`, label: t('customers.nav.importExport'), icon: ArrowLeftRight },
         { to: `${LEADS_CENTER_ROUTE}/trash`, label: t('customers.page.deletedRecordsTitle'), icon: Trash2 },
       ],

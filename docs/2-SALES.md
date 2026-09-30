@@ -106,6 +106,7 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 | `/LeadsCenter/trash` | Deleted customers, restore / force delete | CURRENT |
 | `/LeadsCenter/activities`, `/activities/meeting/:meetingId` | Activities (calendar-first, see above) / meeting detail | CURRENT |
 | `/LeadsCenter/assignments` | Lead assignment rules (`AssignmentRulesPanel`) | CURRENT |
+| `/LeadsCenter/reports` | Reports & statistics on the shared reports engine: new leads (delta vs previous period), unassigned, per-day trend, by status / source / assignee (`features/customers/reports`, up to 5 list pages) — added 2026-10-01 01:49 (Africa/Cairo) | CURRENT |
 | `/LeadsCenter/automation` | Shared automation flow in the `leads` workflow module (`WorkflowModuleWorkspace`) | CURRENT |
 | `/LeadsCenter/ai` | Shared `AiSetupPage` with `LEAD_AI_CAPABILITIES` (per-browser draft) | PARTIAL |
 | `/LeadsCenter/proposals`, `/proposals/templates`, `/proposals/:proposalId/builder` | Proposals | CURRENT |

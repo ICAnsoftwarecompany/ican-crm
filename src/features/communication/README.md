@@ -30,7 +30,7 @@ Built with the shared [sub-sidebar](../../shared/components/sub-sidebar/README.m
 |---|---|---|---|---|
 | Work | View | `/<module>` | Activities list locked to the type | existing inbox page (full-bleed) |
 | Work | Create | `/<module>/create` | `ScheduleActivityDialog presentation="inline"` | planned (`ModulePlaceholderPage`) |
-| Insights | Reports | `/<module>/reports` | `ActivityReports` (client-side aggregation) | planned |
+| Insights | Reports | `/<module>/reports` | shared `ReportsPage` + `useActivityReport` | shared `ReportsPage` + `useConversationsReport` / `useTeamChatReport` *(all on the shared reports engine since 2026-10-01 01:49 (Africa/Cairo))* |
 | Insights | Calendar | `/<module>/calendar` | shared `Calendar` engine, module's source only | shared `Calendar`, no source yet + notice |
 | Setup | Automation | `/<module>/automation` | shared `WorkflowBuilder` with `workflowContext` | same |
 | Setup | Customization | `/<module>/customization` | planned list | planned list |
@@ -49,7 +49,7 @@ The same module settings sections also appear in the app-wide Settings under **S
 | `components/CommunicationModuleLayout.jsx` | Route shell: `SubSidebarLayout` + full-bleed index for chat inboxes. |
 | `components/CommunicationCalendar.jsx` | Module-scoped view of the shared Calendar (uses `features/calendar` sources, preview drawer, create dialog). |
 | `components/CommunicationAutomation.jsx` | Embedded `WorkflowBuilder` in the module's context. |
-| `components/ActivityReports.jsx` + `utils/activityReport.js` | Calls/meetings reports: status stats, by-assignee table, by-priority counts. Tested. |
+| `reports/` | Report hooks for the shared reports engine: `useActivityReport(type, range)` (KPIs, per-day by status, by assignee/priority/outcome), `useConversationsReport(range)` (unread + activity per channel), `useTeamChatReport(range)` (activity, direct vs groups, unread). Replaced `ActivityReports.jsx` + `utils/activityReport.js` (2026-10-01 01:49 (Africa/Cairo)). |
 | `index.js` | Public API. |
 
 Route pages: [`pages/communication/`](../../pages/communication/README.md). Strings: `communication.*` in
@@ -66,7 +66,7 @@ Route pages: [`pages/communication/`](../../pages/communication/README.md). Stri
 ## Known gaps
 
 - **Customization and module settings:** no backend API — pages list the planned content with a warning notice.
-- **Reports:** computed in the browser from the latest 200 records; switch to `GET /api/tenant/meetings/reports/summary`
+- **Reports:** computed in the browser from the latest 200 records (calls/meetings), the first 30 conversations per channel, and the team chat list; switch to `GET /api/tenant/meetings/reports/summary`
   once its response shape is confirmed.
 - **Calendar:** conversations and team chat have no dated source yet.
 - **Automation:** calls/meetings/conversations/team-chat have no registered workflow definitions yet

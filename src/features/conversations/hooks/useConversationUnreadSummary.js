@@ -11,7 +11,8 @@ function sumUnread(conversations = []) {
 }
 
 /**
- * Unread message counts per customer channel (added 2026-10-01 for features/my-work).
+ * Unread message counts per customer channel (added 2026-10-01 for features/my-work), plus the
+ * loaded conversation lists per channel (used by the Conversations reports page).
  * Gmail is only queried when at least one mailbox is connected.
  */
 export function useConversationUnreadSummary() {
@@ -30,8 +31,15 @@ export function useConversationUnreadSummary() {
     return { ...byChannel, total: byChannel.whatsapp + byChannel.messenger + byChannel.gmail }
   }, [gmail.data, hasGmail, messenger.data, whatsapp.data])
 
+  const lists = useMemo(() => ({
+    whatsapp: whatsapp.data || [],
+    messenger: messenger.data || [],
+    gmail: hasGmail ? gmail.data || [] : [],
+  }), [gmail.data, hasGmail, messenger.data, whatsapp.data])
+
   return {
     counts,
+    lists,
     isLoading: messenger.isLoading || whatsapp.isLoading,
     error: messenger.error && whatsapp.error ? messenger.error : null,
     refetch: () => {

@@ -115,7 +115,9 @@ export default {
     "typeSentDescription": "The category type will always be sent as {{type}}."
   },
   "nav": {
-    "productCategories": "Product Categories"
+    "productCategories": "Product Categories",
+    "reports": "Reports & statistics",
+    "insights": "Insights"
   },
   "sidebar": {
     "ariaLabel": "Products Menu",
@@ -131,5 +133,33 @@ export default {
     "fieldNamePlaceholder": "e.g. color",
     "valueLabel": "Value",
     "addField": "Add Field"
+  },
+  "reports": {
+    "description": "Catalog statistics: categories, type, status and additions over time.",
+    "kpis": {
+      "total": "Products & services",
+      "added": "Added in period",
+      "inactive": "Inactive",
+      "categories": "Categories in use"
+    },
+    "charts": {
+      "byCategory": "By category",
+      "byType": "Products vs services",
+      "byStatus": "Active vs inactive",
+      "addedOverTime": "Added per day"
+    },
+    "series": {
+      "items": "Items",
+      "added": "Added"
+    },
+    "types": {
+      "product": "Products",
+      "service": "Services"
+    },
+    "statuses": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "noDates": "No creation dates were returned for items in this period"
   }
 }

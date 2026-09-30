@@ -19,6 +19,7 @@ import { CustomerImportExportPage } from '../../pages/customers/pages/CustomerIm
 import { DeletedCustomersPage } from '../../pages/customers/pages/TrashCustomer/DeletedCustomersPage'
 import { CustomersSettingsPage } from '../../pages/customers/pages/CustomersSettingsPage'
 import { LeadsAutomationPage } from '../../pages/customers/pages/LeadsAutomationPage'
+import { LeadsReportsPage } from '../../pages/customers/pages/LeadsReportsPage'
 import { LeadsAiSetupPage } from '../../pages/customers/pages/LeadsAiSetupPage'
 import { CustomerStatusBoardPage } from '../../pages/customers/pages/statusBoard/CustomerStatusBoardPage'
 import { CustomerActivitiesPage, MeetingDetailPage } from '../../pages/customers/pages/activities'
@@ -60,6 +61,7 @@ import { FacebookCallbackPage } from '../../pages/integrations/FacebookCallbackP
 import { TasksPage } from '../../pages/tasks/TasksPage'
 import { CalendarPage } from '../../pages/calendar/CalendarPage'
 import { ProductsLayout } from '../../pages/products/layout/ProductsLayout'
+import { ProductsReportsPage } from '../../pages/products/ProductsReportsPage'
 import { ProductsPage } from '../../pages/products/ProductsPage/ProductsPage'
 import { ProductCategoriesPage } from '../../pages/products/ProductsPage/ProductCategoriesPage'
 import { ServicesPage } from '../../pages/products/ServicesPage/ServicesPage'
@@ -74,6 +76,7 @@ import { AppearanceSettingsPage } from '../../pages/settings/pages/appearance/Ap
 import { TemplatesPage } from '../../pages/templates/TemplatesPage'
 import { DataTableDemo } from '../../pages/playground/DataTableDemo'
 import { VisualFlowDemo } from '../../pages/playground/VisualFlowDemo'
+import { ReportsDemo } from '../../pages/playground/ReportsDemo'
 import { communicationRoutes } from '../../pages/communication/communicationRoutes'
 import { CommunicationSettingsPage } from '../../pages/settings/pages/communication/CommunicationSettingsPage'
 import { serviceRoutes } from '../../pages/service/serviceRoutes'
@@ -131,6 +134,7 @@ export const router = createBrowserRouter([
           { path: 'import-export', element: <CustomerImportExportPage /> },
           { path: 'trash', element: <DeletedCustomersPage /> },
           { path: 'settings', element: <CustomersSettingsPage /> },
+          { path: 'reports', element: <LeadsReportsPage /> },
           { path: 'automation', element: <LeadsAutomationPage /> },
           { path: 'ai', element: <LeadsAiSetupPage /> },
           { path: 'status-board', element: <CustomerStatusBoardPage /> },
@@ -209,6 +213,7 @@ export const router = createBrowserRouter([
           { path: 'categories', element: <ProductCategoriesPage /> },
           { path: 'services', element: <ServicesPage /> },
           { path: 'service-categories', element: <ServiceCategoriesPage /> },
+          { path: 'reports', element: <ProductsReportsPage /> },
         ],
       },
       { path: 'teams', element: <TeamsPage /> },
@@ -230,6 +235,7 @@ export const router = createBrowserRouter([
       { path: 'integrations/facebook/callback', element: <FacebookCallbackPage /> },
       { path: 'playground/datatable', element: <DataTableDemo /> },
       { path: 'playground/visual-flow', element: <VisualFlowDemo /> },
+      { path: 'playground/reports', element: <ReportsDemo /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
