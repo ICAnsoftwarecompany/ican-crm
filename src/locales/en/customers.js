@@ -14,6 +14,19 @@ export default {
   "active": "Active Leads",
   "trash": "Trash",
   "pipeline": {
+    "dragHint": "Long-press a lead, then drag it to change its status",
+    "fields": {
+      "nextActivity": "Next activity"
+    },
+    "settings": {
+      "button": "Pipeline settings",
+      "title": "Pipeline settings",
+      "description": "Choose and order the data shown on each lead card.",
+      "reset": "Reset to default",
+      "nameAlwaysShown": "The lead name is always shown.",
+      "moveUp": "Move {{field}} up",
+      "moveDown": "Move {{field}} down"
+    },
     "viewMode": {
       "label": "View mode",
       "table": "Table",
@@ -33,8 +46,7 @@ export default {
     "card": {
       "actions": "Lead actions",
       "openDetails": "Open details",
-      "openLeadPage": "Open lead page",
-      "openHint": "Click to open details, or Ctrl/Cmd + click for the full page"
+      "openLeadPage": "Open lead page"
     },
     "toasts": {
       "missingLead": "This customer has no linked lead, so its status can't be changed.",

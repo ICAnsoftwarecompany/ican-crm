@@ -1,11 +1,24 @@
 import { useMemo } from 'react'
-import { cn } from '../../utils/cn'
+import { PipelineColumn } from './PipelineColumn'
+import { PipelineDndBoard } from './PipelineDndBoard'
 import { usePipelineDragDrop } from './usePipelineDragDrop'
 
 function matches(value, expected) {
   return String(value ?? '') === String(expected ?? '')
 }
 
+function isTerminalStage(stage) {
+  return Boolean(stage?.is_won_stage || stage?.is_lost_stage || stage?.is_terminal_won || stage?.is_terminal_lost)
+}
+
+/**
+ * Kanban board: one column per stage (optionally repeated per lane).
+ *
+ * dragMode: 'native' (default) drags immediately with HTML5 drag & drop;
+ *           'longPress' starts dragging only after a long press (mouse + touch).
+ * columnWidth: fixed column width in px. Without it columns stretch (minmax(260px, 1fr)).
+ * columnBodyClassName: e.g. a max height + overflow-y-auto so each column scrolls on its own.
+ */
 export function PipelineBoard({
   stages = [],
   items = [],
@@ -17,18 +30,26 @@ export function PipelineBoard({
   onItemMove,
   onTerminalStageDrop,
   isInteractive = true,
+  dragMode = 'native',
+  columnWidth,
+  columnBodyClassName,
+  pressDelay,
 }) {
-  const lanes = groupBy?.lanes?.length ? groupBy.lanes : [{ id: null, label: null }]
+  const lanes = useMemo(() => (groupBy?.lanes?.length ? groupBy.lanes : [{ id: null, label: null }]), [groupBy])
+
+  const handleItemMove = (itemId, fromStageId, toStageId, laneId) => {
+    const stage = stages.find((entry) => matches(entry.id, toStageId))
+    if (isTerminalStage(stage)) {
+      return onTerminalStageDrop?.({ itemId, fromStageId, stage, laneId })
+    }
+    return onItemMove?.(itemId, fromStageId, toStageId, laneId)
+  }
+
   const { draggableProps, dropZoneProps, isDropTarget } = usePipelineDragDrop({
-    isInteractive,
-    onItemMove: (itemId, fromStageId, toStageId, laneId) => {
-      const stage = stages.find((entry) => matches(entry.id, toStageId))
-      if (stage?.is_won_stage || stage?.is_lost_stage || stage?.is_terminal_won || stage?.is_terminal_lost) {
-        return onTerminalStageDrop?.({ itemId, fromStageId, stage, laneId })
-      }
-      return onItemMove?.(itemId, fromStageId, toStageId, laneId)
-    },
+    isInteractive: isInteractive && dragMode === 'native',
+    onItemMove: handleItemMove,
   })
+
   const groupedItems = useMemo(() => {
     const map = new Map()
     lanes.forEach((lane) => stages.forEach((stage) => map.set(`${lane.id ?? 'all'}:${stage.id}`, [])))
@@ -40,37 +61,57 @@ export function PipelineBoard({
     return map
   }, [groupBy, itemStageKey, items, lanes, stages])
 
+  const columnCount = Math.max(stages.length, 1)
+  const gridTemplateColumns = columnWidth
+    ? `repeat(${columnCount}, ${columnWidth}px)`
+    : `repeat(${columnCount}, minmax(260px, 1fr))`
+
+  if (dragMode === 'longPress') {
+    return (
+      <div className="min-w-0 overflow-x-auto pb-2">
+        <PipelineDndBoard
+          stages={stages}
+          lanes={lanes}
+          groupedItems={groupedItems}
+          itemIdKey={itemIdKey}
+          itemStageKey={itemStageKey}
+          renderCard={renderCard}
+          renderEmpty={renderEmpty}
+          isInteractive={isInteractive}
+          onItemMove={handleItemMove}
+          gridTemplateColumns={gridTemplateColumns}
+          columnWidth={columnWidth}
+          columnBodyClassName={columnBodyClassName}
+          pressDelay={pressDelay}
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="min-w-0 overflow-auto">
-      <div className="grid min-w-max gap-4" style={{ gridTemplateColumns: `repeat(${Math.max(stages.length, 1)}, minmax(260px, 1fr))` }}>
+      <div className="grid min-w-max gap-4" style={{ gridTemplateColumns }}>
         {lanes.flatMap((lane) => stages.map((stage) => {
           const key = `${lane.id ?? 'all'}:${stage.id}`
           const stageItems = groupedItems.get(key) || []
           return (
-            <section
+            <PipelineColumn
               key={key}
+              stage={stage}
+              lane={lane}
+              count={stageItems.length}
+              isDropTarget={isDropTarget(stage.id, lane.id)}
+              bodyClassName={columnBodyClassName}
               {...dropZoneProps(stage.id, lane.id)}
-              className={cn(
-                'min-h-48 rounded-md border border-[var(--border)] bg-[var(--surface-2)] p-2 transition-colors',
-                isDropTarget(stage.id, lane.id) && 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)]'
-              )}
             >
-              <header className="mb-2 flex items-center gap-2 border-b border-[var(--border)] px-1 pb-2">
-                <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: stage.color || 'var(--text-muted)' }} />
-                <h3 className="min-w-0 flex-1 truncate text-sm font-bold text-[var(--text)]">{stage.label || stage.name}</h3>
-                <span className="text-xs font-semibold text-[var(--text-muted)]">{stageItems.length}</span>
-              </header>
-              {lane.label && <div className="mb-2 text-xs font-semibold text-[var(--text-muted)]">{lane.label}</div>}
-              <div className="space-y-2">
-                {stageItems.length
-                  ? stageItems.map((item) => (
-                    <div key={item[itemIdKey]} {...draggableProps(item[itemIdKey], item[itemStageKey])}>
-                      {renderCard?.(item, stage, lane)}
-                    </div>
-                  ))
-                  : renderEmpty?.(stage, lane)}
-              </div>
-            </section>
+              {stageItems.length
+                ? stageItems.map((item) => (
+                  <div key={item[itemIdKey]} {...draggableProps(item[itemIdKey], item[itemStageKey])}>
+                    {renderCard?.(item, stage, lane)}
+                  </div>
+                ))
+                : renderEmpty?.(stage, lane)}
+            </PipelineColumn>
           )
         }))}
       </div>

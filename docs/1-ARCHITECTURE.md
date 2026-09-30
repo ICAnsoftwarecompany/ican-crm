@@ -163,13 +163,14 @@ Domain-neutral node/graph editor on top of `@xyflow/react`. Everything domain-sp
 
 ### Pipeline Board
 
-**Status:** CURRENT · **Path:** `shared/components/pipeline-board` · **Exports:** `PipelineBoard`, `PipelineCard`, `usePipelineDragDrop`
+**Status:** CURRENT · **Path:** `shared/components/pipeline-board` · **Exports:** `PipelineBoard`, `PipelineCard`, `PipelineColumn`, `usePipelineDragDrop`
 
-Generic stage board with HTML5 drag-and-drop and optional swimlanes; stages come from data, never hardcoded.
+Generic stage board with optional swimlanes; stages come from data, never hardcoded. Two drag modes: `native` (default, HTML5 drag-and-drop, drags immediately) and `longPress` (`PipelineDndBoard`, `@dnd-kit` mouse + touch sensors with a press delay, `DragOverlay`; a short click still reaches the card).
 
-- **Props:** `stages`, `items`, `itemStageKey` (default `stage_id`), `itemIdKey` (default `id`), `groupBy` (swimlanes), `renderCard`, `renderEmpty`, `onItemMove(itemId, fromStageId, toStageId)`, `onTerminalStageDrop({ itemId, fromStageId, stage, laneId })`, `isInteractive`.
+- **Props:** `stages`, `items`, `itemStageKey` (default `stage_id`), `itemIdKey` (default `id`), `groupBy` (swimlanes), `renderCard`, `renderEmpty`, `onItemMove(itemId, fromStageId, toStageId)`, `onTerminalStageDrop({ itemId, fromStageId, stage, laneId })`, `isInteractive`, `dragMode` (`native` | `longPress`), `pressDelay` (ms, default 250), `columnWidth` (fixed px; default columns stretch `minmax(260px, 1fr)`), `columnBodyClassName` (e.g. max height + `overflow-y-auto` for per-column scroll).
 - **Stage shape:** `{ id, name|label, order, color, is_won_stage|is_terminal_won, is_lost_stage|is_terminal_lost }`. Dropping on a won/lost stage never calls `onItemMove`; the consumer must confirm via its own dialog and endpoint.
-- **Consumer:** `pages/deals/DealWorkspacePage.jsx` ([2-SALES.md → Deals](2-SALES.md#deals)).
+- **Consumers:** `pages/deals/DealWorkspacePage.jsx` ([2-SALES.md → Deals](2-SALES.md#deals)), `features/service/cases/components/CasesBoard.jsx` (native mode), `features/customers/pipeline` Leads Center pipeline (long-press mode, fixed columns).
+- **Related:** `shared/components/ui/TruncatedText` — clamps text to 1–3 lines and shows the full value in a hover tooltip only when it is actually cut.
 
 ### Sidebar and navigation
 

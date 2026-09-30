@@ -1284,7 +1284,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
         viewToggle={!showTrash ? <CustomersViewModeToggle value={viewMode} onChange={setViewMode} /> : null}
       />
 
-      {!showTrash && (
+      {!showTrash && !isPipelineView && (
         <LeadStatusTabs
           selectedStatusId={selectedLeadStatusId}
           onStatusChange={handleLeadStatusTabChange}
@@ -1305,14 +1305,13 @@ export function CustomersPage({ defaultShowTrash = false }) {
         />
       )}
 
-      <div className={`grid min-w-0 gap-3 ${activeActivityDrawerType ? 'xl:grid-cols-[minmax(0,1fr)_340px]' : 'grid-cols-1'}`}>
+      <div className={`grid min-w-0 gap-3 ${activeActivityDrawerType && !isPipelineView ? 'xl:grid-cols-[minmax(0,1fr)_340px]' : 'grid-cols-1'}`}>
         <section className="overflow-x-auto min-w-0">
           {isPipelineView ? (
             <CustomersPipelineSection
-              rows={baseFilteredRows}
+              rows={normalizedRows}
               statuses={leadStatusesQuery.data || []}
               statusById={statusById}
-              selectedStatusId={freshLeadActive ? null : selectedLeadStatusId}
               isLoading={isLoading || leadStatusesQuery.isLoading}
               error={error || leadStatusesQuery.error}
               onRetry={() => Promise.allSettled([refetch(), leadStatusesQuery.refetch()])}
@@ -1379,7 +1378,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
           )}
         </section>
 
-        {activeActivityDrawerType ? (
+        {activeActivityDrawerType && !isPipelineView ? (
           <CustomersActivitySidePanel
             type={activeActivityDrawerType}
             items={activeActivityList}
