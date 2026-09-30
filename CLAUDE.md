@@ -57,7 +57,8 @@ Legacy/transitional (don't copy these patterns, don't add to them):
 | Leads & customers (`/leads`, `/LeadsCenter/*`, `/lead/:customerId`) | `features/leads`, `features/customers`, `pages/customers` | [Leads Center](docs/2-SALES.md#leads-center-pages), [Customer drawer](docs/2-SALES.md#customer-details-drawer), [Domain model](docs/2-SALES.md#domain-model) |
 | Lead assignment | `features/leads/api/leadAssignmentApi.js`, `/LeadsCenter/assignments` | [Leads & assignment](docs/2-SALES.md#leads-page-and-lead-assignment) |
 | Statuses / definitions | `features/definitions` | [Statuses & tags](docs/2-SALES.md#statuses-tags-and-pipeline) |
-| Activities, calls, meetings | `features/activities`, `features/call-meetings`, `features/meetings` | [Activities](docs/2-SALES.md#activities-calls-and-meetings) |
+| Communication hub (`/conversations`, `/calls`, `/meetings`, `/team-chat` + their sub-pages) | `features/communication` (config only), `pages/communication` | [Communication hub](docs/3-FEATURES.md#communication-hub), [README](src/features/communication/README.md) |
+| Activities, calls, meetings (logic behind `/calls`, `/meetings`) | `features/activities`, `features/call-meetings`, `features/meetings` | [Activities](docs/2-SALES.md#activities-calls-and-meetings) |
 | Conversations (WhatsApp/Messenger/Gmail) | `features/conversations` (adapters in `channels/`, shared chat UI in `components/shared/`), `pages/conversations`, `src/realtime/hooks` | [Conversations](docs/3-FEATURES.md#conversations) |
 | Internal team chat | `features/internal-chat` | [Internal chat](docs/3-FEATURES.md#internal-chat) |
 | Ad campaigns (Meta ads, ad sets, lead forms) | `features/campaigns`, `features/meta-integrations`, `pages/campaigns` | [Ad campaigns](docs/3-FEATURES.md#ad-campaigns-and-meta-integrations) |
@@ -69,6 +70,8 @@ Legacy/transitional (don't copy these patterns, don't add to them):
 | Automation | `features/workflow-engine` + `shared/components/visual-flow` | [Workflow engine](docs/3-FEATURES.md#workflow-engine-and-automation), [Visual Flow](docs/1-ARCHITECTURE.md#visual-flow) |
 | Data table | `shared/components/data-table` (canonical table) | [DataTable](docs/1-ARCHITECTURE.md#datatable) |
 | Sidebar / navigation | `app/navigation`, `shared/components/layout` | [Sidebar & navigation](docs/1-ARCHITECTURE.md#sidebar-and-navigation) |
+| Sub-sidebar (every internal sidebar) | `shared/components/sub-sidebar` | [Sub-sidebar](docs/1-ARCHITECTURE.md#sub-sidebar), [README](src/shared/components/sub-sidebar/README.md) |
+| Module page shells, module settings page, AI setup page | `shared/components/module-pages`, `shared/components/ai-setup`, `pages/settings/registry` | [Module pages and AI setup](docs/1-ARCHITECTURE.md#module-pages-and-ai-setup) |
 | Calendar | `shared/components/calendar` (engine) + `features/calendar` (sources) | [Calendar](docs/1-ARCHITECTURE.md#calendar) |
 | Realtime | `src/realtime` | [Realtime](docs/1-ARCHITECTURE.md#realtime) |
 | Translations | `src/locales` | [i18n](docs/1-ARCHITECTURE.md#i18n) |
@@ -107,6 +110,15 @@ reports were removed (see git history).
 8. Handle loading, empty and error states for every data view.
 9. Keep new components under ~300 lines; split large ones into hooks + subcomponents.
    Don't make existing 1000+ line files bigger.
+10. **Sub-sidebars**: any new internal/sub sidebar (a second navigation column inside an area) MUST be
+    built with `shared/components/sub-sidebar` (`SubSidebarLayout`, or `SubSidebar` / its building
+    blocks). Never write a new `*Sidebar.jsx` with its own NavLink styling, collapse toggle or mobile
+    drawer. A module's settings page uses `ModuleSettingsPage` + `pages/settings/registry`; a module's AI
+    page uses `shared/components/ai-setup` (AI business logic belongs to the future `features/ai`).
+11. **Docs**: every added or changed doc section carries a `YYYY-MM-DD HH:mm (Africa/Cairo)` timestamp next
+    to it, and `docs/README.md` gets a change-log row. Every new `shared/components/<engine>/`,
+    `features/<domain>/` or `pages/<area>/` folder gets a short `README.md` (what it owns, public API, how
+    to extend, known gaps) and is linked from `docs/README.md`.
 
 ## Conventions
 

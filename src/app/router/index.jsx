@@ -1,4 +1,4 @@
-import { Link, createBrowserRouter } from 'react-router-dom'
+import { Link, Navigate, createBrowserRouter } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { PrivateRoute } from './PrivateRoute'
 import { MainLayout } from '../../shared/components/layout/MainLayout'
@@ -25,7 +25,6 @@ import { CustomerProposalsPage } from '../../pages/customers/pages/proposals/Cus
 import { CustomerProposalBuilderPage } from '../../pages/customers/pages/proposals/CustomerProposalBuilderPage'
 import { CustomerProposalTemplatesPage } from '../../pages/customers/pages/proposals/CustomerProposalTemplatesPage'
 import { ActivitiesPage } from '../../features/activities'
-import { ConversationsPage } from '../../pages/conversations/ConversationsPage'
 import { CampaignsPage } from '../../pages/campaigns/CampaignsPage'
 import { CampaignOverviewPage } from '../../pages/campaigns/pages/CampaignOverviewPage'
 import { CampaignCreatePage } from '../../pages/campaigns/pages/CampaignCreatePage'
@@ -73,7 +72,8 @@ import { AppearanceSettingsPage } from '../../pages/settings/pages/appearance/Ap
 import { TemplatesPage } from '../../pages/templates/TemplatesPage'
 import { DataTableDemo } from '../../pages/playground/DataTableDemo'
 import { VisualFlowDemo } from '../../pages/playground/VisualFlowDemo'
-import { InternalChatPage } from '../../pages/chat/InternalChatPage'
+import { communicationRoutes } from '../../pages/communication/communicationRoutes'
+import { CommunicationSettingsPage } from '../../pages/settings/pages/communication/CommunicationSettingsPage'
 import { serviceRoutes } from '../../pages/service/serviceRoutes'
 
 function NotFoundPage() {
@@ -137,10 +137,13 @@ export const router = createBrowserRouter([
       { path: 'lead/:customerId', element: <CustomerLeadDetailsPage /> },
       { path: 'leads/:customerId', element: <CustomerLeadDetailsPage /> },
       { path: 'activities', element: <ActivitiesPage /> },
-      { path: 'activities/calls', element: <ActivitiesPage defaultType="call" /> },
-      { path: 'activities/meetings', element: <ActivitiesPage defaultType="meeting" /> },
+      // Calls and meetings moved to their own Communication hub modules (2026-10-01).
+      { path: 'activities/calls', element: <Navigate to="/calls" replace /> },
+      { path: 'activities/meetings', element: <Navigate to="/meetings" replace /> },
       { path: 'activities/calendar', element: <ActivitiesPage defaultView="calendar" /> },
-      { path: 'conversations', element: <ConversationsPage /> },
+      // Communication hub (2026-10-01): /conversations, /calls, /meetings, /team-chat — each with
+      // its shared sub-sidebar pages. /activities and /activities/calendar stay for existing links.
+      ...communicationRoutes,
       {
         path: 'campaigns',
         element: <CampaignsPage />,
@@ -191,7 +194,6 @@ export const router = createBrowserRouter([
       { path: 'automation', element: <AutomationCenterPage /> },
       { path: 'tasks', element: <TasksPage /> },
       { path: 'calendar', element: <CalendarPage /> },
-      { path: 'team-chat', element: <InternalChatPage /> },
       {
         path: 'products',
         element: <ProductsLayout />,
@@ -214,6 +216,7 @@ export const router = createBrowserRouter([
           { path: 'users', element: <UsersSettingsPage /> },
           { path: 'integrations', element: <IntegrationsSettingsPage /> },
           { path: 'appearance', element: <AppearanceSettingsPage /> },
+          { path: 'communication/:moduleId', element: <CommunicationSettingsPage /> },
         ],
       },
       serviceRoutes,

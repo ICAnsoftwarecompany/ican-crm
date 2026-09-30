@@ -1,4 +1,7 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+// The engine's data sources import API modules; httpClient throws without a tenant subdomain.
+vi.mock('../../../services/httpClient', () => ({ default: {} }))
 import { getActions, getConditions, getDataSource, getModule, getTriggers } from '../../workflow-engine'
 
 describe('Customer Hub workflow module', () => {

@@ -14,5 +14,12 @@ export default {
   "checkConnection": "راجع الاتصال وحاول مرة أخرى",
   "am": "ص",
   "pm": "م",
-  "listSeparator": "، "
+  "listSeparator": "، ",
+  "subSidebar": {
+    "expand": "فتح القائمة",
+    "collapse": "طي القائمة",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة",
+    "comingSoon": "قريبًا"
+  }
 }

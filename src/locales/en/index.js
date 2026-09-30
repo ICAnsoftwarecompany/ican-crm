@@ -28,6 +28,10 @@ import service from './service.js'
 import notifications from './notifications.js'
 import alerts from './alerts.js'
 import portal from './portal.js'
+import communication from './communication.js'
+import settings from './settings.js'
+import modulePages from './modulePages.js'
+import aiSetup from './aiSetup.js'
 
 export default {
   app,
@@ -60,4 +64,8 @@ export default {
   notifications,
   alerts,
   portal,
+  communication,
+  settings,
+  modulePages,
+  aiSetup,
 }

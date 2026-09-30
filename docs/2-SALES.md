@@ -87,7 +87,7 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 **Status:** CURRENT (main table) · several sub-pages PLANNED (placeholders)
 
 - **What it does:** the main customer/lead workspace at `/LeadsCenter` with its own layout and internal sidebar.
-- **Key files:** `pages/customers/CustomersPage.jsx` (≈1.45k lines: table/pipeline switch, stats, filters, drawer wiring), `components/CustomersActivitySidePanel.jsx` (meetings/calls side panel), `utils/backendLocalDate.js`, `layout/CustomersLayout.jsx`, `CustomersSidebar.jsx`, `CustomersMobileSidebar.jsx`, `constants/customerNavigation.js`, `components/CustomersTableColumns.jsx`, `components/customers-table/*`, `components/page-actions/*` (add, import, export, table settings, trash), `components/TableSettingsDrawer.jsx`, `components/StatusTaps/LeadStatusTabs.jsx`.
+- **Key files:** `pages/customers/CustomersPage.jsx` (≈1.45k lines: table/pipeline switch, stats, filters, drawer wiring), `components/CustomersActivitySidePanel.jsx` (meetings/calls side panel), `utils/backendLocalDate.js`, `layout/CustomersLayout.jsx` (shared `SubSidebarLayout` + bulk-actions rail; updated 2026-10-01 00:25 (Africa/Cairo)), `constants/customerNavigation.js` (`getCustomersSidebarConfig`), `constants/customersLayoutConstants.js` (bulk-actions slot id/event), `components/CustomersTableColumns.jsx`, `components/customers-table/*`, `components/page-actions/*` (add, import, export, table settings, trash), `components/TableSettingsDrawer.jsx`, `components/StatusTaps/LeadStatusTabs.jsx`.
 - **Routes:**
 
 | Route | Page | Status |
@@ -163,7 +163,11 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 
 ## Activities, calls and meetings
 
+> **Documentation update:** 2026-10-01 00:25 (Africa/Cairo) — calls and meetings got their own pages in the Communication hub.
+
 **Status:** CURRENT (transitional ownership across three folders)
+
+- **Where users open them now:** main sidebar → **Communication** → **Calls** (`/calls`) and **Meetings** (`/meetings`), each with a shared sub-sidebar (view, create, reports, calendar, automation, customization, AI setup, settings). See [3-FEATURES.md → Communication hub](3-FEATURES.md#communication-hub). The Sales section no longer has an "Activities" item. `ActivitiesPage` gained `lockedType` (`'call' | 'meeting'`: fixed type, no type tabs, one create button, type not persisted) and `embedded`; `ActivityHeader`/`ActivityTabs` follow `lockedType`; `ScheduleActivityDialog` gained `presentation="inline"` for the create pages. Notification targets (`meeting.*`, `call_reminder`) point to `/meetings` and `/calls`.
 
 - **What it does:** one operational module for calls and meetings across all leads/customers: list/table and calendar views, stats (today, scheduled, in progress, completed, overdue, cancelled), URL-synced filters, create/edit dialog, detail drawer (Overview, Preparation, Report, Notes, Files, Participants [meetings only], History), lifecycle actions and a finish-with-report flow with next actions.
 - **Ownership:**
@@ -172,7 +176,7 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
   - `features/call-meetings/` — reusable call/meeting UI for the customer drawer and elsewhere: `ScheduleActivityDialog` (+ `CallScheduleDialog`, `MeetingScheduleDialog`), `CallsActionTab`, `MeetingsActionTab`, filters, reminder banners, quick actions, `MeetingDataDrawer`, `PreMeetingReportDrawer`, `AfterMeetingReportDrawer` (template-based, sends `title: 'after-meeting report'`), `LiveMeetingIndicator` (header, shows `in_progress` meetings), `ScheduleDetails/scheduleDetailsUtils.js`. Import from `features/call-meetings/index.js`.
 - **Lifecycle:** backend statuses `scheduled → in_progress → completed | cancelled`; frontend-derived `today`, `upcoming`, `overdue` (never sent). Actions: scheduled → start/edit/cancel; in progress → finish (report); completed → follow-up; any → view/delete.
 - **Report & next action:** `ActivityReportDialog` validates and saves the report, optionally creates the next call/meeting, marks the activity completed, invalidates queries. Next actions (`none`, `call_again`, `schedule_meeting`, `create_task`, `send_proposal`, `send_email`) — only follow-up calls/meetings are wired.
-- **Routes:** `/activities`, `/activities/calls`, `/activities/meetings`, `/activities/calendar`, `/LeadsCenter/activities`, `/LeadsCenter/activities/meeting/:meetingId` (tab kept in `?tab=`; back uses `location.state.from`, else `/LeadsCenter/activities`).
+- **Routes:** `/calls/*`, `/meetings/*` (Communication hub) · legacy `/activities`, `/activities/calendar` (still work) · `/activities/calls` → redirects to `/calls`, `/activities/meetings` → `/meetings` · `/LeadsCenter/activities`, `/LeadsCenter/activities/meeting/:meetingId` (tab kept in `?tab=`; back uses `location.state.from`, else `/LeadsCenter/activities`).
 - **API (`/api/tenant/meetings`):** `POST` (create, FormData via `toMeetingFormData`: `users[]`, `attachments[]`, booleans as 1/0), `GET` (list), `GET/PUT/DELETE {id}`, `PATCH {id}/status`, `GET/POST {id}/reports`, `DELETE {id}/reports/{reportId}`, `GET reports/summary`, `POST {id}/notes`, `PUT/DELETE {id}/notes/{noteId}`, `POST {id}/attachments`, `DELETE {id}/attachments/{attachmentId}`, `POST {id}/participants`, `DELETE {id}/participants/{userId}`, `PATCH {id}/participants/{userId}/status`, `GET leads/{leadId}/calls-meetings`.
 - **Used by:** activities pages, customer drawer timeline and quick actions, bulk actions (schedule), calendar (`activityEventAdapter`), header live-meeting indicator. Mutations also invalidate `meetings`, `customers` and `leads` roots.
 - **Extend:** new outcome → `CALL_OUTCOMES`/`MEETING_OUTCOMES` in `utils/activityOutcomes.js`; new next action → `utils/activityNextActions.js` and wire creation in `ActivityReportDialog`; new schedule status → `scheduleDetailsUtils.js` + call/meeting filters.

@@ -126,10 +126,15 @@ function getElapsedDuration(activity, nowTimestamp = Date.now()) {
 
 const ACTIVITY_ROWS_BATCH_SIZE = 30
 
-export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIEW_MODES.list }) {
+/**
+ * @param {'call'|'meeting'} [lockedType] - Single-type mode used by /calls and /meetings
+ *   (Communication hub): no type tabs, one create button, type never changes.
+ * @param {boolean} [embedded] - Rendered inside a sub-sidebar layout that already pads the page.
+ */
+export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIEW_MODES.list, lockedType = null, embedded = false }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const filtersState = useActivityFilters(defaultType, defaultView)
+  const filtersState = useActivityFilters(lockedType || defaultType, defaultView, lockedType)
   const activitiesQuery = useActivities(filtersState.apiParams)
   const customersQuery = useQuery({
     queryKey: ['activities', 'customers-name-lookup'],
@@ -404,8 +409,9 @@ export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIE
   }
 
   return (
-    <main className="space-y-4 p-4">
+    <main className={embedded ? 'space-y-4' : 'space-y-4 p-4'}>
       <ActivityHeader
+        lockedType={lockedType}
         onCreate={() => setScheduleDialogType(filtersState.filters.type === 'meeting' ? 'meeting' : 'call')}
         onCreateCall={() => setScheduleDialogType('call')}
         onCreateMeeting={() => setScheduleDialogType('meeting')}
@@ -417,6 +423,7 @@ export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIE
         type={filtersState.filters.type}
         view={filtersState.filters.view}
         onTypeChange={filtersState.setType}
+        showTypeTabs={!lockedType}
         onViewChange={filtersState.setViewMode}
       />
 

@@ -78,6 +78,8 @@ export default {
     "proposalBuilder": "Proposal Builder",
     "importExport": "Import & Export",
     "leadsCenterSettings": "Leads Center Settings",
+    "leadsCenterMenu": "Leads Center menu",
+    "bulkActionsRail": "Selected customers actions",
     "customersListAriaLabel": "Customers list",
     "manageCustomers": "Manage Customers",
     "manageCustomersDesc": "Customers, segments, follow-up and settings",

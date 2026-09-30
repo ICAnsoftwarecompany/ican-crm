@@ -25,6 +25,8 @@ Status labels used in all three docs: **CURRENT** (verified code in use) · **PA
   - [Visual Flow](#visual-flow)
   - [Pipeline Board](#pipeline-board)
   - [Sidebar and navigation](#sidebar-and-navigation)
+  - [Sub-sidebar](#sub-sidebar)
+  - [Module pages and AI setup](#module-pages-and-ai-setup)
   - [Other shared UI](#other-shared-ui)
 - [Checks and commands](#checks-and-commands)
 - [Definition of Done](#definition-of-done)
@@ -190,6 +192,7 @@ Canonical configurable table: sorting, global search, per-column filter row, adv
 - **Engine API:** `Calendar`, `CalendarToolbar`, `CalendarSidebar`, `MiniCalendar`, `EventPill`, views `MonthView|WeekView|DayView|YearView|CalendarTimeGrid`, `useCalendar` + `CALENDAR_VIEWS`, `createEventSourceRegistry`, calendar math utils. The engine never imports features.
 - **Sources today:** `features/calendar/constants/calendarSources.js` registers `tasks`, `meetings`, `calls` (colors `--calendar-*`); adapters `activityEventAdapter.js` and `taskEventAdapter.js` (tested) map domain records to events; `useCalendarEvents`, `useVisibleSources`, `CreateEventMenu`, `ActivityPreviewDrawer` handle data and create/preview.
 - **Extend:** add a source with one `register()` entry, an adapter to the event shape, and a color variable. No engine change needed.
+- **Module-scoped calendars:** `features/communication/components/CommunicationCalendar.jsx` renders the same engine limited to one module's sources (`/calls/calendar` → `calls`, `/meetings/calendar` → `meetings`). *(Added 2026-10-01 00:25 (Africa/Cairo).)*
 - **Known issues:** `TaskCalendarView` (tasks) and `ActivityCalendar` (activities) still use their own calendar UIs; migrating them to the engine is open.
 
 ### Visual Flow
@@ -216,13 +219,34 @@ Generic stage board with optional swimlanes; stages come from data, never hardco
 
 ### Sidebar and navigation
 
+> **Documentation update:** 2026-10-01 00:25 (Africa/Cairo) — Communication section added; Activities, Conversations and Team Chat moved.
+
 **Status:** CURRENT · **Config:** `app/navigation/navigation.config.js` · **Renderer:** `shared/components/layout/Sidebar.jsx`, `Header.jsx` via `useNavigation()`
 
-- **Principle:** the main sidebar lists business modules and primary destinations only (3–7 items per section). Filters, views, record details and actions live inside pages. Areas with more depth get their own internal sidebar: Leads Center (`pages/customers/layout/CustomersSidebar.jsx`), Settings, Products, Campaign Center, Outreach, Social Media.
-- **Current sections:** Overview (Dashboard) · Sales (`module: 'sales'`: Leads, Customers, Activities, Deals, Proposals) · Growth (`module: 'growth'`: Social Media, Campaigns, Outreach Campaigns, Opportunity Center) · Customer Hub (`module: 'customer_service'`: Operations Center, Cases, Services, My Work, Knowledge Base, Reports, Operations Settings) · Workspace (Conversations, Tasks, Calendar, Team Chat, Products) · Automation (`module: 'automation'`: Automation Center) · Administration (Teams, Users, Templates, Settings).
+- **Principle:** the main sidebar lists business modules and primary destinations only (3–7 items per section). Filters, views, record details and actions live inside pages. Areas with more depth get their own internal sidebar, **always built with the shared [Sub-sidebar](#sub-sidebar)**: Leads Center, Settings, Products, Campaign Center, Outreach, Social Media, Customer Hub settings, and the four Communication modules.
+- **Current sections:** Overview (Dashboard) · Sales (`module: 'sales'`: Leads, Customers, Deals, Proposals) · Growth (`module: 'growth'`: Social Media, Campaigns, Outreach Campaigns, Opportunity Center) · Customer Hub (`module: 'customer_service'`: Operations Center, Cases, Services, My Work, Knowledge Base, Reports, Operations Settings) · **Communication** (Conversations, Calls, Meetings, Team Chat — used by Sales and Customer Hub; see [3-FEATURES.md → Communication hub](3-FEATURES.md#communication-hub)) · Workspace (Tasks, Calendar, Products) · Automation (`module: 'automation'`: Automation Center) · Administration (Teams, Users, Templates, Settings).
 - **Item schema:** `{ id, labelKey, icon, path, end?, activePatterns?, module?, permission?, featureFlag?, badge? }`; sections `{ id, type: 'section', labelKey, hideLabel?, module?, items }`. `path` must be an existing route.
 - **Filtering:** `getVisibleNavigation` applies module → permission → feature flag → drops empty sections. `user.modules`/`user.permissions` are not sent by the backend yet, so everything is visible by design — the frontend never fabricates restrictions. `featureFlag` and `badge` are reserved placeholders.
 - **Extend:** add one entry to `navigation.config.js` plus `nav.*` keys in both locales. Never hardcode items in `Sidebar.jsx`/`Header.jsx`. The Customer Hub section (`module: 'customer_service'`, code name `service`) shipped in phase F1; keep it at 3–7 items.
+
+### Sub-sidebar
+
+> **Documentation update:** 2026-10-01 00:25 (Africa/Cairo) — section added.
+
+**Status:** CURRENT · **Code:** `shared/components/sub-sidebar/` ([README](../src/shared/components/sub-sidebar/README.md)) · **Tests:** `subSidebarUtils.test.js`
+
+- **Rule:** every internal/sub sidebar (the second navigation column inside an area) is built from `shared/components/sub-sidebar`. Do **not** write a new `*Sidebar.jsx` with its own `NavLink` styling, collapse toggle or mobile drawer. Also in `CLAUDE.md` (rule 10).
+- **Default:** `SubSidebarLayout` = attached sidebar on desktop + menu button/drawer on mobile + `<Outlet />`, collapse state persisted in `localStorage` under the area's `storageKey`. Use it as the `element` of the area's parent route.
+- **Custom grids:** `SubSidebar` (`variant="framed"` / `"plain"`) when the page owns its grid (Outreach, Social Media); building blocks (`SubSidebarFrame`, `SubSidebarHeader`, `SubSidebarNav`, `SubSidebarNavItem`, `SubSidebarFooter`) when one part is custom (Campaign Center platform rows, Customer Hub settings).
+- **Config:** `{ header, groups: [{ id, label?, note?, divider?, items: [{ to, label, icon, end?, disabled?, badge?, hidden? }] }], footerItems? }` with labels already translated; keep it in one `get<Area>SidebarConfig(t)` function next to the area. `hidden` is UX-only gating, never authorization.
+- **Migrated 2026-10-01:** Leads Center, Products, Settings, Outreach, Social Media, Campaign Center, Customer Hub settings. Deleted: `CustomersSidebar`, `CustomersMobileSidebar`, `ProductsSidebar`, `ProductsMobileSidebar`, `SettingsSidebar`, `SettingsMobileSidebar`, `layout/WorkspaceSubSidebarFrame`.
+
+### Module pages and AI setup
+
+> **Documentation update:** 2026-10-01 00:25 (Africa/Cairo) — section added.
+
+- **`shared/components/module-pages/`** ([README](../src/shared/components/module-pages/README.md)): `ModulePageHeader`, `ModuleNotice`, `ModulePlaceholderPage` (planned content + "not connected" notice — never fake data) and `ModuleSettingsPage` (a module's own settings page that renders **selected sections of the app-wide settings** from `pages/settings/registry/settingsSections.jsx`, so a section is identical in both places).
+- **`shared/components/ai-setup/`** ([README](../src/shared/components/ai-setup/README.md)): `AiSetupPage` for any module's "AI setup" page (on/off, capabilities, tone, language, autonomy, instructions, hand-off). Presentation only — without `onSave` it keeps a per-browser draft. The future **`features/ai`** domain (models, prompts, quotas, settings API, agents) will plug in through `initialValues`/`onSave`; do not put AI business logic in `shared/`.
 
 ### Other shared UI
 
@@ -266,7 +290,9 @@ One checklist for every change (human or AI). Report anything you could not veri
 - [ ] `npm run lint`, `npm run check:i18n`, `npm run check:architecture`, `npm run check:service`, `npx vitest run`, `npm run build` all pass (advisory `check:theme` / `check:hardcoded-text` output reviewed).
 - [ ] RTL + LTR and light + dark verified, or explicitly reported as not verified.
 - [ ] Existing APIs, payloads, query keys used by realtime, and routes remain compatible.
-- [ ] Update the relevant section in docs/2-SALES.md or docs/3-FEATURES.md in the same change. Do not create new .md files; add a section instead. Architecture or rule changes update this file.
+- [ ] Update the relevant section in docs/2-SALES.md or docs/3-FEATURES.md in the same change. Do not create new .md files under `docs/`; add a section instead. Architecture or rule changes update this file.
+- [ ] Every **new folder** for a shared engine (`shared/components/<engine>/`), a new feature domain (`features/<domain>/`) or a new route area (`pages/<area>/`) gets a short `README.md` (what it owns, public API, how to extend, known gaps) with a timestamp. *(Rule added 2026-10-01 00:25 (Africa/Cairo).)*
+- [ ] Any new internal navigation uses the shared [Sub-sidebar](#sub-sidebar).
 - [ ] Every changed section in `docs/**/*.md` has a nearby `YYYY-MM-DD HH:mm (Africa/Cairo)` timestamp reflecting the current edit.
 - [ ] **Exception — Customer Service:** it is large and phased, so it has its own doc `docs/4-CUSTOMER-SERVICE.md` (phase log updated every phase), backend specs in `docs/customer-service/`, and a `README.md` in each `features/service/*` sub-module folder and in `pages/service/`. Keep those in sync in the same change.
 
@@ -274,7 +300,7 @@ One checklist for every change (human or AI). Report anything you could not veri
 
 1. Inspect related domains and existing APIs; prefer **consuming** Customers, Conversations, Activities, Tasks, Teams, Users and Workflow Engine over duplicating them.
 2. Create `features/<new-domain>` (API + hooks inside), compose the route page under `pages/`.
-3. Add navigation + module/permission metadata (inert today) and both locale modules.
+3. Add navigation + module/permission metadata (inert today) and both locale modules. If the module has several pages, give it a sub-sidebar with `SubSidebarLayout` (see [Sub-sidebar](#sub-sidebar)) and reuse `module-pages` / `ai-setup` for its settings and AI pages.
 4. Automation → register definitions with `features/workflow-engine`; graph UI → `shared/components/visual-flow`; boards → `pipeline-board`; tables → `data-table`. Never build a second engine.
 5. Cover loading/empty/error, tenant behavior, RTL/LTR and light/dark; add a section to [3-FEATURES.md](3-FEATURES.md) or [2-SALES.md](2-SALES.md).
 
@@ -285,5 +311,5 @@ One checklist for every change (human or AI). Report anything you could not veri
 - **Boundaries:** app-shell composition still inside `shared/components/layout` and `PageToolbar`; large route-owned domain UI in `pages/customers` (incl. proposal builder).
 - **Bundle:** single large JS chunk (Vite chunk-size warning); route-level lazy loading for heavy screens (workflow builder, proposal builder, analytics) is open.
 - **i18n / theme:** thousands of advisory hardcoded-text and hex-color findings remain (`check:hardcoded-text`, `check:theme`); a full authenticated AR/EN × light/dark × desktop/mobile visual QA has not been done. Least-audited areas: outreach, conversations, internal chat, workflow, integrations, teams/users/settings, app shell.
-- **Ownership overlaps:** `features/integrations` vs `features/meta-integrations`; calls/meetings split across `features/activities`, `features/call-meetings`, `features/meetings`.
+- **Ownership overlaps:** `features/integrations` vs `features/meta-integrations`; calls/meetings split across `features/activities`, `features/call-meetings`, `features/meetings` (their routes now live in the Communication hub, `features/communication`, which owns configuration only — the three-folder consolidation is still open). *(Updated 2026-10-01 00:25 (Africa/Cairo).)*
 - **Tooling:** no circular-dependency check; test coverage is mostly pure logic (adapters, utils), not UI flows. `npm install` reports dependency audit advisories not yet reviewed.

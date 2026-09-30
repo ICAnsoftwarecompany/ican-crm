@@ -10,3 +10,7 @@ export {
   MeetingScheduleDialog,
   ScheduleActivityDialog,
 } from '../call-meetings'
+// Used by the Communication hub reports pages (/calls/reports, /meetings/reports).
+export { ActivityStats } from './components/ActivityStats/ActivityStats'
+export { useActivityStatistics } from './hooks/useActivityStatistics'
+export { isOverdueActivity } from './utils/activityDateHelpers'

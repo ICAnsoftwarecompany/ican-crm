@@ -12,7 +12,7 @@ import { cn } from '../../../../shared/utils/cn'
 import {
   CUSTOMERS_BULK_ACTIONS_PIN_MODE_EVENT,
   CUSTOMERS_SIDEBAR_BULK_ACTIONS_SLOT_ID,
-} from '../../layout/CustomersSidebar'
+} from '../../constants/customersLayoutConstants'
 import { extractLeadStatuses } from '../../utils/customerStatus'
 import { CustomerSocialMessagingPanel } from './social-messaging'
 import { PinBulkActionsButton } from './PinBulkActionsButton'

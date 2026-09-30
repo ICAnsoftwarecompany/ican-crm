@@ -1,5 +1,7 @@
 # ICAN CRM — Documentation index
 
+> **Documentation update:** 2026-10-01 00:25 (Africa/Cairo) — Communication hub, sub-sidebar, module pages, AI setup, README index and change log added.
+
 Start here. Every doc in this folder, what it covers, and its sections. Rules for agents and contributors are in
 [../CLAUDE.md](../CLAUDE.md). **If a doc and the code disagree, the code wins.** When you change a feature, update its
 doc in the same change.
@@ -23,7 +25,7 @@ doc in the same change.
 - [Realtime](1-ARCHITECTURE.md#realtime) · [Notification center](1-ARCHITECTURE.md#notification-center) · [Operational alerts](1-ARCHITECTURE.md#operational-alerts)
 - [i18n](1-ARCHITECTURE.md#i18n) · [RTL and LTR](1-ARCHITECTURE.md#rtl-and-ltr) · [Theme and dark mode](1-ARCHITECTURE.md#theme-and-dark-mode)
 - [Conventions](1-ARCHITECTURE.md#conventions)
-- [Shared engines](1-ARCHITECTURE.md#shared-engines): [DataTable](1-ARCHITECTURE.md#datatable), [Calendar](1-ARCHITECTURE.md#calendar), [Visual Flow](1-ARCHITECTURE.md#visual-flow), [Pipeline Board](1-ARCHITECTURE.md#pipeline-board), [Sidebar and navigation](1-ARCHITECTURE.md#sidebar-and-navigation), [Other shared UI](1-ARCHITECTURE.md#other-shared-ui)
+- [Shared engines](1-ARCHITECTURE.md#shared-engines): [DataTable](1-ARCHITECTURE.md#datatable), [Calendar](1-ARCHITECTURE.md#calendar), [Visual Flow](1-ARCHITECTURE.md#visual-flow), [Pipeline Board](1-ARCHITECTURE.md#pipeline-board), [Sidebar and navigation](1-ARCHITECTURE.md#sidebar-and-navigation), [Sub-sidebar](1-ARCHITECTURE.md#sub-sidebar), [Module pages and AI setup](1-ARCHITECTURE.md#module-pages-and-ai-setup), [Other shared UI](1-ARCHITECTURE.md#other-shared-ui)
 - [Checks and commands](1-ARCHITECTURE.md#checks-and-commands) · [Definition of Done](1-ARCHITECTURE.md#definition-of-done)
 - [Adding a new module](1-ARCHITECTURE.md#adding-a-new-module) · [Known architecture debt](1-ARCHITECTURE.md#known-architecture-debt)
 
@@ -39,6 +41,7 @@ doc in the same change.
 
 ## 3-FEATURES.md — Features
 
+- [Communication hub](3-FEATURES.md#communication-hub) (Conversations, Calls, Meetings, Team chat — `/conversations`, `/calls`, `/meetings`, `/team-chat`)
 - [Conversations](3-FEATURES.md#conversations) (WhatsApp / Messenger / Gmail) · [Internal chat](3-FEATURES.md#internal-chat)
 - [Ad campaigns and Meta integrations](3-FEATURES.md#ad-campaigns-and-meta-integrations) · [Outreach campaigns](3-FEATURES.md#outreach-campaigns) · [Social media](3-FEATURES.md#social-media)
 - [Tasks](3-FEATURES.md#tasks) · [Workflow engine and automation](3-FEATURES.md#workflow-engine-and-automation) · [Integrations](3-FEATURES.md#integrations)
@@ -71,6 +74,18 @@ doc in the same change.
 | F6 knowledge & quality | [knowledge](../src/features/service/knowledge/README.md) · [quality](../src/features/service/quality/README.md) · [workflow](../src/features/service/workflow/README.md) · [incidents](../src/features/service/incidents/README.md) · [search](../src/features/service/search/README.md) · template versioning in [setup](../src/features/service/setup/README.md) |
 | F7 AI | [ai](../src/features/service/ai/README.md) · [health](../src/features/service/health/README.md) |
 
+## READMEs next to the code (outside the Customer Hub)
+
+> **Documentation update:** 2026-10-01 00:25 (Africa/Cairo) — table added.
+
+| Area | README |
+|---|---|
+| Shared sub-sidebar (mandatory for every internal sidebar) | [shared/components/sub-sidebar](../src/shared/components/sub-sidebar/README.md) |
+| Shared module page shells (placeholder, notice, module settings page) | [shared/components/module-pages](../src/shared/components/module-pages/README.md) |
+| Shared AI setup page (and the boundary with the future `features/ai`) | [shared/components/ai-setup](../src/shared/components/ai-setup/README.md) |
+| Communication hub (conversations, calls, meetings, team chat) | [features/communication](../src/features/communication/README.md) · routes [pages/communication](../src/pages/communication/README.md) |
+| Settings sections registry | [pages/settings/registry](../src/pages/settings/registry/README.md) · [pages/settings/pages/communication](../src/pages/settings/pages/communication/README.md) |
+
 ## customer-service/SERVICE-MASTER-SPEC.md — backend spec (Arabic)
 
 Parts: 1 Foundation (context, scope, principles, architecture, engineering standards) · 2 Shared platform services
@@ -78,3 +93,12 @@ Parts: 1 Foundation (context, scope, principles, architecture, engineering stand
 files, numbering…) · 3 Business core · 4 Sales integration · 5 Service operations (cases, SLA, knowledge, feedback &
 quality, AI §45, reports §46, setup §47…) · 6 Industry guides · 7 Data & API (§51 endpoint list) · 8 Delivery (phases
 and acceptance criteria §55). The spec has its own index at the top.
+
+## Docs change log
+
+Newest first. Every docs change also carries a `YYYY-MM-DD HH:mm (Africa/Cairo)` timestamp next to the changed section
+(rule in [1-ARCHITECTURE.md → Conventions](1-ARCHITECTURE.md#conventions)).
+
+| When | What changed | Where |
+|---|---|---|
+| 2026-10-01 00:25 (Africa/Cairo) | Communication hub (new main-sidebar section; `/calls`, `/meetings` added; conversations and team chat moved there; Activities item removed from Sales); shared sub-sidebar rule and migration of every internal sidebar; shared module pages and AI setup; settings sections registry; README-per-new-folder rule | 1-ARCHITECTURE (Sidebar and navigation, Sub-sidebar, Module pages and AI setup, Calendar, Definition of Done, Adding a new module, Known debt) · 2-SALES (Leads Center pages, Activities) · 3-FEATURES (Communication hub, Conversations, Internal chat, AI agent, Settings) · this index · `CLAUDE.md` · new READMEs listed above |

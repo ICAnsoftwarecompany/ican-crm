@@ -35,7 +35,8 @@ import {
   LayoutDashboard,
   Users,
   UserCheck,
-  CalendarClock,
+  PhoneCall,
+  Presentation,
   CalendarDays,
   FileSignature,
   Megaphone,
@@ -104,13 +105,6 @@ export const navigationConfig = [
         path: '/LeadsCenter',
         activePatterns: ['/LeadsCenter', '/LeadsCenter/*', '/lead/*', '/leads/*'],
         permission: 'customers.view',
-      },
-      {
-        id: 'activities',
-        labelKey: 'nav.activities',
-        icon: CalendarClock,
-        path: '/activities',
-        activePatterns: ['/activities', '/activities/*'],
       },
       {
         id: 'deals',
@@ -232,21 +226,53 @@ export const navigationConfig = [
     ],
   },
 
-  // Workspace: cross-module, company-wide tools. Conversations lives here
-  // short-term per the migration strategy documented in
-  // SIDEBAR_ARCHITECTURE.md; it may become Customer Service > Service Inbox
-  // once that module exists.
+  // Communication (added 2026-10-01): channels and collaboration used by BOTH Sales and
+  // Customer Hub — customer conversations, calls, meetings (customer + internal) and team chat.
+  // Each item opens a module with its own shared sub-sidebar (view, create, reports, calendar,
+  // automation, customization, AI setup, settings) — see features/communication/README.md.
+  // Calls and meetings used to be one "Activities" item under Sales; /activities still works.
   {
-    id: 'workspace',
+    id: 'communication',
     type: 'section',
-    labelKey: 'nav.sections.workspace',
+    labelKey: 'nav.sections.communication',
     items: [
       {
         id: 'conversations',
         labelKey: 'nav.conversations',
         icon: MessageSquare,
         path: '/conversations',
+        activePatterns: ['/conversations', '/conversations/*'],
       },
+      {
+        id: 'calls',
+        labelKey: 'nav.calls',
+        icon: PhoneCall,
+        path: '/calls',
+        activePatterns: ['/calls', '/calls/*'],
+      },
+      {
+        id: 'meetings',
+        labelKey: 'nav.meetings',
+        icon: Presentation,
+        path: '/meetings',
+        activePatterns: ['/meetings', '/meetings/*'],
+      },
+      {
+        id: 'team-chat',
+        labelKey: 'nav.teamChat',
+        icon: MessagesSquare,
+        path: '/team-chat',
+        activePatterns: ['/team-chat', '/team-chat/*'],
+      },
+    ],
+  },
+
+  // Workspace: cross-module, company-wide tools (tasks, calendar, products).
+  {
+    id: 'workspace',
+    type: 'section',
+    labelKey: 'nav.sections.workspace',
+    items: [
       {
         id: 'tasks',
         labelKey: 'nav.tasks',
@@ -258,12 +284,6 @@ export const navigationConfig = [
         labelKey: 'nav.calendar',
         icon: CalendarDays,
         path: '/calendar',
-      },
-      {
-        id: 'team-chat',
-        labelKey: 'nav.teamChat',
-        icon: MessagesSquare,
-        path: '/team-chat',
       },
       {
         id: 'products',

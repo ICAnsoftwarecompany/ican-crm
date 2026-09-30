@@ -62,3 +62,19 @@ export function getCustomerSettingsItem(t) {
     icon: Settings,
   }
 }
+
+/** Everything <SubSidebarLayout sidebar={...}> needs for the Leads Center. */
+export function getCustomersSidebarConfig(t) {
+  return {
+    header: {
+      icon: UsersRound,
+      title: t('customers.nav.manageCustomers'),
+      description: t('customers.nav.manageCustomersDesc'),
+      expandLabel: t('customers.nav.openCustomersList'),
+      collapseLabel: t('customers.nav.closeCustomersList'),
+    },
+    ariaLabel: t('customers.nav.customersListAriaLabel'),
+    groups: getCustomerNavigationGroups(t),
+    footerItems: [getCustomerSettingsItem(t)],
+  }
+}

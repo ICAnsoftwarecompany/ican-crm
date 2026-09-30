@@ -1,14 +1,14 @@
 import { useTranslation } from 'react-i18next'
 import { ACTIVITY_VIEW_MODES, getActivityTabOptions } from '../../constants/activityConstants'
 
-export function ActivityTabs({ type, view, onTypeChange, onViewChange }) {
+export function ActivityTabs({ type, view, onTypeChange, onViewChange, showTypeTabs = true }) {
   const { t } = useTranslation()
   const tabOptions = getActivityTabOptions(t)
 
   return (
     <section className="flex flex-col gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex flex-wrap gap-1">
-        {tabOptions.map((item) => {
+        {showTypeTabs && tabOptions.map((item) => {
           const Icon = item.icon
           const active = type === item.value
           return (

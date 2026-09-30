@@ -78,6 +78,8 @@ export default {
     "proposalBuilder": "منشئ عروض الأسعار",
     "importExport": "الاستيراد والتصدير",
     "leadsCenterSettings": "إعدادات مركز العملاء المحتملين",
+    "leadsCenterMenu": "قائمة مركز العملاء المحتملين",
+    "bulkActionsRail": "إجراءات العملاء المحددين",
     "customersListAriaLabel": "قائمة العملاء",
     "manageCustomers": "إدارة العملاء",
     "manageCustomersDesc": "العملاء، التصنيفات، المتابعة والإعدادات",

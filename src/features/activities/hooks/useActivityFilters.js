@@ -4,7 +4,11 @@ import { useLocalStorage } from '../../../shared/components/data-table/hooks/use
 
 import { DEFAULT_ACTIVITY_FILTERS, filtersToApiParams, normalizeActivityFilters } from '../utils/activityFilters'
 
-export function useActivityFilters(defaultType = 'all', defaultView = DEFAULT_ACTIVITY_FILTERS.view) {
+/**
+ * @param {string} [lockedType] - 'call' | 'meeting'. When set (the /calls and /meetings pages), the
+ *   type filter is fixed, ignores ?type= and is not written to the shared "last type" preference.
+ */
+export function useActivityFilters(defaultType = 'all', defaultView = DEFAULT_ACTIVITY_FILTERS.view, lockedType = null) {
   const [searchParams, setSearchParams] = useSearchParams()
   const [persistedType, setPersistedType] = useLocalStorage('activities-last-type', defaultType || 'all')
   const [persistedView, setPersistedView] = useLocalStorage('activities-last-view', defaultView || DEFAULT_ACTIVITY_FILTERS.view)
@@ -12,7 +16,7 @@ export function useActivityFilters(defaultType = 'all', defaultView = DEFAULT_AC
   const filters = useMemo(() => {
     const raw = {
       ...DEFAULT_ACTIVITY_FILTERS,
-      type: searchParams.get('type') || persistedType || defaultType || 'all',
+      type: lockedType || searchParams.get('type') || persistedType || defaultType || 'all',
       view: searchParams.get('view') || persistedView || defaultView || DEFAULT_ACTIVITY_FILTERS.view,
       search: searchParams.get('search') || '',
       status: searchParams.get('status') || 'scheduled',
@@ -24,11 +28,12 @@ export function useActivityFilters(defaultType = 'all', defaultView = DEFAULT_AC
     }
 
     return normalizeActivityFilters(raw)
-  }, [defaultType, defaultView, persistedType, persistedView, searchParams])
+  }, [defaultType, defaultView, lockedType, persistedType, persistedView, searchParams])
 
   useEffect(() => {
+    if (lockedType) return
     setPersistedType(filters.type || 'all')
-  }, [filters.type, setPersistedType])
+  }, [filters.type, lockedType, setPersistedType])
 
   useEffect(() => {
     setPersistedView(filters.view || DEFAULT_ACTIVITY_FILTERS.view)
@@ -51,13 +56,13 @@ export function useActivityFilters(defaultType = 'all', defaultView = DEFAULT_AC
   const clearFilters = useCallback(() => {
     setSearchParams((current) => {
       const view = current.get('view')
-      const type = defaultType && defaultType !== 'all' ? defaultType : current.get('type')
+      const type = lockedType ? null : defaultType && defaultType !== 'all' ? defaultType : current.get('type')
       const next = new URLSearchParams()
       if (view) next.set('view', view)
       if (type && type !== 'all') next.set('type', type)
       return next
     })
-  }, [defaultType, setSearchParams])
+  }, [defaultType, lockedType, setSearchParams])
 
   return {
     filters,

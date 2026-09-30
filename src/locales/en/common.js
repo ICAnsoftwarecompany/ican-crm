@@ -14,5 +14,12 @@ export default {
   "checkConnection": "Check your connection and try again",
   "am": "AM",
   "pm": "PM",
-  "listSeparator": ", "
+  "listSeparator": ", ",
+  "subSidebar": {
+    "expand": "Expand menu",
+    "collapse": "Collapse menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "comingSoon": "Soon"
+  }
 }

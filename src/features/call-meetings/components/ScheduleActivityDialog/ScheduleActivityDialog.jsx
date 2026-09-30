@@ -842,6 +842,19 @@ export function ScheduleActivityDialog({
     </AppModal>
   ) : null
 
+  // 'inline': full-page form (Communication hub /calls/create, /meetings/create). Callers pass isOpen so the form initializes.
+  if (presentation === 'inline') {
+    return (
+      <>
+        <section className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">
+          {form}
+          <div className="mt-4 flex flex-col-reverse gap-2 border-t border-[var(--border)] pt-4 sm:flex-row sm:justify-end">{actions}</div>
+        </section>
+        {participantsDialog}
+      </>
+    )
+  }
+
   if (presentation === 'drawer') {
     return (
       <>

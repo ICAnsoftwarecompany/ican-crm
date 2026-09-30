@@ -20,3 +20,19 @@ export function getProductNavigationGroups(t) {
     },
   ]
 }
+
+/** Everything <SubSidebarLayout sidebar={...}> needs for Products & Services. */
+export function getProductsSidebarConfig(t) {
+  return {
+    header: {
+      icon: Package,
+      title: t('products.sidebar.title'),
+      description: t('products.sidebar.subtitle'),
+      expandLabel: t('products.sidebar.openMenu'),
+      collapseLabel: t('products.sidebar.closeMenu'),
+    },
+    ariaLabel: t('products.sidebar.ariaLabel'),
+    width: 240,
+    groups: getProductNavigationGroups(t),
+  }
+}

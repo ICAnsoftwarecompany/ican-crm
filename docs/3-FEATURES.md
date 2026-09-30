@@ -8,6 +8,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 ## Contents
 
+- [Communication hub](#communication-hub) (Conversations, Calls, Meetings, Team chat)
 - [Conversations](#conversations)
 - [Internal chat](#internal-chat)
 - [Ad campaigns and Meta integrations](#ad-campaigns-and-meta-integrations)
@@ -25,11 +26,24 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 ---
 
+## Communication hub
+
+> **Documentation update:** 2026-10-01 00:25 (Africa/Cairo) — section added.
+
+**Status:** PARTIAL (navigation, layouts, view/create/reports/calendar/automation/AI pages live; customization and module settings are planned content)
+
+- **What it does:** main-sidebar section **Communication** (`nav.sections.communication`) with four modules used by **both** Sales and Customer Hub: Conversations (`/conversations`), Calls (`/calls`), Meetings — customer and internal — (`/meetings`), Team chat (`/team-chat`). Each module has the same shared sub-sidebar: **Work** (View, Create) · **Insights** (Reports, Calendar) · **Setup** (Automation, Customization, AI setup) · footer **Settings**.
+- **Key files:** `features/communication/` (registry `constants/communicationModules.js`, `navigation/communicationNavigation.js`, `CommunicationModuleLayout`, `CommunicationCalendar`, `CommunicationAutomation`, `ActivityReports` + `utils/activityReport.js`) — [README](../src/features/communication/README.md); route pages `pages/communication/` ([README](../src/pages/communication/README.md)); settings sections `pages/settings/registry/settingsSections.jsx` + `pages/settings/pages/communication/`; shared shells `shared/components/{sub-sidebar,module-pages,ai-setup}`; locale `communication.js`.
+- **Reuses:** `ActivitiesPage` (`lockedType`), `ScheduleActivityDialog` (`presentation="inline"`), `ConversationsPage`, `InternalChatPage`, the Calendar engine + `features/calendar` sources, the Workflow Engine builder (`context: { module: 'calls' | 'meetings' | 'conversations' | 'team-chat' }`), `AiSetupPage`, `ModuleSettingsPage`.
+- **Settings:** a module's `/…/settings` page shows the sections listed in its `settingsSectionIds` (e.g. calls → `communication.calls` + `users`); the same sections appear in `/settings/communication/:moduleId`.
+- **API:** none of its own. Calls/meetings use `/api/tenant/meetings`; conversations and team chat use their features' APIs.
+- **Known issues:** customization and module settings have no backend API (planned lists shown); calls/meetings reports aggregate the latest 200 records client-side; conversations/team chat have no calendar source and no create contract yet; no workflow definitions registered for the four modules; AI setup is a per-browser draft until `features/ai` exists; `/activities` is still reachable (no nav item).
+
 ## Conversations
 
 **Status:** CURRENT
 
-**What it does:** omnichannel inbox for WhatsApp, Messenger and Gmail at `/conversations` (`?channel=whatsapp|gmail`, Messenger default), quick sidebar panels and navbar buttons in the app shell, and floating chat windows inside the customer drawer. One normalized data model and one set of chat UI building blocks serve all three channels.
+**What it does:** omnichannel inbox for WhatsApp, Messenger and Gmail at `/conversations` (`?channel=whatsapp|gmail`, Messenger default; since 2026-10-01 00:25 (Africa/Cairo) it is the "View" page of the [Communication hub](#communication-hub) Conversations module, with sub-pages under `/conversations/*`), quick sidebar panels and navbar buttons in the app shell, and floating chat windows inside the customer drawer. One normalized data model and one set of chat UI building blocks serve all three channels.
 
 **Structure (`src/features/conversations`)**
 - `model/conversationModel.js` — JSDoc typedefs: `Conversation` (`channel, id, contact, title, subtitle, lastMessage, unreadCount, updatedAt, status, linkedCustomerId, linkedLeadId, assignedUser, raw`), `Message` (`channel, id, conversationId, direction, status, text, createdAt, attachments, reactions, replyToMessageId, replyTo, subject?, raw, source`), `Attachment`, `Contact`, `RealtimeEvent`, `ChannelCapabilities`. `Message.raw` keeps the legacy enriched shape the UI reads (WhatsApp swaps `raw.id` to the Meta message id); `Message.source` and `Conversation.raw` hold the untouched API payload.
@@ -78,7 +92,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 **Status:** CURRENT
 
-- **What it does:** team chat inside the tenant (direct and group conversations), isolated from external channels. Full workspace at `/team-chat` (`pages/chat/InternalChatPage.jsx`) and a header quick panel.
+- **What it does:** team chat inside the tenant (direct and group conversations), isolated from external channels. Full workspace at `/team-chat` (`pages/chat/InternalChatPage.jsx`, the "View" page of the [Communication hub](#communication-hub) Team chat module since 2026-10-01 00:25 (Africa/Cairo); sub-pages under `/team-chat/*`) and a header quick panel.
 - **Key files:** `features/internal-chat/api/internalChatApi.js`; hooks `useChatConversations`, `useChatMessages`, `useChatMembers`, `useChatRealtime`, `useChatUnreadCount`, `useChatSearch`, `useTypingIndicator`, `useChatPermissions`; `store/internalChatUiStore.js`; `constants/chatConstants.js` (`chatKeys`); `utils/` (`conversationHelpers`, `messageCacheHelpers`, `messageGrouping`); components `InternalChatWorkspace`, `InternalChatSidebarPanel`, `InternalChatNavbarButton`. Renders messages with `ConversationThread` from `features/conversations`.
 - **Message lifecycle:** paginated load → normalize and sort oldest-first → send multipart → optimistic pending message → reconcile with the server message. Opening a conversation marks it read.
 - **API (`/api/tenant/chat`):** `GET` / `POST` conversations, `GET {id}/messages`, `POST send/messages/{id}`, `POST {id}/read`, `POST {id}/members`, `DELETE {id}/members/{user}`, `PATCH {id}/members/{user}/role`, `POST {id}/mute|unmute`, `PATCH messages/{messageId}`, `DELETE messages/{messageId}`, `POST messages/{messageId}/reactions`, `DELETE messages/{messageId}/reactions/{emoji}`.
@@ -190,6 +204,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 - **API:** none.
 - **Used by:** `AgentChat` in the deals workspace drawer (rendered without `onAsk`).
 - **Known issues:** no AI backend contract, so the chat never answers; `AgentSuggestions` and `AutomationLog` have no consumers; hardcoded Arabic copy in `AgentChat`.
+- **AI setup pages** *(added 2026-10-01 00:25 (Africa/Cairo))*: any module's "AI setup" page uses the shared `shared/components/ai-setup` (`AiSetupPage`, presentation only, per-browser draft without `onSave`) — first used by the Communication hub (`/calls/ai`, `/meetings/ai`, `/conversations/ai`, `/team-chat/ai`). A dedicated, larger **`features/ai`** domain is planned (models/providers, prompts, knowledge, quotas, settings API, agents); it will plug into `AiSetupPage` through `initialValues`/`onSave`, and `features/ai-agent` + `features/service/ai` should align with it.
 
 ## Products and services
 
@@ -205,11 +220,12 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 **Status:** CURRENT (brand persistence local only)
 
-- **What it does:** `/settings` has its own layout and internal sidebar (`SettingsLayout`, `SettingsSidebar`, `SettingsMobileSidebar`, `constants/settingsNavigation.js`; collapse state in `settings-sidebar-collapsed`). Pages: `/settings` → definitions, `/settings/definitions`, `/settings/users`, `/settings/integrations`, `/settings/appearance`.
+- **What it does:** `/settings` has its own layout on the shared sub-sidebar (`SettingsLayout` → `SubSidebarLayout`, `constants/settingsNavigation.js` → `getSettingsSidebarConfig(t)`, labels now i18n `settings.*`; collapse state in `settings-sidebar-collapsed`). Pages: `/settings` → definitions, `/settings/definitions`, `/settings/users`, `/settings/integrations`, `/settings/appearance`, and the **Communication** group `/settings/communication/:moduleId` (conversations, calls, meetings, team-chat). *(Updated 2026-10-01 00:25 (Africa/Cairo).)*
+- **Settings sections registry** *(added 2026-10-01 00:25 (Africa/Cairo))*: `pages/settings/registry/settingsSections.jsx` is the single source of settings sections ([README](../src/pages/settings/registry/README.md)). `getSettingsSections(ids, t)` feeds a module's own settings page (shared `ModuleSettingsPage`), so a section renders identically in `/settings` and inside the module.
 - **Appearance:** tenant admins pick **brand primary** and **brand accent**; `features/branding/utils/deriveBrandTokens.js` (pure) derives `--brand-primary-l` (+12 lightness), `--brand-accent-soft` (92 % light / 15 % dark lightness), `--ai-color` (= accent), `--ai-bg` (= accent soft), `--ai-border` (70 % lightness). `themeStore.setBrandPrimary/Accent` apply tokens live on `document.documentElement`; `saveBrandTokens` persists via `features/branding/api/brandingApi.js` to localStorage (`ican-crm:brand-tokens`); `resetBrandTokens` restores `src/index.css` defaults. Drafts are excluded from zustand persist. `ThemeProvider` re-applies tokens on mount and on theme/brand change. Font family, semantic tokens, spacing and density are deliberately not exposed.
 - **Key files:** `pages/settings/` (layout, `pages/definitions|users|integrations|appearance`), `features/branding/` (`api/brandingApi.js`, `utils/deriveBrandTokens.js`, `hooks/useAppearanceSettings.js`, `index.js`), `store/themeStore.js`; locale `branding.js`.
 - **API:** definitions, users and integrations APIs (see [2-SALES.md → Statuses, tags and pipeline](2-SALES.md#statuses-tags-and-pipeline), [2-SALES.md → Teams and users](2-SALES.md#teams-and-users), [Integrations](#integrations)); branding has no backend yet. Proposed: `GET /api/tenant/branding` → `{ brandPrimary, brandAccent }`, `PUT /api/tenant/branding` (6-digit hex, tenant-scoped); only `brandingApi.js` should change.
-- **Known issues:** brand colors do not sync across devices/users; only `Button` and `SettingsSidebar` read brand tokens — screens with hardcoded brand hex do not follow the picked colors.
+- **Known issues:** brand colors do not sync across devices/users; only `Button` and the shared sub-sidebar read brand tokens — screens with hardcoded brand hex do not follow the picked colors.
 
 ## Customer Hub (Customer Service)
 

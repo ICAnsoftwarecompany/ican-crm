@@ -673,6 +673,18 @@ export default {
     "createActivity": "Create Activity",
     "clearFilters": "Clear Filters"
   },
+  "lockedHeader": {
+    "call": {
+      "title": "Calls",
+      "description": "Every call with leads and customers, from Sales and Customer Service.",
+      "create": "New call"
+    },
+    "meeting": {
+      "title": "Meetings",
+      "description": "Customer meetings and internal team meetings in one place.",
+      "create": "New meeting"
+    }
+  },
   "header": {
     "description": "Manage all calls and meetings for all leads in one place.",
     "newActivity": "New Activity"
