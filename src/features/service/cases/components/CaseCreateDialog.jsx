@@ -12,6 +12,7 @@ import { useServiceTerminology } from '../../core/capabilities/useServiceCapabil
 import { CASE_PRIORITIES } from '../constants/caseViews'
 import { useCaseMutations, useCaseSetup, useCustomerLookup } from '../hooks/useCases'
 import { AiTriageHint } from '../../ai/components/AiTriageHint'
+import { CustomFieldInputs } from './CaseCustomFields'
 
 const TEXTAREA_CLASS =
   'min-h-[88px] w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-brand-accent'
@@ -23,6 +24,7 @@ const emptyForm = (defaults = {}) => ({
   type_id: '',
   priority: '',
   queue_id: '',
+  custom_fields: {},
 })
 
 /**
@@ -65,6 +67,7 @@ export function CaseCreateDialog({ open, onClose, defaults, navigateOnCreate = t
 
   const submit = () => {
     const payload = Object.fromEntries(Object.entries(form).filter(([, value]) => value !== ''))
+    if (!Object.keys(form.custom_fields || {}).length) delete payload.custom_fields
     create.mutate(
       { ...payload, source_channel: defaults?.source_channel, conversation_id: defaults?.conversation_id },
       {
@@ -129,6 +132,7 @@ export function CaseCreateDialog({ open, onClose, defaults, navigateOnCreate = t
         {t('service.cases.fields.description')}
         <textarea className={TEXTAREA_CLASS} value={form.description} onChange={(event) => update('description')(event.target.value)} />
       </label>
+      <CustomFieldInputs fields={(setup?.case_types || []).find((type) => type.id === form.type_id)?.form_fields} value={form.custom_fields} onChange={update('custom_fields')} errors={fieldErrors} />
       <AiTriageHint subject={form.subject} description={form.description} caseTypes={setup?.case_types} current={form} onApply={(suggestion) => setForm((current) => ({ ...current, ...suggestion }))} />
     </FormDialog>
   )

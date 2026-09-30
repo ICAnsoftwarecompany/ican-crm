@@ -44,5 +44,9 @@ export default {
     quality: 'الجودة',
     templates: 'قوالب الأنشطة',
     ai: 'الذكاء الاصطناعي',
+    workflow: 'أتمتة سير العمل',
+    incidents: 'الأعطال الكبرى',
+    search: 'البحث',
+    health: 'صحة العميل',
   },
 }

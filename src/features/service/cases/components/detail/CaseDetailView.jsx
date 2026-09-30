@@ -21,6 +21,8 @@ import { CaseCoveragePanel } from '../../../entitlements'
 import { useServiceCapabilities } from '../../../core/capabilities/useServiceCapabilities'
 import { AiCasePanel, AiSignalChips } from '../../../ai'
 import { SendToQualityButton } from '../../../quality'
+import { CaseCustomFieldsPanel } from '../CaseCustomFields'
+import { ActiveIncidentsBanner } from '../../../incidents/components/ActiveIncidentsBanner'
 
 /** Full case screen: header + transitions, timeline + composer, properties. */
 export function CaseDetailView({ caseId }) {
@@ -50,6 +52,7 @@ export function CaseDetailView({ caseId }) {
       >
         {caseItem && (
           <>
+            <ActiveIncidentsBanner caseId={caseItem.id} />
             <header className="flex flex-col gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0">
                 <div className="mb-1 flex flex-wrap items-center gap-2 text-xs text-[var(--text-muted)]">
@@ -89,6 +92,7 @@ export function CaseDetailView({ caseId }) {
                 <CaseCsatCard csat={caseItem.csat} />
                 {hasFeature('entitlements') && <CaseCoveragePanel caseItem={caseItem} />}
                 <CasePropertiesPanel caseItem={caseItem} setup={setup.data} />
+                <CaseCustomFieldsPanel caseItem={caseItem} setup={setup.data} disabled={!isCaseOpen(caseItem)} />
                 <SuggestedArticlesPanel caseId={caseItem.id} />
                 <CustomerContactsPanel customerId={caseItem.customer?.id} compact />
               </div>

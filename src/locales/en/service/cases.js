@@ -74,6 +74,7 @@ export default {
       submit: 'Save status',
       done: 'Status updated',
     },
+    customFields: { title: 'Extra details', builderHint: 'Fields asked when this request type is created, and shown on the request.', count: 'Extra fields: {{count}}', cancel: 'Cancel' },
     validation: { required: 'Required' },
     detail: { back: 'Back to {{entity}}', properties: 'Details', activity: 'Activity' },
     activity: {

@@ -154,6 +154,8 @@ export function createCase(body) {
   if (!String(body.subject || '').trim()) errors.subject = ['required']
   if (!type) errors.type_id = ['required']
   if (!customer) errors.customer_id = ['required']
+  // F6 form builder: required custom fields of the request type.
+  ;(type?.form_fields || []).filter((entry) => entry.required && !String(body.custom_fields?.[entry.key] ?? '').trim()).forEach((entry) => { errors[`custom_fields.${entry.key}`] = ['required'] })
   if (Object.keys(errors).length) throw new MockHttpError(422, 'VALIDATION_FAILED', 'Validation failed', errors)
 
   const cases = getCollection('cases')
@@ -174,6 +176,7 @@ export function createCase(body) {
     assignee_id: body.assignee_id || null,
     source_channel: body.source_channel || 'internal',
     conversation_id: body.conversation_id || null,
+    custom_fields: body.custom_fields || {},
     opened_at: nowIso(),
     first_response_at: null,
     resolved_at: null,
@@ -227,6 +230,15 @@ export const casesHandlers = [
       const item = getCase(params.caseId)
       assertVersion(item, body.version)
       const changes = {}
+      if (body.custom_fields && typeof body.custom_fields === 'object') {
+        const before = item.custom_fields || {}
+        Object.entries(body.custom_fields).forEach(([key, value]) => {
+          if (before[key] !== value) {
+            item.custom_fields = { ...(item.custom_fields || {}), [key]: value }
+          }
+        })
+        if (JSON.stringify(before) !== JSON.stringify(item.custom_fields)) touch(item)
+      }
       ;['priority', 'severity', 'type_id', 'subject', 'description'].forEach((field) => {
         if (body[field] !== undefined && body[field] !== item[field]) {
           changes[field] = { from: item[field], to: body[field] }

@@ -44,5 +44,9 @@ export default {
     quality: 'Quality',
     templates: 'Industry templates',
     ai: 'AI',
+    workflow: 'Workflow automation',
+    incidents: 'Incidents',
+    search: 'Search',
+    health: 'Health score',
   },
 }

@@ -12,6 +12,7 @@ import '../../leads/workflow/leadWorkflowDefinition'
 import '../../opportunities/workflow/opportunityWorkflowDefinition'
 import '../../outreach-campaigns/workflow/outreachWorkflowDefinition'
 import '../../tasks/workflow/taskWorkflowDefinition'
+import '../../service/workflow/serviceWorkflowDefinition'
 
 /**
  * No Notifications feature exists anywhere in this codebase yet (checked —

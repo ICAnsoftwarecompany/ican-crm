@@ -157,6 +157,7 @@ export default {
     types: { passport: 'جواز السفر', photo: 'صورة شخصية', national_id: 'البطاقة', medical_note: 'تقرير طبي', bank_statement: 'كشف حساب بنكي' },
     statuses: { missing: 'مطلوب', uploaded: 'تحت المراجعة', verified: 'مقبول', rejected: 'مرفوض' },
   },
+  incidents: { statuses: { investigating: 'بنحقق', identified: 'عرفنا السبب', monitoring: 'تحت المتابعة', resolved: 'اتحلت' } },
   assistant: {
     open: 'اسألنا',
     title: 'المساعد',

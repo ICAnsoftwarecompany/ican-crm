@@ -139,8 +139,9 @@ export function getTriggersForContext({ module } = {}) {
  * project hooks (useUsers, useTeams, ...) — kept separate so this file
  * never imports React/TanStack Query (registry stays a plain data module).
  */
-export function registerDataSource(key, { labelKey } = {}) {
-  dataSources.set(key, { key, labelKey: labelKey || key })
+export function registerDataSource(key, { labelKey, options } = {}) {
+  // `options` (optional): a fixed list [{ value, labelKey }] for sources that need no fetching (e.g. priorities).
+  dataSources.set(key, { key, labelKey: labelKey || key, options: options || null })
 }
 
 export function getDataSource(key) {

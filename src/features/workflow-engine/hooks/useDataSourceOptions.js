@@ -11,6 +11,7 @@ import { useAuthStore } from '../../../store/authStore'
 import { resolveTenantId } from '../../../services/tenantResolver'
 import { getOpportunityStatuses } from '../../opportunities/constants/opportunityTypes'
 import { CAMPAIGN_CHANNEL_LIST } from '../../outreach-campaigns/config/campaignChannels'
+import { getDataSource } from '../registry/workflowRegistry'
 
 /**
  * Adapter between a field's `source` key and the project's real data hooks.
@@ -102,7 +103,8 @@ export function useDataSourceOptions(source) {
           isLoading: gmailMailboxesQuery.isLoading,
         }
       default:
-        return { options: [], isLoading: false }
+        // Modules may register fixed option lists with their data source (registerDataSource(key, { options })).
+        return { options: getDataSource(source)?.options || [], isLoading: false }
     }
   }, [
     source, t,

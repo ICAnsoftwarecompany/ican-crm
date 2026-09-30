@@ -79,6 +79,10 @@ export { FollowUpsWorkspace, EnrollFollowUpDialog } from './follow-ups'
 export { PortfoliosPanel } from './portfolios'
 export { ApiClientsPanel, WebhooksPanel } from './api-access'
 
+// F6 — Search & incidents
+export { ServiceSearch } from './search/ServiceSearch'
+export { ActiveIncidentsBanner, IncidentsWorkspace, IncidentDetailView } from './incidents'
+
 // F6 — Quality
 export { QualityWorkspace } from './quality'
 

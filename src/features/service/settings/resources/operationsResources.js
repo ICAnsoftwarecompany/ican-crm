@@ -3,6 +3,7 @@ import { serviceEndpoints } from '../../core/api/endpoints'
 import { serviceKeys } from '../../core/constants/queryKeys'
 import { CASE_TYPE_ICONS } from '../../cases/components/CaseTypeIcon'
 import { EscalationTriggersField, HolidaysField, WorkingHoursField } from '../components/fields/CompositeFields'
+import { FormSchemaField } from '../../portal-admin/components/FormSchemaField'
 import { agentOptions, formatMinutes, labelOptions, listOf, listText, namesOf, priorityOptions } from './resourceHelpers'
 
 const { settings } = serviceEndpoints
@@ -19,9 +20,10 @@ export const caseTypesResource = {
   endpoint: settings.caseTypes,
   icon: Tags,
   i18nKey: 'service.settings.resources.caseTypes',
+  dialogClassName: 'max-w-3xl',
   dependsOn: ['queues', 'slaPolicies', 'pipelines'],
   invalidates: [serviceKeys.caseSetup(), serviceKeys.cases()],
-  emptyValue: () => ({ key: '', label: L(), icon: 'HelpCircle', pipeline_id: null, default_priority: 'normal', default_queue_id: null, sla_policy_id: null, active: true }),
+  emptyValue: () => ({ key: '', label: L(), icon: 'HelpCircle', pipeline_id: null, default_priority: 'normal', default_queue_id: null, sla_policy_id: null, form_fields: [], active: true }),
   fields: [
     { name: 'label', type: 'localized', labelKey: 'service.settings.fields.label' },
     { name: 'key', type: 'text', ltr: true, labelKey: 'service.settings.fields.key', hintKey: 'service.settings.fields.keyHint', row: 'a' },
@@ -30,10 +32,12 @@ export const caseTypesResource = {
     { name: 'default_priority', type: 'select', labelKey: 'service.cases.fields.priority', row: 'b', options: priorityOptions },
     { name: 'default_queue_id', type: 'select', labelKey: 'service.settings.fields.defaultQueue', row: 'b', options: (ctx) => labelOptions(listOf(ctx, 'queues'), ctx.language) },
     { name: 'sla_policy_id', type: 'select', labelKey: 'service.settings.fields.slaPolicy', placeholderKey: 'service.settings.fields.slaAuto', options: (ctx) => labelOptions(listOf(ctx, 'slaPolicies'), ctx.language, 'name') },
+    // F6 form builder: extra fields asked when this request type is created (stored in `case.custom_fields`).
+    { name: 'form_fields', type: 'custom', component: FormSchemaField, formHintKey: 'service.cases.customFields.builderHint', labelKey: 'service.cases.customFields.title' },
     { name: 'active', type: 'switch', labelKey: 'service.settings.fields.active' },
   ],
   summary: (item, ctx) =>
-    [item.key, ctx.t(`service.cases.priority.${item.default_priority}`, { defaultValue: '' })].filter(Boolean).join(' · '),
+    [item.key, ctx.t(`service.cases.priority.${item.default_priority}`, { defaultValue: '' }), item.form_fields?.length && ctx.t('service.cases.customFields.count', { count: item.form_fields.length })].filter(Boolean).join(' · '),
 }
 
 export const queuesResource = {

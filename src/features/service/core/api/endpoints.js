@@ -133,6 +133,8 @@ export const serviceEndpoints = {
   },
 
   setupApply: (key) => `${TENANT_API}/settings/templates/${key}/apply`,
+  // F6 template versioning (spec §47.2, proposed): installed version, latest, history; POST /upgrade { dry_run, choices }.
+  templateInstallation: `${TENANT_API}/settings/templates/installation`,
 
   // AI layer (F7, spec §45 — proposed). Signals/suggestions only; people and rules decide.
   ai: {
@@ -151,6 +153,10 @@ export const serviceEndpoints = {
   // Advanced analytics (F7b, spec §46.3 — proposed): aging, repeat contact, deflection, AI resolution, workload, follow-ups.
   reportAdvanced: `${SERVICE_API}/reports/advanced`,
   caseMarkDuplicate: (caseId) => `${SERVICE_API}/cases/${caseId}/mark-duplicate`,
+  // F6 (proposed): one search across requests, records, customers, assets, contracts and help articles.
+  search: `${SERVICE_API}/search`,
+  // F6 major incidents (proposed): one outage → many linked requests; updates can be public (portal banner).
+  incidents: `${SERVICE_API}/incidents`,
 
   // Knowledge base (F2) — CRUD + publish (kb.publish permission). New articles start as drafts.
   kbArticles: `${SERVICE_API}/kb/articles`,

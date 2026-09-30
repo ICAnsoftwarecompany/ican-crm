@@ -5,6 +5,7 @@ import { Button } from '../../../../shared/components/ui/Button'
 import { cn } from '../../../../shared/utils/cn'
 import { usePublicSettings, useSignOut } from '../../api/portalApi'
 import { PortalAssistant } from '../assistant/PortalAssistant'
+import { PortalIncidentBanner } from './PortalIncidentBanner'
 import { visibleSections } from '../../constants/sections'
 import { usePortalAccess } from '../../hooks/usePortalAccess'
 import { usePortalPreferences } from '../../store/portalPreferencesStore'
@@ -51,6 +52,7 @@ export function PortalLayout() {
         </nav>
       </header>
       <main className="mx-auto grid max-w-6xl gap-4 px-4 py-6">
+        <PortalIncidentBanner />
         <Outlet />
       </main>
       {settings.data?.ai_agent && <PortalAssistant />}

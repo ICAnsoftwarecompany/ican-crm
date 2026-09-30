@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Headset, Map as MapIcon, Plus } from 'lucide-react'
+import { Headset, Map as MapIcon, Plus, Siren } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
 import { Button } from '../../shared/components/ui/Button'
 import {
+  ActiveIncidentsBanner,
   AtRiskCustomers,
   CaseCreateDialog,
   MyWorkList,
   ServiceCenterCounters,
   ServiceMockBanner,
+  ServiceSearch,
   useServiceCapabilities,
   useServiceTerminology,
 } from '../../features/service'
@@ -38,6 +40,10 @@ export function ServiceCenterPage() {
             <MapIcon size={16} aria-hidden="true" />
             {t('service.center.setupOverview')}
           </Link>
+          <Link to="/service/incidents" className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border)] px-3 text-sm text-[var(--text)] hover:bg-[var(--surface-2)]">
+            <Siren size={16} aria-hidden="true" />
+            {t('service.incidents.title')}
+          </Link>
           <Button onClick={() => setCreateOpen(true)}>
             <Plus size={16} aria-hidden="true" />
             {t('service.cases.create.button', { entity: term('case') })}
@@ -46,6 +52,8 @@ export function ServiceCenterPage() {
       </header>
 
       <ServiceMockBanner activeTemplate={manifest.template} />
+      <ServiceSearch />
+      <ActiveIncidentsBanner />
       <ServiceCenterCounters />
 
       <section className="grid gap-3">

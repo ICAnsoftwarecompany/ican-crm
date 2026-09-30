@@ -157,6 +157,7 @@ export default {
     types: { passport: 'Passport', photo: 'Personal photo', national_id: 'National ID', medical_note: 'Medical note', bank_statement: 'Bank statement' },
     statuses: { missing: 'Needed', uploaded: 'Under review', verified: 'Accepted', rejected: 'Rejected' },
   },
+  incidents: { statuses: { investigating: 'Investigating', identified: 'Cause found', monitoring: 'Monitoring', resolved: 'Resolved' } },
   assistant: {
     open: 'Ask us',
     title: 'Assistant',

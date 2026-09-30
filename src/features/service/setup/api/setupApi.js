@@ -28,3 +28,25 @@ export function useApplyTemplate() {
     },
   })
 }
+
+/**
+ * Template versioning (F6, spec §47.2). Installation: { template, installed_version, latest_version, upgrade_available,
+ * pending, conflicts, versions[{ version, released_at, notes }], history[{ from, to, applied[], skipped[], at, by }] }.
+ * Upgrade dry run → changes[{ id, entity, change added|changed|removed, label, field?, from?, to?, note, status
+ * pending|conflict|already }]. Apply takes `choices { id: 'take' | 'keep' }`: default takes pending, keeps conflicts.
+ */
+export const templateVersionApi = {
+  installation: async () => (await api.get(serviceEndpoints.templateInstallation)).data?.data,
+  preview: async () => (await api.post(`${serviceEndpoints.templateInstallation}/upgrade`, { dry_run: true })).data?.data,
+  upgrade: async (choices) => (await api.post(`${serviceEndpoints.templateInstallation}/upgrade`, { choices })).data?.data,
+}
+
+export const useTemplateInstallation = () => useQuery({ queryKey: [...serviceKeys.all, 'template-installation'], queryFn: templateVersionApi.installation })
+
+export function useTemplateUpgrade() {
+  const queryClient = useQueryClient()
+  return {
+    preview: useMutation({ mutationFn: templateVersionApi.preview }),
+    upgrade: useMutation({ mutationFn: templateVersionApi.upgrade, onSuccess: () => queryClient.invalidateQueries({ queryKey: serviceKeys.all }) }),
+  }
+}

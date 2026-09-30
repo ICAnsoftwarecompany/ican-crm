@@ -13,17 +13,19 @@ import { schedulingResourcesResource } from './schedulingResources'
 import { portalAccountsSection, portalBrandingSection, portalPoliciesResource, requestCatalogResource } from './portalResources'
 import { followUpProgramsResource, portfoliosSection } from './followUpResources'
 import { qualityChecklistsResource, samplingRulesResource, surveysResource } from './qualityResources'
-import { Bot, FileUp, KeyRound, Package, Sparkles, Wand2, Webhook } from 'lucide-react'
+import { Bot, FileUp, GitCompare, KeyRound, Package, Sparkles, Wand2, Webhook } from 'lucide-react'
 import { ApiClientsPanel } from '../../api-access/components/ApiClientsPanel'
 import { AiSettingsPanel } from '../../ai/components/AiSettingsPanel'
 import { AiAgentPanel } from '../../ai/components/AiAgentPanel'
 import { WebhooksPanel } from '../../api-access/components/WebhooksPanel'
 import { ImportsPanel } from '../../imports/components/ImportsPanel'
 import { SetupWizardPanel } from '../../setup/components/SetupWizardPanel'
+import { TemplateVersionsPanel } from '../../setup/components/TemplateVersionsPanel'
 import { CatalogItemsPanel } from '../../catalog/components/CatalogItemsPanel'
 
 /** A section can also be a custom panel (`component`) instead of a CRUD list. */
 const setupSection = { key: 'setup', icon: Wand2, i18nKey: 'service.settings.resources.setup', component: SetupWizardPanel }
+const templateVersionsSection = { key: 'templateVersions', icon: GitCompare, i18nKey: 'service.settings.resources.templateVersions', component: TemplateVersionsPanel }
 const importsSection = { key: 'imports', icon: FileUp, i18nKey: 'service.settings.resources.imports', component: ImportsPanel }
 const apiClientsSection = { key: 'apiClients', icon: KeyRound, i18nKey: 'service.settings.resources.apiClients', component: ApiClientsPanel }
 const webhooksSection = { key: 'webhooks', icon: Webhook, i18nKey: 'service.settings.resources.webhooks', component: WebhooksPanel }
@@ -38,7 +40,7 @@ const catalogItemsSection = { key: 'catalogItems', icon: Package, i18nKey: 'serv
  * Later sub-modules (replies, knowledge…) append their own resources.
  */
 export const SETTINGS_GROUPS = [
-  { key: 'general', resources: [setupSection, importsSection] },
+  { key: 'general', resources: [setupSection, templateVersionsSection, importsSection] },
   { key: 'cases', resources: [caseTypesResource, queuesResource] },
   { key: 'catalog', resources: [catalogItemsSection, itemTypesResource, recordTypesResource, pipelinesResource] },
   { key: 'contracts', resources: [contractTypesResource] },
@@ -72,6 +74,7 @@ const SECTION_SLUGS = {
   contractTypes: 'contract-types',
   setup: 'setup',
   imports: 'imports',
+  templateVersions: 'template-version',
   paymentPlans: 'payment-plans',
   planAssignments: 'plan-assignments',
   schedulingResources: 'scheduling-resources',

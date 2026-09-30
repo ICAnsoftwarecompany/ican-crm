@@ -44,6 +44,8 @@ export const serviceRoutes = {
         { path: 'billing/schedules/:scheduleId', lazy: page(() => import('./ServiceBillingPage'), 'ServiceBillingPage') },
       ],
     },
+    // F6 — major incidents
+    { path: 'incidents/:incidentId?', lazy: page(() => import('./ServiceIncidentsPage'), 'ServiceIncidentsPage') },
     // F0 — capabilities, demo template switcher, roadmap
     { path: 'overview', lazy: page(() => import('./ServiceOverviewPage'), 'ServiceOverviewPage') },
   ],

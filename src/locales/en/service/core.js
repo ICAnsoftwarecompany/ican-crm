@@ -29,6 +29,8 @@ export default {
     AI_LIMIT_REACHED: 'The monthly AI limit is reached. Raise it in AI settings or wait for next month.',
     REVIEW_ALREADY_QUEUED: 'This request is already waiting for a quality review.',
     REVIEW_DONE: 'This review was already submitted.',
+    TEMPLATE_UP_TO_DATE: 'You are already on the latest template version.',
+    INCIDENT_RESOLVED: 'This incident is resolved.',
     IMPORT_NOTHING_VALID: 'There are no valid rows to import.',
     PORTAL_ACCOUNT_EXISTS: 'Someone already has a portal account with this phone or email. Add access to that account instead.',
     MEMBERSHIP_EXISTS: 'This account can already access this customer.',

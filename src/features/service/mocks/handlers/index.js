@@ -22,10 +22,12 @@ import { portalHandlers } from './portalHandlers'
 import { portalKbHandlers } from './portalKbHandlers'
 import { qualityHandlers } from './qualityHandlers'
 import { recordsHandlers } from './recordsHandlers'
+import { searchIncidentHandlers } from './searchIncidentHandlers'
 import { settingsHandlers } from './settingsHandlers'
 import { schedulingHandlers } from './schedulingHandlers'
 import { setupHandlers } from './setupHandlers'
 import { subscriptionsHandlers } from './subscriptionsHandlers'
+import { templateVersionHandlers } from './templateVersionHandlers'
 
 /**
  * Every mock route of the Service area. A new sub-module adds ONE line here
@@ -57,8 +59,10 @@ export const mockRoutes = [
   ...portalHandlers,
   ...qualityHandlers,
   ...recordsHandlers,
+  ...searchIncidentHandlers,
   ...settingsHandlers,
   ...schedulingHandlers,
   ...setupHandlers,
   ...subscriptionsHandlers,
+  ...templateVersionHandlers,
 ]

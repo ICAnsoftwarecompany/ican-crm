@@ -6,14 +6,14 @@ import { Select } from '../../../../shared/components/ui/Select'
 import { FORM_FIELD_TYPES } from '../constants/portalObjects'
 
 /** Request form fields shown to the customer: key, label (ar/en), type, required, options for selects. */
-export function FormSchemaField({ label, value = [], onChange, error }) {
+export function FormSchemaField({ label, value = [], onChange, error, field }) {
   const { t } = useTranslation()
   const rows = value || []
   const update = (index, patch) => onChange(rows.map((row, rowIndex) => (rowIndex === index ? { ...row, ...patch } : row)))
   return (
     <fieldset className="grid gap-2">
       <legend className="mb-1.5 text-sm font-medium text-[var(--text)]">{label}</legend>
-      <p className="-mt-1 text-xs text-[var(--text-muted)]">{t('service.portal.formHint')}</p>
+      <p className="-mt-1 text-xs text-[var(--text-muted)]">{t(field?.formHintKey || 'service.portal.formHint')}</p>
       {rows.map((row, index) => (
         <div key={index} className="grid gap-2 rounded-lg border border-[var(--border)] p-3">
           <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_8rem_8rem_auto] sm:items-center">

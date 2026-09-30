@@ -74,6 +74,7 @@ export default {
       submit: 'حفظ الحالة',
       done: 'تم تحديث الحالة',
     },
+    customFields: { title: 'تفاصيل إضافية', builderHint: 'حقول بتتسأل لما النوع ده يتفتح، وبتظهر على الطلب.', count: 'حقول إضافية: {{count}}', cancel: 'إلغاء' },
     validation: { required: 'مطلوب' },
     detail: { back: 'الرجوع إلى {{entity}}', properties: 'التفاصيل', activity: 'النشاط' },
     activity: {

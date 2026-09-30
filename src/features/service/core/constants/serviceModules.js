@@ -82,14 +82,21 @@ export const SERVICE_MODULES = [
   { key: 'apiAccess', folder: 'api-access', phase: 5, status: 'done', backend: 'mock' },
 
   // F6 — Knowledge & Quality
-  { key: 'quality', folder: 'quality', phase: 6, status: 'in_progress', backend: 'mock' },
-  { key: 'templates', folder: 'templates', phase: 6, status: 'planned', backend: 'mock' },
+  { key: 'quality', folder: 'quality', phase: 6, status: 'done', backend: 'mock' },
+  // Template versioning lives in setup/ (TemplateVersionsPanel); API module key 'setup'.
+  { key: 'templates', folder: 'setup', phase: 6, status: 'done', backend: 'mock' },
+  // Registers service triggers/actions in features/workflow-engine; no API of its own.
+  { key: 'workflow', folder: 'workflow', phase: 6, status: 'done', backend: 'mock' },
+  { key: 'incidents', folder: 'incidents', phase: 6, status: 'done', backend: 'mock' },
+  { key: 'search', folder: 'search', phase: 6, status: 'done', backend: 'mock' },
 
-  // F7 — AI
-  { key: 'ai', folder: 'ai', phase: 7, status: 'in_progress', backend: 'mock' },
+  // F7 — AI (field service, inventory and supplier portal are deferred to a later phase)
+  { key: 'ai', folder: 'ai', phase: 7, status: 'done', backend: 'mock' },
+  // Health score & advanced analytics; API module key 'ai'.
+  { key: 'health', folder: 'health', phase: 7, status: 'done', backend: 'mock' },
 ]
 
-export const CURRENT_SERVICE_PHASE = 2
+export const CURRENT_SERVICE_PHASE = 7
 
 /** @param {string} key */
 export function getServiceModule(key) {

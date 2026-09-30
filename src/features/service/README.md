@@ -30,24 +30,25 @@ Everything business-related for Customer Service lives here. Start with
 | `entitlements/` | Entitlements, ledger, case coverage | F3 ✅ | [entitlements/README.md](entitlements/README.md) |
 | `contracts/` | Contracts: versions, signatures, amendments | F3 ✅ | [contracts/README.md](contracts/README.md) |
 | `handoffs/` | Sales → Service handoff inbox | F3 ✅ | [handoffs/README.md](handoffs/README.md) |
-| `setup/` | Setup wizard (industry templates) | F3 ✅ | [setup/README.md](setup/README.md) |
-| `billing/` | Payment plans, preview, schedules, payments, collections | F4 | `billing/README.md` |
-| `subscriptions/` | Subscription lifecycle | F4 | `subscriptions/README.md` |
-| `scheduling/` | Resources, reservations, slots | F4 | `scheduling/README.md` |
-| `work-orders/` | Work orders & field visits | F4 | `work-orders/README.md` |
-| `deliveries/` | Courier dispatch, proof of delivery, COD remittances | F4 | `deliveries/README.md` |
-| `portal-admin/` | Portal accounts, policies, request catalog, branding | F5 | `portal-admin/README.md` |
-| `imports/` | CSV import wizard, dry run, error file | F5 | `imports/README.md` |
-| `follow-ups/` | Follow-up programs, workspace, manual enroll | F5 | `follow-ups/README.md` |
-| `portfolios/` | Customer portfolios and owners | F5 | `portfolios/README.md` |
-| `api-access/` | Public API clients, outbound webhooks, delivery log | F5 | `api-access/README.md` |
-| `quality/` | Quality checklists, sampling, reviews with RCA/CAPA, survey settings | F6 | `quality/README.md` |
-| `health/` | Customer health score, at-risk list, advanced analytics | F7 | `health/README.md` |
-| `ai/` | AI signals, triage, summaries, draft replies, duplicates, assignment, AI settings | F7 | `ai/README.md` |
-| `quality/`, `templates/` | Knowledge & quality | F6 | added with the code |
-| `quality/` | Quality checklists, sampling, reviews with RCA/CAPA, survey settings | F6 | `quality/README.md` |
-| `health/` | Customer health score, at-risk list, advanced analytics | F7 | `health/README.md` |
-| `ai/` | AI | F7 | added with the code |
+| `setup/` | Setup wizard (industry templates) + template versioning (F6) | F3 ✅ | [setup/README.md](setup/README.md) |
+| `billing/` | Payment plans, preview, schedules, payments, collections | F4 ✅ | [billing/README.md](billing/README.md) |
+| `subscriptions/` | Subscription lifecycle, plan change with proration | F4 ✅ · F7 | [subscriptions/README.md](subscriptions/README.md) |
+| `scheduling/` | Resources, reservations, slots | F4 ✅ | [scheduling/README.md](scheduling/README.md) |
+| `work-orders/` | Work orders & field visits | F4 ✅ | [work-orders/README.md](work-orders/README.md) |
+| `deliveries/` | Courier dispatch, proof of delivery, COD remittances | F4 ✅ | [deliveries/README.md](deliveries/README.md) |
+| `portal-admin/` | Portal accounts, policies, request catalog, branding, public help center switch | F5 ✅ | [portal-admin/README.md](portal-admin/README.md) |
+| `imports/` | CSV import wizard, dry run, error file | F5 ✅ | [imports/README.md](imports/README.md) |
+| `follow-ups/` | Follow-up programs, workspace, manual enroll | F5 ✅ | [follow-ups/README.md](follow-ups/README.md) |
+| `portfolios/` | Customer portfolios and owners | F5 ✅ | [portfolios/README.md](portfolios/README.md) |
+| `api-access/` | Public API clients, outbound webhooks, delivery log | F5 ✅ | [api-access/README.md](api-access/README.md) |
+| `knowledge/` (F6 additions) | Article versions, review/publish/archive workflow, expiry, stats & content gaps, portal help + deflection | F6 ✅ | [knowledge/README.md](knowledge/README.md) |
+| `quality/` | Quality checklists, sampling, reviews with RCA/CAPA, NPS/CES surveys | F6 ✅ | [quality/README.md](quality/README.md) |
+| `workflow/` | Customer Hub triggers/conditions/actions registered in the app's Workflow Engine | F6 ✅ | [workflow/README.md](workflow/README.md) |
+| `incidents/` | Major incidents: linked cases, updates, portal banner | F6 ✅ | [incidents/README.md](incidents/README.md) |
+| `search/` | Global service search | F6 ✅ | [search/README.md](search/README.md) |
+| `ai/` | AI signals, triage, summaries, draft replies, duplicates, assignment suggestions, AI agent, AI settings | F7 ✅ | [ai/README.md](ai/README.md) |
+| `health/` | Customer health score, at-risk list, advanced analytics | F7 ✅ | [health/README.md](health/README.md) |
+| — | Field service, inventory, supplier portal | Later (F8) | not built |
 
 The authoritative list (with mock/live state) is `core/constants/serviceModules.js`.
 

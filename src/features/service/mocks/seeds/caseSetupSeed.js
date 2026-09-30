@@ -104,6 +104,16 @@ const TEMPLATE_SETUP = {
   },
 }
 
+const FORM_FIELDS = {
+  maintenance: [
+    { key: 'device_model', label: L('موديل الجهاز', 'Device model'), type: 'text', required: false, options: [] },
+    { key: 'issue_since', label: L('المشكلة من إمتى', 'Problem since'), type: 'date', required: false, options: [] },
+  ],
+  delivery_issue: [{ key: 'waybill', label: L('رقم البوليصة', 'Waybill number'), type: 'text', required: false, options: [] }],
+  booking_change: [{ key: 'new_date', label: L('الميعاد الجديد المطلوب', 'Requested new date'), type: 'date', required: false, options: [] }],
+  transport: [{ key: 'bus_line', label: L('خط الباص', 'Bus line'), type: 'select', required: false, options: ['A', 'B', 'C'] }],
+}
+
 const AGENT_NAMES = ['سارة محمود', 'أحمد علي', 'منى حسن', 'كريم سمير']
 
 /** @param {{ template: string }} manifest */
@@ -118,6 +128,8 @@ export function buildCaseSetup(manifest) {
       icon,
       default_priority: priority,
       pipeline: DEFAULT_PIPELINE,
+      // F6 form builder demo: extra fields asked for some request types.
+      form_fields: FORM_FIELDS[key] || [],
     })),
     queues: config.queues.map(([key, label]) => ({ id: `q-${key}`, key, label })),
     agents: [me, ...AGENT_NAMES.map((name, index) => ({ id: `agent-${index + 1}`, name }))],

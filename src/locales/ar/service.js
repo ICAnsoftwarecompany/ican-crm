@@ -23,6 +23,7 @@ import followUps from './service/followUps.js'
 import apiAccess from './service/apiAccess.js'
 import ai from './service/ai.js'
 import quality from './service/quality.js'
+import workflow from './service/workflow.js'
 
 /**
  * نصوص إدارة العملاء (Customer Hub) — جذر المفاتيح `service.*`.
@@ -54,5 +55,6 @@ export default {
   ...apiAccess,
   ...ai,
   ...quality,
+  ...workflow,
   terms,
 }

@@ -119,6 +119,11 @@ export const serviceKeys = {
   qualityReviews: (params) => [...serviceKeys.quality(), 'reviews', params ?? {}],
   qualitySummary: (params) => [...serviceKeys.quality(), 'summary', params ?? {}],
 
+  // Search & incidents (F6)
+  search: (q) => [...serviceKeys.all, 'search', q ?? ''],
+  incidents: (params) => [...serviceKeys.all, 'incidents', params ?? {}],
+  incident: (id) => [...serviceKeys.all, 'incidents', 'detail', String(id)],
+
   // AI (F7)
   ai: () => [...serviceKeys.all, 'ai'],
   aiSettings: () => [...serviceKeys.ai(), 'settings'],

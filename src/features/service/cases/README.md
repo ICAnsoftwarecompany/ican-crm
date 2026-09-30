@@ -64,3 +64,12 @@ Tenants rename it (Ticket, Request…) through terminology — always show it wi
 - Board shows loaded pages only ("Load more" appends).
 - DataTable column filters work on loaded rows; server-side filters are priority/queue/type (F2).
 - Pipeline (statuses/transitions) is not editable yet — editor planned for F3.
+
+## Custom fields per case type (F6)
+
+Each case type can define a form (`form_fields`), edited in Settings → Case types with the portal's
+`FormSchemaField` builder. Supported field types: text, textarea, number, date, select, checkbox.
+- `CaseCustomFields.jsx` → `CustomFieldInputs` renders the fields inside the create dialog after a type is
+  picked. `CaseCustomFieldsPanel` shows the values in the case sidebar and edits them.
+- Values go in `custom_fields: { <key>: value }`. The server validates required keys on create
+  (`422 custom_fields.<key>`); `PATCH` merges the object.

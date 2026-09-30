@@ -38,6 +38,8 @@ export const portalEndpoints = {
   activeSurvey: `${PORTAL_API}/surveys/active`,
   // F7: AI assistant chat (customer-scoped tools, hands over to a person).
   assistant: `${PORTAL_API}/assistant/messages`,
+  // F6: public updates of active major incidents (banner).
+  incidents: `${PORTAL_API}/incidents/active`,
   remittances: `${PORTAL_API}/remittances`,
   orgUsers: `${PORTAL_API}/org/users`,
   track: `${PORTAL_API}/track`,
