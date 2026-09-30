@@ -1,6 +1,6 @@
 # ICAN CRM — Documentation index
 
-> **Documentation update:** 2026-10-01 00:25 (Africa/Cairo) — Communication hub, sub-sidebar, module pages, AI setup, README index and change log added.
+> **Documentation update:** 2026-10-01 00:55 (Africa/Cairo) — My Work added. Earlier: 2026-10-01 00:25 (Africa/Cairo) — Communication hub, sub-sidebar, module pages, AI setup, README index and change log added.
 
 Start here. Every doc in this folder, what it covers, and its sections. Rules for agents and contributors are in
 [../CLAUDE.md](../CLAUDE.md). **If a doc and the code disagree, the code wins.** When you change a feature, update its
@@ -41,6 +41,7 @@ doc in the same change.
 
 ## 3-FEATURES.md — Features
 
+- [My Work](3-FEATURES.md#my-work) (`/my-work`, شغلي — everything waiting for the signed-in user)
 - [Communication hub](3-FEATURES.md#communication-hub) (Conversations, Calls, Meetings, Team chat — `/conversations`, `/calls`, `/meetings`, `/team-chat`)
 - [Conversations](3-FEATURES.md#conversations) (WhatsApp / Messenger / Gmail) · [Internal chat](3-FEATURES.md#internal-chat)
 - [Ad campaigns and Meta integrations](3-FEATURES.md#ad-campaigns-and-meta-integrations) · [Outreach campaigns](3-FEATURES.md#outreach-campaigns) · [Social media](3-FEATURES.md#social-media)
@@ -83,6 +84,7 @@ doc in the same change.
 | Shared sub-sidebar (mandatory for every internal sidebar) | [shared/components/sub-sidebar](../src/shared/components/sub-sidebar/README.md) |
 | Shared module page shells (placeholder, notice, module settings page) | [shared/components/module-pages](../src/shared/components/module-pages/README.md) |
 | Shared AI setup page (and the boundary with the future `features/ai`) | [shared/components/ai-setup](../src/shared/components/ai-setup/README.md) |
+| My Work (شغلي) — sections, rules, registry, how to add a section | [features/my-work](../src/features/my-work/README.md) · route [pages/my-work](../src/pages/my-work/README.md) |
 | Communication hub (conversations, calls, meetings, team chat) | [features/communication](../src/features/communication/README.md) · routes [pages/communication](../src/pages/communication/README.md) |
 | Settings sections registry | [pages/settings/registry](../src/pages/settings/registry/README.md) · [pages/settings/pages/communication](../src/pages/settings/pages/communication/README.md) |
 
@@ -101,4 +103,6 @@ Newest first. Every docs change also carries a `YYYY-MM-DD HH:mm (Africa/Cairo)`
 
 | When | What changed | Where |
 |---|---|---|
+| 2026-10-01 01:20 (Africa/Cairo) | `/leads` page removed (redirect); assignment rules → `/LeadsCenter/assignments`; Leads Center sub-sidebar reorganized (activities moved up, status board / proposal builder / sales teams out, Automation + AI setup in the footer); Sales teams in the main sidebar; calendar-first Leads Center activities on the shared calendar; `WorkflowModuleWorkspace` | 2-SALES (Leads page and lead assignment, Leads Center pages) · 1-ARCHITECTURE (Sidebar and navigation) · 3-FEATURES (Workflow engine) · `CLAUDE.md` |
+| 2026-10-01 00:55 (Africa/Cairo) | My Work page (`/my-work`) with section registry; public exports for tasks, calendar, analytics and conversation unread counts; Customer Hub "My Work" nav label renamed to "Service work" | 1-ARCHITECTURE (Sidebar and navigation) · 3-FEATURES (My Work) · 4-CUSTOMER-SERVICE (Routes and navigation) · this index · `CLAUDE.md` · READMEs `features/my-work`, `pages/my-work` |
 | 2026-10-01 00:25 (Africa/Cairo) | Communication hub (new main-sidebar section; `/calls`, `/meetings` added; conversations and team chat moved there; Activities item removed from Sales); shared sub-sidebar rule and migration of every internal sidebar; shared module pages and AI setup; settings sections registry; README-per-new-folder rule | 1-ARCHITECTURE (Sidebar and navigation, Sub-sidebar, Module pages and AI setup, Calendar, Definition of Done, Adding a new module, Known debt) · 2-SALES (Leads Center pages, Activities) · 3-FEATURES (Communication hub, Conversations, Internal chat, AI agent, Settings) · this index · `CLAUDE.md` · new READMEs listed above |

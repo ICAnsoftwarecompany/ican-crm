@@ -207,7 +207,7 @@ component → hook (React Query) → casesApi → createServiceApi('cases') → 
 | `/service` | `ServiceCenterPage` — counters per view, My Work preview, new case, demo banner | F1 |
 | `/service/cases` | `ServiceCasesPage` — views (`?view=`), search (`?q=`), list or board (`?mode=board`) | F1 |
 | `/service/cases/:caseId` | `ServiceCaseDetailPage` — timeline, reply / internal note, status, properties, contacts | F1 |
-| `/service/my-work` | `ServiceMyWorkPage` — everything assigned to me | F1 |
+| `/service/my-work` | `ServiceMyWorkPage` — everything assigned to me (nav label "شغل خدمة العملاء / Service work" since 2026-10-01 00:55 (Africa/Cairo); a preview of this list is the `service` section of the app-wide [My Work](3-FEATURES.md#my-work) page) | F1 |
 | `/service/cases?saved=&priority=&queue=&type=` | Cases filters + saved views (same page) | F2 |
 | `/service/knowledge` | `ServiceKnowledgePage` — search, category/status filters, article list; F6: views `?status=changes|expiring`, stats (views, helpful rate, deflections, content gaps) | F2 · F6 |
 | `/service/knowledge/:articleId` | `ServiceKnowledgeArticlePage` — editor; `new` creates a draft. F6: type, expiry date, reviewer, review workflow (submit → approve/reject → publish → archive), versions drawer with restore | F2 · F6 |

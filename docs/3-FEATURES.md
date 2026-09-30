@@ -8,6 +8,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 ## Contents
 
+- [My Work](#my-work) (`/my-work`, شغلي)
 - [Communication hub](#communication-hub) (Conversations, Calls, Meetings, Team chat)
 - [Conversations](#conversations)
 - [Internal chat](#internal-chat)
@@ -25,6 +26,18 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 - [Customer Hub (Customer Service)](#customer-hub-customer-service)
 
 ---
+
+## My Work
+
+> **Documentation update:** 2026-10-01 00:55 (Africa/Cairo) — section added.
+
+**Status:** PARTIAL (live on real APIs; "mine" filtering client-side; focus chosen by the viewer until the backend sends roles)
+
+- **What it does:** `/my-work` (Overview → **شغلي / My work**) — one page per user with everything waiting now, across Sales, Customer Hub and Communication: summary tiles (overdue, today's calls & meetings, tasks due, unread) and registered sections: Overdue, Today's calls & meetings, My tasks due, Newest leads assigned to me (Sales), Customer service work (Customer Hub preview of `/service/my-work`), Messages (WhatsApp, Messenger, Gmail, team chat). A focus switch (All / Sales / Customer service) filters sections; `module` gating is inert until the backend sends `user.modules`.
+- **Key files:** `features/my-work/` — registry (`registerMyWorkSection`), rules (`utils/myWorkItems.js`, tested), hooks (`useMyActivities`, `useMyTasks`, `useMyWorkFocus`, `useMyWorkPreview`), sections, `MyWorkBoard`/`MyWorkSummary`; page `pages/my-work/MyWorkPage.jsx`; locale `myWork.js`. Full reference: [features/my-work/README.md](../src/features/my-work/README.md).
+- **API:** none of its own — activities (`/api/tenant/meetings`), tasks, `sales/dashboard/my-leads`, `/api/tenant/my-work` (Customer Hub), conversation lists, internal chat conversations. Same list params as the calendar/inbox, so caches are shared.
+- **Added public exports:** `features/tasks/index.js`, `features/calendar/index.js`, `features/analytics/index.js`, `useConversationUnreadSummary` in `features/conversations`.
+- **Known issues:** "mine" is computed from the latest 200 activities/tasks; undated tasks are not shown; leads link to the Leads Center when the response lacks a customer id; not visually verified with real data.
 
 ## Communication hub
 
@@ -155,7 +168,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 - **Key files:** `features/workflow-engine/registry/workflowRegistry.js` (`registerWorkflowModule`, `getModules`, `getTriggers|Conditions|Actions(ForContext)`, data sources), `config/registerBuiltinModules.js` (imports module definitions; also registers a `notifications` module whose actions are `backendSupport: false`), `config/registerDataSources.js`, `hooks/useDataSourceOptions.js`, `core/` (node types, domain model), `components/` (`WorkflowBuilder`, `WorkflowLauncher`, `WorkflowVisualCanvas` on Visual Flow, node library/properties, `WorkflowLocalStorageNotice`), `hooks/useWorkflowStore.js` (Zustand `persist`, key `ican-workflow-drafts`), `templates/`; module definitions in `features/{leads,opportunities,outreach-campaigns,tasks}/workflow/*WorkflowDefinition.js`; locale `workflow.js`.
 - **Node concepts:** trigger (`entity.event`), conditions, actions (`backendSupport: true|false` per action), branch, wait, wait-for-event, variables (`{{key}}`), context (`module`, `entity`, `entityId`).
 - **API:** none — workflows are local browser drafts; the UI never claims a workflow is running. Suggested backend surface: `GET|POST /workflows`, `GET|PUT|DELETE /workflows/{id}`, `POST /workflows/{id}/activate|pause|duplicate`, `GET /workflows/{id}/executions`, `GET /workflow-executions/{id}`, `GET /workflow-executions/{id}/logs`, plus event bus, action executors, scheduler/queue, variable resolution, versioning, retry, idempotency, loop protection, permissions and tenant capabilities.
-- **Used by:** `/automation`, deals workspace, outreach campaign details, any module via `WorkflowLauncher`.
+- **Used by:** `/automation`, deals workspace, outreach campaign details, any module via `WorkflowLauncher`, and as a full page via **`WorkflowModuleWorkspace({ context })`** (notice + embedded builder; added 2026-10-01 01:20 (Africa/Cairo)) in `/LeadsCenter/automation` and the Communication hub `/<module>/automation`.
 - **Extend:** new module = `features/<module>/workflow/<module>WorkflowDefinition.js` calling `registerWorkflowModule({...})` + one import line in `registerBuiltinModules.js` + labels in `locales/{ar,en}/workflow.js`. New action field data source = a `case` in `useDataSourceOptions.js` registered in `registerDataSources.js`. Never build a second automation engine.
 - **Known issues:** no persistence or execution backend; drafts are per browser; many actions `backendSupport: false` (e.g. send notification).
 

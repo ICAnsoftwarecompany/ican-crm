@@ -78,6 +78,8 @@ export default {
     "proposalBuilder": "Proposal Builder",
     "importExport": "Import & Export",
     "leadsCenterSettings": "Leads Center Settings",
+    "automation": "Automation",
+    "aiSetup": "AI setup",
     "leadsCenterMenu": "Leads Center menu",
     "bulkActionsRail": "Selected customers actions",
     "customersListAriaLabel": "Customers list",
@@ -386,6 +388,41 @@ export default {
       "loading": "Loading activity log...",
       "loadError": "Could not load the activity log right now.",
       "resizeWindow": "Resize the window"
+    }
+  },
+  "automation": {
+    "description": "Automatic rules on leads: on creation, status change, assignment and follow-up."
+  },
+  "assignments": {
+    "description": "Rules that assign new leads to the sales team."
+  },
+  "ai": {
+    "description": "What AI may do inside the Leads Center.",
+    "capabilities": {
+      "scoreLeads": {
+        "label": "Score leads",
+        "description": "Gives each lead a score from interest, engagement and buying signals."
+      },
+      "summarizeLead": {
+        "label": "Summarize the lead",
+        "description": "A quick summary of the lead history, conversations and activities."
+      },
+      "suggestNextAction": {
+        "label": "Suggest the next action",
+        "description": "Suggests a call, a meeting or a status change."
+      },
+      "smartAssignment": {
+        "label": "Smart assignment",
+        "description": "Suggests the best rep for each new lead by skill and workload."
+      },
+      "draftFollowUp": {
+        "label": "Draft a follow-up",
+        "description": "Drafts a follow-up message the rep reviews before sending."
+      },
+      "detectDuplicates": {
+        "label": "Detect duplicates",
+        "description": "Flags leads registered with the same phone or email."
+      }
     }
   }
 }

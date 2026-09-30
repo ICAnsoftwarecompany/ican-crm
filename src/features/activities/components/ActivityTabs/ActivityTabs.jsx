@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { ACTIVITY_VIEW_MODES, getActivityTabOptions } from '../../constants/activityConstants'
 
-export function ActivityTabs({ type, view, onTypeChange, onViewChange, showTypeTabs = true }) {
+export function ActivityTabs({ type, view, onTypeChange, onViewChange, showTypeTabs = true, showViewToggle = true }) {
   const { t } = useTranslation()
   const tabOptions = getActivityTabOptions(t)
 
@@ -27,7 +27,7 @@ export function ActivityTabs({ type, view, onTypeChange, onViewChange, showTypeT
         })}
       </div>
 
-      <div className="flex rounded-lg bg-[var(--surface-2)] p-1">
+      {showViewToggle && <div className="flex rounded-lg bg-[var(--surface-2)] p-1">
         {[
           { value: ACTIVITY_VIEW_MODES.list, label: t('activities.viewModeTabs.table') },
           { value: ACTIVITY_VIEW_MODES.calendar, label: t('activities.viewModeTabs.calendar') },
@@ -43,7 +43,7 @@ export function ActivityTabs({ type, view, onTypeChange, onViewChange, showTypeT
             {item.label}
           </button>
         ))}
-      </div>
+      </div>}
     </section>
   )
 }

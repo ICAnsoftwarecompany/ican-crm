@@ -33,7 +33,6 @@
 
 import {
   LayoutDashboard,
-  Users,
   UserCheck,
   PhoneCall,
   Presentation,
@@ -77,6 +76,14 @@ export const navigationConfig = [
         path: '/',
         end: true,
       },
+      // My Work (added 2026-10-01): one page per user across Sales, Customer Hub and
+      // Communication — not under either department. See features/my-work/README.md.
+      {
+        id: 'my-work',
+        labelKey: 'nav.myWork',
+        icon: ListChecks,
+        path: '/my-work',
+      },
     ],
   },
 
@@ -91,13 +98,6 @@ export const navigationConfig = [
     labelKey: 'nav.sections.sales',
     module: 'sales',
     items: [
-      {
-        id: 'leads',
-        labelKey: 'nav.leads',
-        icon: Users,
-        path: '/leads',
-        end: true,
-      },
       {
         id: 'customers',
         labelKey: 'nav.customers',
@@ -119,6 +119,15 @@ export const navigationConfig = [
         icon: FileSignature,
         path: '/LeadsCenter/proposals',
         activePatterns: ['/LeadsCenter/proposals', '/LeadsCenter/proposals/*'],
+      },
+      // Sales teams (moved out of the Leads Center sub-sidebar 2026-10-01). Same route; the
+      // longer '/LeadsCenter/teams' prefix wins over the Leads Center item when active.
+      {
+        id: 'sales-teams',
+        labelKey: 'nav.salesTeams',
+        icon: UsersRound,
+        path: '/LeadsCenter/teams',
+        activePatterns: ['/LeadsCenter/teams', '/LeadsCenter/teams/*'],
       },
     ],
   },

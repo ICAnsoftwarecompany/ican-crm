@@ -4,7 +4,7 @@ import { PrivateRoute } from './PrivateRoute'
 import { MainLayout } from '../../shared/components/layout/MainLayout'
 import { LoginPage } from '../../pages/auth/LoginPage'
 import { DashboardPage } from '../../pages/dashboard/DashboardPage'
-import { LeadsPage } from '../../pages/leads/LeadsPage'
+import { MyWorkPage } from '../../pages/my-work/MyWorkPage'
 import { CustomersPage } from '../../pages/customers/CustomersPage'
 import { CustomersLayout } from '../../pages/customers/layout/CustomersLayout'
 import { NewCustomersPage } from '../../pages/customers/pages/NewCustomersPage'
@@ -18,6 +18,8 @@ import { CustomerCustomizationPage } from '../../pages/customers/pages/customiza
 import { CustomerImportExportPage } from '../../pages/customers/pages/CustomerImportExportPage'
 import { DeletedCustomersPage } from '../../pages/customers/pages/TrashCustomer/DeletedCustomersPage'
 import { CustomersSettingsPage } from '../../pages/customers/pages/CustomersSettingsPage'
+import { LeadsAutomationPage } from '../../pages/customers/pages/LeadsAutomationPage'
+import { LeadsAiSetupPage } from '../../pages/customers/pages/LeadsAiSetupPage'
 import { CustomerStatusBoardPage } from '../../pages/customers/pages/statusBoard/CustomerStatusBoardPage'
 import { CustomerActivitiesPage, MeetingDetailPage } from '../../pages/customers/pages/activities'
 import { CustomerLeadDetailsPage } from '../../pages/customers/pages/lead-details'
@@ -109,7 +111,10 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <DashboardPage /> },
-      { path: 'leads', element: <LeadsPage /> },
+      { path: 'my-work', element: <MyWorkPage /> },
+      // The old /leads page (raw lead logs + assignment-rule form) was removed 2026-10-01; rules now live at
+      // /LeadsCenter/assignments. /leads/:customerId (lead details) is unaffected.
+      { path: 'leads', element: <Navigate to="/LeadsCenter" replace /> },
       {
         path: 'LeadsCenter',
         element: <CustomersLayout />,
@@ -126,6 +131,8 @@ export const router = createBrowserRouter([
           { path: 'import-export', element: <CustomerImportExportPage /> },
           { path: 'trash', element: <DeletedCustomersPage /> },
           { path: 'settings', element: <CustomersSettingsPage /> },
+          { path: 'automation', element: <LeadsAutomationPage /> },
+          { path: 'ai', element: <LeadsAiSetupPage /> },
           { path: 'status-board', element: <CustomerStatusBoardPage /> },
           { path: 'activities', element: <CustomerActivitiesPage /> },
           { path: 'activities/meeting/:meetingId', element: <MeetingDetailPage /> },

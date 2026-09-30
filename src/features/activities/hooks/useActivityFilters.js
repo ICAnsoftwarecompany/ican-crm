@@ -8,10 +8,11 @@ import { DEFAULT_ACTIVITY_FILTERS, filtersToApiParams, normalizeActivityFilters 
  * @param {string} [lockedType] - 'call' | 'meeting'. When set (the /calls and /meetings pages), the
  *   type filter is fixed, ignores ?type= and is not written to the shared "last type" preference.
  */
-export function useActivityFilters(defaultType = 'all', defaultView = DEFAULT_ACTIVITY_FILTERS.view, lockedType = null) {
+export function useActivityFilters(defaultType = 'all', defaultView = DEFAULT_ACTIVITY_FILTERS.view, lockedType = null, viewStorageKey = 'activities-last-view') {
   const [searchParams, setSearchParams] = useSearchParams()
   const [persistedType, setPersistedType] = useLocalStorage('activities-last-type', defaultType || 'all')
-  const [persistedView, setPersistedView] = useLocalStorage('activities-last-view', defaultView || DEFAULT_ACTIVITY_FILTERS.view)
+  // `viewStorageKey` lets a page keep its own remembered view (the Leads Center defaults to the calendar).
+  const [persistedView, setPersistedView] = useLocalStorage(viewStorageKey, defaultView || DEFAULT_ACTIVITY_FILTERS.view)
 
   const filters = useMemo(() => {
     const raw = {

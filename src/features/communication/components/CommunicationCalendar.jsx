@@ -4,9 +4,7 @@ import { Calendar } from '../../../shared/components/calendar'
 import { ModuleNotice } from '../../../shared/components/module-pages'
 import { Button } from '../../../shared/components/ui/Button'
 import { ActivityFormDialog } from '../../activities'
-import { ActivityPreviewDrawer } from '../../calendar/components/ActivityPreviewDrawer'
-import { calendarSourceRegistry } from '../../calendar/constants/calendarSources'
-import { useCalendarEvents } from '../../calendar/hooks/useCalendarEvents'
+import { ActivityPreviewDrawer, calendarSourceRegistry, useCalendarEvents } from '../../calendar'
 import { getCommunicationModule } from '../constants/communicationModules'
 
 const ACTIVITY_TYPE_BY_SOURCE = { calls: 'call', meetings: 'meeting' }
