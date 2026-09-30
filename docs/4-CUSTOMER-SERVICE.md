@@ -6,7 +6,7 @@ Frontend domain doc for the Customer Service area. Business and backend contract
 **what the frontend has built, where it lives, and the rules for adding more**. Update it in the same
 change as the code (see [Phase log](#phase-log)).
 
-**Status:** PARTIAL — F0 Foundation, F1 Case core, F2 Service operations (**MVP-1**), F3 Service context, F4 Billing & scheduling and F5 Portal & growth (**MVP-2**) done. All data comes from the mock layer until the backend ships.
+**Status:** FRONTEND PHASES DONE — F0 Foundation, F1 Case core, F2 Service operations (**MVP-1**), F3 Service context, F4 Billing & scheduling, F5 Portal & growth (**MVP-2**), F6 Knowledge & quality and F7 AI are built. All data comes from the mock layer until the backend ships (no module is live yet). Field service, inventory and the supplier portal were moved to a later phase ([Deferred](#deferred-to-a-later-phase)).
 
 **Naming.** Users see this area as **Customer Hub / إدارة العملاء** (sidebar section), with
 **Operations Center / مركز العمليات** as its home and **Services / الخدمات** as the customer-drawer tab —
@@ -29,7 +29,8 @@ A later option: let tenants override the section name through capabilities termi
 - [API used by the frontend](#api-used-by-the-frontend)
 - [Adding a sub-module](#adding-a-sub-module)
 - [Per-phase checklist](#per-phase-checklist)
-- [Phase log](#phase-log)
+- [Deferred to a later phase](#deferred-to-a-later-phase)
+- [Phase log](#phase-log) — [F7](#f7--ai--2026-09-30) · [F6](#f6--knowledge--quality--2026-09-30) · [F5](#f5--portal--growth-mvp-2--2026-09-30) · [F4](#f4--billing-lite-subscriptions-scheduling-work-orders--2026-09-30) · [F3](#f3--service-context--2026-09-29) · [F2](#f2--service-operations-mvp-1--2026-09-29) · [F1](#f1--case-core--2026-09-29) · [F0](#f0--foundation--2026-09-28)
 
 ---
 
@@ -57,8 +58,8 @@ code (`features/service/core/constants/serviceModules.js`) and is rendered live 
 | **F3** | Service context | Pipeline editor (statuses/transitions per case type), item types & capabilities settings, service records (generic by type) with participants, components, entries, batches; assets, warranty, entitlements, contracts, handoffs, setup wizard | — | ✅ Done |
 | **F4** | Billing & scheduling | Payment plans + preview engine (reusable calculator), schedules & payments, collections workspace, subscriptions lifecycle, scheduling & capacity, work orders, courier dispatch + POD, COD remittances | — | ✅ Done (see F4 log for what is left) |
 | **F5** | Portal & growth | Customer portal app (self / guardian / B2B / guest) + portal admin & request catalog, imports, follow-up programs, portfolios, API clients & webhooks | **MVP-2** (pilot) | ✅ Done (see F5 log for what is left) |
-| **F6** | Knowledge & quality | Public KB & self-service, quality reviews, NPS/CES, template versioning, form & workflow builders | — | Planned |
-| **F7** | AI | Triage, suggested replies/articles, summaries, AI agent, health score | — | Planned |
+| **F6** | Knowledge & quality | KB versions + review workflow + expiry + stats, portal help & public help center, deflection; quality checklists, sampling, reviews (RCA/CAPA); NPS/CES; Workflow Engine registration; case-type form builder; template versioning; global search; major incidents | — | ✅ Done (see F6 log) |
+| **F7** | AI | AI signals, triage, summaries, same-language draft replies, duplicates, assignment suggestions, AI settings & usage; portal AI agent with handoff; customer health score, at-risk list, advanced analytics; subscription proration | — | ✅ Done — AI only; field service / inventory / supplier portal deferred (see F7 log) |
 
 Frontend can run ahead of the backend: each phase ships on mock data and flips to live module by module.
 
@@ -104,8 +105,14 @@ src/features/service/          ← all business code (README.md inside)
 ├── follow-ups/                ← F5: follow-up programs, workspace, manual enroll (README.md inside)
 ├── portfolios/                ← F5: customer portfolios and owners (README.md inside)
 ├── api-access/                ← F5: public API clients, outbound webhooks, delivery log (README.md inside)
+├── quality/                   ← F6: checklists, sampling, reviews with RCA/CAPA, NPS/CES survey settings (README.md inside)
+├── workflow/                  ← F6: Customer Hub triggers/conditions/actions registered in features/workflow-engine (README.md inside)
+├── incidents/                 ← F6: major incidents, linked cases, public updates (README.md inside)
+├── search/                    ← F6: global service search (README.md inside)
+├── ai/                        ← F7: AI signals, case panel, summaries, draft replies, duplicates, AI settings + agent (README.md inside)
+├── health/                    ← F7: health score card, at-risk customers, advanced analytics (README.md inside)
 ├── portal-transport.js        ← F5: the only Service file the portal app may import (portal endpoints + mock switch)
-└── <sub-module>/              ← one folder per sub-module as phases ship: records/, assets/ …
+└── <sub-module>/              ← one folder per sub-module as phases ship
 
 src/pages/service/             ← thin route pages + serviceRoutes.js (README.md inside)
 src/locales/{ar,en}/service.js ← `service.*` copy, split into ./service/*.js parts
@@ -202,10 +209,11 @@ component → hook (React Query) → casesApi → createServiceApi('cases') → 
 | `/service/cases/:caseId` | `ServiceCaseDetailPage` — timeline, reply / internal note, status, properties, contacts | F1 |
 | `/service/my-work` | `ServiceMyWorkPage` — everything assigned to me | F1 |
 | `/service/cases?saved=&priority=&queue=&type=` | Cases filters + saved views (same page) | F2 |
-| `/service/knowledge` | `ServiceKnowledgePage` — search, category/status filters, article list | F2 |
-| `/service/knowledge/:articleId` | `ServiceKnowledgeArticlePage` — editor; `new` creates a draft | F2 |
-| `/service/reports` | `ServiceReportsPage` — `?tab=overview|feedback&period=7d|30d|90d` | F2 |
-| `/service/settings/:section?` | `ServiceSettingsPage` — setup wizard, import data, case types, queues, catalog (items, item types, record types, pipelines), contract types, payment plans + assignments, scheduling resources, follow-up programs, portfolios, portal (accounts, policies, request catalog, branding), API clients, webhooks, SLA policies, business hours, escalation, saved replies, macros, KB categories | F2–F5 |
+| `/service/knowledge` | `ServiceKnowledgePage` — search, category/status filters, article list; F6: views `?status=changes|expiring`, stats (views, helpful rate, deflections, content gaps) | F2 · F6 |
+| `/service/knowledge/:articleId` | `ServiceKnowledgeArticlePage` — editor; `new` creates a draft. F6: type, expiry date, reviewer, review workflow (submit → approve/reject → publish → archive), versions drawer with restore | F2 · F6 |
+| `/service/reports` | `ServiceReportsPage` — `?tab=overview|feedback|quality|advanced&period=7d|30d|90d` (quality = F6 review workspace, advanced = F7 analytics) | F2 · F6 · F7 |
+| `/service/incidents/:incidentId?` | `ServiceIncidentsPage` — major incidents list + detail (linked from the Operations Center) | F6 |
+| `/service/settings/:section?` | `ServiceSettingsPage` — setup wizard, import data, case types, queues, catalog (items, item types, record types, pipelines), contract types, payment plans + assignments, scheduling resources, follow-up programs, portfolios, portal (accounts, policies, request catalog, branding), API clients, webhooks, SLA policies, business hours, escalation, saved replies, macros, KB categories; F6: template version, quality checklists, sampling rules, surveys, case-type form fields; F7: AI settings, AI agent | F2–F7 |
 | `/service/records/:recordType?/:recordId?` | `ServiceRecordsPage` / `ServiceRecordDetailPage` inside `ServicesHubLayout` (Services hub) | F3 |
 | `/service/batches/:recordType?/:batchId?` | `ServiceBatchesPage` (Services hub) | F3 |
 | `/service/assets/:assetId?` | `ServiceAssetsPage` (Services hub, feature `assets`) | F3 |
@@ -218,7 +226,7 @@ component → hook (React Query) → casesApi → createServiceApi('cases') → 
 | `/service/scheduling` | `ServiceSchedulingPage` (Services hub, features `scheduling` / `workOrders` / `courierAssignment`) | F4 |
 | `/service/deliveries` | `ServiceDeliveriesPage` (Services hub, feature `courierAssignment`) | F4 |
 | `/service/follow-ups` | `ServiceFollowUpsPage` (Services hub tab "Follow-ups") — due buckets, outcome drawer, manual enroll | F5 |
-| `/portal/*` (separate app) | `login`, `track` (guest), then `/`, `services/:recordId?`, `requests`, `requests/new`, `requests/:caseId`, `catalog`, `payments`, `assets`, `documents`, `help`, `company` — sections shown = tenant-enabled ∩ membership policy | F5 |
+| `/portal/*` (separate app) | `login`, `track` (guest), then `/`, `services/:recordId?`, `requests`, `requests/new`, `requests/:caseId`, `catalog`, `payments`, `assets`, `documents`, `help`, `company` — sections shown = tenant-enabled ∩ membership policy. F6: `help/:articleId`, KB suggestions + "this solved it" on new request, NPS/CES card, incident banner; public `/portal/help-center` (no sign-in, when enabled). F7: AI assistant chat bubble (when the AI agent is on) | F5 · F6 · F7 |
 | `/service/overview` | `ServiceOverviewPage` — manifest, mock template switcher, roadmap | F0 |
 
 - All Service routes are declared in `src/pages/service/serviceRoutes.js` and **lazy-loaded** (own chunks).
@@ -227,9 +235,10 @@ component → hook (React Query) → casesApi → createServiceApi('cases') → 
 - **Services hub**: one sidebar item; its tabs (`core/components/ServicesHubNav.jsx`) come from record types
   (+ their batches) and features (`assets`, `entitlements`), then Work orders, Scheduling, Deliveries, Subscriptions, Follow-ups (F5), Contracts, Handoffs and Payments (F4). New areas that
   belong to "what the customer has" (subscriptions, schedules, work orders) become tabs here, not sidebar items.
-- Sidebar section `customer-service` (`module: 'customer_service'`, label `nav.sections.customerService`)
-  in `app/navigation/navigation.config.js`: Service Center, Cases, My Work. Keep it at 3–7 items;
-  deeper destinations (settings, records, reports) go inside `/service` pages or an internal sidebar (F2).
+- Sidebar section id `customer-service` (`module: 'customer_service'`, label `nav.sections.customerService`)
+  in `app/navigation/navigation.config.js`. Keep it at 3–7 items; new destinations (incidents F6, quality and
+  advanced reports F6/F7, AI settings F7) go inside `/service` pages — Operations Center links, Reports tabs, settings groups —
+  never as new sidebar items.
 
 ## Integration points outside the area
 
@@ -240,6 +249,8 @@ Customer Service plugs into existing screens without those screens importing Ser
 | Conversations thread header → **Create case** | Workspaces accept an optional `threadHeaderActions` prop; `ConversationThread.headerActions` may be a function receiving the thread `contactDetails`. `pages/conversations/ConversationsPage.jsx` lazy-loads `CreateCaseFromConversationButton` and passes it. Conversations code never imports Service. | `features/conversations/components/{Whatsapp,Messenger,Gmail}ConversationsWorkspace.jsx`, `shared/ConversationThread.jsx`, `pages/conversations/ConversationsPage.jsx` |
 | Customer drawer → **Service** tab | One `DRAWER_TABS` entry + one branch in `ActiveTabContent`; `tabs/CustomerServiceTabSlot.jsx` lazy-loads `CustomerServiceTab` and adapts the Leads Center row. | `pages/customers/components/CustomerDetailsDrawer/CustomerDetailsDrawer.jsx`, `tabs/CustomerServiceTabSlot.jsx` |
 | Relative times | `formatRelativeTime(value, language)` added to `shared/utils/dateTime.js` (domain-neutral, tested). | `shared/utils/dateTime.js` |
+| Workflow Engine (F6) | `features/service/workflow/serviceWorkflowDefinition.js` calls `registerWorkflowModule` / `registerDataSource`; one import line loads it. The engine gained fixed `options` on data sources (returned by `useDataSourceOptions`). The engine never imports Service internals. | `features/workflow-engine/config/registerBuiltinModules.js`, `registry/workflowRegistry.js`, `hooks/useDataSourceOptions.js` |
+| Customer drawer → **Health** (F7) | `HealthScoreCard` inside the Service tab (`customer-360`). | `features/service/customer-360/*` (inside the area) |
 
 ## API used by the frontend
 
@@ -299,6 +310,18 @@ the unified body `{ success:false, code, message, errors, meta:{ request_id } }`
 | `CRUD /follow-up-programs`, `GET|POST /follow-ups`, `POST /follow-ups/{id}/outcome|exit` | See `follow-ups/README.md` | F5. Enrollment endpoints proposed; live creates Tasks in the Task Engine. |
 | `CRUD /portfolios`, `/portfolios/{id}/members` (GET/POST/PATCH/DELETE), `POST /portfolios/{id}/distribute` | See `portfolios/README.md` | F5. Members + distribute proposed. |
 | `CRUD /api-clients` (+ `/catalog`, `/{id}/rotate`), `CRUD /webhook-subscriptions` (+ `/rotate-secret`, `/test`, `/deliveries`), `POST /webhook-deliveries/{id}/redeliver` | See `api-access/README.md` | F5. Clear key / secret only in the create and rotate responses. |
+| `GET /service/kb/articles?status=changes|expiring` (+ `meta.counts`), `GET …/articles/{id}/versions`, `POST …/versions/{v}/restore`, `POST …/articles/{id}/submit-review|reject|publish|archive|unarchive`, `GET /service/kb/stats` | See `knowledge/README.md` | F6. Reject needs a note; live = published version, not archived, not expired. Stats include content gaps (portal searches with no result) and deflections. |
+| `/api/portal/kb` (+ `/{id}`, `/{id}/vote`, `/suggest`, `/deflections`), `/api/portal/public/kb[/{id}]`, `GET /api/portal/surveys/active` | See `features/portal/README.md` | F6. Portal shows `customer`+`public` articles; public help only `public`, only when `public_help_center` is on. |
+| `CRUD /service/quality/checklists`, `/quality/sampling-rules`, `/feedback/surveys`; `POST /quality/sampling/run`; `GET|POST /quality/reviews`, `GET|PATCH|DELETE /quality/reviews/{id}`; `GET /quality/summary` | See `quality/README.md` | F6. Sampling is idempotent; a failing review needs RCA + CAPA (422). Weighted score on the server. |
+| `GET /service/feedback/responses?survey=csat|nps|ces` (+ NPS/CES summaries) | See `feedback/README.md` | F6. A low portal score opens a case (server rule). |
+| `GET /service/search?q=` | Grouped results (cases, customers, records, articles) | F6. Proposed. |
+| `GET|POST /service/incidents`, `GET /service/incidents/{id}`, `POST …/{id}/updates|link`, `GET /api/portal/incidents/active` | See `incidents/README.md` | F6. Proposed. `409 INCIDENT_RESOLVED`. |
+| `GET /settings/templates/installation`, `POST …/installation/upgrade { dry_run, choices }` | See `setup/README.md` | F6. Proposed. `409 TEMPLATE_UP_TO_DATE`. Never deletes; conflicts default to "keep mine". |
+| `CRUD /service/case-types` gains `form_fields[]`; `POST/PATCH /service/cases` accept `custom_fields{}` | See `cases/README.md` | F6. Required custom fields → 422 `custom_fields.<key>`. |
+| `GET|PUT /service/ai/settings`, `GET /service/ai/usage`, `POST /service/ai/triage`, `GET|POST /service/cases/{id}/ai/summary`, `GET …/ai/duplicates|assignment`, `POST …/ai/suggest-reply|feedback`, `POST /service/cases/{id}/mark-duplicate` | See `ai/README.md` | F7. Proposed (spec §45). `403 FEATURE_DISABLED` when a feature is off, `429 AI_LIMIT_REACHED` over the monthly limit. Cases carry `ai_signals` (sentiment, urgency, topics). |
+| `POST /api/portal/assistant/messages`, `GET /service/ai/agent/conversations`, `POST /service/ai/agent/test` | See `ai/README.md` | F7. Customer-scoped tools only; hands over to a person on sensitive / handoff topics; the test console never opens a case. |
+| `GET /service/customers/{id}/health`, `GET /service/health?band=`, `GET /service/reports/advanced?period=` | See `health/README.md` | F7. Proposed. Score + band (healthy / watch / at_risk) + factors computed on the server. |
+| `POST /subscriptions/{id}/change-preview`, `PATCH /subscriptions/{id} { pending_change: { effective: 'now' } }` | See `subscriptions/README.md` | F7. Proration: extra charge line or credit balance. Proposed. |
 
 ## Adding a sub-module
 
@@ -323,7 +346,76 @@ Copy into the phase log entry and tick honestly (write "not verified" when true)
 - [ ] Works on at least two industry templates without code changes
 - [ ] Sub-module README + this doc + `3-FEATURES.md` section updated
 
+## Deferred to a later phase
+
+Agreed at the start of F6/F7 (2026-09-30): F7 ships **AI only**. These spec areas move to a later phase (F8),
+built when a pilot tenant needs them:
+- **Field service** beyond F4 work orders: technician mobile view, routes, parts used on a visit, offline check-in.
+- **Inventory**: spare parts, warehouses, stock movements, reservations against work orders.
+- **Supplier portal**: supplier accounts, purchase requests, supplier-side updates (reuses the portal app shell).
+
+Also not built yet (smaller): AI summaries of a conversation / handoff, a staff view of live portal assistant chats
+(the mock shows seeded conversations; chats made in the portal tab live in a separate in-memory mock), backend execution of
+the Customer Hub workflow items (all `backendSupport: false`).
+
 ## Phase log
+
+### F7 — AI · 2026-09-30
+
+Rule for everything below (spec §45.1): **AI gives signals and suggestions; people and rules decide.** Nothing is
+sent, assigned or closed by the AI on its own, except the portal AI agent, which only uses customer-scoped tools
+and hands over to a person.
+- **Added:**
+  - `ai/` — AI signal chips on cases (sentiment, urgency, topics); **triage hint** in the create dialog (suggested type,
+    priority, queue); case **AI panel**: summary (regenerate), possible duplicates (mark as duplicate), assignment
+    suggestions with reasons, feedback (useful / not useful); **draft reply** button in the composer, grounded only in
+    KB articles in the reply's language; **AI settings** (features on/off, tone, language, auto-reply, blocked topics,
+    handoff topics, monthly limit) + usage & acceptance card (settings group "AI").
+  - **AI agent** — portal chat bubble (`PortalAssistant`) when the tenant turns it on: answers from KB, request status and
+    payments of *this* customer, opens a request only when asked, hands over on sensitive / handoff topics. Staff panel
+    (settings → AI agent) with conversation log and a test console on one customer (never opens a case).
+  - `health/` — **health score** card in the customer drawer (score, band, factors), **at-risk customers** in the
+    Operations Center, **advanced report** tab (aging, repeat contact, deflection, AI resolution, workload, follow-ups).
+  - Subscriptions: **change plan** dialog with preview; effective now → proration line or credit balance.
+- **Mock layer:** `state/aiEngine.js`, `aiAgent.js`, `healthScore.js`, `proration.js` (pure + tested); handlers `aiHandlers`,
+  `aiAgentHandlers`, `healthHandlers`; `serializeCase` adds `ai_signals`.
+- **Not built:** real model calls (server), conversation / handoff summaries, staff live view of portal chats, field
+  service / inventory / supplier portal ([Deferred](#deferred-to-a-later-phase)).
+- **Mocked modules:** ai, health (+ all earlier). **Live:** none.
+
+### F6 — Knowledge & quality · 2026-09-30
+
+- **Added:**
+  - **Knowledge** — article versions (drawer + restore), review workflow (draft → review → approve/reject with note →
+    publish → archive/unarchive), article type, expiry date and reviewer, views "changes requested" and "expiring", stats
+    (views, helpful rate, deflections, **content gaps** = portal searches with no result).
+  - **Self-service** — portal help (search, categories, article, helpful vote), KB suggestions while writing a request
+    with "this solved it" (deflection), and a **public help center** (`/portal/help-center`, no sign-in, `public`
+    articles only, switch in portal settings). Fixed: portal no longer leaks internal articles through category visibility.
+  - `quality/` — checklists with weighted criteria, sampling rules + idempotent sampling run, review drawer (scores,
+    auto-fail criteria, RCA + CAPA required when failing), "Send to quality" on a case, quality tab in Reports, quality
+    average per agent.
+  - **Surveys** — CSAT / NPS / CES definitions (settings → Quality), NPS/CES summaries in Feedback, portal NPS/CES card,
+    low score opens a case.
+  - `workflow/` — Customer Hub triggers (11), conditions (5) and actions (8) registered in the app's **Workflow Engine**
+    (one import line, `backendSupport: false`).
+  - **Form builder** for case types (`form_fields`), custom fields in the create dialog and case sidebar.
+  - **Template versioning** (settings → General → Template version): dry-run diff, conflicts, take/keep, history.
+  - `search/` — global search in the Operations Center. `incidents/` — major incidents with linked cases, status updates,
+    public updates to linked requests and a portal banner.
+- **Outside the area:** `features/workflow-engine` (registry `options`, `useDataSourceOptions` default case, one import in
+  `registerBuiltinModules.js`); `features/portal` (help pages, deflection, survey card, incident banner, assistant).
+- **Mock layer:** `state/kbLive.js`, `qualityScore.js`, `templateUpgrades.js`; handlers `kbHandlers` (article routes moved out
+  of `communicationHandlers`), `portalKbHandlers`, `qualityHandlers`, `templateVersionHandlers`, `searchIncidentHandlers`;
+  seeds for quality, surveys, KB search log / deflections, case-type form fields, one active incident.
+- **Not built:** rich text / attachments in articles, multi-step KB approval chains, calibration sessions for reviewers,
+  visual form logic (conditions between fields), backend execution of workflow items.
+
+**F6 + F7 checklist:** lint ✅ · i18n ✅ · architecture ✅ · service gate ✅ · vitest ✅ (764 tests) · build ✅ ·
+screenshots (EN light / AR dark) of KB workflow, versions, stats, portal help + public help center, deflection, quality
+workspace + review drawer, surveys, AI panel, draft reply, triage hint, AI settings, AI agent (portal + staff), advanced
+report, at-risk list, change-plan dialog, workflow palette, form builder, template versions, search, incidents ✅ ·
+customer drawer health card **not visually verified** (needs the real customers backend).
 
 ### F5 — Portal & growth (MVP-2) · 2026-09-30
 

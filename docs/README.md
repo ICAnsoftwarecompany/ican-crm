@@ -1,0 +1,80 @@
+# ICAN CRM — Documentation index
+
+Start here. Every doc in this folder, what it covers, and its sections. Rules for agents and contributors are in
+[../CLAUDE.md](../CLAUDE.md). **If a doc and the code disagree, the code wins.** When you change a feature, update its
+doc in the same change.
+
+| # | Doc | Read it when |
+|---|---|---|
+| 1 | [1-ARCHITECTURE.md](1-ARCHITECTURE.md) | You touch structure, shared engines, i18n, theme, routing, tenant/auth, or need the Definition of Done |
+| 2 | [2-SALES.md](2-SALES.md) | You work on leads, customers, assignment, statuses, activities, deals, opportunities, proposals |
+| 3 | [3-FEATURES.md](3-FEATURES.md) | You work on conversations, campaigns, outreach, social, tasks, automation, notifications, AI agent, products, settings |
+| 4 | [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md) | You work on the Customer Hub (`features/service`, `/service/*`) or the customer portal (`/portal/*`) |
+| — | [customer-service/SERVICE-MASTER-SPEC.md](customer-service/SERVICE-MASTER-SPEC.md) | Backend contract and business rules for Customer Service (Arabic) |
+| — | [customer-service/SERVICE-BRIEF.md](customer-service/SERVICE-BRIEF.md) | The decision brief behind the spec (Arabic) |
+| — | `Proposal Template Builder.pdf` | Reference design for the proposals builder |
+
+## 1-ARCHITECTURE.md — Architecture & rules
+
+- [Folder structure and ownership](1-ARCHITECTURE.md#folder-structure-and-ownership)
+- [Dependency rules](1-ARCHITECTURE.md#dependency-rules)
+- [Routes and navigation](1-ARCHITECTURE.md#routes-and-navigation)
+- [Tenant, auth, httpClient and api_password](1-ARCHITECTURE.md#tenant-auth-httpclient-and-api_password)
+- [Realtime](1-ARCHITECTURE.md#realtime) · [Notification center](1-ARCHITECTURE.md#notification-center) · [Operational alerts](1-ARCHITECTURE.md#operational-alerts)
+- [i18n](1-ARCHITECTURE.md#i18n) · [RTL and LTR](1-ARCHITECTURE.md#rtl-and-ltr) · [Theme and dark mode](1-ARCHITECTURE.md#theme-and-dark-mode)
+- [Conventions](1-ARCHITECTURE.md#conventions)
+- [Shared engines](1-ARCHITECTURE.md#shared-engines): [DataTable](1-ARCHITECTURE.md#datatable), [Calendar](1-ARCHITECTURE.md#calendar), [Visual Flow](1-ARCHITECTURE.md#visual-flow), [Pipeline Board](1-ARCHITECTURE.md#pipeline-board), [Sidebar and navigation](1-ARCHITECTURE.md#sidebar-and-navigation), [Other shared UI](1-ARCHITECTURE.md#other-shared-ui)
+- [Checks and commands](1-ARCHITECTURE.md#checks-and-commands) · [Definition of Done](1-ARCHITECTURE.md#definition-of-done)
+- [Adding a new module](1-ARCHITECTURE.md#adding-a-new-module) · [Known architecture debt](1-ARCHITECTURE.md#known-architecture-debt)
+
+## 2-SALES.md — Sales domain
+
+- [Domain model](2-SALES.md#domain-model) · [Lead lifecycle](2-SALES.md#lead-lifecycle)
+- [Statuses, tags and pipeline](2-SALES.md#statuses-tags-and-pipeline)
+- [Leads page and lead assignment](2-SALES.md#leads-page-and-lead-assignment) · [Leads Center pages](2-SALES.md#leads-center-pages)
+- [Customer details drawer](2-SALES.md#customer-details-drawer) · [Bulk actions](2-SALES.md#bulk-actions) · [Customer activity timeline](2-SALES.md#customer-activity-timeline)
+- [Teams and users](2-SALES.md#teams-and-users) · [Activities, calls and meetings](2-SALES.md#activities-calls-and-meetings)
+- [Deals](2-SALES.md#deals) · [Opportunities](2-SALES.md#opportunities) · [Proposals](2-SALES.md#proposals)
+- [Sales dashboard](2-SALES.md#sales-dashboard) · [Sales domain known issues](2-SALES.md#sales-domain-known-issues)
+
+## 3-FEATURES.md — Features
+
+- [Conversations](3-FEATURES.md#conversations) (WhatsApp / Messenger / Gmail) · [Internal chat](3-FEATURES.md#internal-chat)
+- [Ad campaigns and Meta integrations](3-FEATURES.md#ad-campaigns-and-meta-integrations) · [Outreach campaigns](3-FEATURES.md#outreach-campaigns) · [Social media](3-FEATURES.md#social-media)
+- [Tasks](3-FEATURES.md#tasks) · [Workflow engine and automation](3-FEATURES.md#workflow-engine-and-automation) · [Integrations](3-FEATURES.md#integrations)
+- [Notifications](3-FEATURES.md#notifications) · [Operational alerts](3-FEATURES.md#operational-alerts) · [AI agent](3-FEATURES.md#ai-agent)
+- [Products and services](3-FEATURES.md#products-and-services) · [Settings and appearance](3-FEATURES.md#settings-and-appearance)
+- [Customer Hub (Customer Service)](3-FEATURES.md#customer-hub-customer-service): summary and module inventory; details are in doc 4
+
+## 4-CUSTOMER-SERVICE.md — Customer Hub (Service Operations)
+
+- [What it is](4-CUSTOMER-SERVICE.md#what-it-is) · [Phases](4-CUSTOMER-SERVICE.md#phases) (F0–F7, all built on mock data)
+- [Where the code lives](4-CUSTOMER-SERVICE.md#where-the-code-lives) · [How data flows (mock → live)](4-CUSTOMER-SERVICE.md#how-data-flows-mock--live)
+- [Capabilities and terminology](4-CUSTOMER-SERVICE.md#capabilities-and-terminology) · [i18n rules](4-CUSTOMER-SERVICE.md#i18n-rules-for-service) · [Theme and dark mode](4-CUSTOMER-SERVICE.md#theme-and-dark-mode)
+- [Routes and navigation](4-CUSTOMER-SERVICE.md#routes-and-navigation) · [Integration points outside the area](4-CUSTOMER-SERVICE.md#integration-points-outside-the-area)
+- [API used by the frontend](4-CUSTOMER-SERVICE.md#api-used-by-the-frontend) (the proposed backend contract)
+- [Adding a sub-module](4-CUSTOMER-SERVICE.md#adding-a-sub-module) · [Per-phase checklist](4-CUSTOMER-SERVICE.md#per-phase-checklist)
+- [Deferred to a later phase](4-CUSTOMER-SERVICE.md#deferred-to-a-later-phase) (field service, inventory, supplier portal)
+- [Phase log](4-CUSTOMER-SERVICE.md#phase-log): what each phase added, what is mocked, what was not built or not verified
+
+### Customer Hub READMEs (next to the code)
+
+| Area | README |
+|---|---|
+| Map of all sub-modules | [features/service/README.md](../src/features/service/README.md) |
+| Core, mocks, pages | [core](../src/features/service/core/README.md) · [mocks](../src/features/service/mocks/README.md) · [pages/service](../src/pages/service/README.md) |
+| F1 case core | [cases](../src/features/service/cases/README.md) · [my-work](../src/features/service/my-work/README.md) · [contacts](../src/features/service/contacts/README.md) · [customer-360](../src/features/service/customer-360/README.md) |
+| F2 operations | [settings](../src/features/service/settings/README.md) · [sla](../src/features/service/sla/README.md) · [replies](../src/features/service/replies/README.md) · [knowledge](../src/features/service/knowledge/README.md) · [feedback](../src/features/service/feedback/README.md) · [reports](../src/features/service/reports/README.md) · [saved-views](../src/features/service/saved-views/README.md) |
+| F3 service context | [catalog](../src/features/service/catalog/README.md) · [pipelines](../src/features/service/pipelines/README.md) · [records](../src/features/service/records/README.md) · [assets](../src/features/service/assets/README.md) · [entitlements](../src/features/service/entitlements/README.md) · [contracts](../src/features/service/contracts/README.md) · [handoffs](../src/features/service/handoffs/README.md) · [setup](../src/features/service/setup/README.md) |
+| F4 billing & scheduling | [billing](../src/features/service/billing/README.md) · [subscriptions](../src/features/service/subscriptions/README.md) · [scheduling](../src/features/service/scheduling/README.md) · [work-orders](../src/features/service/work-orders/README.md) · [deliveries](../src/features/service/deliveries/README.md) |
+| F5 portal & growth | [portal-admin](../src/features/service/portal-admin/README.md) · [imports](../src/features/service/imports/README.md) · [follow-ups](../src/features/service/follow-ups/README.md) · [portfolios](../src/features/service/portfolios/README.md) · [api-access](../src/features/service/api-access/README.md) · portal app: [src/portal](../src/portal/README.md), [features/portal](../src/features/portal/README.md) |
+| F6 knowledge & quality | [knowledge](../src/features/service/knowledge/README.md) · [quality](../src/features/service/quality/README.md) · [workflow](../src/features/service/workflow/README.md) · [incidents](../src/features/service/incidents/README.md) · [search](../src/features/service/search/README.md) · template versioning in [setup](../src/features/service/setup/README.md) |
+| F7 AI | [ai](../src/features/service/ai/README.md) · [health](../src/features/service/health/README.md) |
+
+## customer-service/SERVICE-MASTER-SPEC.md — backend spec (Arabic)
+
+Parts: 1 Foundation (context, scope, principles, architecture, engineering standards) · 2 Shared platform services
+(events/outbox/queue, audit, permissions, packages & feature flags, custom fields, pipeline engine, assignment,
+files, numbering…) · 3 Business core · 4 Sales integration · 5 Service operations (cases, SLA, knowledge, feedback &
+quality, AI §45, reports §46, setup §47…) · 6 Industry guides · 7 Data & API (§51 endpoint list) · 8 Delivery (phases
+and acceptance criteria §55). The spec has its own index at the top.

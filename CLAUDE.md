@@ -77,6 +77,7 @@ Legacy/transitional (don't copy these patterns, don't add to them):
 Do not confuse: **campaigns** (paid Meta ads) ≠ **outreach-campaigns** (sending messages).
 `integrations` (connection capabilities) and `meta-integrations` (Meta APIs) overlap — ask before moving code between them.
 
+Docs index (every doc and its sections): [docs/README.md](docs/README.md).
 Policy docs: [docs/1-ARCHITECTURE.md](docs/1-ARCHITECTURE.md) (rules; checklist in
 [Definition of Done](docs/1-ARCHITECTURE.md#definition-of-done)); domain docs [docs/2-SALES.md](docs/2-SALES.md),
 [docs/3-FEATURES.md](docs/3-FEATURES.md) and [docs/4-CUSTOMER-SERVICE.md](docs/4-CUSTOMER-SERVICE.md).

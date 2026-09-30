@@ -213,7 +213,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 ## Customer Hub (Customer Service)
 
-**Status:** PARTIAL — F0 Foundation, F1 Case core, F2 Service operations (MVP-1), F3 Service context, F4 Billing & scheduling and F5 Portal & growth (MVP-2) done (mock data only). User-facing name **Customer Hub / إدارة العملاء**; code name stays `service`. Full domain doc: [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md).
+**Status:** FRONTEND DONE ON MOCK DATA — F0–F7 built (F2 = MVP-1, F5 = MVP-2); field service, inventory and supplier portal deferred to a later phase. User-facing name **Customer Hub / إدارة العملاء**; code name stays `service`. Full domain doc: [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md).
 
 **What it does:** Service Operations after the sale — cases/tickets, SLA, service records (bookings, shipments, enrollments, projects), assets and warranty, entitlements, contracts, installments, scheduling, work orders, follow-ups and a customer portal. Works with Sales (contract → handoff) or standalone. Industries are configuration: screens render from the tenant capabilities manifest.
 
@@ -250,8 +250,12 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 | Imports (CSV, mapping, dry run, error file) | F5 | CURRENT | mock |
 | Follow-up programs + Follow-ups workspace, portfolios | F5 | CURRENT | mock |
 | API clients + outbound webhooks (delivery log) | F5 | CURRENT | mock |
-| Public KB, quality, template versioning, builders | F6 | PLANNED | — |
-| AI triage, suggestions, summaries, agent, health score | F7 | PLANNED | — |
+| KB versions + review workflow, stats & content gaps, portal help + public help center, deflection | F6 | CURRENT | mock |
+| Quality checklists, sampling, reviews (RCA/CAPA); NPS/CES surveys | F6 | CURRENT | mock |
+| Workflow Engine registration, case-type form builder, template versioning, global search, major incidents | F6 | CURRENT | mock |
+| AI signals, triage, summaries, draft replies, duplicates, assignment suggestions, AI settings | F7 | CURRENT | mock |
+| Portal AI agent (handoff), health score, at-risk list, advanced analytics, subscription proration | F7 | CURRENT | mock |
+| Field service, inventory, supplier portal | F8 | DEFERRED | — |
 
 **Reuses (never duplicates):** `features/customers` (identity), `features/conversations` (channels via `getChannelAdapter` / `index.js`), `features/tasks` (subtasks, follow-up steps), `features/workflow-engine` (automation), `features/teams`/`users`, `features/notifications` + realtime, `shared/components/data-table`, `pipeline-board`, `calendar`.
 
@@ -259,4 +263,4 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 **Navigation:** section Customer Hub (`module: 'customer_service'`): Operations Center, Cases, Services (hub with tabs), My Work, Knowledge Base, Reports, Operations Settings.
 
-**Known issues:** document builder/PDF for contracts not built yet; portal uploads have no file storage yet and online payment has no real gateway; service config lives in the Customer Hub, not in the Products form; SLA in the mock uses wall-clock time (the backend owns business-time SLA); the board shows loaded pages only; Conversation → Case and the drawer Service tab were not visually verified against the real backend.
+**Known issues:** Customer Hub workflow triggers/actions are `backendSupport: false` until the server ships them; AI is simulated by the mock (no model calls); document builder/PDF for contracts not built yet; portal uploads have no file storage yet and online payment has no real gateway; service config lives in the Customer Hub, not in the Products form; SLA in the mock uses wall-clock time (the backend owns business-time SLA); the board shows loaded pages only; Conversation → Case and the drawer Service tab were not visually verified against the real backend.
