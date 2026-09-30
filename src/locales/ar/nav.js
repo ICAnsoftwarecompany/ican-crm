@@ -30,6 +30,7 @@ export default {
   "calls": "المكالمات",
   "meetings": "الاجتماعات",
   "proposals": "عروض الأسعار",
+  "salesTeams": "فرق السيلز",
   "conversations": "المحادثات",
   "socialMedia": "التواصل الاجتماعي",
   "campaigns": "الحملات",

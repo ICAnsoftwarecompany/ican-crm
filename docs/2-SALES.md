@@ -74,17 +74,24 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 
 ## Leads page and lead assignment
 
+> **Documentation update:** 2026-10-01 01:20 (Africa/Cairo) — the `/leads` page was removed; assignment rules moved to the Leads Center.
+
 **Status:** PARTIAL
 
-- **What it does:** `/leads` lists lead logs, saves lead actions and manages lead-assignment rules (create/update/list).
-- **Key files:** `pages/leads/LeadsPage.jsx`; `features/leads/api/leadsApi.js`, `leadAssignmentApi.js`, `hooks/useLeads.js` (`useLeadLogs`, `useAssignmentRules`, `useLeadMutations`); `features/leads/workflow/leadWorkflowDefinition.js` (automation triggers/actions).
+- **What it does:** lead actions API (used by the Leads Center, drawer and bulk actions) and lead-assignment rules. The old `/leads` page (raw lead-log list, a developer-style "save action" form, and the rule form) was **removed**; `/leads` now redirects to `/LeadsCenter` (`/leads/:customerId` lead details is unaffected). The rules UI moved to **`/LeadsCenter/assignments`** as `AssignmentRulesPanel` (list + create, same endpoints and `{ name, active }` payload). The page's automation button is replaced by `/LeadsCenter/automation`.
+- **Key files:** `features/leads/components/AssignmentRulesPanel.jsx`, `features/leads/index.js` (public API, added 2026-10-01 01:20 (Africa/Cairo)), `constants/leadAiCapabilities.js`; `features/leads/api/leadsApi.js`, `leadAssignmentApi.js`, `hooks/useLeads.js` (`useLeadLogs`, `useAssignmentRules`, `useLeadMutations`); `features/leads/workflow/leadWorkflowDefinition.js` (automation triggers/actions).
 - **API:** `POST /api/tenant/leads/save/action`, `POST /api/tenant/leads/update-tag`, `GET /api/tenant/leads/logs`, `GET /api/tenant/leads/lead/log/{leadId}`, `POST /api/tenant/leads/manual/lead/distribution`; `POST /api/tenant/lead-assignment/create/rule`, `POST /api/tenant/lead-assignment/update/rule/{id}`, `GET /api/tenant/lead-assignment/rules`.
-- **Used by:** `/leads`; `saveAction`/`updateTag` are used across the Leads Center, drawer and bulk actions.
-- **Known issues:** `/LeadsCenter/assignments` is still a placeholder — the only assignment-rule UI is on `/leads`. No UI for manual distribution outside the API hook.
+- **Used by:** `/LeadsCenter/assignments`; `saveAction`/`updateTag` across the Leads Center, drawer and bulk actions.
+- **Known issues:** rules can be created and listed but not edited or toggled in the UI (`updateRule` exists; its payload is unconfirmed); no UI for manual distribution outside the API hook; the global lead-log list (`GET /leads/logs`) has no UI now — per-lead history stays in the activity timeline.
 
 ## Leads Center pages
 
+> **Documentation update:** 2026-10-01 01:20 (Africa/Cairo) — sub-sidebar reorganized; assignments, automation, AI setup and a calendar-first activities page added.
+
 **Status:** CURRENT (main table) · several sub-pages PLANNED (placeholders)
+
+- **Sub-sidebar (`constants/customerNavigation.js`):** *Leads Center* — All, New, Needs follow-up, Inactive, **Activities & appointments** · *Organization* — Segments & tags, Lead distribution, Duplicate records, Setup & customization · *Tools* — Import & export, Deleted records · *Footer* — **Automation**, **AI setup**, Settings. Removed from the sub-sidebar: Sales teams (now main sidebar → Sales, under Proposals, same route), Multi-status view (still opened from the main table's status tabs), Proposal builder (main sidebar → Proposals).
+- **Activities & appointments (`/LeadsCenter/activities`):** calendar-first. `ActivitiesPage` with `viewSwitchPlacement="top"` (big Calendar | Table switch under the header), `defaultView="calendar"`, its own remembered view (`leads-center-activities-view`) and `renderCalendar` → `ActivitiesCalendarView` (shared Calendar engine, `features/calendar`). Type tabs (All / Calls / Meetings) and filters apply to both views.
 
 - **What it does:** the main customer/lead workspace at `/LeadsCenter` with its own layout and internal sidebar.
 - **Key files:** `pages/customers/CustomersPage.jsx` (≈1.45k lines: table/pipeline switch, stats, filters, drawer wiring), `components/CustomersActivitySidePanel.jsx` (meetings/calls side panel), `utils/backendLocalDate.js`, `layout/CustomersLayout.jsx` (shared `SubSidebarLayout` + bulk-actions rail; updated 2026-10-01 00:25 (Africa/Cairo)), `constants/customerNavigation.js` (`getCustomersSidebarConfig`), `constants/customersLayoutConstants.js` (bulk-actions slot id/event), `components/CustomersTableColumns.jsx`, `components/customers-table/*`, `components/page-actions/*` (add, import, export, table settings, trash), `components/TableSettingsDrawer.jsx`, `components/StatusTaps/LeadStatusTabs.jsx`.
@@ -95,11 +102,14 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 | `/LeadsCenter` | All customers — **Table** (`DataTable`) or **Pipeline** (Kanban by lead status) view, stats, status tabs, bulk actions, drawer | CURRENT |
 | `/LeadsCenter/status-board` | Columns per lead status | CURRENT |
 | `/LeadsCenter/customization` | Statuses + tags tabs | CURRENT |
-| `/LeadsCenter/teams` | Sales teams (`pages/SalesTeams/CustomerTeamsPage.jsx`, team + members drawers) | CURRENT |
+| `/LeadsCenter/teams` | Sales teams (`pages/SalesTeams/CustomerTeamsPage.jsx`, team + members drawers) — linked from the main sidebar | CURRENT |
 | `/LeadsCenter/trash` | Deleted customers, restore / force delete | CURRENT |
-| `/LeadsCenter/activities`, `/activities/meeting/:meetingId` | Activities page / meeting detail | CURRENT |
+| `/LeadsCenter/activities`, `/activities/meeting/:meetingId` | Activities (calendar-first, see above) / meeting detail | CURRENT |
+| `/LeadsCenter/assignments` | Lead assignment rules (`AssignmentRulesPanel`) | CURRENT |
+| `/LeadsCenter/automation` | Shared automation flow in the `leads` workflow module (`WorkflowModuleWorkspace`) | CURRENT |
+| `/LeadsCenter/ai` | Shared `AiSetupPage` with `LEAD_AI_CAPABILITIES` (per-browser draft) | PARTIAL |
 | `/LeadsCenter/proposals`, `/proposals/templates`, `/proposals/:proposalId/builder` | Proposals | CURRENT |
-| `/LeadsCenter/new`, `/follow-up`, `/inactive`, `/segments`, `/assignments`, `/duplicates`, `/import-export`, `/settings` | `CustomerPlaceholderPage` | PLANNED |
+| `/LeadsCenter/new`, `/follow-up`, `/inactive`, `/segments`, `/duplicates`, `/import-export`, `/settings` | `CustomerPlaceholderPage` | PLANNED |
 | `/lead/:customerId`, `/leads/:customerId` | Full-page lead details (`pages/customers/pages/lead-details/`) using `CustomerDetailsContent mode="page"` + lead switcher | CURRENT |
 
 - **API:** `GET /api/tenant/customers/data`, `GET .../info/{id}`, `POST .../create`, `POST .../update/{id}`, `POST .../delete`, `GET .../deleted/data`, `POST .../restore/deleted`, `POST .../force/delete`.
@@ -113,7 +123,7 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
   - **Long press (≈250 ms, mouse or touch) then drag** a card to another column to change the lead status (`PipelineBoard dragMode="longPress"`, built on `@dnd-kit`; a short click still opens the card). This with the same `leadsApi.saveAction` payload as bulk/drawer status changes (`data.source: 'customers_pipeline'`). Statuses with `has_resone = 1` open the reason dialog first. The card moves optimistically in the `['customers','list']` cache and rolls back on error. Cards can't be dropped on "No status".
   - Not in the pipeline yet: the table's row alert colours (upcoming/overdue activity, new-message flash) and column customization.
 - **Persisted UI:** `main-sidebar-collapsed`, `customers-sidebar-collapsed`, `customers-bulk-actions-pin-mode`, `customers-view-mode` (`table` \| `pipeline`) and `customers-pipeline-card-fields` (via the DataTable `useLocalStorage` helper), DataTable `datatable-*-{tableId}` keys.
-- **Known issues:** eight placeholder sub-routes (table above); `CustomersPage.jsx` is oversized and route-owned; `customersApi` logs responses to the console.
+- **Known issues:** seven placeholder sub-routes (table above); `CustomersPage.jsx` is oversized and route-owned; `customersApi` logs responses to the console.
 
 ## Customer details drawer
 

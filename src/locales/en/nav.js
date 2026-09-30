@@ -30,6 +30,7 @@ export default {
   "calls": "Calls",
   "meetings": "Meetings",
   "proposals": "Proposals",
+  "salesTeams": "Sales teams",
   "conversations": "Conversations",
   "socialMedia": "Social Media",
   "campaigns": "Campaigns",

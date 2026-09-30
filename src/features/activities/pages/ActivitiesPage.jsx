@@ -20,6 +20,7 @@ import { ActivityReportDialog } from '../components/ActivityReport/ActivityRepor
 import { ActivityStats } from '../components/ActivityStats/ActivityStats'
 import { ActivityTable } from '../components/ActivityTable/ActivityTable'
 import { ActivityTabs } from '../components/ActivityTabs/ActivityTabs'
+import { ActivityViewSwitch } from '../components/ActivityTabs/ActivityViewSwitch'
 import { EmptyActivitiesState } from '../components/common/EmptyActivitiesState'
 import { extractLeadStatuses } from '../../../pages/customers/utils/customerStatus'
 import { extractList, extractMessage } from '../../../shared/utils/apiResponse'
@@ -130,11 +131,25 @@ const ACTIVITY_ROWS_BATCH_SIZE = 30
  * @param {'call'|'meeting'} [lockedType] - Single-type mode used by /calls and /meetings
  *   (Communication hub): no type tabs, one create button, type never changes.
  * @param {boolean} [embedded] - Rendered inside a sub-sidebar layout that already pads the page.
+ * @param {'tabs'|'top'} [viewSwitchPlacement] - 'top' shows a prominent calendar/table switch under the
+ *   header (calendar first) instead of the small toggle in the tabs bar.
+ * @param {string} [viewStorageKey] - localStorage key for the remembered view (per page).
+ * @param {(activities: object[], api: { onActivityClick: Function, onCreate: Function }) => React.ReactNode} [renderCalendar]
+ *   Custom calendar for the calendar view (e.g. the shared Calendar engine). Rendered even when the
+ *   filtered list is empty, so the calendar is always the page's main surface.
  */
-export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIEW_MODES.list, lockedType = null, embedded = false }) {
+export function ActivitiesPage({
+  defaultType = 'all',
+  defaultView = ACTIVITY_VIEW_MODES.list,
+  lockedType = null,
+  embedded = false,
+  viewSwitchPlacement = 'tabs',
+  viewStorageKey,
+  renderCalendar,
+}) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const filtersState = useActivityFilters(lockedType || defaultType, defaultView, lockedType)
+  const filtersState = useActivityFilters(lockedType || defaultType, defaultView, lockedType, viewStorageKey)
   const activitiesQuery = useActivities(filtersState.apiParams)
   const customersQuery = useQuery({
     queryKey: ['activities', 'customers-name-lookup'],
@@ -417,6 +432,10 @@ export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIE
         onCreateMeeting={() => setScheduleDialogType('meeting')}
       />
 
+      {viewSwitchPlacement === 'top' && (
+        <ActivityViewSwitch view={filtersState.filters.view} onChange={filtersState.setViewMode} />
+      )}
+
       <ActivityStats stats={stats} />
 
       <ActivityTabs
@@ -424,6 +443,7 @@ export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIE
         view={filtersState.filters.view}
         onTypeChange={filtersState.setType}
         showTypeTabs={!lockedType}
+        showViewToggle={viewSwitchPlacement !== 'top'}
         onViewChange={filtersState.setViewMode}
       />
 
@@ -431,6 +451,11 @@ export function ActivitiesPage({ defaultType = 'all', defaultView = ACTIVITY_VIE
         <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-sm font-bold text-[var(--text-muted)]">
           {t('activities.page.loadingActivities')}
         </div>
+      ) : renderCalendar && filtersState.filters.view === ACTIVITY_VIEW_MODES.calendar ? (
+        renderCalendar(scopedActivities, {
+          onActivityClick: setDrawerActivity,
+          onCreate: (type) => setScheduleDialogType(type === 'meeting' ? 'meeting' : 'call'),
+        })
       ) : !scopedActivities.length ? (
         <EmptyActivitiesState
           title={isFiltered ? t('activities.page.noMatchingResultsTitle') : t('activities.page.noActivitiesYetTitle')}

@@ -33,7 +33,6 @@
 
 import {
   LayoutDashboard,
-  Users,
   UserCheck,
   PhoneCall,
   Presentation,
@@ -100,13 +99,6 @@ export const navigationConfig = [
     module: 'sales',
     items: [
       {
-        id: 'leads',
-        labelKey: 'nav.leads',
-        icon: Users,
-        path: '/leads',
-        end: true,
-      },
-      {
         id: 'customers',
         labelKey: 'nav.customers',
         icon: UserCheck,
@@ -127,6 +119,15 @@ export const navigationConfig = [
         icon: FileSignature,
         path: '/LeadsCenter/proposals',
         activePatterns: ['/LeadsCenter/proposals', '/LeadsCenter/proposals/*'],
+      },
+      // Sales teams (moved out of the Leads Center sub-sidebar 2026-10-01). Same route; the
+      // longer '/LeadsCenter/teams' prefix wins over the Leads Center item when active.
+      {
+        id: 'sales-teams',
+        labelKey: 'nav.salesTeams',
+        icon: UsersRound,
+        path: '/LeadsCenter/teams',
+        activePatterns: ['/LeadsCenter/teams', '/LeadsCenter/teams/*'],
       },
     ],
   },

@@ -712,6 +712,9 @@ export default {
   },
   "untitledCall": "Untitled call",
   "untitledMeeting": "Untitled meeting",
+  "viewSwitch": {
+    "label": "View"
+  },
   "viewModeTabs": {
     "table": "Table",
     "calendar": "Calendar"

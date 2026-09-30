@@ -712,6 +712,9 @@ export default {
   },
   "untitledCall": "مكالمة بدون عنوان",
   "untitledMeeting": "اجتماع بدون عنوان",
+  "viewSwitch": {
+    "label": "طريقة العرض"
+  },
   "viewModeTabs": {
     "table": "جدول",
     "calendar": "تقويم"

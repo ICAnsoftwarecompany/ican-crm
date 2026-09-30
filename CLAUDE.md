@@ -54,7 +54,7 @@ Legacy/transitional (don't copy these patterns, don't add to them):
 
 | Area | Code | Doc |
 |---|---|---|
-| Leads & customers (`/leads`, `/LeadsCenter/*`, `/lead/:customerId`) | `features/leads`, `features/customers`, `pages/customers` | [Leads Center](docs/2-SALES.md#leads-center-pages), [Customer drawer](docs/2-SALES.md#customer-details-drawer), [Domain model](docs/2-SALES.md#domain-model) |
+| Leads & customers (`/LeadsCenter/*`, `/lead/:customerId`, `/leads/:customerId`; bare `/leads` redirects) | `features/leads`, `features/customers`, `pages/customers` | [Leads Center](docs/2-SALES.md#leads-center-pages), [Customer drawer](docs/2-SALES.md#customer-details-drawer), [Domain model](docs/2-SALES.md#domain-model) |
 | Lead assignment | `features/leads/api/leadAssignmentApi.js`, `/LeadsCenter/assignments` | [Leads & assignment](docs/2-SALES.md#leads-page-and-lead-assignment) |
 | Statuses / definitions | `features/definitions` | [Statuses & tags](docs/2-SALES.md#statuses-tags-and-pipeline) |
 | My Work (`/my-work`, شغلي) | `features/my-work` (section registry + rules), `pages/my-work` | [My Work](docs/3-FEATURES.md#my-work), [README](src/features/my-work/README.md) |
