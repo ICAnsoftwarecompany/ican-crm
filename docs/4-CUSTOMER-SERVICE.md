@@ -6,7 +6,7 @@ Frontend domain doc for the Customer Service area. Business and backend contract
 **what the frontend has built, where it lives, and the rules for adding more**. Update it in the same
 change as the code (see [Phase log](#phase-log)).
 
-**Status:** PARTIAL — F0 Foundation, F1 Case core, F2 Service operations (**MVP-1**), F3 Service context and F4 Billing & scheduling done. All data comes from the mock layer until the backend ships.
+**Status:** PARTIAL — F0 Foundation, F1 Case core, F2 Service operations (**MVP-1**), F3 Service context, F4 Billing & scheduling and F5 Portal & growth (**MVP-2**) done. All data comes from the mock layer until the backend ships.
 
 **Naming.** Users see this area as **Customer Hub / إدارة العملاء** (sidebar section), with
 **Operations Center / مركز العمليات** as its home and **Services / الخدمات** as the customer-drawer tab —
@@ -56,7 +56,7 @@ code (`features/service/core/constants/serviceModules.js`) and is rendered live 
 | **F2** | Service operations | SLA display & escalation states, saved replies & macros, internal knowledge base, CSAT, dashboard & reports, settings (case types, queues, SLA, business calendar, escalation), saved views | **MVP-1** (standalone helpdesk) | ✅ Done |
 | **F3** | Service context | Pipeline editor (statuses/transitions per case type), item types & capabilities settings, service records (generic by type) with participants, components, entries, batches; assets, warranty, entitlements, contracts, handoffs, setup wizard | — | ✅ Done |
 | **F4** | Billing & scheduling | Payment plans + preview engine (reusable calculator), schedules & payments, collections workspace, subscriptions lifecycle, scheduling & capacity, work orders, courier dispatch + POD, COD remittances | — | ✅ Done (see F4 log for what is left) |
-| **F5** | Portal & growth | Customer portal app (self / guardian / B2B / guest), imports, follow-up programs, portfolios, operations workspaces | **MVP-2** (pilot) | Planned |
+| **F5** | Portal & growth | Customer portal app (self / guardian / B2B / guest) + portal admin & request catalog, imports, follow-up programs, portfolios, API clients & webhooks | **MVP-2** (pilot) | ✅ Done (see F5 log for what is left) |
 | **F6** | Knowledge & quality | Public KB & self-service, quality reviews, NPS/CES, template versioning, form & workflow builders | — | Planned |
 | **F7** | AI | Triage, suggested replies/articles, summaries, AI agent, health score | — | Planned |
 
@@ -99,17 +99,34 @@ src/features/service/          ← all business code (README.md inside)
 ├── scheduling/                ← F4: resources, reservations/holds, slots (README.md inside)
 ├── work-orders/               ← F4: work orders & field visits (README.md inside)
 ├── deliveries/                ← F4: courier dispatch, proof of delivery, COD remittances (README.md inside)
+├── portal-admin/              ← F5: portal accounts & memberships, policies, request catalog, branding (README.md inside)
+├── imports/                   ← F5: CSV import wizard, dry run, error file (README.md inside)
+├── follow-ups/                ← F5: follow-up programs, workspace, manual enroll (README.md inside)
+├── portfolios/                ← F5: customer portfolios and owners (README.md inside)
+├── api-access/                ← F5: public API clients, outbound webhooks, delivery log (README.md inside)
+├── portal-transport.js        ← F5: the only Service file the portal app may import (portal endpoints + mock switch)
 └── <sub-module>/              ← one folder per sub-module as phases ship: records/, assets/ …
 
 src/pages/service/             ← thin route pages + serviceRoutes.js (README.md inside)
 src/locales/{ar,en}/service.js ← `service.*` copy, split into ./service/*.js parts
 ```
 
+The **customer portal** (F5) is a second app in the same repo, not part of the staff CRM bundle:
+
+```text
+portal.html                    ← second Vite entry (vite.config.js: rollup input + dev rewrite of /portal/*)
+src/portal/                    ← app shell: main, PortalApp (providers, branding), router (README.md inside)
+src/features/portal/           ← portal domain: auth, layout, pages, session store (README.md inside)
+src/services/portalHttpClient.js ← portal token only; never the staff session
+src/locales/{ar,en}/portal.js  ← `portal.*` copy
+```
+
 Other touch points (keep them small):
 - `src/app/router/index.jsx` — one line: `serviceRoutes`.
 - `src/index.css` + `tailwind.config.js` — `--sla-*`, `--priority-*`, `--chart-*` tokens.
 - `scripts/check-service.mjs` — strict gate for this area.
-- `.env.example` — `VITE_SERVICE_MOCKS`.
+- `.env.example` — `VITE_SERVICE_MOCKS`, `VITE_PORTAL_BASENAME` (portal router base, default `/portal`).
+- `vite.config.js` — `portal.html` build input and the dev middleware that serves it for `/portal/*`.
 
 Sub-module shape (create only folders that have code):
 
@@ -188,7 +205,7 @@ component → hook (React Query) → casesApi → createServiceApi('cases') → 
 | `/service/knowledge` | `ServiceKnowledgePage` — search, category/status filters, article list | F2 |
 | `/service/knowledge/:articleId` | `ServiceKnowledgeArticlePage` — editor; `new` creates a draft | F2 |
 | `/service/reports` | `ServiceReportsPage` — `?tab=overview|feedback&period=7d|30d|90d` | F2 |
-| `/service/settings/:section?` | `ServiceSettingsPage` — setup wizard, case types, queues, catalog (items, item types, record types, pipelines), contract types, payment plans + assignments, scheduling resources, SLA policies, business hours, escalation, saved replies, macros, KB categories | F2–F4 |
+| `/service/settings/:section?` | `ServiceSettingsPage` — setup wizard, import data, case types, queues, catalog (items, item types, record types, pipelines), contract types, payment plans + assignments, scheduling resources, follow-up programs, portfolios, portal (accounts, policies, request catalog, branding), API clients, webhooks, SLA policies, business hours, escalation, saved replies, macros, KB categories | F2–F5 |
 | `/service/records/:recordType?/:recordId?` | `ServiceRecordsPage` / `ServiceRecordDetailPage` inside `ServicesHubLayout` (Services hub) | F3 |
 | `/service/batches/:recordType?/:batchId?` | `ServiceBatchesPage` (Services hub) | F3 |
 | `/service/assets/:assetId?` | `ServiceAssetsPage` (Services hub, feature `assets`) | F3 |
@@ -200,13 +217,15 @@ component → hook (React Query) → casesApi → createServiceApi('cases') → 
 | `/service/work-orders/:workOrderId?` | `ServiceWorkOrdersPage` (Services hub, feature `workOrders`) | F4 |
 | `/service/scheduling` | `ServiceSchedulingPage` (Services hub, features `scheduling` / `workOrders` / `courierAssignment`) | F4 |
 | `/service/deliveries` | `ServiceDeliveriesPage` (Services hub, feature `courierAssignment`) | F4 |
+| `/service/follow-ups` | `ServiceFollowUpsPage` (Services hub tab "Follow-ups") — due buckets, outcome drawer, manual enroll | F5 |
+| `/portal/*` (separate app) | `login`, `track` (guest), then `/`, `services/:recordId?`, `requests`, `requests/new`, `requests/:caseId`, `catalog`, `payments`, `assets`, `documents`, `help`, `company` — sections shown = tenant-enabled ∩ membership policy | F5 |
 | `/service/overview` | `ServiceOverviewPage` — manifest, mock template switcher, roadmap | F0 |
 
 - All Service routes are declared in `src/pages/service/serviceRoutes.js` and **lazy-loaded** (own chunks).
 - Sidebar section **Customer Hub** (`navigation.config.js`, id `customer-service`): Operations Center, Cases,
   Services, My Work, Knowledge Base, Reports, Operations Settings (7 items — the limit).
 - **Services hub**: one sidebar item; its tabs (`core/components/ServicesHubNav.jsx`) come from record types
-  (+ their batches) and features (`assets`, `entitlements`), then Work orders, Scheduling, Deliveries, Subscriptions, Contracts, Handoffs and Payments (F4). New areas that
+  (+ their batches) and features (`assets`, `entitlements`), then Work orders, Scheduling, Deliveries, Subscriptions, Follow-ups (F5), Contracts, Handoffs and Payments (F4). New areas that
   belong to "what the customer has" (subscriptions, schedules, work orders) become tabs here, not sidebar items.
 - Sidebar section `customer-service` (`module: 'customer_service'`, label `nav.sections.customerService`)
   in `app/navigation/navigation.config.js`: Service Center, Cases, My Work. Keep it at 3–7 items;
@@ -274,6 +293,12 @@ the unified body `{ success:false, code, message, errors, meta:{ request_id } }`
 | `CRUD /scheduling/resources`, `GET /scheduling/availability`, `GET|POST /reservations`, `POST /reservations/{id}/confirm`, `DELETE /reservations/{id}` | See `scheduling/README.md` | F4. Resources CRUD + confirm proposed; 409 `RESERVATION_CONFLICT`. |
 | `CRUD /service/work-orders` (PATCH = assign + book slot), `POST …/on-the-way|check-in|check-out|complete|cancel` | See `work-orders/README.md` | F4. on-the-way / cancel proposed. |
 | `GET /service/deliveries`, `POST …/{recordId}/assign|out-for-delivery|attempts`, `CRUD /billing/cod-remittances` (+ `/pending`, `/{id}/pay`) | See `deliveries/README.md` | F4. Deliveries endpoints proposed. |
+| `CRUD /portal/policies`, `CRUD /service/catalog-items` (request catalog), `GET|PUT /portal/settings`, `/portal/accounts` (+ `/{id}/memberships`, `/revoke-sessions`, `/resend-invite`) | See `portal-admin/README.md` | F5. Accounts, memberships and settings are proposed staff endpoints. |
+| `/api/portal/*` — `settings`, `auth/otp|verify|login|logout`, `me` (+ `/switch`), `records`, `cases`, `schedules`, `payments`, `assets`, `entitlements`, `subscriptions`, `contracts`, `documents`, `document-requirements/{id}/upload`, `catalog` (+ `/{id}/request`), `kb`, `feedback`, `remittances`, `org/users`, `track` | See `features/portal/README.md` | F5. Portal token (not the staff session); every call scoped to the active membership; OTP never reveals whether an account exists. |
+| `POST /imports` (dry run), `POST /imports/{id}/execute`, `GET /imports[/{id}]`, `/imports/entities|fields|files|mappings`, `GET /imports/{id}/error-file` | See `imports/README.md` | F5. Entities, fields, files, mappings and error file proposed. |
+| `CRUD /follow-up-programs`, `GET|POST /follow-ups`, `POST /follow-ups/{id}/outcome|exit` | See `follow-ups/README.md` | F5. Enrollment endpoints proposed; live creates Tasks in the Task Engine. |
+| `CRUD /portfolios`, `/portfolios/{id}/members` (GET/POST/PATCH/DELETE), `POST /portfolios/{id}/distribute` | See `portfolios/README.md` | F5. Members + distribute proposed. |
+| `CRUD /api-clients` (+ `/catalog`, `/{id}/rotate`), `CRUD /webhook-subscriptions` (+ `/rotate-secret`, `/test`, `/deliveries`), `POST /webhook-deliveries/{id}/redeliver` | See `api-access/README.md` | F5. Clear key / secret only in the create and rotate responses. |
 
 ## Adding a sub-module
 
@@ -299,6 +324,57 @@ Copy into the phase log entry and tick honestly (write "not verified" when true)
 - [ ] Sub-module README + this doc + `3-FEATURES.md` section updated
 
 ## Phase log
+
+### F5 — Portal & growth (MVP-2) · 2026-09-30
+
+- **Added:**
+  - `portal-admin/` (settings group "Customer portal"): portal accounts with memberships (self / guardian /
+    organization member + B2B role), invite / resend / disable / revoke sessions, embeddable per customer (customer
+    drawer "Portal access" section when the `portal` feature is on); **portal policies** (object + actions, deny wins);
+    **request catalog** (case type, form schema, required documents, scheduling, payment, audience); portal branding
+    and enabled sections.
+  - **Customer portal app** — separate entry `portal.html` → `src/portal` + `features/portal`, own HTTP client
+    (`services/portalHttpClient.js`, portal token only; verified the portal bundle contains no staff `httpClient`), own
+    session store, AR/EN + RTL + dark mode, tenant branding. Sign-in by one-time code or B2B email + password, profile
+    switcher across memberships, guest shipment tracking, and sections: home, my services (detail, updates, documents
+    upload), requests (list, detail, reply, new), request catalog forms, payments, what I have, documents, help (KB +
+    feedback), company users. Sections = tenant-enabled ∩ policy.
+  - `imports/` (settings → Import data): CSV upload, column mapping with suggestions and saved mappings, create or
+    upsert by match key, dry run with per-row errors, execute valid rows, downloadable error file to fix and re-upload;
+    service records (any type) and assets.
+  - `follow-ups/`: follow-up programs in settings (timed steps from start or back from the end date, channel,
+    checklist, outcomes, per-outcome rules: next / bounded retry / open a request; editing bumps the version);
+    Services hub tab **Follow-ups** (overdue, due today, upcoming, finished, all; outcome drawer with checklist, note,
+    history, stop; manual enroll).
+  - `portfolios/` (settings → Portfolios): owners, members, least-loaded add, change owner, rebalance; programs can
+    assign to the **portfolio owner**.
+  - `api-access/` (settings group "API & webhooks"): API clients (scopes, bound to one customer with limited scopes,
+    rate limit, IP allowlist, rotate / disable / delete; key shown once), outbound webhooks (https only, events by area,
+    test ping, rotate secret, pause, health) and a delivery log with redelivery.
+- **Outside the area:** second Vite entry (`portal.html`, `vite.config.js` input + dev rewrite), `services/portalHttpClient.js`,
+  `locales/{ar,en}/portal.js` registered in both `index.js`, `scripts/check-service.mjs` now also scans `features/portal`
+  and `src/portal`. `.env.example` gains `VITE_PORTAL_BASENAME`.
+- **Mock layer:** `state/portalAccess.js` (sessions, memberships, policy checks), `importEngine.js` (CSV parser, validation,
+  error file), `followUpEngine.js` (offsets, rules, due buckets) — pure + tested; handlers for portal admin, portal,
+  imports, follow-ups + portfolios, API access. Portal mock sessions persist in localStorage (demo code `123456`,
+  company password `Portal@123`).
+- **Acceptance (spec §55 Phase 5) — demonstrated on the mock:** a guardian sees only the data of the customer on the active
+  membership and only what the policy allows (test); the "student sees only themself" case uses the same scoping but has no
+  separate test; a B2B *accounting* user cannot create a shipment (deny wins);
+  guest tracking returns exactly one record and nothing else; an API key bound to a customer can only hold record / case /
+  tracking scopes. *Not demonstrable in the frontend:* "10,000-row import does not slow other tenants" (server queue).
+- **Not built in F5 (next / needs backend):** file storage for uploads (names only in the mock), real payment gateway
+  redirect, contract PDFs, MFA, B2B bulk shipment upload in the portal, Excel import (CSV only), the public API itself
+  (`/public/v1`), event-triggered enrollment and exit conditions (server), automatic portfolio membership by criteria,
+  portfolio owner on the customer drawer, operations workspaces beyond the existing ones.
+- **Mocked modules:** portal, imports, followUps, portfolios, apiAccess (+ all earlier). **Live modules:** none.
+- **Tests:** portal access + portal handlers, portal admin, import engine + handlers + mapping suggestions, follow-up engine
+  + editor mapping + handlers, API access handlers (730 tests, full suite green).
+- **Checklist:** lint ✅ · i18n ✅ · architecture ✅ · service gate ✅ · vitest ✅ · build ✅ · screenshots (AR light / EN dark;
+  devices, shipping, school) of portal settings, portal app (login, code, home, services, record, requests, catalog form,
+  payments, assets, documents, help, company, guest tracking), import wizard steps, follow-ups workspace + drawer + enroll,
+  program editor, portfolios, API clients + one-time key, webhooks + delivery log ✅ · customer drawer "Portal access"
+  section **not visually verified** (needs the real customers backend).
 
 ### F4 — Billing Lite, subscriptions, scheduling, work orders · 2026-09-30
 

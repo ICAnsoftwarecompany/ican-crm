@@ -75,11 +75,11 @@ export const SERVICE_MODULES = [
   { key: 'workOrders', folder: 'work-orders', phase: 4, status: 'done', backend: 'mock' },
 
   // F5 — Portal & Growth (MVP-2)
-  { key: 'portal', folder: 'portal-admin', phase: 5, status: 'in_progress', backend: 'mock' },
-  { key: 'imports', folder: 'imports', phase: 5, status: 'in_progress', backend: 'mock' },
-  { key: 'followUps', folder: 'follow-ups', phase: 5, status: 'in_progress', backend: 'mock' },
-  { key: 'portfolios', folder: 'portfolios', phase: 5, status: 'in_progress', backend: 'mock' },
-  { key: 'apiAccess', folder: 'api-access', phase: 5, status: 'in_progress', backend: 'mock' },
+  { key: 'portal', folder: 'portal-admin', phase: 5, status: 'done', backend: 'mock' },
+  { key: 'imports', folder: 'imports', phase: 5, status: 'done', backend: 'mock' },
+  { key: 'followUps', folder: 'follow-ups', phase: 5, status: 'done', backend: 'mock' },
+  { key: 'portfolios', folder: 'portfolios', phase: 5, status: 'done', backend: 'mock' },
+  { key: 'apiAccess', folder: 'api-access', phase: 5, status: 'done', backend: 'mock' },
 
   // F6 — Knowledge & Quality
   { key: 'quality', folder: 'quality', phase: 6, status: 'planned', backend: 'mock' },

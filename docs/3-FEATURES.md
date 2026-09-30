@@ -213,7 +213,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 ## Customer Hub (Customer Service)
 
-**Status:** PARTIAL — F0 Foundation, F1 Case core, F2 Service operations (MVP-1) and F3 Service context done (mock data only). User-facing name **Customer Hub / إدارة العملاء**; code name stays `service`. Full domain doc: [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md).
+**Status:** PARTIAL — F0 Foundation, F1 Case core, F2 Service operations (MVP-1), F3 Service context, F4 Billing & scheduling and F5 Portal & growth (MVP-2) done (mock data only). User-facing name **Customer Hub / إدارة العملاء**; code name stays `service`. Full domain doc: [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md).
 
 **What it does:** Service Operations after the sale — cases/tickets, SLA, service records (bookings, shipments, enrollments, projects), assets and warranty, entitlements, contracts, installments, scheduling, work orders, follow-ups and a customer portal. Works with Sales (contract → handoff) or standalone. Industries are configuration: screens render from the tenant capabilities manifest.
 
@@ -244,8 +244,12 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 | Services hub `/service/records…`: service records (participants, components, entries, documents, timeline, customer updates) and batches | F3 | CURRENT | mock |
 | Assets & warranty, entitlements with ledger, case coverage | F3 | CURRENT | mock |
 | Contracts (versions, signatures, amendments) and Sales → Service handoffs | F3 | CURRENT | mock |
-| Payment plans & installments, collections, scheduling, work orders, COD | F4 | PLANNED | — |
-| Customer portal, imports, follow-up programs, portfolios (MVP-2) | F5 | PLANNED | — |
+| Payment plans & installments, collections, subscriptions, scheduling, work orders, courier dispatch + COD | F4 | CURRENT | mock |
+| Portal administration (accounts, memberships, policies, request catalog, branding) | F5 | CURRENT | mock |
+| Customer portal app (`portal.html`, `/portal/*`: self / guardian / B2B / guest tracking) | F5 | CURRENT | mock |
+| Imports (CSV, mapping, dry run, error file) | F5 | CURRENT | mock |
+| Follow-up programs + Follow-ups workspace, portfolios | F5 | CURRENT | mock |
+| API clients + outbound webhooks (delivery log) | F5 | CURRENT | mock |
 | Public KB, quality, template versioning, builders | F6 | PLANNED | — |
 | AI triage, suggestions, summaries, agent, health score | F7 | PLANNED | — |
 
@@ -255,4 +259,4 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 **Navigation:** section Customer Hub (`module: 'customer_service'`): Operations Center, Cases, Services (hub with tabs), My Work, Knowledge Base, Reports, Operations Settings.
 
-**Known issues:** document builder/PDF for contracts not built yet; service config lives in the Customer Hub, not in the Products form; SLA in the mock uses wall-clock time (the backend owns business-time SLA); the board shows loaded pages only; Conversation → Case and the drawer Service tab were not visually verified against the real backend.
+**Known issues:** document builder/PDF for contracts not built yet; portal uploads have no file storage yet and online payment has no real gateway; service config lives in the Customer Hub, not in the Products form; SLA in the mock uses wall-clock time (the backend owns business-time SLA); the board shows loaded pages only; Conversation → Case and the drawer Service tab were not visually verified against the real backend.

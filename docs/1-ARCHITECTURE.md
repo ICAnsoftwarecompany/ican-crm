@@ -47,6 +47,8 @@ Status labels used in all three docs: **CURRENT** (verified code in use) · **PA
 | `src/locales/{ar,en}/<domain>.js` | Translations, registered in `src/locales/{ar,en}/index.js`. |
 | `scripts/` | Repository checks (`check-architecture`, `check-translations`, `check-theme`, `check-hardcoded-text`). |
 
+Second entry (customer portal, F5): `portal.html` → `src/portal/main.jsx` — its own providers, router and HTTP client (`services/portalHttpClient.js`); it never loads the staff shell, auth store or realtime. See `src/portal/README.md`.
+
 Bootstrap: `src/main.jsx` → `src/App.jsx` (`QueryProvider` → `ThemeProvider` → `TenantNotificationsRealtime` + router; `syncDocumentLanguage` runs on start and on every language change).
 
 Legacy / transitional areas (do not copy, do not grow):
@@ -79,7 +81,7 @@ app / pages  ->  features  ->  shared / services
 - **httpClient:** `services/httpClient.js` is the only Axios instance. Its request interceptor adds `Authorization: Bearer <token>` (from `authStore`) and the query parameter `api_password`. A 401 sets `sessionRefreshNeeded` and dispatches `ican:session-expired` (handled by `features/auth/components/SessionRefreshModal.jsx`). It throws at import time when `VITE_API_PASSWORD` is missing — mock it in tests.
 - **api_password:** `VITE_*` values are bundled into the browser. `VITE_API_PASSWORD` is a public compatibility value, **not a secret**. Never publish its value in docs. Replacing it needs backend work; do not change the contract silently.
 - **Auth state:** `store/authStore.js` persists `{ token, user }` in localStorage under `ican-auth`. Auth API (`features/auth/api/authApi.js`): `POST /api/tenant/auth/signin`, `POST /api/tenant/auth/refresh`, `GET /api/tenant/auth/logout`.
-- **Environment variables:** `VITE_API_ROOT_DOMAIN`, `VITE_API_SCHEME`, `VITE_API_USE_DEV_PROXY`, `VITE_API_DEV_PROXY_TARGET`, `VITE_API_PASSWORD`, `VITE_MAIN_SERVER_URL` (Facebook sub-login only), `VITE_REALTIME_ENABLED`, `VITE_REVERB_APP_KEY`, `VITE_REVERB_HOST`, `VITE_REVERB_ROOT_DOMAIN`, `VITE_REVERB_SCHEME`, `VITE_REVERB_PORT`, `VITE_SERVICE_MOCKS` (Customer Service demo data: `auto` | `all` | `none`, see [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md#how-data-flows-mock--live)). See `.env.example`.
+- **Environment variables:** `VITE_API_ROOT_DOMAIN`, `VITE_API_SCHEME`, `VITE_API_USE_DEV_PROXY`, `VITE_API_DEV_PROXY_TARGET`, `VITE_API_PASSWORD`, `VITE_MAIN_SERVER_URL` (Facebook sub-login only), `VITE_REALTIME_ENABLED`, `VITE_REVERB_APP_KEY`, `VITE_REVERB_HOST`, `VITE_REVERB_ROOT_DOMAIN`, `VITE_REVERB_SCHEME`, `VITE_REVERB_PORT`, `VITE_SERVICE_MOCKS` (Customer Service demo data: `auto` | `all` | `none`, see [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md#how-data-flows-mock--live)), `VITE_PORTAL_BASENAME` (customer portal router base, default `/portal`). See `.env.example`.
 
 ## Realtime
 
