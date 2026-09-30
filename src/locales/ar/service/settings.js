@@ -35,6 +35,7 @@ export default {
       taken: 'هذا المفتاح مستخدم بالفعل',
     },
     groups: {
+      ai: 'الذكاء الاصطناعي',
       developers: 'الـ API والـ Webhooks',
       followUps: 'المتابعات',
       portal: 'بوابة العملاء',
@@ -49,6 +50,11 @@ export default {
       sla: 'مستويات الخدمة',
     },
     resources: {
+      ai: {
+        title: 'الذكاء الاصطناعي',
+        one: 'إعداد ذكاء اصطناعي',
+        description: 'شغّل أو اقفل مساعدة الذكاء الاصطناعي لكل ميزة، وحدد النبرة والحدود، وشوف الاستخدام ونسبة القبول.',
+      },
       apiClients: {
         title: 'عملاء الـ API',
         one: 'عميل API',

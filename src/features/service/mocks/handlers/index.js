@@ -1,3 +1,4 @@
+import { aiHandlers } from './aiHandlers'
 import { apiAccessHandlers } from './apiAccessHandlers'
 import { assetsHandlers } from './assetsHandlers'
 import { billingHandlers } from './billingHandlers'
@@ -29,6 +30,7 @@ import { subscriptionsHandlers } from './subscriptionsHandlers'
  * @type {import('../router').MockRoute[]}
  */
 export const mockRoutes = [
+  ...aiHandlers,
   ...apiAccessHandlers,
   ...assetsHandlers,
   ...billingHandlers,

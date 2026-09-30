@@ -35,6 +35,7 @@ export default {
       taken: 'This key is already used',
     },
     groups: {
+      ai: 'AI',
       developers: 'API & webhooks',
       followUps: 'Follow-ups',
       portal: 'Customer portal',
@@ -49,6 +50,11 @@ export default {
       sla: 'Service levels',
     },
     resources: {
+      ai: {
+        title: 'AI',
+        one: 'AI setting',
+        description: 'Turn AI help on or off per feature, set its tone and limits, and see how much it is used and accepted.',
+      },
       apiClients: {
         title: 'API clients',
         one: 'API client',

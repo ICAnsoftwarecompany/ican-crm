@@ -1,6 +1,7 @@
 import { SERVICE_API, serviceEndpoints } from '../../core/api/endpoints'
 import { getCollection, registerSeed } from '../db'
 import { MockHttpError, notFound } from '../errors'
+import { signals } from '../state/aiEngine'
 import { findStatus, getCaseSetup, getPipeline } from '../state/caseConfig'
 import { computeSla, escalationActivities } from '../state/sla'
 import { findCaseCsat } from '../state/feedback'
@@ -45,6 +46,8 @@ export function serializeCase(item) {
     assignee: assignee ? { id: assignee.id, name: assignee.name } : null,
     sla: computeSla(item),
     csat: findCaseCsat(item.id),
+    // F7: demo signals computed on read (the server stores `ai_signals` when a message arrives).
+    ai_signals: signals(`${item.subject} ${item.description || ''}`),
   }
 }
 

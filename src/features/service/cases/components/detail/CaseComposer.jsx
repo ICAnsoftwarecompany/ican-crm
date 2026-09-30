@@ -5,6 +5,7 @@ import { Button } from '../../../../../shared/components/ui/Button'
 import { cn } from '../../../../../shared/utils/cn'
 import { useCaseMutations } from '../../hooks/useCases'
 import { SavedReplyPicker } from '../../../replies'
+import { AiDraftReplyButton } from '../../../ai/components/AiDraftReplyButton'
 
 /**
  * Reply to the customer (goes out on the case channel; the backend applies
@@ -54,11 +55,14 @@ export function CaseComposer({ caseItem, disabled }) {
           {tab('reply', Send, t('service.cases.composer.reply'))}
           {tab('note', Lock, t('service.cases.composer.note'))}
         </div>
-        <SavedReplyPicker
-          caseItem={caseItem}
-          disabled={disabled}
-          onPick={(text) => setBody((current) => (current.trim() ? `${current.trimEnd()}\n${text}` : text))}
-        />
+        <div className="flex items-center gap-1">
+          {!isNote && <AiDraftReplyButton caseItem={caseItem} disabled={disabled} onDraft={setBody} />}
+          <SavedReplyPicker
+            caseItem={caseItem}
+            disabled={disabled}
+            onPick={(text) => setBody((current) => (current.trim() ? `${current.trimEnd()}\n${text}` : text))}
+          />
+        </div>
       </div>
       <textarea
         value={body}

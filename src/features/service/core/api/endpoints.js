@@ -134,6 +134,16 @@ export const serviceEndpoints = {
 
   setupApply: (key) => `${TENANT_API}/settings/templates/${key}/apply`,
 
+  // AI layer (F7, spec §45 — proposed). Signals/suggestions only; people and rules decide.
+  ai: {
+    settings: `${SERVICE_API}/ai/settings`,
+    usage: `${SERVICE_API}/ai/usage`,
+    triage: `${SERVICE_API}/ai/triage`,
+    // GET summary | duplicates | assignment; POST summary (regenerate) | suggest-reply | feedback
+    case: (caseId, action) => `${SERVICE_API}/cases/${caseId}/ai/${action}`,
+  },
+  caseMarkDuplicate: (caseId) => `${SERVICE_API}/cases/${caseId}/mark-duplicate`,
+
   // Knowledge base (F2) — CRUD + publish (kb.publish permission). New articles start as drafts.
   kbArticles: `${SERVICE_API}/kb/articles`,
   kbArticle: (articleId) => `${SERVICE_API}/kb/articles/${articleId}`,

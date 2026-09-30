@@ -21,6 +21,7 @@ import portal from './service/portal.js'
 import imports from './service/imports.js'
 import followUps from './service/followUps.js'
 import apiAccess from './service/apiAccess.js'
+import ai from './service/ai.js'
 
 /**
  * نصوص إدارة العملاء (Customer Hub) — جذر المفاتيح `service.*`.
@@ -50,5 +51,6 @@ export default {
   ...imports,
   ...followUps,
   ...apiAccess,
+  ...ai,
   terms,
 }

@@ -78,3 +78,6 @@ export { PlanCalculator, PlanPreviewTable, BillingNav, SchedulesList, ScheduleDe
 export { FollowUpsWorkspace, EnrollFollowUpDialog } from './follow-ups'
 export { PortfoliosPanel } from './portfolios'
 export { ApiClientsPanel, WebhooksPanel } from './api-access'
+
+// F7 — AI
+export { AiCasePanel, AiSignalChips, AiSettingsPanel } from './ai'

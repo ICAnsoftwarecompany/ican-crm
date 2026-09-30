@@ -11,6 +11,7 @@ import { getServiceErrorMessage, getServiceFieldErrors } from '../../core/utils/
 import { useServiceTerminology } from '../../core/capabilities/useServiceCapabilities'
 import { CASE_PRIORITIES } from '../constants/caseViews'
 import { useCaseMutations, useCaseSetup, useCustomerLookup } from '../hooks/useCases'
+import { AiTriageHint } from '../../ai/components/AiTriageHint'
 
 const TEXTAREA_CLASS =
   'min-h-[88px] w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-brand-accent'
@@ -128,6 +129,7 @@ export function CaseCreateDialog({ open, onClose, defaults, navigateOnCreate = t
         {t('service.cases.fields.description')}
         <textarea className={TEXTAREA_CLASS} value={form.description} onChange={(event) => update('description')(event.target.value)} />
       </label>
+      <AiTriageHint subject={form.subject} description={form.description} caseTypes={setup?.case_types} current={form} onApply={(suggestion) => setForm((current) => ({ ...current, ...suggestion }))} />
     </FormDialog>
   )
 }

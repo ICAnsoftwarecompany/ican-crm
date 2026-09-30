@@ -19,6 +19,7 @@ import { SuggestedArticlesPanel } from '../../../knowledge'
 import { CaseCsatCard } from '../../../feedback'
 import { CaseCoveragePanel } from '../../../entitlements'
 import { useServiceCapabilities } from '../../../core/capabilities/useServiceCapabilities'
+import { AiCasePanel, AiSignalChips } from '../../../ai'
 
 /** Full case screen: header + transitions, timeline + composer, properties. */
 export function CaseDetailView({ caseId }) {
@@ -55,12 +56,14 @@ export function CaseDetailView({ caseId }) {
                   <CaseStatusBadge status={caseItem.status} />
                   <CasePriorityBadge priority={caseItem.priority} />
                   <SlaBadge sla={caseItem.sla} />
+                  <AiSignalChips signals={caseItem.ai_signals} />
                 </div>
                 <h1 className="flex items-center gap-2 text-lg font-bold text-[var(--text)]">
                   <CaseTypeIcon icon={caseItem.type?.icon} size={18} className="shrink-0 text-[var(--text-muted)]" />
                   <span className="min-w-0 break-words">{caseItem.subject}</span>
                 </h1>
                 {caseItem.description && <p className="mt-1 text-sm text-[var(--text-muted)]">{caseItem.description}</p>}
+                {caseItem.duplicate_of && <Link to={`/service/cases/${caseItem.duplicate_of.id}`} className="mt-1 inline-block text-xs font-medium text-brand-accent hover:underline">{t('service.ai.duplicates.closedAs', { number: caseItem.duplicate_of.case_number })}</Link>}
               </div>
               <div className="flex shrink-0 flex-wrap items-center gap-2">
                 <MacroMenu caseItem={caseItem} disabled={!isCaseOpen(caseItem)} />
@@ -80,6 +83,7 @@ export function CaseDetailView({ caseId }) {
               </section>
               <div className="grid content-start gap-4">
                 <SlaPanel sla={caseItem.sla} />
+                <AiCasePanel caseItem={caseItem} setup={setup.data} open={isCaseOpen(caseItem)} />
                 <CaseCsatCard csat={caseItem.csat} />
                 {hasFeature('entitlements') && <CaseCoveragePanel caseItem={caseItem} />}
                 <CasePropertiesPanel caseItem={caseItem} setup={setup.data} />

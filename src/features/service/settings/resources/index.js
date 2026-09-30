@@ -12,8 +12,9 @@ import { paymentPlansResource, planAssignmentsResource } from './billingResource
 import { schedulingResourcesResource } from './schedulingResources'
 import { portalAccountsSection, portalBrandingSection, portalPoliciesResource, requestCatalogResource } from './portalResources'
 import { followUpProgramsResource, portfoliosSection } from './followUpResources'
-import { FileUp, KeyRound, Package, Wand2, Webhook } from 'lucide-react'
+import { FileUp, KeyRound, Package, Sparkles, Wand2, Webhook } from 'lucide-react'
 import { ApiClientsPanel } from '../../api-access/components/ApiClientsPanel'
+import { AiSettingsPanel } from '../../ai/components/AiSettingsPanel'
 import { WebhooksPanel } from '../../api-access/components/WebhooksPanel'
 import { ImportsPanel } from '../../imports/components/ImportsPanel'
 import { SetupWizardPanel } from '../../setup/components/SetupWizardPanel'
@@ -24,6 +25,7 @@ const setupSection = { key: 'setup', icon: Wand2, i18nKey: 'service.settings.res
 const importsSection = { key: 'imports', icon: FileUp, i18nKey: 'service.settings.resources.imports', component: ImportsPanel }
 const apiClientsSection = { key: 'apiClients', icon: KeyRound, i18nKey: 'service.settings.resources.apiClients', component: ApiClientsPanel }
 const webhooksSection = { key: 'webhooks', icon: Webhook, i18nKey: 'service.settings.resources.webhooks', component: WebhooksPanel }
+const aiSection = { key: 'ai', icon: Sparkles, i18nKey: 'service.settings.resources.ai', component: AiSettingsPanel }
 const catalogItemsSection = { key: 'catalogItems', icon: Package, i18nKey: 'service.settings.resources.catalogItems', component: CatalogItemsPanel }
 
 /**
@@ -41,6 +43,7 @@ export const SETTINGS_GROUPS = [
   { key: 'scheduling', resources: [schedulingResourcesResource] },
   { key: 'followUps', resources: [followUpProgramsResource, portfoliosSection] },
   { key: 'portal', resources: [portalAccountsSection, portalPoliciesResource, requestCatalogResource, portalBrandingSection] },
+  { key: 'ai', resources: [aiSection] },
   { key: 'developers', resources: [apiClientsSection, webhooksSection] },
   { key: 'sla', resources: [slaPoliciesResource, businessCalendarsResource, escalationRulesResource] },
   { key: 'communication', resources: [savedRepliesResource, macrosResource] },
@@ -75,6 +78,7 @@ const SECTION_SLUGS = {
   followUpPrograms: 'follow-up-programs',
   portfolios: 'portfolios',
   apiClients: 'api-clients',
+  ai: 'ai',
   webhooks: 'webhooks',
 }
 

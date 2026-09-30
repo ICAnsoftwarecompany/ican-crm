@@ -86,7 +86,7 @@ export const SERVICE_MODULES = [
   { key: 'templates', folder: 'templates', phase: 6, status: 'planned', backend: 'mock' },
 
   // F7 — AI
-  { key: 'ai', folder: 'ai', phase: 7, status: 'planned', backend: 'mock' },
+  { key: 'ai', folder: 'ai', phase: 7, status: 'in_progress', backend: 'mock' },
 ]
 
 export const CURRENT_SERVICE_PHASE = 2

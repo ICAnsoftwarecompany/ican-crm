@@ -114,6 +114,11 @@ export const serviceKeys = {
   apiAccess: () => [...serviceKeys.all, 'api-access'],
   webhookDeliveries: (id, params) => [...serviceKeys.apiAccess(), 'deliveries', String(id), params ?? {}],
 
+  // AI (F7)
+  ai: () => [...serviceKeys.all, 'ai'],
+  aiSettings: () => [...serviceKeys.ai(), 'settings'],
+  aiCase: (caseId, feature) => [...serviceKeys.ai(), 'case', String(caseId), feature],
+
   // Saved views (F2) — per entity (e.g. service_case)
   savedViews: (entity) => [...serviceKeys.all, 'saved-views', entity],
 }
