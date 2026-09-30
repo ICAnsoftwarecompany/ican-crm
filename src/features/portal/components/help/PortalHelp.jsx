@@ -1,16 +1,14 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Search, Star } from 'lucide-react'
+import { Star } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
-import { Input } from '../../../../shared/components/ui/Input'
-import { useDebounce } from '../../../../shared/hooks/useDebounce'
 import { cn } from '../../../../shared/utils/cn'
 import { portalEndpoints as P } from '../../../service/portal-transport'
-import { portalApi, usePortalList, usePortalMutation } from '../../api/portalApi'
+import { portalApi, usePortalMutation } from '../../api/portalApi'
 import { usePortalAccess } from '../../hooks/usePortalAccess'
-import { usePortalFormat } from '../../utils/format'
 import { Card, PortalPage } from '../PortalPage'
+import { KbBrowser } from './KbBrowser'
 
 const TEXTAREA = 'min-h-[80px] w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-brand-accent'
 
@@ -35,33 +33,15 @@ function FeedbackCard() {
   )
 }
 
-/** Help center (customer-visible KB) + feedback. */
+const SIGNED_IN = { list: P.kb, article: P.kbArticle, vote: P.kbVote }
+
+/** Help center (customer-visible, published KB) + feedback. */
 export function PortalHelp() {
   const { t } = useTranslation()
-  const format = usePortalFormat()
   const { can } = usePortalAccess()
-  const [search, setSearch] = useState('')
-  const debounced = useDebounce(search, 300)
-  const query = usePortalList('kb', P.kb, debounced ? { search: debounced } : undefined, { enabled: can('kb') })
-  const articles = query.data || []
   return (
     <PortalPage title={t('portal.sections.kb')} description={t('portal.help.description')}>
-      {can('kb') && (
-        <>
-          <div className="max-w-md"><Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t('portal.help.search')} aria-label={t('portal.help.search')} startIcon={<Search size={16} aria-hidden="true" />} /></div>
-          <PortalPage level={2} title={t('portal.help.articles')} query={query} empty={!articles.length} emptyTitle={t('portal.help.empty')}>
-            <div className="grid gap-2">
-              {articles.map((article) => (
-                <details key={article.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                  <summary className="cursor-pointer font-medium"><bdi>{article.title}</bdi></summary>
-                  <p dir="auto" className="mt-2 whitespace-pre-line text-sm text-[var(--text-muted)]">{article.body}</p>
-                  <p className="mt-2 text-xs text-[var(--text-muted)]">{t('portal.help.updated', { date: format.date(article.updated_at) })}</p>
-                </details>
-              ))}
-            </div>
-          </PortalPage>
-        </>
-      )}
+      {can('kb') && <KbBrowser endpoints={SIGNED_IN} scope="member" />}
       {can('feedback', 'create') && <FeedbackCard />}
     </PortalPage>
   )

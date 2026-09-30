@@ -11,10 +11,12 @@ import { contractsHandlers } from './contractsHandlers'
 import { deliveriesHandlers } from './deliveriesHandlers'
 import { followUpsHandlers } from './followUpsHandlers'
 import { importsHandlers } from './importsHandlers'
+import { kbHandlers } from './kbHandlers'
 import { insightsHandlers } from './insightsHandlers'
 import { myWorkHandlers } from './myWorkHandlers'
 import { portalAdminHandlers } from './portalAdminHandlers'
 import { portalHandlers } from './portalHandlers'
+import { portalKbHandlers } from './portalKbHandlers'
 import { recordsHandlers } from './recordsHandlers'
 import { settingsHandlers } from './settingsHandlers'
 import { schedulingHandlers } from './schedulingHandlers'
@@ -40,9 +42,11 @@ export const mockRoutes = [
   ...deliveriesHandlers,
   ...followUpsHandlers,
   ...importsHandlers,
+  ...kbHandlers,
   ...insightsHandlers,
   ...myWorkHandlers,
   ...portalAdminHandlers,
+  ...portalKbHandlers,
   ...portalHandlers,
   ...recordsHandlers,
   ...settingsHandlers,

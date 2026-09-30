@@ -83,6 +83,7 @@ export default {
       sections: 'Visible sections',
       otpChannels: 'Send sign-in codes by',
       defaultLanguage: 'Default language',
+      publicHelpCenter: 'Public help center (no sign-in): show public articles to anyone',
       b2bPassword: 'Company users can sign in with email + password',
     },
     validation: { phoneOrEmail: 'Enter a phone or an email.', color: 'Use a color like #00C2CB.', subdomain: 'Lowercase letters, numbers and dashes only.' },

@@ -138,6 +138,10 @@ export const serviceEndpoints = {
   kbArticles: `${SERVICE_API}/kb/articles`,
   kbArticle: (articleId) => `${SERVICE_API}/kb/articles/${articleId}`,
   kbArticlePublish: (articleId) => `${SERVICE_API}/kb/articles/${articleId}/publish`,
+  // F6 — versions (+ /{v}/restore), review workflow (submit-review, reject, archive, unarchive) and stats (views,
+  // helpful rate, deflections, content gaps from portal searches with no result). Proposed additions to spec §41.
+  kbArticleAction: (articleId, action) => `${SERVICE_API}/kb/articles/${articleId}/${action}`,
+  kbStats: `${SERVICE_API}/kb/stats`,
 
   // Feedback & reports (F2) — spec §42, §51 (`/service/reports/{report_key}`).
   feedbackResponses: `${SERVICE_API}/feedback/responses`,

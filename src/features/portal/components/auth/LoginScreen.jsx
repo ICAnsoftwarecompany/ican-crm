@@ -39,7 +39,12 @@ export function LoginScreen() {
     <AuthCard
       title={t('portal.auth.title')}
       description={t('portal.auth.description')}
-      footer={<Link to="/track" className="text-center text-sm text-[var(--text-muted)] underline">{t('portal.auth.trackLink')}</Link>}
+      footer={
+        <div className="flex flex-wrap justify-center gap-4 text-sm text-[var(--text-muted)]">
+          <Link to="/track" className="underline">{t('portal.auth.trackLink')}</Link>
+          {settings.data?.public_help_center && <Link to="/help-center" className="underline">{t('portal.help.browseHelp')}</Link>}
+        </div>
+      }
     >
       {settings.data?.b2b_password_login && (
         <div role="tablist" className="grid grid-cols-2 gap-1 rounded-lg bg-[var(--surface-2)] p-1">

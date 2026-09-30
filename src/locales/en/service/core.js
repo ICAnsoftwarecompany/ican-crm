@@ -25,6 +25,7 @@ export default {
     API_CLIENT_DISABLED: 'Enable this API client first.',
     API_CLIENT_IN_USE: 'A webhook is linked to this API client. Unlink it first.',
     DELIVERY_ALREADY_DELIVERED: 'This delivery already succeeded.',
+    KB_INVALID_STATUS: 'This step is not available for the article in its current status.',
     IMPORT_NOTHING_VALID: 'There are no valid rows to import.',
     PORTAL_ACCOUNT_EXISTS: 'Someone already has a portal account with this phone or email. Add access to that account instead.',
     MEMBERSHIP_EXISTS: 'This account can already access this customer.',

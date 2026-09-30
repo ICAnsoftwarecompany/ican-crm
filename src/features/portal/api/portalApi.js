@@ -22,6 +22,8 @@ export const portalApi = {
   post: async (url, payload) => unwrap(await http.post(url, payload)),
   patch: async (url, payload) => unwrap(await http.patch(url, payload)),
   track: async (payload) => unwrap(await http.post(P.track, payload)),
+  /** Full response `{ data, meta }` (lists that carry extra meta, e.g. help center categories). */
+  page: async (url, params) => (await http.get(url, { params })).data,
 }
 
 export const usePublicSettings = () => useQuery({ queryKey: ['portal', 'public-settings'], queryFn: portalApi.publicSettings, staleTime: 10 * 60 * 1000 })

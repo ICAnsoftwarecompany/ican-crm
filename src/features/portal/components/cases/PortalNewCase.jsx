@@ -8,6 +8,7 @@ import { portalEndpoints as P } from '../../../service/portal-transport'
 import { portalApi, usePortalMutation } from '../../api/portalApi'
 import { usePortalAccess } from '../../hooks/usePortalAccess'
 import { Card, PortalPage } from '../PortalPage'
+import { KbDeflection } from './KbDeflection'
 
 const TEXTAREA = 'min-h-[120px] w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-brand-accent'
 
@@ -35,6 +36,11 @@ export function PortalNewCase() {
         </div>
         <Button className="w-fit" loading={create.isPending} onClick={() => create.mutate({ subject, description })}>{t('portal.cases.submit')}</Button>
       </Card>
+      {can('kb') && !about && (
+        <div className="max-w-2xl">
+          <KbDeflection text={`${subject} ${description}`} onSolved={() => { toast.success(t('portal.help.gladSolved')); navigate('/') }} />
+        </div>
+      )}
     </PortalPage>
   )
 }

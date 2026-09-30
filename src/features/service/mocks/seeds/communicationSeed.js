@@ -1,4 +1,5 @@
 import { buildCaseSetup } from './caseSetupSeed'
+import { ensureVersioned } from '../state/kbLive'
 import { hoursAgo } from './seedUtils'
 
 /**
@@ -90,6 +91,7 @@ export function buildKbCategories() {
     { id: 'kbc-faq', label: L('أسئلة شائعة', 'FAQ'), visibility: 'customer' },
     { id: 'kbc-troubleshooting', label: L('حل المشكلات', 'Troubleshooting'), visibility: 'agent' },
     { id: 'kbc-procedures', label: L('إجراءات داخلية', 'Internal procedures'), visibility: 'internal' },
+    { id: 'kbc-guides', label: L('أدلة الاستخدام', 'How-to guides'), visibility: 'public' },
   ]
 }
 
@@ -118,35 +120,56 @@ export function buildKbArticles(manifest) {
       'kbc-troubleshooting',
       'خطوات التشخيص الأولى قبل تحويل الطلب',
       'اسأل العميل عن آخر مرة كانت الخدمة تعمل بشكل طبيعي.\nاطلب صورة أو فيديو قصير للمشكلة.\nتأكد من بيانات التواصل والعنوان.\nلو المشكلة متكررة، راجع الطلبات السابقة للعميل من صفحة العميل.',
-      { related_case_type_ids: typeId(0), tags: ['تشخيص'] }
+      { related_case_type_ids: typeId(0), tags: ['تشخيص'], type: 'troubleshooting', view_count: 64, helpful_count: 21, not_helpful_count: 3 }
     ),
     article(
       'kb-2',
       'kbc-faq',
       'How long does a request take?',
       'Most requests get a first response within business hours.\nUrgent requests are handled first.\nThe customer receives an update whenever the status changes.',
-      { language: 'en', visibility: 'customer', related_case_type_ids: typeId(1) }
+      { language: 'en', visibility: 'customer', related_case_type_ids: typeId(1), type: 'faq', tags: ['time', 'response'], view_count: 212, helpful_count: 80, not_helpful_count: 9 }
     ),
     article(
       'kb-3',
       'kbc-procedures',
       'متى أصعّد الطلب للمشرف؟',
       'صعّد الطلب إذا:\n- تجاوز وقت الحل المتفق عليه.\n- العميل طلب التحدث مع مسؤول.\n- يوجد تعويض مالي أو استثناء من السياسة.\nأضف ملاحظة داخلية توضح السبب قبل التصعيد.',
-      { visibility: 'internal', related_case_type_ids: typeId(2) }
+      { visibility: 'internal', related_case_type_ids: typeId(2), type: 'procedure', view_count: 30, helpful_count: 12 }
     ),
     article(
       'kb-4',
       'kbc-faq',
       'سياسة الاسترجاع والاستبدال',
       'يمكن للعميل طلب الاسترجاع خلال المدة المحددة في العقد أو الفاتورة.\nيجب إرفاق صورة الفاتورة.\nيتم الرد خلال يومي عمل.',
-      { visibility: 'customer', related_case_type_ids: typeId(3) }
+      { visibility: 'customer', related_case_type_ids: typeId(3), type: 'faq', tags: ['استرجاع', 'استبدال', 'فاتورة'], view_count: 140, helpful_count: 44, not_helpful_count: 15 }
     ),
     article(
       'kb-5',
       'kbc-troubleshooting',
       'مسودة: التعامل مع شكوى متكررة',
       'راجع سجل الطلبات السابقة.\nاتصل بالعميل هاتفيًا بدلاً من الرسائل.\nاعرض متابعة بعد الحل بثلاثة أيام.',
-      { status: 'draft', published_at: null, related_case_type_ids: typeId(4) }
+      { status: 'draft', published_at: null, related_case_type_ids: typeId(4), type: 'script' }
     ),
-  ]
+    article(
+      'kb-6',
+      'kbc-guides',
+      'إزاي أتابع طلبي من البوابة؟',
+      'ادخل على البوابة برقم موبايلك.\nافتح "طلباتي" وهتلاقي حالة كل طلب وآخر تحديث.\nتقدر ترد على الطلب أو ترفع مستند من نفس الصفحة.',
+      { visibility: 'public', type: 'guide', tags: ['متابعة', 'طلب', 'بوابة', 'حالة'], view_count: 96, helpful_count: 38, not_helpful_count: 2 }
+    ),
+    article(
+      'kb-7',
+      'kbc-faq',
+      'مواعيد العمل في الأعياد',
+      'نعمل بمواعيد مختصرة أيام الأعياد الرسمية.\nالطلبات العاجلة يتم الرد عليها خلال اليوم.',
+      { status: 'review', published_at: null, visibility: 'customer', type: 'faq', tags: ['مواعيد', 'عيد'], reviewer_id: 'agent-1', owner_id: 'agent-3' }
+    ),
+    article(
+      'kb-8',
+      'kbc-faq',
+      'عرض الصيانة المجانية لفترة محدودة',
+      'احجز زيارة صيانة مجانية حتى نهاية الشهر.\nالعرض لعميل واحد لكل عقد.',
+      { visibility: 'customer', type: 'article', tags: ['صيانة', 'عرض'], expires_at: hoursAgo(-24 * 5), view_count: 51, helpful_count: 9, not_helpful_count: 1 }
+    ),
+  ].map(ensureVersioned)
 }

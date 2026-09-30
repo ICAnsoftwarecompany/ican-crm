@@ -4,7 +4,8 @@ import { getCollection, registerSeed } from '../db'
 import { MockHttpError } from '../errors'
 import { buildKbArticles, buildKbCategories, buildMacros, buildSavedReplies } from '../seeds/communicationSeed'
 import { getMockCurrentUser } from '../seeds/seedUtils'
-import { matchesSearch, nowIso } from '../utils'
+import { nowIso } from '../utils'
+import { rankArticles } from '../state/kbLive'
 import { addActivity, applyTransition, assertVersion, getCase, serializeCase, touch } from './casesHandlers'
 
 registerSeed('savedReplies', buildSavedReplies)
@@ -54,43 +55,14 @@ function applyMacro(item, macro, language) {
   addActivity(item.id, { type: 'macro_applied', metadata: { macro: { id: macro.id, name: macro.name } } })
 }
 
-const isLive = (article, now = Date.now()) =>
-  article.status === 'published' && (!article.expires_at || new Date(article.expires_at).getTime() > now)
-
-const words = (value) => String(value || '').toLowerCase().split(/[\s,.،؟?!:;()-]+/).filter((word) => word.length > 2)
-
 function suggestArticles(item) {
-  const subjectWords = new Set(words(item.subject))
-  return getCollection('kbArticles')
-    .filter((article) => isLive(article))
-    .map((article) => {
-      const typeMatch = article.related_case_type_ids?.includes(item.type_id) ? 10 : 0
-      const overlap = words(`${article.title} ${article.tags?.join(' ')}`).filter((word) => subjectWords.has(word)).length
-      return { article, score: typeMatch + overlap }
-    })
-    .filter(({ score }) => score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 5)
-    .map(({ article }) => serializeArticle(article))
+  return rankArticles(getCollection('kbArticles'), `${item.subject} ${item.description || ''}`, { typeId: item.type_id }).map(({ article }) => serializeArticle(article))
 }
 
-function serializeArticle(article) {
+export function serializeArticle(article) {
   const category = getCollection('kbCategories').find((entry) => entry.id === article.category_id)
   return { ...article, category: category ? { id: category.id, label: category.label } : null }
 }
-
-function listArticles(query) {
-  const data = getCollection('kbArticles')
-    .filter((article) => !query.category_id || article.category_id === query.category_id)
-    .filter((article) => !query.status || article.status === query.status)
-    .filter((article) => !query.visibility || article.visibility === query.visibility)
-    .filter((article) => matchesSearch([article.title, article.body, ...(article.tags || [])], query.search))
-    .sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)))
-    .map(serializeArticle)
-  return { data }
-}
-
-const ARTICLE_STATUSES = ['draft', 'published', 'archived']
 
 /** @type {import('../router').MockRoute[]} */
 export const communicationHandlers = [
@@ -123,37 +95,6 @@ export const communicationHandlers = [
       }
     },
   }),
-
-  // Knowledge base articles
-  ...crudHandlers({
-    collection: 'kbArticles',
-    path: serviceEndpoints.kbArticles,
-    prefix: 'kb',
-    serialize: serializeArticle,
-    validate: (body) => ({
-      ...(required(body.title) && { title: ['required'] }),
-      ...(required(body.body) && { body: ['required'] }),
-      ...(!body.category_id && { category_id: ['required'] }),
-      ...(body.status && !ARTICLE_STATUSES.includes(body.status) && { status: ['invalid'] }),
-    }),
-  }).map((route) =>
-    // List supports filters; creating always starts as a draft (publishing is a separate permission).
-    route.method === 'GET' && route.path === serviceEndpoints.kbArticles
-      ? { ...route, handler: ({ query }) => listArticles(query) }
-      : route.method === 'POST' && route.path === serviceEndpoints.kbArticles
-        ? { ...route, handler: (context) => route.handler({ ...context, body: { tags: [], related_case_type_ids: [], version: 1, ...context.body, status: 'draft', published_at: null } }) }
-        : route
-  ),
-  {
-    method: 'POST',
-    path: `${serviceEndpoints.kbArticles}/:id/publish`,
-    handler: ({ params }) => {
-      const article = getCollection('kbArticles').find((entry) => entry.id === params.id)
-      if (!article) throw new MockHttpError(404, 'NOT_FOUND', 'Article not found')
-      Object.assign(article, { status: 'published', published_at: nowIso(), updated_at: nowIso(), version: (article.version || 1) + 1 })
-      return { data: serializeArticle(article) }
-    },
-  },
 
   // Case integrations
   {

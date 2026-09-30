@@ -11,9 +11,11 @@ import { useDebounce } from '../../../../shared/hooks/useDebounce'
 import { localizeLabel } from '../../core/utils/localizeLabel'
 import { useResourceList } from '../../settings/api/settingsApi'
 import { kbCategoriesResource } from '../../settings/resources/communicationResources'
-import { useKbArticles } from '../api/knowledgeApi'
-import { ARTICLE_STATUSES } from '../utils/articleMeta'
-import { ArticleMetaLine, ArticleStatusBadge } from './ArticleBadges'
+import { useKbArticleList } from '../api/knowledgeApi'
+import { ARTICLE_STATUSES, ARTICLE_TYPES, ARTICLE_VIEWS } from '../utils/articleMeta'
+import { ArticleMetaLine, ArticleStateChips, ArticleStatusBadge } from './ArticleBadges'
+import { KnowledgeStats } from './KnowledgeStats'
+import { cn } from '../../../../shared/utils/cn'
 
 /** Internal knowledge base: search + filters + article list. `basePath` comes from the page. */
 export function KnowledgeWorkspace({ basePath }) {
@@ -22,13 +24,24 @@ export function KnowledgeWorkspace({ basePath }) {
   const [search, setSearch] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [status, setStatus] = useState('')
+  const [type, setType] = useState('')
   const debounced = useDebounce(search, 300)
   const categories = useResourceList(kbCategoriesResource)
-  const articles = useKbArticles({ search: debounced || undefined, category_id: categoryId || undefined, status: status || undefined })
-  const items = articles.data || []
+  const articles = useKbArticleList({ search: debounced || undefined, category_id: categoryId || undefined, status: status || undefined, type: type || undefined })
+  const items = articles.data?.data || []
+  const counts = articles.data?.meta?.counts || {}
 
   return (
     <div className="grid gap-4">
+      <KnowledgeStats />
+      <div className="flex flex-wrap gap-2" role="tablist" aria-label={t('service.knowledge.fields.status')}>
+        {['', ...ARTICLE_STATUSES, ...ARTICLE_VIEWS].map((key) => (
+          <button key={key || 'all'} type="button" role="tab" aria-selected={status === key} onClick={() => setStatus(key)} className={cn('rounded-full border px-3 py-1 text-xs transition-colors', status === key ? 'border-brand-accent font-semibold text-[var(--text)]' : 'border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text)]')}>
+            {key ? t(ARTICLE_VIEWS.includes(key) ? `service.knowledge.views.${key}` : `service.knowledge.status.${key}`) : t('service.knowledge.allStatuses')}
+            {key && counts[key] != null && <span className="ms-1.5 font-semibold">{counts[key]}</span>}
+          </button>
+        ))}
+      </div>
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
         <div className="grid flex-1 gap-3 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
           <Input
@@ -46,11 +59,11 @@ export function KnowledgeWorkspace({ basePath }) {
             options={(categories.data || []).map((category) => ({ value: category.id, label: localizeLabel(category.label, i18n.language, category.id) }))}
           />
           <Select
-            aria-label={t('service.knowledge.fields.status')}
-            placeholder={t('service.knowledge.allStatuses')}
-            value={status}
-            onChange={setStatus}
-            options={ARTICLE_STATUSES.map((value) => ({ value, label: t(`service.knowledge.status.${value}`) }))}
+            aria-label={t('service.knowledge.fields.type')}
+            placeholder={t('service.knowledge.allTypes')}
+            value={type}
+            onChange={setType}
+            options={ARTICLE_TYPES.map((value) => ({ value, label: t(`service.knowledge.types.${value}`) }))}
           />
         </div>
         <Button className="shrink-0 whitespace-nowrap" onClick={() => navigate(`${basePath}/new`)}>
@@ -84,7 +97,11 @@ export function KnowledgeWorkspace({ basePath }) {
                     {localizeLabel(article.category?.label, i18n.language, '-')} · <ArticleMetaLine article={article} />
                   </span>
                 </span>
-                <ArticleStatusBadge status={article.status} />
+                <span className="flex flex-wrap items-center gap-1.5">
+                  <ArticleStateChips article={article} />
+                  <ArticleStatusBadge status={article.status} />
+                </span>
+                {article.helpful_rate != null && <span className="text-xs text-[var(--text-muted)]">{t('service.knowledge.helpfulRate', { rate: article.helpful_rate })}</span>}
                 <span className="text-xs text-[var(--text-muted)]">{formatRelativeTime(article.updated_at, i18n.language)}</span>
               </Link>
             </li>

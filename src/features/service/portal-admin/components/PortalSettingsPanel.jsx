@@ -53,6 +53,10 @@ export function PortalSettingsPanel({ resource }) {
                 {t('service.portal.fields.b2bPassword')}
               </label>
             </div>
+            <label className="inline-flex items-center gap-2 text-sm text-[var(--text)]">
+              <input type="checkbox" checked={Boolean(form.public_help_center)} onChange={(event) => set('public_help_center')(event.target.checked)} />
+              {t('service.portal.fields.publicHelpCenter')}
+            </label>
             <Button type="submit" className="w-fit" loading={saveSettings.isPending}>{t('service.portal.save')}</Button>
           </form>
         )}

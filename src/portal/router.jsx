@@ -16,6 +16,7 @@ import {
   PortalPayments,
   PortalRecordDetail,
   PortalRecords,
+  PublicHelpCenter,
   useMe,
   usePortalSession,
 } from '../features/portal'
@@ -36,6 +37,7 @@ export const portalRouter = createBrowserRouter(
   [
     { path: '/login', element: <LoginScreen /> },
     { path: '/track', element: <GuestTrack /> },
+    { path: '/help-center', element: <PublicHelpCenter /> },
     {
       element: <RequireSession />,
       children: [

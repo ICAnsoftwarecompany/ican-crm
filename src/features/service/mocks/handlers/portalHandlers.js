@@ -361,17 +361,6 @@ export const portalHandlers = [
 
   // Help center + feedback
   {
-    method: 'GET',
-    path: P.kb,
-    handler: ({ headers, query }) => {
-      const ctx = context(headers)
-      requirePermission(ctx, 'kb')
-      const customerCategories = new Set(getCollection('kbCategories').filter((entry) => entry.visibility === 'customer').map((entry) => entry.id))
-      const search = String(query.search || '').trim().toLowerCase()
-      return { data: getCollection('kbArticles').filter((entry) => entry.status === 'published' && (entry.visibility === 'customer' || customerCategories.has(entry.category_id))).filter((entry) => !search || `${entry.title} ${entry.body}`.toLowerCase().includes(search)).map((entry) => ({ id: entry.id, title: entry.title, body: entry.body, language: entry.language, updated_at: entry.updated_at })) }
-    },
-  },
-  {
     method: 'POST',
     path: P.feedback,
     handler: ({ headers, body = {} }) => {

@@ -84,6 +84,8 @@ export function buildPortalSettings(manifest) {
     otp_channels: ['whatsapp', 'sms'],
     b2b_password_login: manifest.template === 'shipping',
     subdomain: 'portal',
+    // F6: public help center (no sign-in) with `public` articles.
+    public_help_center: true,
     // B2B admins invite company users by role; the tenant maps each role to a policy.
     role_policies: manifest.template === 'shipping' ? { admin: 'pp-b2b-admin', operations: 'pp-b2b-operations', accounting: 'pp-b2b-accounting' } : {},
   }

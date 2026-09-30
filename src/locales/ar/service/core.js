@@ -25,6 +25,7 @@ export default {
     API_CLIENT_DISABLED: 'فعّل عميل الـ API ده الأول.',
     API_CLIENT_IN_USE: 'فيه Webhook مربوط بعميل الـ API ده. فك الربط الأول.',
     DELIVERY_ALREADY_DELIVERED: 'الإرسال ده وصل بالفعل.',
+    KB_INVALID_STATUS: 'الخطوة دي مش متاحة للمقال في حالته الحالية.',
     IMPORT_NOTHING_VALID: 'مفيش صفوف سليمة للاستيراد.',
     PORTAL_ACCOUNT_EXISTS: 'فيه حساب بوابة بنفس الموبايل أو الإيميل. أضف صلاحية وصول للحساب ده بدل ما تعمل جديد.',
     MEMBERSHIP_EXISTS: 'الحساب ده عنده صلاحية على العميل ده بالفعل.',
