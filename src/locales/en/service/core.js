@@ -15,6 +15,8 @@ export default {
     },
   },
   errors: {
+    IMPORT_ALREADY_RUN: 'This import already ran. Start a new one.',
+    IMPORT_NOTHING_VALID: 'There are no valid rows to import.',
     PORTAL_ACCOUNT_EXISTS: 'Someone already has a portal account with this phone or email. Add access to that account instead.',
     MEMBERSHIP_EXISTS: 'This account can already access this customer.',
     PORTAL_ACCOUNT_ACTIVE: 'This account is already active.',

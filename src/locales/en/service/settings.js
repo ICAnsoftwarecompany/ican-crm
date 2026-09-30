@@ -47,6 +47,11 @@ export default {
       sla: 'Service levels',
     },
     resources: {
+      imports: {
+        title: 'Import data',
+        one: 'import',
+        description: 'Bring records or assets in from a CSV file: map the columns, check the file without saving, then import. Rows with errors come back as a file to fix.',
+      },
       portalAccounts: {
         title: 'Portal accounts',
         one: 'portal account',

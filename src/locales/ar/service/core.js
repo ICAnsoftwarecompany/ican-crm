@@ -15,6 +15,8 @@ export default {
     },
   },
   errors: {
+    IMPORT_ALREADY_RUN: 'الاستيراد ده اتنفذ بالفعل. ابدأ استيراد جديد.',
+    IMPORT_NOTHING_VALID: 'مفيش صفوف سليمة للاستيراد.',
     PORTAL_ACCOUNT_EXISTS: 'فيه حساب بوابة بنفس الموبايل أو الإيميل. أضف صلاحية وصول للحساب ده بدل ما تعمل جديد.',
     MEMBERSHIP_EXISTS: 'الحساب ده عنده صلاحية على العميل ده بالفعل.',
     PORTAL_ACCOUNT_ACTIVE: 'الحساب ده نشط بالفعل.',

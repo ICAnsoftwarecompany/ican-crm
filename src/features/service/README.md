@@ -37,6 +37,7 @@ Everything business-related for Customer Service lives here. Start with
 | `work-orders/` | Work orders & field visits | F4 | `work-orders/README.md` |
 | `deliveries/` | Courier dispatch, proof of delivery, COD remittances | F4 | `deliveries/README.md` |
 | `portal-admin/` | Portal accounts, policies, request catalog, branding | F5 | `portal-admin/README.md` |
+| `imports/` | CSV import wizard, dry run, error file | F5 | `imports/README.md` |
 | `portal/`, `imports/`, `follow-ups/`, `portfolios/` | Portal & growth (MVP-2) | F5 | added with the code |
 | `quality/`, `templates/` | Knowledge & quality | F6 | added with the code |
 | `ai/` | AI | F7 | added with the code |

@@ -11,12 +11,14 @@ import { contractTypesResource } from './contractResources'
 import { paymentPlansResource, planAssignmentsResource } from './billingResources'
 import { schedulingResourcesResource } from './schedulingResources'
 import { portalAccountsSection, portalBrandingSection, portalPoliciesResource, requestCatalogResource } from './portalResources'
-import { Package, Wand2 } from 'lucide-react'
+import { FileUp, Package, Wand2 } from 'lucide-react'
+import { ImportsPanel } from '../../imports/components/ImportsPanel'
 import { SetupWizardPanel } from '../../setup/components/SetupWizardPanel'
 import { CatalogItemsPanel } from '../../catalog/components/CatalogItemsPanel'
 
 /** A section can also be a custom panel (`component`) instead of a CRUD list. */
 const setupSection = { key: 'setup', icon: Wand2, i18nKey: 'service.settings.resources.setup', component: SetupWizardPanel }
+const importsSection = { key: 'imports', icon: FileUp, i18nKey: 'service.settings.resources.imports', component: ImportsPanel }
 const catalogItemsSection = { key: 'catalogItems', icon: Package, i18nKey: 'service.settings.resources.catalogItems', component: CatalogItemsPanel }
 
 /**
@@ -26,7 +28,7 @@ const catalogItemsSection = { key: 'catalogItems', icon: Package, i18nKey: 'serv
  * Later sub-modules (replies, knowledge…) append their own resources.
  */
 export const SETTINGS_GROUPS = [
-  { key: 'general', resources: [setupSection] },
+  { key: 'general', resources: [setupSection, importsSection] },
   { key: 'cases', resources: [caseTypesResource, queuesResource] },
   { key: 'catalog', resources: [catalogItemsSection, itemTypesResource, recordTypesResource, pipelinesResource] },
   { key: 'contracts', resources: [contractTypesResource] },
@@ -55,6 +57,7 @@ const SECTION_SLUGS = {
   pipelines: 'pipelines',
   contractTypes: 'contract-types',
   setup: 'setup',
+  imports: 'imports',
   paymentPlans: 'payment-plans',
   planAssignments: 'plan-assignments',
   schedulingResources: 'scheduling-resources',

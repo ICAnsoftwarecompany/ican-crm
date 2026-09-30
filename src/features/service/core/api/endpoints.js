@@ -101,6 +101,10 @@ export const serviceEndpoints = {
   portalSettings: `${TENANT_API}/portal/settings`,
   portalAccounts: `${TENANT_API}/portal/accounts`,
 
+  // Import engine (F5, spec §15.1 / §51 `POST /imports (dry_run)`, `POST /imports/{id}/execute`, `GET /imports/{id}`).
+  // Entities, fields, files, error-file and mappings endpoints are proposed.
+  imports: `${TENANT_API}/imports`,
+
   // Setup wizard (F3, spec §47.2): industry templates + apply (with dry run).
   setupTemplates: `${TENANT_API}/settings/templates`,
   // Billing Lite (F4) — preview never saves; schedules are created from signed contracts.

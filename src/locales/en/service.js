@@ -18,6 +18,7 @@ import subscriptions from './service/subscriptions.js'
 import scheduling from './service/scheduling.js'
 import deliveries from './service/deliveries.js'
 import portal from './service/portal.js'
+import imports from './service/imports.js'
 
 /**
  * Customer Hub (Service Operations) copy — key root `service.*`.
@@ -45,5 +46,6 @@ export default {
   ...scheduling,
   ...deliveries,
   ...portal,
+  ...imports,
   terms,
 }

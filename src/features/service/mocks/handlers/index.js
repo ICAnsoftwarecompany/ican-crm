@@ -8,6 +8,7 @@ import { communicationHandlers } from './communicationHandlers'
 import { contactsHandlers } from './contactsHandlers'
 import { contractsHandlers } from './contractsHandlers'
 import { deliveriesHandlers } from './deliveriesHandlers'
+import { importsHandlers } from './importsHandlers'
 import { insightsHandlers } from './insightsHandlers'
 import { myWorkHandlers } from './myWorkHandlers'
 import { portalAdminHandlers } from './portalAdminHandlers'
@@ -34,6 +35,7 @@ export const mockRoutes = [
   ...contactsHandlers,
   ...contractsHandlers,
   ...deliveriesHandlers,
+  ...importsHandlers,
   ...insightsHandlers,
   ...myWorkHandlers,
   ...portalAdminHandlers,

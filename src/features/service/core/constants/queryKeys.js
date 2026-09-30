@@ -100,6 +100,10 @@ export const serviceKeys = {
   portalAccounts: (params) => [...serviceKeys.portalAdmin(), 'accounts', params ?? {}],
   portalSettings: () => [...serviceKeys.portalAdmin(), 'settings'],
 
+  // Imports (F5)
+  imports: () => [...serviceKeys.all, 'imports'],
+  importFields: (params) => [...serviceKeys.imports(), 'fields', params ?? {}],
+
   // Saved views (F2) — per entity (e.g. service_case)
   savedViews: (entity) => [...serviceKeys.all, 'saved-views', entity],
 }
