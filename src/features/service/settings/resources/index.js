@@ -11,6 +11,7 @@ import { contractTypesResource } from './contractResources'
 import { paymentPlansResource, planAssignmentsResource } from './billingResources'
 import { schedulingResourcesResource } from './schedulingResources'
 import { portalAccountsSection, portalBrandingSection, portalPoliciesResource, requestCatalogResource } from './portalResources'
+import { followUpProgramsResource, portfoliosSection } from './followUpResources'
 import { FileUp, Package, Wand2 } from 'lucide-react'
 import { ImportsPanel } from '../../imports/components/ImportsPanel'
 import { SetupWizardPanel } from '../../setup/components/SetupWizardPanel'
@@ -34,6 +35,7 @@ export const SETTINGS_GROUPS = [
   { key: 'contracts', resources: [contractTypesResource] },
   { key: 'billing', resources: [paymentPlansResource, planAssignmentsResource] },
   { key: 'scheduling', resources: [schedulingResourcesResource] },
+  { key: 'followUps', resources: [followUpProgramsResource, portfoliosSection] },
   { key: 'portal', resources: [portalAccountsSection, portalPoliciesResource, requestCatalogResource, portalBrandingSection] },
   { key: 'sla', resources: [slaPoliciesResource, businessCalendarsResource, escalationRulesResource] },
   { key: 'communication', resources: [savedRepliesResource, macrosResource] },
@@ -65,6 +67,8 @@ const SECTION_SLUGS = {
   portalPolicies: 'portal-policies',
   requestCatalog: 'request-catalog',
   portalBranding: 'portal-branding',
+  followUpPrograms: 'follow-up-programs',
+  portfolios: 'portfolios',
 }
 
 /** URL slug for a resource (kebab-case, stable). */

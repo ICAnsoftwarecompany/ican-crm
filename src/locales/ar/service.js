@@ -19,6 +19,7 @@ import scheduling from './service/scheduling.js'
 import deliveries from './service/deliveries.js'
 import portal from './service/portal.js'
 import imports from './service/imports.js'
+import followUps from './service/followUps.js'
 
 /**
  * نصوص إدارة العملاء (Customer Hub) — جذر المفاتيح `service.*`.
@@ -46,5 +47,6 @@ export default {
   ...deliveries,
   ...portal,
   ...imports,
+  ...followUps,
   terms,
 }

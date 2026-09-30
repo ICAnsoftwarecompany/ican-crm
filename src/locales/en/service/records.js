@@ -18,6 +18,7 @@ export default {
   },
   hub: {
     deliveries: 'Deliveries',
+    followUps: 'Follow-ups',
     workOrders: 'Work orders',
     scheduling: 'Scheduling',
     subscriptions: 'Subscriptions',

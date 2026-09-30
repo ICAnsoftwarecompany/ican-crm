@@ -18,6 +18,7 @@ export default {
   },
   hub: {
     deliveries: 'التوصيل',
+    followUps: 'المتابعات',
     workOrders: 'أوامر العمل',
     scheduling: 'المواعيد',
     subscriptions: 'الاشتراكات',

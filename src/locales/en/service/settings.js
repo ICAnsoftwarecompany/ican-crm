@@ -35,6 +35,7 @@ export default {
       taken: 'This key is already used',
     },
     groups: {
+      followUps: 'Follow-ups',
       portal: 'Customer portal',
       scheduling: 'Scheduling',
       billing: 'Payments',
@@ -47,6 +48,16 @@ export default {
       sla: 'Service levels',
     },
     resources: {
+      followUpPrograms: {
+        title: 'Follow-up programs',
+        one: 'program',
+        description: 'Planned check-ins after a sale, before a renewal or during onboarding. Each step becomes a task; the outcome decides what happens next.',
+      },
+      portfolios: {
+        title: 'Portfolios',
+        one: 'portfolio',
+        description: 'Groups of customers held by named staff. Requests and follow-ups can go straight to the portfolio owner.',
+      },
       imports: {
         title: 'Import data',
         one: 'import',

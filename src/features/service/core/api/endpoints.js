@@ -59,6 +59,8 @@ export const serviceEndpoints = {
     // F4 — Billing Lite (spec §29): plan library + where plans apply.
     paymentPlans: `${TENANT_API}/billing/payment-plans`,
     planAssignments: `${TENANT_API}/billing/payment-plan-assignments`,
+    // F5 — Follow-up programs (spec §39, §51 `CRUD /follow-up-programs`).
+    followUpPrograms: `${TENANT_API}/follow-up-programs`,
   },
 
   // Catalog (F3) — capability registry + model presets are code-owned (read-only; proposed endpoints).
@@ -104,6 +106,12 @@ export const serviceEndpoints = {
   // Import engine (F5, spec §15.1 / §51 `POST /imports (dry_run)`, `POST /imports/{id}/execute`, `GET /imports/{id}`).
   // Entities, fields, files, error-file and mappings endpoints are proposed.
   imports: `${TENANT_API}/imports`,
+
+  // Follow-up enrollments (F5, spec §39.3 — proposed): GET ?view=due_today|overdue|upcoming|completed|all&mine,
+  // POST (manual enroll), POST /{id}/outcome, POST /{id}/exit. Live: the server creates a Task per due step.
+  followUps: `${TENANT_API}/follow-ups`,
+  // Portfolios (spec §12.5, §51 `CRUD /portfolios`) + proposed /{id}/members (GET/POST/PATCH/DELETE) and /{id}/distribute.
+  portfolios: `${TENANT_API}/portfolios`,
 
   // Setup wizard (F3, spec §47.2): industry templates + apply (with dry run).
   setupTemplates: `${TENANT_API}/settings/templates`,

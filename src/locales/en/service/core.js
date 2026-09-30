@@ -16,6 +16,12 @@ export default {
   },
   errors: {
     IMPORT_ALREADY_RUN: 'This import already ran. Start a new one.',
+    FOLLOW_UP_PROGRAM_IN_USE: 'Customers are still running this program. Stop them or deactivate the program instead.',
+    FOLLOW_UP_ALREADY_ENROLLED: 'This customer is already in this program.',
+    FOLLOW_UP_NOT_ACTIVE: 'This follow-up is no longer running.',
+    CUSTOMER_IN_PORTFOLIO: 'This customer already belongs to a portfolio. Remove them from it first.',
+    PORTFOLIO_HAS_MEMBERS: 'Remove the customers from this portfolio before deleting it.',
+    PORTFOLIO_NO_OWNERS: 'Add at least one owner to the portfolio first.',
     IMPORT_NOTHING_VALID: 'There are no valid rows to import.',
     PORTAL_ACCOUNT_EXISTS: 'Someone already has a portal account with this phone or email. Add access to that account instead.',
     MEMBERSHIP_EXISTS: 'This account can already access this customer.',

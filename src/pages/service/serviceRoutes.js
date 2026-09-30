@@ -4,7 +4,7 @@
  * HERE (not in app/router/index.jsx) to keep merges with other areas clean.
  *
  * Planned routes (add each when its phase ships):
- *   F5  /service/follow-ups, /service/portfolios, /service/imports  (+ separate portal app)
+ *   F5  portfolios + imports live in settings; the customer portal is a separate app (portal.html)
  */
 const page = (loader, name) => () => loader().then((module) => ({ Component: module[name] }))
 
@@ -39,6 +39,8 @@ export const serviceRoutes = {
         { path: 'scheduling', lazy: page(() => import('./ServiceSchedulingPage'), 'ServiceSchedulingPage') },
         { path: 'work-orders/:workOrderId?', lazy: page(() => import('./ServiceWorkOrdersPage'), 'ServiceWorkOrdersPage') },
         { path: 'subscriptions/:subscriptionId?', lazy: page(() => import('./ServiceSubscriptionsPage'), 'ServiceSubscriptionsPage') },
+        // F5
+        { path: 'follow-ups', lazy: page(() => import('./ServiceFollowUpsPage'), 'ServiceFollowUpsPage') },
         { path: 'billing/schedules/:scheduleId', lazy: page(() => import('./ServiceBillingPage'), 'ServiceBillingPage') },
       ],
     },

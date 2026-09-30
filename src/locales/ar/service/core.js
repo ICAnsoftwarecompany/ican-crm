@@ -16,6 +16,12 @@ export default {
   },
   errors: {
     IMPORT_ALREADY_RUN: 'الاستيراد ده اتنفذ بالفعل. ابدأ استيراد جديد.',
+    FOLLOW_UP_PROGRAM_IN_USE: 'فيه عملاء لسه شغالين في البرنامج ده. أوقفهم أو عطّل البرنامج بدل الحذف.',
+    FOLLOW_UP_ALREADY_ENROLLED: 'العميل ده متسجل في البرنامج ده بالفعل.',
+    FOLLOW_UP_NOT_ACTIVE: 'المتابعة دي مبقتش شغالة.',
+    CUSTOMER_IN_PORTFOLIO: 'العميل ده موجود في محفظة تانية. شيله منها الأول.',
+    PORTFOLIO_HAS_MEMBERS: 'شيل عملاء المحفظة قبل ما تحذفها.',
+    PORTFOLIO_NO_OWNERS: 'ضيف مسؤول واحد على الأقل للمحفظة الأول.',
     IMPORT_NOTHING_VALID: 'مفيش صفوف سليمة للاستيراد.',
     PORTAL_ACCOUNT_EXISTS: 'فيه حساب بوابة بنفس الموبايل أو الإيميل. أضف صلاحية وصول للحساب ده بدل ما تعمل جديد.',
     MEMBERSHIP_EXISTS: 'الحساب ده عنده صلاحية على العميل ده بالفعل.',

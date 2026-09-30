@@ -104,6 +104,12 @@ export const serviceKeys = {
   imports: () => [...serviceKeys.all, 'imports'],
   importFields: (params) => [...serviceKeys.imports(), 'fields', params ?? {}],
 
+  // Follow-ups & portfolios (F5)
+  followUps: () => [...serviceKeys.all, 'follow-ups'],
+  followUpList: (params) => [...serviceKeys.followUps(), 'list', params ?? {}],
+  portfolios: () => [...serviceKeys.all, 'portfolios'],
+  portfolioMembers: (id) => [...serviceKeys.portfolios(), 'members', String(id)],
+
   // Saved views (F2) — per entity (e.g. service_case)
   savedViews: (entity) => [...serviceKeys.all, 'saved-views', entity],
 }

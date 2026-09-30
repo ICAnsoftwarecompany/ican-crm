@@ -26,6 +26,7 @@ export function ServicesHubNav({ basePath = '/service' }) {
     hasFeature('workOrders') && { key: 'work-orders', to: `${basePath}/work-orders`, label: t('service.hub.workOrders') },
     (hasFeature('scheduling') || hasFeature('workOrders') || hasFeature('courierAssignment')) && { key: 'scheduling', to: `${basePath}/scheduling`, label: t('service.hub.scheduling') },
     hasFeature('subscriptions') && { key: 'subscriptions', to: `${basePath}/subscriptions`, label: t('service.hub.subscriptions') },
+    { key: 'follow-ups', to: `${basePath}/follow-ups`, label: t('service.hub.followUps') },
     { key: 'contracts', to: `${basePath}/contracts`, label: t('service.hub.contracts') },
     { key: 'handoffs', to: `${basePath}/handoffs`, label: t('service.hub.handoffs') },
     { key: 'billing', to: `${basePath}/billing`, label: t('service.hub.billing') },

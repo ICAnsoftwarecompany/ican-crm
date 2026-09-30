@@ -73,3 +73,7 @@ export { SchedulingWorkspace, SlotPicker } from './scheduling'
 export { DeliveriesWorkspace } from './deliveries'
 export { WorkOrdersWorkspace, WorkOrderDetailView, WorkOrderCreateDialog } from './work-orders'
 export { PlanCalculator, PlanPreviewTable, BillingNav, SchedulesList, ScheduleDetailView, CollectionsWorkspace } from './billing'
+
+// F5 — Follow-ups & portfolios
+export { FollowUpsWorkspace, EnrollFollowUpDialog } from './follow-ups'
+export { PortfoliosPanel } from './portfolios'
