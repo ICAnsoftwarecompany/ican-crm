@@ -143,7 +143,7 @@ export function findOrAdoptCustomer(customerId) {
   return customer
 }
 
-function createCase(body) {
+export function createCase(body) {
   const config = setup()
   const type = config.case_types.find((entry) => entry.id === body.type_id)
   const customer = findOrAdoptCustomer(body.customer_id)

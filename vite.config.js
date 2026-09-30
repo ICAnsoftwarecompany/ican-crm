@@ -98,6 +98,25 @@ function tenantApiDevProxy(env) {
   }
 }
 
+/**
+ * The customer portal is a second entry (portal.html → src/portal). In dev, deep links under /portal are
+ * served by portal.html; in production the host maps the portal (subdomain or /portal) to portal.html.
+ */
+function portalDevFallback() {
+  return {
+    name: 'portal-dev-fallback',
+    configureServer(server) {
+      server.middlewares.use((req, _res, next) => {
+        const [pathname] = String(req.url || '').split('?')
+        if ((pathname === '/portal' || pathname.startsWith('/portal/')) && !pathname.slice(1).includes('.')) {
+          req.url = '/portal.html'
+        }
+        next()
+      })
+    },
+  }
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const enableDevHttps = process.env.npm_lifecycle_event === 'dev:https' || env.VITE_DEV_HTTPS === 'true'
@@ -112,10 +131,19 @@ export default defineConfig(({ mode }) => {
           })
         : null,
       tenantApiDevProxy(env),
+      portalDevFallback(),
     ].filter(Boolean),
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+      },
+    },
+    build: {
+      rollupOptions: {
+        input: {
+          main: path.resolve(__dirname, 'index.html'),
+          portal: path.resolve(__dirname, 'portal.html'),
+        },
       },
     },
     server: {

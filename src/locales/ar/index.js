@@ -27,6 +27,7 @@ import dealWorkspace from './dealWorkspace.js'
 import service from './service.js'
 import notifications from './notifications.js'
 import alerts from './alerts.js'
+import portal from './portal.js'
 
 export default {
   app,
@@ -58,4 +59,5 @@ export default {
   service,
   notifications,
   alerts,
+  portal,
 }

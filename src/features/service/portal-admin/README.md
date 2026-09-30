@@ -20,3 +20,7 @@ paid flag, audience by policy).
 Rules (server-enforced): one person = one portal account (phone/email unique, 409 `PORTAL_ACCOUNT_EXISTS` → add a membership
 instead); access = membership (customer + type + B2B role) + policy; deny wins over allow; portal sessions are separate from
 staff sessions. Proposed (confirm with backend): the accounts/memberships and portal settings endpoints.
+
+The portal API contract (`core/api/portalEndpoints.js`, spec §51 "Portal") and its mock (`mocks/handlers/portalHandlers.js` +
+`mocks/state/portalAccess.js`: OTP, sessions, membership scoping, policy checks) also live in this feature; the portal app reads
+them through the tiny public entry `features/service/portal-transport.js`.

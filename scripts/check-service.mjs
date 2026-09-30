@@ -4,7 +4,7 @@
  * The repo-wide `check:theme` and `check:hardcoded-text` are advisory because
  * legacy code has thousands of findings. The Service area is new, so it starts
  * clean and must stay clean: this script FAILS on any finding inside
- *   src/features/service/**  and  src/pages/service/**
+ *   src/features/service/**, src/pages/service/**, src/features/portal/** and src/portal/** (customer portal)
  * (mocks, tests and README files are excluded — demo data may contain text).
  *
  * Rules:
@@ -18,7 +18,7 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { join, relative } from 'node:path'
 
 const srcRoot = new URL('../src/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')
-const SCOPES = ['features/service', 'pages/service']
+const SCOPES = ['features/service', 'pages/service', 'features/portal', 'portal']
 const EXCLUDE = ['/mocks/', '.test.', '.md']
 
 const RULES = [

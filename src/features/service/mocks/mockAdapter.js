@@ -58,6 +58,7 @@ export async function mockAdapter(config, { routes = mockRoutes, latency = DEFAU
       params: match.params,
       query: { ...(config.params || {}) },
       body: parseBody(config.data),
+      headers: { ...(config.headers || {}) },
     })
     if (result && typeof result === 'object' && 'status' in result && 'body' in result) {
       return buildResponse(config, result.status, result.body)
