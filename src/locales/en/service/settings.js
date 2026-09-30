@@ -35,6 +35,7 @@ export default {
       taken: 'This key is already used',
     },
     groups: {
+      developers: 'API & webhooks',
       followUps: 'Follow-ups',
       portal: 'Customer portal',
       scheduling: 'Scheduling',
@@ -48,6 +49,16 @@ export default {
       sla: 'Service levels',
     },
     resources: {
+      apiClients: {
+        title: 'API clients',
+        one: 'API client',
+        description: 'Keys that let other systems (ERP, a merchant, your website) use the public API with limited permissions.',
+      },
+      webhooks: {
+        title: 'Webhooks',
+        one: 'webhook',
+        description: 'Send events (new request, payment, delivery) to your other systems as they happen.',
+      },
       followUpPrograms: {
         title: 'Follow-up programs',
         one: 'program',

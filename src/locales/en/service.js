@@ -20,6 +20,7 @@ import deliveries from './service/deliveries.js'
 import portal from './service/portal.js'
 import imports from './service/imports.js'
 import followUps from './service/followUps.js'
+import apiAccess from './service/apiAccess.js'
 
 /**
  * Customer Hub (Service Operations) copy — key root `service.*`.
@@ -49,5 +50,6 @@ export default {
   ...portal,
   ...imports,
   ...followUps,
+  ...apiAccess,
   terms,
 }

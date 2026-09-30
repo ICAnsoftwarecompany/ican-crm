@@ -77,3 +77,4 @@ export { PlanCalculator, PlanPreviewTable, BillingNav, SchedulesList, ScheduleDe
 // F5 — Follow-ups & portfolios
 export { FollowUpsWorkspace, EnrollFollowUpDialog } from './follow-ups'
 export { PortfoliosPanel } from './portfolios'
+export { ApiClientsPanel, WebhooksPanel } from './api-access'

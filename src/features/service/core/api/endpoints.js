@@ -110,6 +110,12 @@ export const serviceEndpoints = {
   // Follow-up enrollments (F5, spec §39.3 — proposed): GET ?view=due_today|overdue|upcoming|completed|all&mine,
   // POST (manual enroll), POST /{id}/outcome, POST /{id}/exit. Live: the server creates a Task per due step.
   followUps: `${TENANT_API}/follow-ups`,
+  // Public API clients + outbound webhooks (F5, spec §16.4–16.5, §51 `CRUD /api-clients, /webhook-subscriptions`).
+  // Proposed: /api-clients/catalog (scopes + events), /api-clients/{id}/rotate, /webhook-subscriptions/{id}/rotate-secret,
+  // /webhook-subscriptions/{id}/test, /webhook-subscriptions/{id}/deliveries, /webhook-deliveries/{id}/redeliver.
+  apiClients: `${TENANT_API}/api-clients`,
+  webhookSubscriptions: `${TENANT_API}/webhook-subscriptions`,
+  webhookDeliveries: `${TENANT_API}/webhook-deliveries`,
   // Portfolios (spec §12.5, §51 `CRUD /portfolios`) + proposed /{id}/members (GET/POST/PATCH/DELETE) and /{id}/distribute.
   portfolios: `${TENANT_API}/portfolios`,
 

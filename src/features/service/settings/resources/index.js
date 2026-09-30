@@ -12,7 +12,9 @@ import { paymentPlansResource, planAssignmentsResource } from './billingResource
 import { schedulingResourcesResource } from './schedulingResources'
 import { portalAccountsSection, portalBrandingSection, portalPoliciesResource, requestCatalogResource } from './portalResources'
 import { followUpProgramsResource, portfoliosSection } from './followUpResources'
-import { FileUp, Package, Wand2 } from 'lucide-react'
+import { FileUp, KeyRound, Package, Wand2, Webhook } from 'lucide-react'
+import { ApiClientsPanel } from '../../api-access/components/ApiClientsPanel'
+import { WebhooksPanel } from '../../api-access/components/WebhooksPanel'
 import { ImportsPanel } from '../../imports/components/ImportsPanel'
 import { SetupWizardPanel } from '../../setup/components/SetupWizardPanel'
 import { CatalogItemsPanel } from '../../catalog/components/CatalogItemsPanel'
@@ -20,6 +22,8 @@ import { CatalogItemsPanel } from '../../catalog/components/CatalogItemsPanel'
 /** A section can also be a custom panel (`component`) instead of a CRUD list. */
 const setupSection = { key: 'setup', icon: Wand2, i18nKey: 'service.settings.resources.setup', component: SetupWizardPanel }
 const importsSection = { key: 'imports', icon: FileUp, i18nKey: 'service.settings.resources.imports', component: ImportsPanel }
+const apiClientsSection = { key: 'apiClients', icon: KeyRound, i18nKey: 'service.settings.resources.apiClients', component: ApiClientsPanel }
+const webhooksSection = { key: 'webhooks', icon: Webhook, i18nKey: 'service.settings.resources.webhooks', component: WebhooksPanel }
 const catalogItemsSection = { key: 'catalogItems', icon: Package, i18nKey: 'service.settings.resources.catalogItems', component: CatalogItemsPanel }
 
 /**
@@ -37,6 +41,7 @@ export const SETTINGS_GROUPS = [
   { key: 'scheduling', resources: [schedulingResourcesResource] },
   { key: 'followUps', resources: [followUpProgramsResource, portfoliosSection] },
   { key: 'portal', resources: [portalAccountsSection, portalPoliciesResource, requestCatalogResource, portalBrandingSection] },
+  { key: 'developers', resources: [apiClientsSection, webhooksSection] },
   { key: 'sla', resources: [slaPoliciesResource, businessCalendarsResource, escalationRulesResource] },
   { key: 'communication', resources: [savedRepliesResource, macrosResource] },
   { key: 'knowledge', resources: [kbCategoriesResource] },
@@ -69,6 +74,8 @@ const SECTION_SLUGS = {
   portalBranding: 'portal-branding',
   followUpPrograms: 'follow-up-programs',
   portfolios: 'portfolios',
+  apiClients: 'api-clients',
+  webhooks: 'webhooks',
 }
 
 /** URL slug for a resource (kebab-case, stable). */

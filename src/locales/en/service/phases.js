@@ -40,6 +40,7 @@ export default {
     imports: 'Imports',
     followUps: 'Follow-ups',
     portfolios: 'Portfolios',
+    apiAccess: 'API & webhooks',
     quality: 'Quality',
     templates: 'Industry templates',
     ai: 'AI',

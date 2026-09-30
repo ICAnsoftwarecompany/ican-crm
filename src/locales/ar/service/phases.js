@@ -40,6 +40,7 @@ export default {
     imports: 'الاستيراد',
     followUps: 'المتابعات',
     portfolios: 'المحافظ',
+    apiAccess: 'الـ API والـ Webhooks',
     quality: 'الجودة',
     templates: 'قوالب الأنشطة',
     ai: 'الذكاء الاصطناعي',

@@ -35,6 +35,7 @@ export default {
       taken: 'هذا المفتاح مستخدم بالفعل',
     },
     groups: {
+      developers: 'الـ API والـ Webhooks',
       followUps: 'المتابعات',
       portal: 'بوابة العملاء',
       scheduling: 'المواعيد',
@@ -48,6 +49,16 @@ export default {
       sla: 'مستويات الخدمة',
     },
     resources: {
+      apiClients: {
+        title: 'عملاء الـ API',
+        one: 'عميل API',
+        description: 'مفاتيح بتسمح لأنظمة تانية (ERP، تاجر، موقعك) تستخدم الـ API العام بصلاحيات محدودة.',
+      },
+      webhooks: {
+        title: 'الـ Webhooks',
+        one: 'Webhook',
+        description: 'ابعت الأحداث (طلب جديد، دفعة، تسليم) لأنظمتك التانية لحظة حدوثها.',
+      },
       followUpPrograms: {
         title: 'برامج المتابعة',
         one: 'برنامج',

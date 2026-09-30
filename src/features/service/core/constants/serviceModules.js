@@ -79,6 +79,7 @@ export const SERVICE_MODULES = [
   { key: 'imports', folder: 'imports', phase: 5, status: 'in_progress', backend: 'mock' },
   { key: 'followUps', folder: 'follow-ups', phase: 5, status: 'in_progress', backend: 'mock' },
   { key: 'portfolios', folder: 'portfolios', phase: 5, status: 'in_progress', backend: 'mock' },
+  { key: 'apiAccess', folder: 'api-access', phase: 5, status: 'in_progress', backend: 'mock' },
 
   // F6 — Knowledge & Quality
   { key: 'quality', folder: 'quality', phase: 6, status: 'planned', backend: 'mock' },

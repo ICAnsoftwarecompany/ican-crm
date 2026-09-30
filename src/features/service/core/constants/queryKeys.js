@@ -110,6 +110,10 @@ export const serviceKeys = {
   portfolios: () => [...serviceKeys.all, 'portfolios'],
   portfolioMembers: (id) => [...serviceKeys.portfolios(), 'members', String(id)],
 
+  // API clients & webhooks (F5)
+  apiAccess: () => [...serviceKeys.all, 'api-access'],
+  webhookDeliveries: (id, params) => [...serviceKeys.apiAccess(), 'deliveries', String(id), params ?? {}],
+
   // Saved views (F2) — per entity (e.g. service_case)
   savedViews: (entity) => [...serviceKeys.all, 'saved-views', entity],
 }
