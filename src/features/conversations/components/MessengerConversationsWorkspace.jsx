@@ -29,6 +29,14 @@ import { DEFAULT_MESSENGER_CONVERSATION_FILTERS, filterMessengerConversations } 
 import { MessengerConversationListPanel } from './MessengerConversationListPanel'
 import { messengerAdapter } from '../channels/messenger/adapter'
 import { getThreadCapabilityProps } from './shared/threadCapabilities'
+import { ClosedConversationPlaceholder } from './shared/ClosedConversationPlaceholder'
+import { requestConversationComposerFocus } from './shared/conversationWorkspaceEvents'
+import { NewConversationComposer } from './shared/NewConversationComposer'
+import { messengerApi } from '../api/messengerApi'
+import { ConversationListToggle } from './shared/ConversationListToggle'
+import { useConversationListCollapsed } from './shared/useConversationListCollapsed'
+
+const LAST_MESSENGER_CONVERSATION_KEY = 'conversations:last:messenger'
 
 function getConversationContact(conversation) {
   return (
@@ -49,7 +57,9 @@ export function MessengerConversationsWorkspace({ threadHeaderActions = null } =
   const markAllRead = useMessengerNotificationsStore((state) => state.markAllRead)
   const conversationsQuery = useMessengerConversations({ per_page: 30 })
   const conversations = conversationsQuery.data || []
-  const [selectedId, setSelectedId] = useState('')
+  const [selectedId, setSelectedId] = useState(() => window.localStorage.getItem(LAST_MESSENGER_CONVERSATION_KEY) || '')
+  const [isComposing, setIsComposing] = useState(false)
+  const [listCollapsed, setListCollapsed] = useConversationListCollapsed('messenger')
   const [linkDialogConversation, setLinkDialogConversation] = useState(null)
   const [conversationFilters, setConversationFilters] = useState(DEFAULT_MESSENGER_CONVERSATION_FILTERS)
   const requestedConversationId = searchParams.get('conversation') || ''
@@ -83,10 +93,22 @@ export function MessengerConversationsWorkspace({ threadHeaderActions = null } =
       return
     }
 
-    if (!requestedConversationId && !selectedId && conversations.length) {
-      setSelectedId(String(getMessengerConversationId(conversations[0])))
-    }
   }, [conversations, requestedConversationId, selectedId])
+
+  useEffect(() => {
+    if (!selectedId) return undefined
+    const closeOnEscape = (event) => {
+      if (event.key !== 'Escape' || event.defaultPrevented) return
+      setSelectedId('')
+      setSearchParams((current) => {
+        const next = new URLSearchParams(current)
+        next.delete('conversation')
+        return next
+      })
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => window.removeEventListener('keydown', closeOnEscape)
+  }, [selectedId, setSearchParams])
 
   useEffect(() => {
     markAllRead()
@@ -203,19 +225,42 @@ export function MessengerConversationsWorkspace({ threadHeaderActions = null } =
     const nextId = String(conversationId || '')
     if (!nextId) return
     setSelectedId(nextId)
+    setIsComposing(false)
+    window.localStorage.setItem(LAST_MESSENGER_CONVERSATION_KEY, nextId)
     setSearchParams((current) => {
       const next = new URLSearchParams(current)
       next.set('conversation', nextId)
       return next
     })
+    requestConversationComposerFocus()
+  }
+
+  const closeConversationView = () => {
+    setSelectedId('')
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current)
+      next.delete('conversation')
+      return next
+    })
+  }
+
+  const newMessageRecipients = useMemo(() => conversations.map((conversation) => ({
+    id: String(getMessengerConversationId(conversation)),
+    label: getMessengerConversationTitle(conversation),
+    detail: getConversationContact(conversation),
+  })), [conversations])
+
+  const sendNewMessage = async (recipient, { text, attachment }) => {
+    await messengerApi.sendMessage(recipient.id, { message: String(text || '').trim(), attachment })
+    queryClient.invalidateQueries({ queryKey: MESSENGER_CONVERSATIONS_QUERY_KEY })
   }
 
   return (
     <div className="space-y-4">
       
 
-      <div className="grid min-h-[calc(100vh-170px)] grid-cols-1 gap-4 xl:grid-cols-[360px_minmax(0,1fr)] xl:items-start">
-        <MessengerConversationListPanel
+      <div className={`grid min-h-[calc(100vh-170px)] grid-cols-1 gap-4 xl:items-start ${listCollapsed ? 'xl:grid-cols-[48px_minmax(0,1fr)]' : 'xl:grid-cols-[360px_minmax(0,1fr)]'}`}>
+        {listCollapsed ? <aside className="hidden min-h-[520px] items-start justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] pt-3 xl:flex"><ConversationListToggle collapsed onToggle={() => setListCollapsed(false)} /></aside> : <div className="relative"><ConversationListToggle floating collapsed={false} onToggle={() => setListCollapsed(true)} /><MessengerConversationListPanel
           conversations={conversations}
           filteredConversations={filteredConversations}
           conversationsQuery={conversationsQuery}
@@ -225,9 +270,9 @@ export function MessengerConversationsWorkspace({ threadHeaderActions = null } =
           onSelect={selectConversation}
           onConvertToLead={handleConvertToLead}
           onToggleStatus={handleToggleConversationStatus}
-        />
+        /></div>}
 
-        <section className="flex min-h-[520px] flex-col rounded-lg border border-[var(--border)] bg-[var(--surface)] xl:sticky xl:top-16 xl:h-[calc(100vh-5rem)] xl:max-h-[calc(100vh-5rem)] xl:self-start xl:overflow-hidden">
+        {isComposing ? <NewConversationComposer channelLabel="Messenger" recipients={newMessageRecipients} onCancel={() => setIsComposing(false)} onOpenRecipient={selectConversation} onSendRecipient={sendNewMessage} /> : selectedId ? <section className="flex min-h-[520px] flex-col rounded-lg border border-[var(--border)] bg-[var(--surface)] xl:sticky xl:top-16 xl:h-[calc(100vh-5rem)] xl:max-h-[calc(100vh-5rem)] xl:self-start xl:overflow-hidden">
           <ConversationThread
             title={selectedId ? selectedTitle || 'عميل' : ''}
             contactText={selectedId ? getConversationContact(conversationInfo || selectedConversation) : 'اختر محادثة لعرض الرسائل'}
@@ -256,6 +301,7 @@ export function MessengerConversationsWorkspace({ threadHeaderActions = null } =
             onRemoveReaction={handleRemoveReaction}
             onConvertToLead={handleConvertToLead}
             onToggleConversationStatus={handleToggleConversationStatus}
+            onClose={closeConversationView}
             isTogglingConversationStatus={mutations.closeConversation.isPending || mutations.reopenConversation.isPending}
             {...getThreadCapabilityProps(messengerAdapter.capabilities)}
             channelColor="#0A7CFF"
@@ -266,7 +312,7 @@ export function MessengerConversationsWorkspace({ threadHeaderActions = null } =
             emptyMessage={selectedId ? 'لا توجد رسائل بعد.' : 'اختر محادثة'}
             emptyDescription={selectedId ? '\u0623\u064a \u0631\u0633\u0627\u0644\u0629 \u062c\u062f\u064a\u062f\u0629 \u0633\u062a\u0638\u0647\u0631 \u0647\u0646\u0627 \u0645\u0628\u0627\u0634\u0631\u0629.' : '\u0627\u062e\u062a\u0631 \u0645\u062d\u0627\u062f\u062b\u0629 \u0645\u0646 \u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u0644\u0639\u0631\u0636 \u0627\u0644\u0631\u0633\u0627\u0626\u0644.'}
           />
-        </section>
+        </section> : <ClosedConversationPlaceholder channelLabel="Messenger" onStart={() => setIsComposing(true)} />}
       </div>
 
       <MessengerLinkCustomerDialog

@@ -1,5 +1,6 @@
-import { Suspense, lazy, useMemo } from 'react'
+import { Suspense, lazy, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { ChevronDown, ChevronUp, MessagesSquare } from 'lucide-react'
 import { useMessengerConversations } from '../../features/conversations/hooks/useConversations'
 import { GmailConversationsWorkspace } from '../../features/conversations/components/GmailConversationsWorkspace'
 import { GmailLogoIcon } from '../../features/conversations/components/GmailNavbarButton'
@@ -10,6 +11,7 @@ import { WhatsappLogoIcon } from '../../features/conversations/components/Whatsa
 import { useGmailConversations, useGmailMailboxes } from '../../features/conversations/hooks/useGmailConversations'
 import { useWhatsappConversations } from '../../features/conversations/hooks/useWhatsappConversations'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
+import { requestConversationComposerFocus } from '../../features/conversations/components/shared/conversationWorkspaceEvents'
 
 // Customer Service: "Create case" in every thread header (docs/4-CUSTOMER-SERVICE.md, F1).
 // Lazy so the Service area stays out of the conversations chunk.
@@ -49,11 +51,35 @@ function ChannelUnreadBadge({ count, active, color = 'messenger' }) {
 }
 
 function ConversationChannelTabs({ activeChannel, onChange, unreadCounts = {} }) {
+  const [expanded, setExpanded] = useState(true)
+
+  const changeChannel = (channel) => {
+    onChange(channel)
+    requestConversationComposerFocus()
+  }
+
   return (
-    <div className="mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-sm">
+    <div className="mb-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 shadow-sm">
+      <div className="flex items-center gap-2">
+        <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]">
+          <MessagesSquare size={18} />
+        </span>
+        <span className="text-sm font-black text-[var(--text)]">قنوات المحادثات</span>
+        <button
+          type="button"
+          onClick={() => setExpanded((current) => !current)}
+          className="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] transition hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
+          aria-expanded={expanded}
+          aria-label={expanded ? 'إغلاق شريط القنوات' : 'فتح شريط القنوات'}
+          title={expanded ? 'إغلاق' : 'فتح'}
+        >
+          {expanded ? <ChevronUp size={17} /> : <ChevronDown size={17} />}
+        </button>
+      </div>
+      {expanded ? <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-[var(--border)] pt-2">
       <button
         type="button"
-        onClick={() => onChange('messenger')}
+        onClick={() => changeChannel('messenger')}
         className={[
           'inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-black transition',
           activeChannel === 'messenger'
@@ -67,7 +93,7 @@ function ConversationChannelTabs({ activeChannel, onChange, unreadCounts = {} })
       </button>
       <button
         type="button"
-        onClick={() => onChange('gmail')}
+        onClick={() => changeChannel('gmail')}
         className={[
           'inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-black transition',
           activeChannel === 'gmail'
@@ -81,7 +107,7 @@ function ConversationChannelTabs({ activeChannel, onChange, unreadCounts = {} })
       </button>
       <button
         type="button"
-        onClick={() => onChange('whatsapp')}
+        onClick={() => changeChannel('whatsapp')}
         className={[
           'inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-black transition',
           activeChannel === 'whatsapp'
@@ -93,6 +119,7 @@ function ConversationChannelTabs({ activeChannel, onChange, unreadCounts = {} })
         WhatsApp
         <ChannelUnreadBadge count={unreadCounts.whatsapp} active={activeChannel === 'whatsapp'} color="whatsapp" />
       </button>
+      </div> : null}
     </div>
   )
 }

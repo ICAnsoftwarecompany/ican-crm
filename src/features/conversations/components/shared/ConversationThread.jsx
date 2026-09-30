@@ -131,6 +131,7 @@ export function ConversationThread({
   supportsReactions = false,
   onConvertToLead,
   onToggleConversationStatus,
+  onClose,
   isTogglingConversationStatus = false,
   emptyMessage = 'لا توجد رسائل بعد.',
   emptyDescription = '',
@@ -344,6 +345,17 @@ export function ConversationThread({
           </button>
 
           <div className="flex items-center gap-1">
+            {onClose ? (
+              <button
+                type="button"
+                onClick={onClose}
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] transition hover:border-[#FCA5A5] hover:bg-[#FEF2F2] hover:text-[#DC2626] dark:hover:bg-[#451E28]"
+                title="إغلاق المحادثة (Esc)"
+                aria-label="إغلاق المحادثة"
+              >
+                <X size={13} />
+              </button>
+            ) : null}
             {detailsSource.conversationId ? (
               <button
                 type="button"

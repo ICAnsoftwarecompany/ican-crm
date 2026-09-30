@@ -38,6 +38,14 @@ import { gmailAdapter } from '../channels/gmail/adapter'
 import { getThreadCapabilityProps } from './shared/threadCapabilities'
 import { formatConversationTime } from '../utils/formatConversationTime'
 import { InitialsAvatar } from './shared/InitialsAvatar'
+import { ClosedConversationPlaceholder } from './shared/ClosedConversationPlaceholder'
+import { requestConversationComposerFocus } from './shared/conversationWorkspaceEvents'
+import { NewConversationComposer } from './shared/NewConversationComposer'
+import { gmailApi } from '../api/gmailApi'
+import { ConversationListToggle } from './shared/ConversationListToggle'
+import { useConversationListCollapsed } from './shared/useConversationListCollapsed'
+
+const LAST_GMAIL_CONVERSATION_KEY = 'conversations:last:gmail'
 
 const GMAIL_AVATAR_TONE = {
   activeClassName: 'bg-[#D93025] text-white ring-4 ring-[#FCE8E6]',
@@ -131,7 +139,9 @@ export function GmailConversationsWorkspace({
     refetchInterval: panel ? 60000 : false,
   })
   const conversations = conversationsQuery.data || []
-  const [selectedId, setSelectedId] = useState('')
+  const [selectedId, setSelectedId] = useState(() => panel ? '' : window.localStorage.getItem(LAST_GMAIL_CONVERSATION_KEY) || '')
+  const [isComposing, setIsComposing] = useState(false)
+  const [listCollapsed, setListCollapsed] = useConversationListCollapsed('gmail')
   const [query, setQuery] = useState('')
   const [mode, setMode] = useState(panel ? 'list' : 'chat')
   const [filters, setFilters] = useState(DEFAULT_MESSENGER_CONVERSATION_FILTERS)
@@ -194,14 +204,32 @@ export function GmailConversationsWorkspace({
     }
 
     if (!selectedId && conversations.length) {
-      setSelectedId(String(getGmailConversationId(conversations[0])))
+      if (panel) setSelectedId(String(getGmailConversationId(conversations[0])))
     }
   }, [conversations, hasMailbox, initialTarget, open, panel, requestedConversationId, selectedId])
+
+  useEffect(() => {
+    if (panel || !selectedId) return undefined
+    const closeOnEscape = (event) => {
+      if (event.key !== 'Escape' || event.defaultPrevented) return
+      setSelectedId('')
+      setSearchParams((current) => {
+        const next = new URLSearchParams(current)
+        next.delete('gmailConversation')
+        next.delete('conversation')
+        return next
+      })
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => window.removeEventListener('keydown', closeOnEscape)
+  }, [panel, selectedId, setSearchParams])
 
   const selectConversation = (conversationId) => {
     const nextId = String(conversationId || '')
     if (!nextId) return
     setSelectedId(nextId)
+    setIsComposing(false)
+    window.localStorage.setItem(LAST_GMAIL_CONVERSATION_KEY, nextId)
     if (panel) {
       setMode('chat')
       return
@@ -212,6 +240,38 @@ export function GmailConversationsWorkspace({
       next.set('gmailConversation', nextId)
       return next
     })
+    requestConversationComposerFocus()
+  }
+
+  const closeConversationView = () => {
+    setSelectedId('')
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current)
+      next.delete('gmailConversation')
+      next.delete('conversation')
+      return next
+    })
+  }
+
+  const newMessageRecipients = useMemo(() => conversations.map((conversation) => ({
+    id: String(getGmailConversationId(conversation)),
+    label: getGmailConversationTitle(conversation),
+    detail: getGmailParticipantEmail(conversation, []) || getGmailConversationContact(conversation),
+    conversation,
+  })), [conversations])
+
+  const sendNewMessage = async (recipient, { text, attachment }) => {
+    const conversation = recipient.conversation
+    const toEmail = getGmailParticipantEmail(conversation, []) || conversation?.participant_email || conversation?.email
+    if (!toEmail) throw new Error('Missing Gmail recipient')
+    await gmailApi.sendMessage({
+      mailbox_email: conversation?.mailbox_email || mailboxes[0]?.email || mailboxes[0]?.mailbox_email || mailboxes[0],
+      to_email: toEmail,
+      subject: conversation?.subject || conversation?.last_message?.subject || 'CRM message',
+      message: String(text || '').trim(),
+      attachments: attachment ? [attachment] : [],
+    })
+    queryClient.invalidateQueries({ queryKey: ['gmail'] })
   }
 
   const handleSend = async ({ text, attachment }) => {
@@ -400,7 +460,11 @@ export function GmailConversationsWorkspace({
     </section>
   )
 
-  const chat = (
+  const chat = isComposing && !panel ? (
+    <NewConversationComposer channelLabel="Gmail" recipients={newMessageRecipients} onCancel={() => setIsComposing(false)} onOpenRecipient={selectConversation} onSendRecipient={sendNewMessage} />
+  ) : !selectedId && !panel ? (
+    <ClosedConversationPlaceholder channelLabel="Gmail" onStart={() => setIsComposing(true)} />
+  ) : (
     <section className={`${panel ? 'h-full' : 'min-h-[520px] xl:sticky xl:top-16 xl:h-[calc(100vh-5rem)] xl:max-h-[calc(100vh-5rem)]'} flex flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)]`}>
       {panel && mode === 'chat' ? (
         <div className="border-b border-[var(--border)] bg-[var(--surface)] px-3 py-2">
@@ -432,6 +496,7 @@ export function GmailConversationsWorkspace({
         onSend={handleSend}
         onConvertToLead={(conversation) => setLinkDialogConversation(conversationInfo || selectedConversation || conversation)}
         onToggleConversationStatus={handleToggleConversationStatus}
+        onClose={panel ? undefined : closeConversationView}
         isTogglingConversationStatus={mutations.closeConversation.isPending || mutations.reopenConversation.isPending}
         {...getThreadCapabilityProps(gmailAdapter.capabilities)}
         channelColor="#D93025"
@@ -451,8 +516,8 @@ export function GmailConversationsWorkspace({
           {mode === 'list' ? list : chat}
         </div>
       ) : (
-        <div className="grid min-h-[calc(100vh-170px)] grid-cols-1 gap-4 xl:grid-cols-[360px_minmax(0,1fr)] xl:items-start">
-          {list}
+        <div className={`grid min-h-[calc(100vh-170px)] grid-cols-1 gap-4 xl:items-start ${listCollapsed ? 'xl:grid-cols-[48px_minmax(0,1fr)]' : 'xl:grid-cols-[360px_minmax(0,1fr)]'}`}>
+          {listCollapsed ? <aside className="hidden min-h-[520px] items-start justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] pt-3 xl:flex"><ConversationListToggle collapsed onToggle={() => setListCollapsed(false)} /></aside> : <div className="relative"><ConversationListToggle floating collapsed={false} onToggle={() => setListCollapsed(true)} />{list}</div>}
           {chat}
         </div>
       )}

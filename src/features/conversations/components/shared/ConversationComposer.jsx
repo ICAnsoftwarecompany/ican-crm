@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { FileText, Mic, Paperclip, Send, Smile, Square, X } from 'lucide-react'
+import { FOCUS_CONVERSATION_COMPOSER_EVENT } from './conversationWorkspaceEvents'
 
 const MAX_MESSAGE_LENGTH = 1000
 const MAX_TEXTAREA_ROWS = 5
@@ -113,11 +114,24 @@ export function ConversationComposer({
     if (autoFocusKey === undefined || autoFocusKey === null) return
 
     const timeoutId = window.setTimeout(() => {
+      textareaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       textareaRef.current?.focus({ preventScroll: true })
     }, 80)
 
     return () => window.clearTimeout(timeoutId)
   }, [autoFocusKey])
+
+  useEffect(() => {
+    if (disabled) return undefined
+
+    const focusComposer = () => {
+      textareaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      window.setTimeout(() => textareaRef.current?.focus({ preventScroll: true }), 220)
+    }
+
+    window.addEventListener(FOCUS_CONVERSATION_COMPOSER_EVENT, focusComposer)
+    return () => window.removeEventListener(FOCUS_CONVERSATION_COMPOSER_EVENT, focusComposer)
+  }, [disabled])
 
   useEffect(() => () => {
     window.clearInterval(recordingTimerRef.current)

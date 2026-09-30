@@ -32,6 +32,14 @@ import { whatsappAdapter } from '../channels/whatsapp/adapter'
 import { getThreadCapabilityProps } from './shared/threadCapabilities'
 import { formatConversationTime } from '../utils/formatConversationTime'
 import { InitialsAvatar } from './shared/InitialsAvatar'
+import { ClosedConversationPlaceholder } from './shared/ClosedConversationPlaceholder'
+import { requestConversationComposerFocus } from './shared/conversationWorkspaceEvents'
+import { NewConversationComposer } from './shared/NewConversationComposer'
+import { whatsappIntegrationApi } from '../../integrations/whatsapp'
+import { ConversationListToggle } from './shared/ConversationListToggle'
+import { useConversationListCollapsed } from './shared/useConversationListCollapsed'
+
+const LAST_WHATSAPP_CONVERSATION_KEY = 'conversations:last:whatsapp'
 
 const WHATSAPP_AVATAR_TONE = {
   activeClassName: 'bg-[#25D366] text-white ring-4 ring-[#E9FFF2]',
@@ -137,7 +145,9 @@ export function WhatsappConversationsWorkspace({
     refetchInterval: panel ? 60000 : false,
   })
   const conversations = conversationsQuery.data || []
-  const [selectedId, setSelectedId] = useState('')
+  const [selectedId, setSelectedId] = useState(() => panel ? '' : window.localStorage.getItem(LAST_WHATSAPP_CONVERSATION_KEY) || '')
+  const [isComposing, setIsComposing] = useState(false)
+  const [listCollapsed, setListCollapsed] = useConversationListCollapsed('whatsapp')
   const [query, setQuery] = useState('')
   const [mode, setMode] = useState(panel ? 'list' : 'chat')
   const [filters, setFilters] = useState(DEFAULT_MESSENGER_CONVERSATION_FILTERS)
@@ -177,9 +187,25 @@ export function WhatsappConversationsWorkspace({
     }
 
     if (!selectedId && conversations.length) {
-      setSelectedId(String(getWhatsappConversationId(conversations[0])))
+      if (panel) setSelectedId(String(getWhatsappConversationId(conversations[0])))
     }
   }, [conversations, initialTarget, open, panel, requestedConversationId, selectedId])
+
+  useEffect(() => {
+    if (panel || !selectedId) return undefined
+    const closeOnEscape = (event) => {
+      if (event.key !== 'Escape' || event.defaultPrevented) return
+      setSelectedId('')
+      setSearchParams((current) => {
+        const next = new URLSearchParams(current)
+        next.delete('whatsappConversation')
+        next.delete('conversation')
+        return next
+      })
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => window.removeEventListener('keydown', closeOnEscape)
+  }, [panel, selectedId, setSearchParams])
 
   const selectedTitle = getWhatsappConversationTitle(conversationInfo || selectedConversation)
   const selectedContact = getWhatsappConversationContact(conversationInfo || selectedConversation)
@@ -223,6 +249,8 @@ export function WhatsappConversationsWorkspace({
     const nextId = String(conversationId || '')
     if (!nextId) return
     setSelectedId(nextId)
+    setIsComposing(false)
+    window.localStorage.setItem(LAST_WHATSAPP_CONVERSATION_KEY, nextId)
     if (panel) {
       setMode('chat')
       return
@@ -235,6 +263,38 @@ export function WhatsappConversationsWorkspace({
       next.delete('gmailConversation')
       return next
     })
+    requestConversationComposerFocus()
+  }
+
+  const closeConversationView = () => {
+    setSelectedId('')
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current)
+      next.delete('whatsappConversation')
+      next.delete('conversation')
+      return next
+    })
+  }
+
+  const newMessageRecipients = useMemo(() => conversations.map((conversation) => ({
+    id: String(getWhatsappConversationId(conversation)),
+    label: getWhatsappConversationTitle(conversation),
+    detail: getWhatsappConversationContact(conversation),
+    conversation,
+  })), [conversations])
+
+  const sendNewMessage = async (recipient, { text, attachment }) => {
+    const conversation = recipient.conversation
+    const phoneNumberId = getWhatsappPhoneNumberId(conversation, conversation)
+    const to = getWhatsappRecipient(conversation, conversation)
+    if (!phoneNumberId || !to) throw new Error('Missing WhatsApp recipient configuration')
+    await whatsappIntegrationApi.sendMessage({
+      phone_number_id: phoneNumberId,
+      to,
+      message: String(text || '').trim(),
+      files: attachment ? [attachment] : [],
+    })
+    queryClient.invalidateQueries({ queryKey: ['integrations', 'whatsapp'] })
   }
 
   const handleSend = async ({ text, attachment, replyToMessageId }) => {
@@ -474,7 +534,11 @@ export function WhatsappConversationsWorkspace({
     </section>
   )
 
-  const chat = (
+  const chat = isComposing && !panel ? (
+    <NewConversationComposer channelLabel="WhatsApp" recipients={newMessageRecipients} onCancel={() => setIsComposing(false)} onOpenRecipient={selectConversation} onSendRecipient={sendNewMessage} />
+  ) : !selectedId && !panel ? (
+    <ClosedConversationPlaceholder channelLabel="WhatsApp" onStart={() => setIsComposing(true)} />
+  ) : (
     <section className={`${panel ? 'h-full' : 'min-h-[520px] xl:sticky xl:top-16 xl:h-[calc(100vh-5rem)] xl:max-h-[calc(100vh-5rem)]'} flex flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)]`}>
       {panel && mode === 'chat' ? (
         <div className="border-b border-[var(--border)] bg-[var(--surface)] px-3 py-2">
@@ -507,6 +571,7 @@ export function WhatsappConversationsWorkspace({
         onReact={handleReact}
         onConvertToLead={(conversation) => handleConvertToLead(conversationInfo || selectedConversation || conversation)}
         onToggleConversationStatus={handleToggleConversationStatus}
+        onClose={panel ? undefined : closeConversationView}
         isTogglingConversationStatus={mutations.closeConversation.isPending || mutations.reopenConversation.isPending}
         {...getThreadCapabilityProps(whatsappAdapter.capabilities)}
         channelColor="#25D366"
@@ -526,8 +591,8 @@ export function WhatsappConversationsWorkspace({
           {mode === 'list' ? list : chat}
         </div>
       ) : (
-        <div className="grid min-h-[calc(100vh-170px)] grid-cols-1 gap-4 xl:grid-cols-[360px_minmax(0,1fr)] xl:items-start">
-          {list}
+        <div className={`grid min-h-[calc(100vh-170px)] grid-cols-1 gap-4 xl:items-start ${listCollapsed ? 'xl:grid-cols-[48px_minmax(0,1fr)]' : 'xl:grid-cols-[360px_minmax(0,1fr)]'}`}>
+          {listCollapsed ? <aside className="hidden min-h-[520px] items-start justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] pt-3 xl:flex"><ConversationListToggle collapsed onToggle={() => setListCollapsed(false)} /></aside> : <div className="relative"><ConversationListToggle floating collapsed={false} onToggle={() => setListCollapsed(true)} />{list}</div>}
           {chat}
         </div>
       )}
