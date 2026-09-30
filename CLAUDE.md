@@ -57,6 +57,7 @@ Legacy/transitional (don't copy these patterns, don't add to them):
 | Leads & customers (`/leads`, `/LeadsCenter/*`, `/lead/:customerId`) | `features/leads`, `features/customers`, `pages/customers` | [Leads Center](docs/2-SALES.md#leads-center-pages), [Customer drawer](docs/2-SALES.md#customer-details-drawer), [Domain model](docs/2-SALES.md#domain-model) |
 | Lead assignment | `features/leads/api/leadAssignmentApi.js`, `/LeadsCenter/assignments` | [Leads & assignment](docs/2-SALES.md#leads-page-and-lead-assignment) |
 | Statuses / definitions | `features/definitions` | [Statuses & tags](docs/2-SALES.md#statuses-tags-and-pipeline) |
+| My Work (`/my-work`, شغلي) | `features/my-work` (section registry + rules), `pages/my-work` | [My Work](docs/3-FEATURES.md#my-work), [README](src/features/my-work/README.md) |
 | Communication hub (`/conversations`, `/calls`, `/meetings`, `/team-chat` + their sub-pages) | `features/communication` (config only), `pages/communication` | [Communication hub](docs/3-FEATURES.md#communication-hub), [README](src/features/communication/README.md) |
 | Activities, calls, meetings (logic behind `/calls`, `/meetings`) | `features/activities`, `features/call-meetings`, `features/meetings` | [Activities](docs/2-SALES.md#activities-calls-and-meetings) |
 | Conversations (WhatsApp/Messenger/Gmail) | `features/conversations` (adapters in `channels/`, shared chat UI in `components/shared/`), `pages/conversations`, `src/realtime/hooks` | [Conversations](docs/3-FEATURES.md#conversations) |

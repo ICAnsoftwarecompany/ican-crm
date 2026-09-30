@@ -8,6 +8,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 ## Contents
 
+- [My Work](#my-work) (`/my-work`, شغلي)
 - [Communication hub](#communication-hub) (Conversations, Calls, Meetings, Team chat)
 - [Conversations](#conversations)
 - [Internal chat](#internal-chat)
@@ -25,6 +26,18 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 - [Customer Hub (Customer Service)](#customer-hub-customer-service)
 
 ---
+
+## My Work
+
+> **Documentation update:** 2026-10-01 00:55 (Africa/Cairo) — section added.
+
+**Status:** PARTIAL (live on real APIs; "mine" filtering client-side; focus chosen by the viewer until the backend sends roles)
+
+- **What it does:** `/my-work` (Overview → **شغلي / My work**) — one page per user with everything waiting now, across Sales, Customer Hub and Communication: summary tiles (overdue, today's calls & meetings, tasks due, unread) and registered sections: Overdue, Today's calls & meetings, My tasks due, Newest leads assigned to me (Sales), Customer service work (Customer Hub preview of `/service/my-work`), Messages (WhatsApp, Messenger, Gmail, team chat). A focus switch (All / Sales / Customer service) filters sections; `module` gating is inert until the backend sends `user.modules`.
+- **Key files:** `features/my-work/` — registry (`registerMyWorkSection`), rules (`utils/myWorkItems.js`, tested), hooks (`useMyActivities`, `useMyTasks`, `useMyWorkFocus`, `useMyWorkPreview`), sections, `MyWorkBoard`/`MyWorkSummary`; page `pages/my-work/MyWorkPage.jsx`; locale `myWork.js`. Full reference: [features/my-work/README.md](../src/features/my-work/README.md).
+- **API:** none of its own — activities (`/api/tenant/meetings`), tasks, `sales/dashboard/my-leads`, `/api/tenant/my-work` (Customer Hub), conversation lists, internal chat conversations. Same list params as the calendar/inbox, so caches are shared.
+- **Added public exports:** `features/tasks/index.js`, `features/calendar/index.js`, `features/analytics/index.js`, `useConversationUnreadSummary` in `features/conversations`.
+- **Known issues:** "mine" is computed from the latest 200 activities/tasks; undated tasks are not shown; leads link to the Leads Center when the response lacks a customer id; not visually verified with real data.
 
 ## Communication hub
 

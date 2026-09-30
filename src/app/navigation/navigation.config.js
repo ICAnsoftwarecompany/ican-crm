@@ -77,6 +77,14 @@ export const navigationConfig = [
         path: '/',
         end: true,
       },
+      // My Work (added 2026-10-01): one page per user across Sales, Customer Hub and
+      // Communication — not under either department. See features/my-work/README.md.
+      {
+        id: 'my-work',
+        labelKey: 'nav.myWork',
+        icon: ListChecks,
+        path: '/my-work',
+      },
     ],
   },
 

@@ -32,6 +32,7 @@ import communication from './communication.js'
 import settings from './settings.js'
 import modulePages from './modulePages.js'
 import aiSetup from './aiSetup.js'
+import myWork from './myWork.js'
 
 export default {
   app,
@@ -68,4 +69,5 @@ export default {
   settings,
   modulePages,
   aiSetup,
+  myWork,
 }

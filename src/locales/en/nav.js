@@ -6,7 +6,7 @@ export default {
   serviceCenter: 'Operations Center',
   serviceCases: 'Cases',
   serviceHub: 'Services',
-  serviceMyWork: 'My Work',
+  serviceMyWork: 'Service work',
   serviceKnowledge: 'Knowledge Base',
   serviceReports: 'Reports',
   serviceSettings: 'Operations Settings',
@@ -23,6 +23,7 @@ export default {
     "administration": "Administration"
   },
   "dashboard": "Dashboard",
+  "myWork": "My work",
   "leads": "Leads",
   "customers": "Leads Center",
   "activities": "Activities",

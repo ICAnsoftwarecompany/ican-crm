@@ -6,7 +6,7 @@ export default {
   serviceCenter: 'مركز العمليات',
   serviceCases: 'الطلبات',
   serviceHub: 'الخدمات',
-  serviceMyWork: 'شغلي',
+  serviceMyWork: 'شغل خدمة العملاء',
   serviceKnowledge: 'قاعدة المعرفة',
   serviceReports: 'التقارير',
   serviceSettings: 'إعدادات التشغيل',
@@ -23,6 +23,7 @@ export default {
     "administration": "الإدارة"
   },
   "dashboard": "لوحة التحكم",
+  "myWork": "شغلي",
   "leads": "العملاء المحتملون",
   "customers": "مركز العملاء المحتملين",
   "activities": "الأنشطة",

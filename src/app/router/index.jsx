@@ -4,6 +4,7 @@ import { PrivateRoute } from './PrivateRoute'
 import { MainLayout } from '../../shared/components/layout/MainLayout'
 import { LoginPage } from '../../pages/auth/LoginPage'
 import { DashboardPage } from '../../pages/dashboard/DashboardPage'
+import { MyWorkPage } from '../../pages/my-work/MyWorkPage'
 import { LeadsPage } from '../../pages/leads/LeadsPage'
 import { CustomersPage } from '../../pages/customers/CustomersPage'
 import { CustomersLayout } from '../../pages/customers/layout/CustomersLayout'
@@ -109,6 +110,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <DashboardPage /> },
+      { path: 'my-work', element: <MyWorkPage /> },
       { path: 'leads', element: <LeadsPage /> },
       {
         path: 'LeadsCenter',
