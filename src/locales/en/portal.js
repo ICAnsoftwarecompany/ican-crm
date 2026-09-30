@@ -169,6 +169,7 @@ export default {
     comment: 'Anything you want to add? (optional)',
     send: 'Send feedback',
     thanks: 'Thank you for your feedback',
+    scale: { nps: { low: 'Not likely', high: 'Very likely' }, ces: { low: 'Very hard', high: 'Very easy' } },
     categories: 'Topics',
     allTopics: 'All topics',
     results: 'Results',

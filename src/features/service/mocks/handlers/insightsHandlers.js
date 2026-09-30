@@ -4,8 +4,10 @@ import { getCollection, registerSeed } from '../db'
 import { findStatus, getCaseSetup } from '../state/caseConfig'
 import { computeSla } from '../state/sla'
 import '../state/feedback'
+import './qualityHandlers'
 import { getMockCurrentUser } from '../seeds/seedUtils'
 import { paginate } from '../utils'
+import { cesSummary, npsSummary } from '../state/qualityScore'
 
 registerSeed('savedViews', () => [
   { id: 'sv-urgent-whatsapp', entity: 'service_case', name: 'العاجل المفتوح', visibility: 'shared', owner_id: 'system', filters: { view: 'open', priority: 'urgent', search: '' } },
@@ -62,7 +64,8 @@ function reportOverview(query) {
   const resolved = cases.filter((item) => inPeriod(item.resolved_at, from))
   const slaStates = resolved.map((item) => computeSla(item)?.resolution.state).filter(Boolean)
   const met = slaStates.filter((state) => state === 'met').length
-  const responses = getCollection('feedbackResponses').filter((entry) => inPeriod(entry.responded_at, from))
+  const responses = getCollection('feedbackResponses').filter((entry) => (entry.survey || 'csat') === 'csat' && inPeriod(entry.responded_at, from))
+  const reviews = getCollection('qualityReviews').filter((entry) => entry.status === 'done')
   const csatFor = (ids) => csatSummary(responses.filter((entry) => ids.has(entry.case_id))).average
   const types = getCollection('caseTypes')
 
@@ -92,6 +95,7 @@ function reportOverview(query) {
         resolved: count,
         avg_resolution_minutes: average(agentCases.map((item) => minutesBetween(item.opened_at, item.resolved_at))),
         csat_average: csatFor(new Set(agentCases.map((item) => item.id))),
+        quality_average: average(reviews.filter((entry) => entry.agent_id === agentId).map((entry) => entry.total)),
       }
     }),
   }
@@ -102,7 +106,9 @@ function feedbackList(query) {
   const days = PERIODS[query.period] || 90
   const from = Date.now() - days * DAY
   const cases = getCollection('cases')
+  const survey = ['nps', 'ces'].includes(query.survey) ? query.survey : 'csat'
   const all = getCollection('feedbackResponses')
+    .filter((entry) => (entry.survey || 'csat') === survey)
     .filter((entry) => inPeriod(entry.responded_at, from))
     .sort((a, b) => String(b.responded_at).localeCompare(String(a.responded_at)))
   const filtered = all.filter((entry) => !query.score || String(entry.score) === String(query.score))
@@ -112,7 +118,7 @@ function feedbackList(query) {
       const item = cases.find((candidate) => candidate.id === entry.case_id)
       return { ...entry, case: item ? { id: item.id, case_number: item.case_number, subject: item.subject, customer: { id: item.customer.id, name: item.customer.name } } : null }
     }),
-    meta: { ...page.meta, summary: csatSummary(all) },
+    meta: { ...page.meta, survey, summary: survey === 'nps' ? npsSummary(all) : survey === 'ces' ? cesSummary(all) : csatSummary(all) },
   }
 }
 

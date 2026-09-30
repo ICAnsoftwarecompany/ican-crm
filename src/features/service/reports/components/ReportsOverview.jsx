@@ -53,6 +53,7 @@ export function ReportsOverview({ period }) {
                       <th className="pb-2 text-end font-medium">{t('service.reports.series.resolved')}</th>
                       <th className="pb-2 text-end font-medium">{t('service.reports.kpis.avg_resolution')}</th>
                       <th className="pb-2 text-end font-medium">{t('service.reports.kpis.csat')}</th>
+                      <th className="pb-2 text-end font-medium">{t('service.quality.kpis.average')}</th>
                     </tr>
                   </thead>
                   <tbody className="text-[var(--text)]">
@@ -62,6 +63,7 @@ export function ReportsOverview({ period }) {
                         <td className="py-1.5 text-end" dir="ltr">{row.resolved}</td>
                         <td className="py-1.5 text-end">{row.avg_resolution_minutes == null ? '–' : formatMinutes(row.avg_resolution_minutes, t)}</td>
                         <td className="py-1.5 text-end" dir="ltr">{row.csat_average ?? '–'}</td>
+                        <td className="py-1.5 text-end" dir="ltr">{row.quality_average == null ? '–' : `${row.quality_average}%`}</td>
                       </tr>
                     ))}
                   </tbody>

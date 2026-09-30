@@ -34,6 +34,8 @@ export const portalEndpoints = {
   publicKb: `${PORTAL_API}/public/kb`,
   publicKbArticle: (id) => `${PORTAL_API}/public/kb/${id}`,
   feedback: `${PORTAL_API}/feedback`,
+  // F6: the NPS / CES question to ask this customer now (or null).
+  activeSurvey: `${PORTAL_API}/surveys/active`,
   remittances: `${PORTAL_API}/remittances`,
   orgUsers: `${PORTAL_API}/org/users`,
   track: `${PORTAL_API}/track`,

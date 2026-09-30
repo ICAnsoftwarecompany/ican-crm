@@ -20,6 +20,7 @@ import { CaseCsatCard } from '../../../feedback'
 import { CaseCoveragePanel } from '../../../entitlements'
 import { useServiceCapabilities } from '../../../core/capabilities/useServiceCapabilities'
 import { AiCasePanel, AiSignalChips } from '../../../ai'
+import { SendToQualityButton } from '../../../quality'
 
 /** Full case screen: header + transitions, timeline + composer, properties. */
 export function CaseDetailView({ caseId }) {
@@ -66,6 +67,7 @@ export function CaseDetailView({ caseId }) {
                 {caseItem.duplicate_of && <Link to={`/service/cases/${caseItem.duplicate_of.id}`} className="mt-1 inline-block text-xs font-medium text-brand-accent hover:underline">{t('service.ai.duplicates.closedAs', { number: caseItem.duplicate_of.case_number })}</Link>}
               </div>
               <div className="flex shrink-0 flex-wrap items-center gap-2">
+                {['resolved', 'closed'].includes(caseItem.status?.category) && <SendToQualityButton caseItem={caseItem} />}
                 <MacroMenu caseItem={caseItem} disabled={!isCaseOpen(caseItem)} />
                 <CaseTransitionMenu caseItem={caseItem} setup={setup.data} onSelect={requestTransition} disabled={isTransitioning} />
               </div>

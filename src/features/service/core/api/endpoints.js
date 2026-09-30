@@ -153,6 +153,16 @@ export const serviceEndpoints = {
   kbArticleAction: (articleId, action) => `${SERVICE_API}/kb/articles/${articleId}/${action}`,
   kbStats: `${SERVICE_API}/kb/stats`,
 
+  // Quality (F6, spec §42.2 — proposed): checklists + sampling rules (CRUD), reviews queue, sampling run, summary.
+  quality: {
+    checklists: `${SERVICE_API}/quality/checklists`,
+    samplingRules: `${SERVICE_API}/quality/sampling-rules`,
+    reviews: `${SERVICE_API}/quality/reviews`,
+    sample: `${SERVICE_API}/quality/sampling/run`,
+    summary: `${SERVICE_API}/quality/summary`,
+  },
+  // Surveys (F6, spec §42.1 `feedback_surveys`): CSAT / NPS / CES definitions (CRUD, proposed path).
+  feedbackSurveys: `${SERVICE_API}/feedback/surveys`,
   // Feedback & reports (F2) — spec §42, §51 (`/service/reports/{report_key}`).
   feedbackResponses: `${SERVICE_API}/feedback/responses`,
   reportOverview: `${SERVICE_API}/reports/overview`,

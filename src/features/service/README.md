@@ -41,8 +41,10 @@ Everything business-related for Customer Service lives here. Start with
 | `follow-ups/` | Follow-up programs, workspace, manual enroll | F5 | `follow-ups/README.md` |
 | `portfolios/` | Customer portfolios and owners | F5 | `portfolios/README.md` |
 | `api-access/` | Public API clients, outbound webhooks, delivery log | F5 | `api-access/README.md` |
+| `quality/` | Quality checklists, sampling, reviews with RCA/CAPA, survey settings | F6 | `quality/README.md` |
 | `ai/` | AI signals, triage, summaries, draft replies, duplicates, assignment, AI settings | F7 | `ai/README.md` |
 | `quality/`, `templates/` | Knowledge & quality | F6 | added with the code |
+| `quality/` | Quality checklists, sampling, reviews with RCA/CAPA, survey settings | F6 | `quality/README.md` |
 | `ai/` | AI | F7 | added with the code |
 
 The authoritative list (with mock/live state) is `core/constants/serviceModules.js`.

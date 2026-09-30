@@ -12,6 +12,7 @@ import { paymentPlansResource, planAssignmentsResource } from './billingResource
 import { schedulingResourcesResource } from './schedulingResources'
 import { portalAccountsSection, portalBrandingSection, portalPoliciesResource, requestCatalogResource } from './portalResources'
 import { followUpProgramsResource, portfoliosSection } from './followUpResources'
+import { qualityChecklistsResource, samplingRulesResource, surveysResource } from './qualityResources'
 import { FileUp, KeyRound, Package, Sparkles, Wand2, Webhook } from 'lucide-react'
 import { ApiClientsPanel } from '../../api-access/components/ApiClientsPanel'
 import { AiSettingsPanel } from '../../ai/components/AiSettingsPanel'
@@ -43,6 +44,7 @@ export const SETTINGS_GROUPS = [
   { key: 'scheduling', resources: [schedulingResourcesResource] },
   { key: 'followUps', resources: [followUpProgramsResource, portfoliosSection] },
   { key: 'portal', resources: [portalAccountsSection, portalPoliciesResource, requestCatalogResource, portalBrandingSection] },
+  { key: 'quality', resources: [qualityChecklistsResource, samplingRulesResource, surveysResource] },
   { key: 'ai', resources: [aiSection] },
   { key: 'developers', resources: [apiClientsSection, webhooksSection] },
   { key: 'sla', resources: [slaPoliciesResource, businessCalendarsResource, escalationRulesResource] },
@@ -79,6 +81,9 @@ const SECTION_SLUGS = {
   portfolios: 'portfolios',
   apiClients: 'api-clients',
   ai: 'ai',
+  qualityChecklists: 'quality-checklists',
+  samplingRules: 'sampling-rules',
+  surveys: 'surveys',
   webhooks: 'webhooks',
 }
 

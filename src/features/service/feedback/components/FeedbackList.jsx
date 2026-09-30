@@ -8,26 +8,40 @@ import { ResourceState } from '../../../../shared/components/data/ResourceState'
 import { formatRelativeTime } from '../../../../shared/utils/dateTime'
 import { useFeedbackResponses } from '../api/feedbackApi'
 import { CsatScore } from './CsatScore'
+import { SurveySummary } from './SurveySummary'
+import { cn } from '../../../../shared/utils/cn'
+
+const SURVEYS = ['csat', 'nps', 'ces']
+const MAX = { nps: 10, ces: 7 }
 
 const PER_PAGE = 20
 
-/** CSAT responses for the period, newest first, with a score filter. */
+/** Survey answers for the period (CSAT with a score filter, NPS, CES), newest first. */
 export function FeedbackList({ period, caseBasePath = '/service/cases' }) {
   const { t, i18n } = useTranslation()
   const [score, setScore] = useState('')
   const [page, setPage] = useState(1)
-  const query = useFeedbackResponses({ period, score: score || undefined, page, per_page: PER_PAGE })
+  const [survey, setSurvey] = useState('csat')
+  const query = useFeedbackResponses({ period, survey, score: survey === 'csat' ? score || undefined : undefined, page, per_page: PER_PAGE })
   const items = query.data?.data || []
   const meta = query.data?.meta
   const summary = meta?.summary
 
   return (
     <div className="grid gap-3">
+      <div className="flex flex-wrap gap-2" role="tablist" aria-label={t('service.feedback.surveyType')}>
+        {SURVEYS.map((key) => (
+          <button key={key} type="button" role="tab" aria-selected={survey === key} onClick={() => { setSurvey(key); setPage(1) }} className={cn('rounded-full border px-3 py-1 text-xs', survey === key ? 'border-brand-accent font-semibold text-[var(--text)]' : 'border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text)]')}>
+            {t(`service.feedback.types.${key}`)}
+          </button>
+        ))}
+      </div>
+      {survey !== 'csat' && <SurveySummary type={survey} summary={summary} />}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <p className="text-sm text-[var(--text-muted)]">
-          {summary?.count ? t('service.feedback.summary', { count: summary.count, average: summary.average, percent: summary.satisfied_percent }) : null}
+          {survey === 'csat' && summary?.count ? t('service.feedback.summary', { count: summary.count, average: summary.average, percent: summary.satisfied_percent }) : null}
         </p>
-        <div className="w-44">
+        {survey === 'csat' && <div className="w-44">
           <Select
             aria-label={t('service.feedback.filterScore')}
             placeholder={t('service.feedback.allScores')}
@@ -38,7 +52,7 @@ export function FeedbackList({ period, caseBasePath = '/service/cases' }) {
             }}
             options={[5, 4, 3, 2, 1].map((value) => ({ value: String(value), label: t('service.reports.stars', { count: value }) }))}
           />
-        </div>
+        </div>}
       </div>
       <ResourceState
         isLoading={query.isLoading}
@@ -53,13 +67,13 @@ export function FeedbackList({ period, caseBasePath = '/service/cases' }) {
           {items.map((entry) => (
             <li key={entry.id} className="grid gap-1 px-4 py-3">
               <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--text-muted)]">
-                <CsatScore score={entry.score} />
+                {survey === 'csat' ? <CsatScore score={entry.score} /> : <span className="text-xs font-semibold text-[var(--text)]" dir="ltr">{entry.score}/{MAX[survey]}</span>}
                 {entry.case && (
                   <Link to={`${caseBasePath}/${entry.case.id}`} className="font-mono hover:underline" dir="ltr">
                     {entry.case.case_number}
                   </Link>
                 )}
-                <span>{entry.case?.customer?.name}</span>
+                <span>{entry.case?.customer?.name || entry.customer?.name}</span>
                 <span className="ms-auto">{formatRelativeTime(entry.responded_at, i18n.language)}</span>
               </div>
               {entry.case?.subject && <p className="text-sm text-[var(--text)]">{entry.case.subject}</p>}

@@ -5,6 +5,8 @@ import { mockId } from '../seeds/seedUtils'
 import { nowIso, paginate } from '../utils'
 import { allocatePayment, applyAllocations, serializeSchedule, todayIso } from '../state/billingLedger'
 import { findStatus } from '../state/caseConfig'
+import { SCALES, isLowScore } from '../state/qualityScore'
+import './qualityHandlers'
 import { DEMO_B2B_PASSWORD, can, checkOtp, findAccountByContact, forbidden, openSession, requestOtp, requirePermission, resolveSession, saveSessions } from '../state/portalAccess'
 import { entitlementBalance, entitlementState } from './assetsHandlers'
 import { createCase } from './casesHandlers'
@@ -366,11 +368,37 @@ export const portalHandlers = [
     handler: ({ headers, body = {} }) => {
       const ctx = context(headers)
       requirePermission(ctx, 'feedback', 'create')
+      // F6: the answer belongs to a survey (CSAT by default; NPS 0–10, CES 1–7). A low score runs the survey's
+      // follow-up action — here "open a case for a supervisor" (spec §42.1; live: through the Workflow Engine).
+      const survey = body.survey_id ? getCollection('feedbackSurveys').find((entry) => entry.id === body.survey_id && entry.active) : null
+      if (body.survey_id && !survey) throw notFound('Survey')
+      const type = survey?.type || 'csat'
+      const [min, max] = SCALES[type]
       const score = Number(body.score)
-      validation(score >= 1 && score <= 5 ? {} : { score: ['required'] })
-      const response = { id: mockId('fb'), case_id: body.case_id || null, survey: 'csat', score, comment: body.comment || null, channel: 'portal', responded_at: nowIso() }
+      validation(body.score !== undefined && body.score !== null && score >= min && score <= max ? {} : { score: ['required'] })
+      const customerId = ctx.membership.customer_id
+      const response = { id: mockId('fb'), case_id: body.case_id || null, customer_id: customerId, customer: { id: customerId, name: ctx.membership.customer?.name }, survey: type, survey_id: survey?.id || null, score, comment: body.comment || null, channel: 'portal', responded_at: nowIso() }
       getCollection('feedbackResponses').push(response)
-      return { status: 201, body: { data: response } }
+      if (survey?.low_score_action?.type === 'create_case' && isLowScore(type, score)) {
+        const caseType = getCollection('caseTypes').find((entry) => entry.key === survey.low_score_action.case_type_key) || getCollection('caseTypes')[0]
+        const created = createCase({ type_id: caseType.id, customer_id: customerId, subject: `${type.toUpperCase()} ${score}: ${survey.name?.en || survey.name?.ar}`, description: body.comment || '', source_channel: 'portal', priority: 'high' })
+        response.follow_up_case_id = created.id
+      }
+      return { status: 201, body: { data: { id: response.id, survey: type, score } } }
+    },
+  },
+
+  {
+    method: 'GET',
+    path: P.activeSurvey,
+    handler: ({ headers }) => {
+      // The one survey to ask now in the portal: an active portal survey this customer has not answered in 90 days.
+      const ctx = context(headers)
+      requirePermission(ctx, 'feedback', 'create')
+      const since = Date.now() - 90 * 24 * 3600 * 1000
+      const answered = new Set(getCollection('feedbackResponses').filter((entry) => entry.customer_id === ctx.membership.customer_id && Date.parse(entry.responded_at) > since).map((entry) => entry.survey_id))
+      const survey = getCollection('feedbackSurveys').find((entry) => entry.active && entry.channel === 'portal' && entry.type !== 'csat' && !answered.has(entry.id))
+      return { data: survey ? { id: survey.id, type: survey.type, question: survey.question, scale: SCALES[survey.type] } : null }
     },
   },
 

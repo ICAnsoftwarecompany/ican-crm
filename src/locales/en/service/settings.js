@@ -35,6 +35,7 @@ export default {
       taken: 'This key is already used',
     },
     groups: {
+      quality: 'Quality & surveys',
       ai: 'AI',
       developers: 'API & webhooks',
       followUps: 'Follow-ups',
@@ -50,6 +51,9 @@ export default {
       sla: 'Service levels',
     },
     resources: {
+      qualityChecklists: { title: 'Quality checklists', one: 'checklist', description: 'What a good request looks like: criteria with weights and a pass mark. Supervisors score samples against it.' },
+      samplingRules: { title: 'Sampling rules', one: 'sampling rule', description: 'Which closed requests go to the review queue: a share of each agent’s work and every low rating.' },
+      surveys: { title: 'Surveys', one: 'survey', description: 'CSAT after a request, NPS every few months, customer effort after a service. A low score can open a request for a supervisor.' },
       ai: {
         title: 'AI',
         one: 'AI setting',

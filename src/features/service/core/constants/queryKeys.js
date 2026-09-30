@@ -114,6 +114,11 @@ export const serviceKeys = {
   apiAccess: () => [...serviceKeys.all, 'api-access'],
   webhookDeliveries: (id, params) => [...serviceKeys.apiAccess(), 'deliveries', String(id), params ?? {}],
 
+  // Quality (F6)
+  quality: () => [...serviceKeys.all, 'quality'],
+  qualityReviews: (params) => [...serviceKeys.quality(), 'reviews', params ?? {}],
+  qualitySummary: (params) => [...serviceKeys.quality(), 'summary', params ?? {}],
+
   // AI (F7)
   ai: () => [...serviceKeys.all, 'ai'],
   aiSettings: () => [...serviceKeys.ai(), 'settings'],

@@ -22,6 +22,7 @@ import imports from './service/imports.js'
 import followUps from './service/followUps.js'
 import apiAccess from './service/apiAccess.js'
 import ai from './service/ai.js'
+import quality from './service/quality.js'
 
 /**
  * Customer Hub (Service Operations) copy — key root `service.*`.
@@ -53,5 +54,6 @@ export default {
   ...followUps,
   ...apiAccess,
   ...ai,
+  ...quality,
   terms,
 }

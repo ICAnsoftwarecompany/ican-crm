@@ -168,6 +168,7 @@ export default {
     stars: '{{count}} من 5',
     comment: 'حابب تضيف حاجة؟ (اختياري)',
     send: 'إرسال التقييم',
+    scale: { nps: { low: 'مستبعد', high: 'أكيد' }, ces: { low: 'صعب جدًا', high: 'سهل جدًا' } },
     categories: 'الموضوعات',
     allTopics: 'كل الموضوعات',
     results: 'النتائج',
