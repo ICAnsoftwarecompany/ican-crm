@@ -115,7 +115,9 @@ export default {
     "typeSentDescription": "نوع التصنيف سيتم إرساله دائمًا كـ {{type}}."
   },
   "nav": {
-    "productCategories": "تصنيفات المنتجات"
+    "productCategories": "تصنيفات المنتجات",
+    "reports": "التقارير والإحصائيات",
+    "insights": "المتابعة"
   },
   "sidebar": {
     "ariaLabel": "قائمة المنتجات",
@@ -131,5 +133,33 @@ export default {
     "fieldNamePlaceholder": "مثال: color",
     "valueLabel": "القيمة",
     "addField": "إضافة خانة"
+  },
+  "reports": {
+    "description": "إحصائيات المنتجات والخدمات: التصنيفات، النوع، الحالة والإضافة عبر الوقت.",
+    "kpis": {
+      "total": "إجمالي المنتجات والخدمات",
+      "added": "أضيفت في الفترة",
+      "inactive": "غير نشطة",
+      "categories": "تصنيفات مستخدمة"
+    },
+    "charts": {
+      "byCategory": "حسب التصنيف",
+      "byType": "منتجات وخدمات",
+      "byStatus": "نشطة وغير نشطة",
+      "addedOverTime": "الإضافة يوميًا"
+    },
+    "series": {
+      "items": "عناصر",
+      "added": "أضيفت"
+    },
+    "types": {
+      "product": "منتجات",
+      "service": "خدمات"
+    },
+    "statuses": {
+      "active": "نشطة",
+      "inactive": "غير نشطة"
+    },
+    "noDates": "لا يرسل النظام تاريخ إضافة للعناصر في هذه الفترة"
   }
 }

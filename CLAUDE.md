@@ -72,6 +72,7 @@ Legacy/transitional (don't copy these patterns, don't add to them):
 | Data table | `shared/components/data-table` (canonical table) | [DataTable](docs/1-ARCHITECTURE.md#datatable) |
 | Sidebar / navigation | `app/navigation`, `shared/components/layout` | [Sidebar & navigation](docs/1-ARCHITECTURE.md#sidebar-and-navigation) |
 | Sub-sidebar (every internal sidebar) | `shared/components/sub-sidebar` | [Sub-sidebar](docs/1-ARCHITECTURE.md#sub-sidebar), [README](src/shared/components/sub-sidebar/README.md) |
+| Reports & charts (every area's Reports page, every chart) | `shared/components/reports` (engine) + `features/<area>/reports` (data hooks) | [Reports and charts](docs/1-ARCHITECTURE.md#reports-and-charts), [README](src/shared/components/reports/README.md) |
 | Module page shells, module settings page, AI setup page | `shared/components/module-pages`, `shared/components/ai-setup`, `pages/settings/registry` | [Module pages and AI setup](docs/1-ARCHITECTURE.md#module-pages-and-ai-setup) |
 | Calendar | `shared/components/calendar` (engine) + `features/calendar` (sources) | [Calendar](docs/1-ARCHITECTURE.md#calendar) |
 | Realtime | `src/realtime` | [Realtime](docs/1-ARCHITECTURE.md#realtime) |
@@ -120,6 +121,12 @@ reports were removed (see git history).
     to it, and `docs/README.md` gets a change-log row. Every new `shared/components/<engine>/`,
     `features/<domain>/` or `pages/<area>/` folder gets a short `README.md` (what it owns, public API, how
     to extend, known gaps) and is linked from `docs/README.md`.
+12. **Reports & charts**: every area's "Reports & statistics" page is `ReportsPage` from
+    `shared/components/reports`, and every chart/stat tile comes from that engine (never import Recharts
+    directly in features/pages; no pies/donuts, no dual axes, never a 9th color). The owning feature
+    computes `{ kpis, charts }` in `features/<area>/reports/` (tested model + `use<Area>Report(range)` hook);
+    every data area with a sub-sidebar gets a "Reports & statistics" item (Settings pages are exempt). Existing
+    exceptions still to migrate are listed in `shared/components/reports/README.md` §7 — don't add new ones.
 
 ## Conventions
 

@@ -27,6 +27,7 @@ Status labels used in all three docs: **CURRENT** (verified code in use) · **PA
   - [Sidebar and navigation](#sidebar-and-navigation)
   - [Sub-sidebar](#sub-sidebar)
   - [Module pages and AI setup](#module-pages-and-ai-setup)
+  - [Reports and charts](#reports-and-charts)
   - [Other shared UI](#other-shared-ui)
 - [Checks and commands](#checks-and-commands)
 - [Definition of Done](#definition-of-done)
@@ -248,6 +249,17 @@ Generic stage board with optional swimlanes; stages come from data, never hardco
 - **`shared/components/module-pages/`** ([README](../src/shared/components/module-pages/README.md)): `ModulePageHeader`, `ModuleNotice`, `ModulePlaceholderPage` (planned content + "not connected" notice — never fake data) and `ModuleSettingsPage` (a module's own settings page that renders **selected sections of the app-wide settings** from `pages/settings/registry/settingsSections.jsx`, so a section is identical in both places).
 - **`shared/components/ai-setup/`** ([README](../src/shared/components/ai-setup/README.md)): `AiSetupPage` for any module's "AI setup" page (on/off, capabilities, tone, language, autonomy, instructions, hand-off). Presentation only — without `onSave` it keeps a per-browser draft. The future **`features/ai`** domain (models, prompts, quotas, settings API, agents) will plug in through `initialValues`/`onSave`; do not put AI business logic in `shared/`.
 
+### Reports and charts
+
+> **Documentation update:** 2026-10-01 01:49 (Africa/Cairo) — section added.
+
+**Status:** CURRENT · **Code:** `shared/components/reports/` ([README](../src/shared/components/reports/README.md)) · **Tests:** `reportUtils.test.js` · **Playground:** `/playground/reports`
+
+- **Rule:** every area's **Reports & statistics** page is `ReportsPage` (header → range filter → KPI row → chart grid), and every chart in the app comes from this engine (`TimeSeriesChart`, `CategoryBarChart`, `ShareBar`, `StatTile`). Do not import Recharts directly in features/pages, and do not build pies/donuts or dual-axis charts. Also in `CLAUDE.md` (rule 12).
+- **Split of work:** the owning feature computes `{ kpis, charts }` from its data with the pure helpers (`filterByRange`, `filterPreviousRange`, `buildDailySeries`, `countBy`, `percentOf`, `percentChange`) in a tested model + a `use<Area>Report(range)` hook; the page only wires `useReportRange` + `ReportsPage`.
+- **Color:** 8 validated categorical tokens `--chart-1…8` (+ `--chart-other`, `--chart-grid`, `--chart-axis`) in `src/index.css`, light and dark; fixed order, never a 9th hue (tail folds into "Other"). Every chart has a legend (≥ 2 series) and a table view.
+- **Consumers:** Leads Center, Calls, Meetings, Conversations, Team chat, Products. Not migrated yet: Customer Hub reports, Outreach overview, Social analytics, Campaign analytics.
+
 ### Other shared UI
 
 - **Overlays:** `overlays/AppDrawer`, `AppModal`, `ConfirmDialog`, `FormDialog`, `DropdownMenu`. **UI:** `ui/Button` (brand-token variants), `Input`, `Select`, `Tabs`, `Badge`, `StatusBadge`, `Avatar`, `Pagination`, `Spinner`. **Feedback:** `EmptyState`, `Skeleton`, `ErrorBoundary`. **Data:** `ResourceState`, `PageToolbar`.
@@ -293,6 +305,7 @@ One checklist for every change (human or AI). Report anything you could not veri
 - [ ] Update the relevant section in docs/2-SALES.md or docs/3-FEATURES.md in the same change. Do not create new .md files under `docs/`; add a section instead. Architecture or rule changes update this file.
 - [ ] Every **new folder** for a shared engine (`shared/components/<engine>/`), a new feature domain (`features/<domain>/`) or a new route area (`pages/<area>/`) gets a short `README.md` (what it owns, public API, how to extend, known gaps) with a timestamp. *(Rule added 2026-10-01 00:25 (Africa/Cairo).)*
 - [ ] Any new internal navigation uses the shared [Sub-sidebar](#sub-sidebar).
+- [ ] Any new chart or Reports page uses the shared [Reports and charts](#reports-and-charts) engine. *(Rule added 2026-10-01 01:49 (Africa/Cairo).)*
 - [ ] Every changed section in `docs/**/*.md` has a nearby `YYYY-MM-DD HH:mm (Africa/Cairo)` timestamp reflecting the current edit.
 - [ ] **Exception — Customer Service:** it is large and phased, so it has its own doc `docs/4-CUSTOMER-SERVICE.md` (phase log updated every phase), backend specs in `docs/customer-service/`, and a `README.md` in each `features/service/*` sub-module folder and in `pages/service/`. Keep those in sync in the same change.
 

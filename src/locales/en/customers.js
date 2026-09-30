@@ -80,6 +80,7 @@ export default {
     "leadsCenterSettings": "Leads Center Settings",
     "automation": "Automation",
     "aiSetup": "AI setup",
+    "reports": "Reports & statistics",
     "leadsCenterMenu": "Leads Center menu",
     "bulkActionsRail": "Selected customers actions",
     "customersListAriaLabel": "Customers list",
@@ -423,6 +424,26 @@ export default {
         "label": "Detect duplicates",
         "description": "Flags leads registered with the same phone or email."
       }
+    }
+  },
+  "reports": {
+    "description": "Lead statistics: new leads over time, statuses, sources and team distribution.",
+    "partialNote": "Older records were not loaded; figures cover the latest 5 pages of the list.",
+    "kpis": {
+      "created": "New leads",
+      "unassigned": "New without an owner",
+      "total": "Total loaded",
+      "totalHint": "All time"
+    },
+    "charts": {
+      "createdOverTime": "New leads per day",
+      "byStatus": "By status",
+      "bySource": "By source",
+      "byAssignee": "By assignee"
+    },
+    "series": {
+      "created": "New leads",
+      "leads": "Leads"
     }
   }
 }

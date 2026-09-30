@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, FolderTree, Package, Tags } from 'lucide-react'
+import { BarChart3, BriefcaseBusiness, FolderTree, Package, Tags } from 'lucide-react'
 
 export function getProductNavigationGroups(t) {
   return [
@@ -16,6 +16,13 @@ export function getProductNavigationGroups(t) {
       items: [
         { to: '/products/services', label: t('products.services.pageTitle'), icon: BriefcaseBusiness },
         { to: '/products/service-categories', label: t('products.serviceCategories.pageTitle'), icon: FolderTree },
+      ],
+    },
+    {
+      id: 'insights',
+      label: t('products.nav.insights'),
+      items: [
+        { to: '/products/reports', label: t('products.nav.reports'), icon: BarChart3 },
       ],
     },
   ]

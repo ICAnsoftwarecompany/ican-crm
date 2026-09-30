@@ -33,6 +33,7 @@ import settings from './settings.js'
 import modulePages from './modulePages.js'
 import aiSetup from './aiSetup.js'
 import myWork from './myWork.js'
+import reports from './reports.js'
 
 export default {
   app,
@@ -70,4 +71,5 @@ export default {
   modulePages,
   aiSetup,
   myWork,
+  reports,
 }

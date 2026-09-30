@@ -18,20 +18,46 @@ export default {
     "bindingHint": "You can link the activity to a lead, customer or deal from inside the form."
   },
   "reports": {
-    "byAssignee": "By assignee",
-    "byPriority": "By priority",
-    "columns": {
-      "assignee": "Assignee",
-      "total": "Total",
+    "kpis": {
+      "total": {
+        "call": "Calls in period",
+        "meeting": "Meetings in period"
+      },
       "completed": "Completed",
+      "completionRate": "Completion rate",
       "overdue": "Overdue",
-      "completionRate": "Completion rate"
+      "unreadMessages": "Unread messages",
+      "activeConversations": "Active conversations",
+      "activeChannels": "Channels with conversations",
+      "groups": "Groups"
     },
-    "unassigned": "Unassigned",
-    "noPriority": "No priority",
-    "emptyTitle": "No report data yet",
-    "emptyDescription": "Reports appear once the first activity is recorded.",
-    "clientSideNote": "Reports are computed in the browser from the latest 200 records until a backend summary report is available."
+    "charts": {
+      "perDay": {
+        "call": "Calls per day by status",
+        "meeting": "Meetings per day by status"
+      },
+      "byAssignee": "By assignee",
+      "byPriority": "By priority",
+      "byOutcome": "By outcome",
+      "conversationActivity": "Conversation activity per day by channel",
+      "unreadByChannel": "Unread by channel",
+      "conversationsByChannel": "Conversations by channel",
+      "chatActivity": "Team chat activity per day",
+      "byConversationType": "Direct vs groups",
+      "unreadByConversation": "Conversations with most unread"
+    },
+    "series": {
+      "call": "Calls",
+      "meeting": "Meetings",
+      "unread": "Unread",
+      "conversations": "Conversations"
+    },
+    "conversationTypes": {
+      "group": "Groups",
+      "direct": "Direct"
+    },
+    "noOutcomes": "No outcomes recorded in this period",
+    "noUnread": "No unread messages"
   },
   "modules": {
     "conversations": {
@@ -54,13 +80,7 @@ export default {
       },
       "reports": {
         "title": "Conversation reports",
-        "description": "Response, channel and agent performance.",
-        "items": {
-          "responseTime": "Average first response time",
-          "volume": "Conversations per channel",
-          "unanswered": "Unanswered conversations",
-          "agents": "Performance per agent"
-        }
+        "description": "Response, channel and agent performance."
       },
       "customization": {
         "description": "Customize the conversations inbox.",
@@ -118,10 +138,7 @@ export default {
       },
       "reports": {
         "title": "Call reports",
-        "description": "Call volume, outcomes and team performance.",
-        "items": {
-          "volume": "Number of calls"
-        }
+        "description": "Call volume, outcomes and team performance."
       },
       "customization": {
         "description": "Tailor calls to how your team works.",
@@ -175,10 +192,7 @@ export default {
       },
       "reports": {
         "title": "Meeting reports",
-        "description": "Meeting volume, outcomes and team performance.",
-        "items": {
-          "volume": "Number of meetings"
-        }
+        "description": "Meeting volume, outcomes and team performance."
       },
       "customization": {
         "description": "Tailor meetings to your team.",
@@ -235,13 +249,7 @@ export default {
       },
       "reports": {
         "title": "Team chat reports",
-        "description": "Team activity in chat.",
-        "items": {
-          "activity": "Messages per period",
-          "groups": "Most active groups",
-          "response": "Average reply time between colleagues",
-          "unread": "Unread messages per user"
-        }
+        "description": "Team activity in chat."
       },
       "customization": {
         "description": "Customize team chat.",

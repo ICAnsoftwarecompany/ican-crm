@@ -43,10 +43,20 @@
   --calendar-social:    #D946EF;
 
   /* Service operations (features/service) — SLA state and case priority */
-  /* Charts — categorical slots (validated for CVD on --surface, light + dark) */
+  /* Charts: 8 categorical slots in FIXED order (reference palette; validated with the dataviz
+     validator against --surface — adjacent CVD ΔE ≥ 8.4, normal ≥ 19.3; slots 3–5 are < 3:1 on
+     white, so every chart ships a legend + table view). Used by shared/components/reports. */
   --chart-1:            #2a78d6;
   --chart-2:            #eb6834;
+  --chart-3:            #1baf7a;
+  --chart-4:            #eda100;
+  --chart-5:            #e87ba4;
+  --chart-6:            #008300;
+  --chart-7:            #4a3aa7;
+  --chart-8:            #e34948;
   --chart-grid:         #E5E7EB;
+  --chart-axis:         #898781;
+  --chart-other:        #A3A29B;
 
   --sla-on-track:       #10B981;
   --sla-at-risk:        #F59E0B;
@@ -102,7 +112,15 @@
 
   --chart-1:            #3987e5;
   --chart-2:            #d95926;
+  --chart-3:            #199e70;
+  --chart-4:            #c98500;
+  --chart-5:            #d55181;
+  --chart-6:            #008300;
+  --chart-7:            #9085e9;
+  --chart-8:            #e66767;
   --chart-grid:         #1F2937;
+  --chart-axis:         #898781;
+  --chart-other:        #6B6A64;
 
   --sla-on-track:       #34D399;
   --sla-at-risk:        #FBBF24;

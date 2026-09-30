@@ -1,11 +1,14 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Bot, CalendarDays, Plus, SlidersHorizontal, Workflow, BarChart3 } from 'lucide-react'
+import { Bot, CalendarDays, Plus, SlidersHorizontal, Workflow } from 'lucide-react'
 import { ModulePageHeader, ModulePlaceholderPage, ModuleSettingsPage } from '../../shared/components/module-pages'
 import { AiSetupPage } from '../../shared/components/ai-setup'
+import { ReportsPage, useReportRange } from '../../shared/components/reports'
 import {
-  ActivityReports,
   CommunicationAutomation,
+  useActivityReport,
+  useConversationsReport,
+  useTeamChatReport,
   CommunicationCalendar,
   getCommunicationModule,
 } from '../../features/communication'
@@ -68,23 +71,47 @@ export function CommunicationCreatePage({ moduleId }) {
   )
 }
 
-export function CommunicationReportsPage({ moduleId }) {
-  const text = useModuleText(moduleId)
-  const planned = usePlannedList(`communication.modules.${moduleId}.reports.items`)
-  const activityType = ACTIVITY_TYPE[moduleId]
-
-  if (!activityType) {
-    return (
-      <ModulePlaceholderPage icon={BarChart3} title={text('reports.title')} description={text('reports.description')} plannedItems={planned} />
-    )
-  }
-
+function ReportsView({ moduleId, report, range, setRange }) {
+  const { t } = useTranslation()
   return (
-    <div className="space-y-4">
-      <ModulePageHeader icon={BarChart3} title={text('reports.title')} description={text('reports.description')} />
-      <ActivityReports type={activityType} />
-    </div>
+    <ReportsPage
+      title={t(`communication.modules.${moduleId}.reports.title`)}
+      description={t(`communication.modules.${moduleId}.reports.description`)}
+      range={range}
+      onRangeChange={setRange}
+      kpis={report.kpis}
+      charts={report.charts}
+      isLoading={report.isLoading}
+      error={report.error}
+      onRetry={report.refetch}
+      note={t('reports.basedOnRecords', { count: report.recordCount })}
+    />
   )
+}
+
+function ActivityReportsView({ moduleId }) {
+  const [range, setRange] = useReportRange(`reports:${moduleId}`)
+  const report = useActivityReport(ACTIVITY_TYPE[moduleId], range)
+  return <ReportsView moduleId={moduleId} report={report} range={range} setRange={setRange} />
+}
+
+function ConversationsReportsView() {
+  const [range, setRange] = useReportRange('reports:conversations')
+  const report = useConversationsReport(range)
+  return <ReportsView moduleId="conversations" report={report} range={range} setRange={setRange} />
+}
+
+function TeamChatReportsView() {
+  const [range, setRange] = useReportRange('reports:team-chat')
+  const report = useTeamChatReport(range)
+  return <ReportsView moduleId="team-chat" report={report} range={range} setRange={setRange} />
+}
+
+/** /<module>/reports — every Communication module on the shared reports engine (2026-10-01). */
+export function CommunicationReportsPage({ moduleId }) {
+  if (ACTIVITY_TYPE[moduleId]) return <ActivityReportsView moduleId={moduleId} />
+  if (moduleId === 'conversations') return <ConversationsReportsView />
+  return <TeamChatReportsView />
 }
 
 export function CommunicationCalendarPage({ moduleId }) {
