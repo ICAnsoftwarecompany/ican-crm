@@ -84,3 +84,4 @@ export { QualityWorkspace } from './quality'
 
 // F7 — AI
 export { AiCasePanel, AiSignalChips, AiSettingsPanel } from './ai'
+export { HealthScoreCard, AtRiskCustomers, AdvancedReport } from './health'

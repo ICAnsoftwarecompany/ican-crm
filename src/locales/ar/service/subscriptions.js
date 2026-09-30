@@ -13,14 +13,17 @@ export default {
     history: 'السجل',
     everyN: '{{count}} × {{unit}}',
     cancelWhen: 'امتى',
-    changeDescription: 'السعر الجديد بيسري من الفترة الجاية. التقسيم النسبي غير مدعوم حاليًا.',
+    changeDescription: 'طبّق السعر الجديد من الفترة الجاية، أو النهارده بحساب نسبي (رصيد للأيام اللي متستخدمتش والسعر الجديد لباقي الفترة).',
     suspendDescription: 'الخدمة بتقف والاستحقاقات المرتبطة بتتعلق لحد ما تستأنف.',
     payDescription: 'تسجيل {{amount}} كمدفوع لهذه الفترة.',
     units: { day: 'يوم', week: 'أسبوع', month: 'شهر', year: 'سنة' },
     statuses: { trial: 'تجريبي', active: 'نشط', past_due: 'متأخر السداد', suspended: 'موقوف', cancelled: 'ملغي', expired: 'منتهي' },
     renewals: { auto: 'تجديد تلقائي', manual: 'تجديد يدوي', none: 'بدون تجديد' },
     cancelModes: { period_end: 'بنهاية الفترة الحالية', now: 'فورًا' },
+    effective: { next_period: 'من الفترة الجاية', now: 'النهارده، بحساب نسبي' },
+    proration: { daysLeft: 'الأيام الفاضلة', days: '{{left}} من {{total}}', credit: 'رصيد الأيام اللي متستخدمتش', charge: 'السعر الجديد للأيام دي', dueToday: 'مستحق النهارده', creditKept: 'رصيد محفوظ للفترة الجاية', line: 'فرق نسبي' },
     fields: {
+      effective: 'إمتى',
       number: 'الرقم',
       item: 'الباقة',
       status: 'الحالة',
@@ -37,6 +40,7 @@ export default {
       cancelReason: 'سبب الإلغاء',
     },
     notices: {
+      credit: 'رصيد {{amount}} هيتخصم من الفترة الجاية.',
       trial: 'الفترة التجريبية بتنتهي {{date}}، وبعدها تبدأ أول فترة مدفوعة.',
       pastDue: 'في مبلغ متأخر ({{amount}}). الخدمة هتتوقف بعد {{date}} لو ما اتدفعش.',
       suspendedDues: 'موقوف بسبب عدم السداد. دفع {{amount}} بيرجّعه نشط تلقائيًا.',
@@ -64,6 +68,7 @@ export default {
       renewal_changed: 'تم تغيير إعداد التجديد',
     },
     actions: {
+      changeNow: 'غيّر النهارده',
       renew: 'تجديد',
       resume: 'استئناف',
       keep: 'الإبقاء على الاشتراك',
@@ -74,6 +79,7 @@ export default {
       markPaid: 'تسجيل كمدفوع',
     },
     done: {
+      changedNow: 'اتغيرت الخطة النهارده بحساب نسبي',
       renew: 'تم تجديد الاشتراك',
       resume: 'تم استئناف الاشتراك',
       cancelWithdrawn: 'تم التراجع عن الإلغاء',

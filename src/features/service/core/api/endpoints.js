@@ -141,7 +141,15 @@ export const serviceEndpoints = {
     triage: `${SERVICE_API}/ai/triage`,
     // GET summary | duplicates | assignment; POST summary (regenerate) | suggest-reply | feedback
     case: (caseId, action) => `${SERVICE_API}/cases/${caseId}/ai/${action}`,
+    // F7b AI agent: conversations it held (+ handoffs) and a staff test console on one customer's data.
+    agentConversations: `${SERVICE_API}/ai/agent/conversations`,
+    agentTest: `${SERVICE_API}/ai/agent/test`,
   },
+  // Customer health / churn score (F7b, proposed): one customer, or the list by band.
+  customerHealth: (customerId) => `${SERVICE_API}/customers/${customerId}/health`,
+  health: `${SERVICE_API}/health`,
+  // Advanced analytics (F7b, spec §46.3 — proposed): aging, repeat contact, deflection, AI resolution, workload, follow-ups.
+  reportAdvanced: `${SERVICE_API}/reports/advanced`,
   caseMarkDuplicate: (caseId) => `${SERVICE_API}/cases/${caseId}/mark-duplicate`,
 
   // Knowledge base (F2) — CRUD + publish (kb.publish permission). New articles start as drafts.

@@ -6,6 +6,7 @@ import { getMockCurrentUser } from '../seeds/seedUtils'
 import { matchesSearch, nowIso, paginate } from '../utils'
 import { todayIso } from '../state/billingLedger'
 import { addBillingPeriod, serializeSubscription, tickSubscription } from '../state/subscriptionLifecycle'
+import { prorate } from '../state/proration'
 import './assetsHandlers'
 import './catalogHandlers'
 
@@ -79,7 +80,22 @@ export const subscriptionsHandlers = [
         if (change) {
           const item = change.item_id ? getCollection('catalogItems').find((entry) => entry.id === change.item_id) : null
           validation(Number(change.price) > 0 ? {} : { price: ['required'] })
-          // Upgrades / downgrades apply from the next period (spec §30); proration comes later.
+          if (change.effective === 'now') {
+            // F7: change today with proration — credit the unused old price, charge the unused new price. A positive net
+            // becomes a due line today; a negative net is kept as credit for the next period.
+            if (!['active', 'past_due'].includes(subscription.status) || !subscription.current_period_end) throw conflict('SUBSCRIPTION_INVALID_STATE', 'No running period to prorate')
+            const quote = prorate({ periodStart: subscription.current_period_start, periodEnd: subscription.current_period_end, oldPrice: subscription.plan.price, newPrice: Number(change.price), today: todayIso() })
+            const from = subscription.plan.price
+            subscription.plan.price = Number(change.price)
+            if (item) Object.assign(subscription, { item_id: item.id, item_name: item.name })
+            if (quote.net > 0) subscription.periods.push({ id: `${subscription.id}-adj${subscription.periods.length}`, seq: subscription.periods.length, kind: 'proration', start: todayIso(), end: subscription.current_period_end, due_date: todayIso(), amount: quote.net, paid_at: null, method: null })
+            else if (quote.net < 0) subscription.credit_balance = Math.round(((subscription.credit_balance || 0) - quote.net) * 100) / 100
+            subscription.pending_change = null
+            ;(subscription.adjustments = subscription.adjustments || []).unshift({ type: 'proration', from_price: from, to_price: Number(change.price), ...quote, at: nowIso(), by: me() })
+            log(subscription, 'changed_now', subscription.status)
+            return detail(subscription)
+          }
+          // Default: upgrades / downgrades apply from the next period (spec §30).
           subscription.pending_change = { price: Number(change.price), item_id: item?.id || null, item_name: item?.name || null, effective_date: subscription.current_period_end || subscription.trial_ends_at }
         } else subscription.pending_change = null
         log(subscription, change ? 'change_scheduled' : 'change_withdrawn', subscription.status)
@@ -99,6 +115,16 @@ export const subscriptionsHandlers = [
       Object.assign(period, { paid_at: nowIso(), method: body.method, reference: body.reference || null, recorded_by: me() })
       subscription.version += 1
       return detail(subscription)
+    },
+  },
+  {
+    method: 'POST',
+    path: `${S}/:id/change-preview`,
+    handler: ({ params, body = {} }) => {
+      const subscription = byId(params.id)
+      validation(Number(body.price) > 0 ? {} : { price: ['required'] })
+      if (!subscription.current_period_end) throw conflict('SUBSCRIPTION_INVALID_STATE', 'No running period')
+      return { data: { ...prorate({ periodStart: subscription.current_period_start, periodEnd: subscription.current_period_end, oldPrice: subscription.plan.price, newPrice: Number(body.price), today: todayIso() }), currency: subscription.plan.currency, next_period_date: subscription.current_period_end } }
     },
   },
   {

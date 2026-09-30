@@ -27,6 +27,10 @@ export const aiApi = {
   duplicates: async (caseId) => unwrap(await api.get(AI.case(caseId, 'duplicates'))) || [],
   assignment: async (caseId) => unwrap(await api.get(AI.case(caseId, 'assignment'))) || [],
   feedback: async ({ caseId, feature, accepted }) => unwrap(await api.post(AI.case(caseId, 'feedback'), { feature, accepted })),
+  agentConversations: async (params) => (await api.get(AI.agentConversations, { params })).data,
+  agentConversation: async (id) => unwrap(await api.get(`${AI.agentConversations}/${id}`)),
+  /** Staff test console: same agent and tools on one customer's data; never opens a case. */
+  agentTest: async (payload) => unwrap(await api.post(AI.agentTest, payload)),
   markDuplicate: async ({ caseId, ...payload }) => unwrap(await api.post(serviceEndpoints.caseMarkDuplicate(caseId), payload)),
 }
 
@@ -35,6 +39,9 @@ export const useAiUsage = () => useQuery({ queryKey: [...serviceKeys.ai(), 'usag
 export const useAiInsights = (caseId, version) => useQuery({ queryKey: [...serviceKeys.aiCase(caseId, 'insights'), version], queryFn: () => aiApi.insights(caseId), enabled: Boolean(caseId) })
 export const useAiDuplicates = (caseId, enabled = true) => useQuery({ queryKey: serviceKeys.aiCase(caseId, 'duplicates'), queryFn: () => aiApi.duplicates(caseId), enabled: Boolean(caseId) && enabled, staleTime: 60 * 1000 })
 export const useAiAssignment = (caseId, enabled = true) => useQuery({ queryKey: serviceKeys.aiCase(caseId, 'assignment'), queryFn: () => aiApi.assignment(caseId), enabled: Boolean(caseId) && enabled, staleTime: 60 * 1000 })
+
+export const useAgentConversations = (params) => useQuery({ queryKey: serviceKeys.aiConversations(params), queryFn: () => aiApi.agentConversations(params), placeholderData: (previous) => previous })
+export const useAgentConversation = (id) => useQuery({ queryKey: [...serviceKeys.aiConversations(), 'detail', id], queryFn: () => aiApi.agentConversation(id), enabled: Boolean(id) })
 
 export function useAiMutations() {
   const queryClient = useQueryClient()
@@ -48,6 +55,7 @@ export function useAiMutations() {
     suggestReply: useMutation({ mutationFn: aiApi.suggestReply, onSuccess: refreshUsage, onError }),
     triage: useMutation({ mutationFn: aiApi.triage, onError: () => {} }),
     feedback: useMutation({ mutationFn: aiApi.feedback }),
+    agentTest: useMutation({ mutationFn: aiApi.agentTest, onSuccess: refreshUsage, onError }),
     saveSettings: useMutation({ mutationFn: aiApi.saveSettings, onSuccess: () => queryClient.invalidateQueries({ queryKey: serviceKeys.ai() }), onError }),
     markDuplicate: useMutation({
       mutationFn: aiApi.markDuplicate,

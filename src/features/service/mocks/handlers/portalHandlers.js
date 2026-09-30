@@ -11,6 +11,7 @@ import { DEMO_B2B_PASSWORD, can, checkOtp, findAccountByContact, forbidden, open
 import { entitlementBalance, entitlementState } from './assetsHandlers'
 import { createCase } from './casesHandlers'
 import { portalSettings } from './portalAdminHandlers'
+import { aiSettings } from './aiHandlers'
 import { syncSubscription } from './subscriptionsHandlers'
 import { serializeSubscription } from '../state/subscriptionLifecycle'
 import '../state/feedback'
@@ -97,7 +98,8 @@ export const portalHandlers = [
     path: P.publicSettings,
     handler: () => {
       const { role_policies: _hidden, ...settings } = portalSettings()
-      return { data: settings }
+      // F7: the portal shows the AI assistant only when the tenant turned the agent on.
+      return { data: { ...settings, ai_agent: Boolean(aiSettings().features.agent) } }
     },
   },
   { method: 'POST', path: P.otp, handler: ({ body = {} }) => ({ data: requestOtp(body.target) }) },

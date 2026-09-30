@@ -25,6 +25,8 @@ export const subscriptionsApi = {
   update: async (id, payload) => unwrap(await api.patch(`${S}/${id}`, payload)),
   /** action: cancel | suspend | resume | renew */
   action: async (id, action, payload) => unwrap(await api.post(`${S}/${id}/${action}`, payload)),
+  /** F7: proration quote for a change today `{ price }` → { period_days, days_left, credit_unused, charge_new, net, currency }. */
+  changePreview: async (id, payload) => unwrap(await api.post(`${S}/${id}/change-preview`, payload)),
   payPeriod: async (id, periodId, payload) => unwrap(await api.post(`${S}/${id}/periods/${periodId}/pay`, payload)),
 }
 

@@ -15,6 +15,7 @@ import { useServiceCapabilities } from '../../core/capabilities/useServiceCapabi
 import { EntitlementsList } from '../../entitlements/components/EntitlementsList'
 import { CustomerAssetsSection, CustomerContractsSection, CustomerRecordsSection } from './CustomerHubSections'
 import { CustomerPaymentsSection, CustomerSubscriptionsSection } from './CustomerPaymentsSection'
+import { HealthScoreCard } from '../../health/components/HealthScoreCard'
 import { PortalAccountsPanel } from '../../portal-admin/components/PortalAccountsPanel'
 
 /**
@@ -35,6 +36,7 @@ export function CustomerServiceTab({ customer }) {
 
   return (
     <div className="grid gap-4 py-4">
+      {customerId && <HealthScoreCard customerId={customerId} />}
       <section className="grid gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">
         <div className="flex items-center justify-between gap-2">
           <h2 className="flex items-center gap-2 text-sm font-semibold text-[var(--text)]">

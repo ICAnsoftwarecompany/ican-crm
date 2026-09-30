@@ -24,3 +24,12 @@ Lifecycle (server job; the mock runs `mocks/state/subscriptionLifecycle.js` on r
 
 Proposed (confirm with backend): `POST /subscriptions/{id}/periods/{periodId}/pay` — in `erp` / `gateway` mode periods are
 paid by webhook and this action is hidden.
+
+## F7 — proration
+
+`PATCH /subscriptions/{id} { pending_change: { price, effective: 'now' } }` changes the price today: credit for the
+unused days at the old price, charge for them at the new price (`mocks/state/proration.js`, day-based). A positive net is
+a due line today (`periods[].kind = 'proration'`); a negative net is kept as `credit_balance` for the next period. The
+change is logged in `adjustments[]`. Preview: `POST /subscriptions/{id}/change-preview { price }` → `{ period_days,
+days_left, credit_unused, charge_new, net }` (proposed). UI: `components/ChangePlanDialog.jsx`. Default stays "from the
+next period" (spec §30).

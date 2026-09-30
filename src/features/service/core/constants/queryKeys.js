@@ -123,6 +123,10 @@ export const serviceKeys = {
   ai: () => [...serviceKeys.all, 'ai'],
   aiSettings: () => [...serviceKeys.ai(), 'settings'],
   aiCase: (caseId, feature) => [...serviceKeys.ai(), 'case', String(caseId), feature],
+  aiConversations: (params) => [...serviceKeys.ai(), 'conversations', params ?? {}],
+  health: (params) => [...serviceKeys.all, 'health', params ?? {}],
+  customerHealth: (customerId) => [...serviceKeys.all, 'health', 'customer', String(customerId)],
+  reportAdvanced: (period) => [...serviceKeys.all, 'reports', 'advanced', period],
 
   // Saved views (F2) — per entity (e.g. service_case)
   savedViews: (entity) => [...serviceKeys.all, 'saved-views', entity],

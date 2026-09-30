@@ -36,6 +36,8 @@ export const portalEndpoints = {
   feedback: `${PORTAL_API}/feedback`,
   // F6: the NPS / CES question to ask this customer now (or null).
   activeSurvey: `${PORTAL_API}/surveys/active`,
+  // F7: AI assistant chat (customer-scoped tools, hands over to a person).
+  assistant: `${PORTAL_API}/assistant/messages`,
   remittances: `${PORTAL_API}/remittances`,
   orgUsers: `${PORTAL_API}/org/users`,
   track: `${PORTAL_API}/track`,

@@ -5,8 +5,9 @@ import { FeedbackList } from '../../feedback/components/FeedbackList'
 import { REPORT_PERIODS } from '../api/reportsApi'
 import { ReportsOverview } from './ReportsOverview'
 import { QualityWorkspace } from '../../quality/components/QualityWorkspace'
+import { AdvancedReport } from '../../health/components/AdvancedReport'
 
-const TABS = ['overview', 'feedback', 'quality']
+const TABS = ['overview', 'feedback', 'quality', 'advanced']
 
 /** Reports shell: tab + period in the URL (?tab=&period=), filters in one row. */
 export function ReportsWorkspace() {
@@ -61,6 +62,7 @@ export function ReportsWorkspace() {
       {tab === 'overview' && <ReportsOverview period={period} />}
       {tab === 'feedback' && <FeedbackList period={period} />}
       {tab === 'quality' && <QualityWorkspace period={period} />}
+      {tab === 'advanced' && <AdvancedReport period={period} />}
     </div>
   )
 }

@@ -5,6 +5,7 @@ import { Headset, Map as MapIcon, Plus } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
 import { Button } from '../../shared/components/ui/Button'
 import {
+  AtRiskCustomers,
   CaseCreateDialog,
   MyWorkList,
   ServiceCenterCounters,
@@ -55,6 +56,14 @@ export function ServiceCenterPage() {
           </Link>
         </div>
         <MyWorkList limit={8} />
+      </section>
+
+      <section className="grid gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-[var(--text)]">{t('service.health.atRisk')}</h2>
+          <Link to="/service/reports?tab=advanced" className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] hover:underline">{t('service.center.viewAll')}</Link>
+        </div>
+        <AtRiskCustomers limit={5} />
       </section>
 
       <CaseCreateDialog open={createOpen} onClose={() => setCreateOpen(false)} />

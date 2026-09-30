@@ -4,7 +4,7 @@ export default {
     title: 'Reports',
     period: 'Period',
     periods: { '7d': 'Last 7 days', '30d': 'Last 30 days', '90d': 'Last 90 days' },
-    tabs: { overview: 'Overview', feedback: 'Customer feedback', quality: 'Quality' },
+    tabs: { overview: 'Overview', feedback: 'Customer feedback', quality: 'Quality', advanced: 'Advanced' },
     kpis: {
       created: 'New requests',
       resolved: 'Resolved',

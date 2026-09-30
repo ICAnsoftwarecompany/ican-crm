@@ -4,7 +4,7 @@ export default {
     title: 'التقارير',
     period: 'الفترة',
     periods: { '7d': 'آخر 7 أيام', '30d': 'آخر 30 يومًا', '90d': 'آخر 90 يومًا' },
-    tabs: { overview: 'نظرة عامة', feedback: 'آراء العملاء', quality: 'الجودة' },
+    tabs: { overview: 'نظرة عامة', feedback: 'آراء العملاء', quality: 'الجودة', advanced: 'متقدم' },
     kpis: {
       created: 'طلبات جديدة',
       resolved: 'تم حلها',

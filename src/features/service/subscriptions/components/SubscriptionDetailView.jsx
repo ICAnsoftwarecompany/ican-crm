@@ -40,6 +40,7 @@ export function SubscriptionDetailView({ subscriptionId, backTo, contractPath })
         item.cancel_at_period_end && live && t('service.subscriptions.notices.cancelAtEnd', { date: date(item.current_period_end) }),
         item.renewal_due && t('service.subscriptions.notices.renewalDue', { count: item.days_to_period_end }),
         item.pending_change && t('service.subscriptions.notices.pendingChange', { amount: money(item.pending_change.price), date: date(item.pending_change.effective_date) }),
+        item.credit_balance > 0 && t('service.subscriptions.notices.credit', { amount: money(item.credit_balance) }),
       ].filter(Boolean)
     : []
 

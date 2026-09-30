@@ -44,7 +44,7 @@ export function SubscriptionPeriods({ subscription }) {
         <tbody>
           {subscription.periods.map((period) => (
             <tr key={period.id} className="border-t border-[var(--border)]">
-              <td className="whitespace-nowrap px-3 py-1.5 text-xs">{t('service.entitlements.range', { from: date(period.start), to: date(period.end) })}</td>
+              <td className="whitespace-nowrap px-3 py-1.5 text-xs">{t('service.entitlements.range', { from: date(period.start), to: date(period.end) })}{period.kind === 'proration' && <span className="ms-1 text-[var(--text-muted)]">· {t('service.subscriptions.proration.line')}</span>}</td>
               <td className="whitespace-nowrap px-3 py-1.5 text-xs">{date(period.due_date)}</td>
               <td className="px-3 py-1.5 text-end"><span dir="ltr">{money(period.amount)}</span></td>
               <td className={cn('whitespace-nowrap px-3 py-1.5 text-xs font-medium', LINE_TONE[period.status])}>

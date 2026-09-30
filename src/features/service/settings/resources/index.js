@@ -13,9 +13,10 @@ import { schedulingResourcesResource } from './schedulingResources'
 import { portalAccountsSection, portalBrandingSection, portalPoliciesResource, requestCatalogResource } from './portalResources'
 import { followUpProgramsResource, portfoliosSection } from './followUpResources'
 import { qualityChecklistsResource, samplingRulesResource, surveysResource } from './qualityResources'
-import { FileUp, KeyRound, Package, Sparkles, Wand2, Webhook } from 'lucide-react'
+import { Bot, FileUp, KeyRound, Package, Sparkles, Wand2, Webhook } from 'lucide-react'
 import { ApiClientsPanel } from '../../api-access/components/ApiClientsPanel'
 import { AiSettingsPanel } from '../../ai/components/AiSettingsPanel'
+import { AiAgentPanel } from '../../ai/components/AiAgentPanel'
 import { WebhooksPanel } from '../../api-access/components/WebhooksPanel'
 import { ImportsPanel } from '../../imports/components/ImportsPanel'
 import { SetupWizardPanel } from '../../setup/components/SetupWizardPanel'
@@ -27,6 +28,7 @@ const importsSection = { key: 'imports', icon: FileUp, i18nKey: 'service.setting
 const apiClientsSection = { key: 'apiClients', icon: KeyRound, i18nKey: 'service.settings.resources.apiClients', component: ApiClientsPanel }
 const webhooksSection = { key: 'webhooks', icon: Webhook, i18nKey: 'service.settings.resources.webhooks', component: WebhooksPanel }
 const aiSection = { key: 'ai', icon: Sparkles, i18nKey: 'service.settings.resources.ai', component: AiSettingsPanel }
+const aiAgentSection = { key: 'aiAgent', icon: Bot, i18nKey: 'service.settings.resources.aiAgent', component: AiAgentPanel }
 const catalogItemsSection = { key: 'catalogItems', icon: Package, i18nKey: 'service.settings.resources.catalogItems', component: CatalogItemsPanel }
 
 /**
@@ -45,7 +47,7 @@ export const SETTINGS_GROUPS = [
   { key: 'followUps', resources: [followUpProgramsResource, portfoliosSection] },
   { key: 'portal', resources: [portalAccountsSection, portalPoliciesResource, requestCatalogResource, portalBrandingSection] },
   { key: 'quality', resources: [qualityChecklistsResource, samplingRulesResource, surveysResource] },
-  { key: 'ai', resources: [aiSection] },
+  { key: 'ai', resources: [aiSection, aiAgentSection] },
   { key: 'developers', resources: [apiClientsSection, webhooksSection] },
   { key: 'sla', resources: [slaPoliciesResource, businessCalendarsResource, escalationRulesResource] },
   { key: 'communication', resources: [savedRepliesResource, macrosResource] },
@@ -81,6 +83,7 @@ const SECTION_SLUGS = {
   portfolios: 'portfolios',
   apiClients: 'api-clients',
   ai: 'ai',
+  aiAgent: 'ai-agent',
   qualityChecklists: 'quality-checklists',
   samplingRules: 'sampling-rules',
   surveys: 'surveys',

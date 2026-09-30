@@ -13,14 +13,17 @@ export default {
     history: 'History',
     everyN: '{{count}} × {{unit}}',
     cancelWhen: 'When',
-    changeDescription: 'The new price applies from the next period. Proration is not supported yet.',
+    changeDescription: 'Apply the new price from the next period, or today with proration (credit for unused days, new price for the rest).',
     suspendDescription: 'Service stops and linked entitlements are suspended until you resume.',
     payDescription: 'Mark {{amount}} as paid for this period.',
     units: { day: 'day', week: 'week', month: 'month', year: 'year' },
     statuses: { trial: 'Trial', active: 'Active', past_due: 'Past due', suspended: 'Suspended', cancelled: 'Cancelled', expired: 'Expired' },
     renewals: { auto: 'Auto-renew', manual: 'Manual renewal', none: 'No renewal' },
     cancelModes: { period_end: 'At the end of the current period', now: 'Immediately' },
+    effective: { next_period: 'From the next period', now: 'Today, with proration' },
+    proration: { daysLeft: 'Days left', days: '{{left}} of {{total}}', credit: 'Credit for unused days', charge: 'New price for those days', dueToday: 'Due today', creditKept: 'Credit kept for next period', line: 'proration' },
     fields: {
+      effective: 'When',
       number: 'Number',
       item: 'Plan',
       status: 'Status',
@@ -37,6 +40,7 @@ export default {
       cancelReason: 'Cancellation reason',
     },
     notices: {
+      credit: 'Credit of {{amount}} will be used on the next period.',
       trial: 'Trial ends {{date}}. The first period is billed then.',
       pastDue: 'Payment overdue ({{amount}}). Service is suspended after {{date}} if it stays unpaid.',
       suspendedDues: 'Suspended for non-payment. Paying {{amount}} reactivates it automatically.',
@@ -64,6 +68,7 @@ export default {
       renewal_changed: 'Renewal setting changed',
     },
     actions: {
+      changeNow: 'Change today',
       renew: 'Renew',
       resume: 'Resume',
       keep: 'Keep subscription',
@@ -74,6 +79,7 @@ export default {
       markPaid: 'Mark paid',
     },
     done: {
+      changedNow: 'Plan changed today with proration',
       renew: 'Subscription renewed',
       resume: 'Subscription resumed',
       cancelWithdrawn: 'Cancellation withdrawn',
