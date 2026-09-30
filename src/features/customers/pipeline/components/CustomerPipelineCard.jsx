@@ -1,51 +1,36 @@
 import { useTranslation } from 'react-i18next'
-import { CalendarClock, ExternalLink, MoreVertical, NotebookPen, PanelRightOpen, Phone, StickyNote, Users } from 'lucide-react'
+import { Briefcase, Clock, ExternalLink, Hash, Mail, MoreVertical, NotebookPen, PanelRightOpen, Phone, UserRound, Users } from 'lucide-react'
 
-import { GmailLogoIcon } from '../../../conversations/components/GmailNavbarButton'
-import { MessengerLogoIcon } from '../../../conversations/components/MessengerNavbarButton'
 import { CustomerSourceBadge } from '../../../../shared/components/Icons/CustomerSourceBadge'
 import { DropdownMenu } from '../../../../shared/components/overlays/DropdownMenu'
 import { PipelineCard } from '../../../../shared/components/pipeline-board'
+import { TruncatedText } from '../../../../shared/components/ui/TruncatedText'
 import { cn } from '../../../../shared/utils/cn'
 import { formatDate, formatTime } from '../../../../shared/utils/dateTime'
 import { getNextScheduledActivity, getPipelineLead, getPipelineLeadId } from '../utils/customerPipeline'
+import { CardLine, ChannelButtons, Chip, NextActivityLine, NoteLine } from './CustomerPipelineCardParts'
 
-function stopDrag(event) {
-  event.stopPropagation()
-}
+const CHIP_FIELDS = new Set(['source', 'leadId', 'tag', 'leadType'])
 
-function ChannelButton({ icon, unreadCount, label, onClick, className }) {
-  return (
-    <button
-      type="button"
-      onClick={(event) => {
-        event.stopPropagation()
-        onClick()
-      }}
-      className={cn('relative inline-flex h-7 w-7 items-center justify-center rounded-full border bg-[var(--surface)] transition', className)}
-      title={label}
-      aria-label={label}
-    >
-      {icon}
-      {unreadCount > 0 && (
-        <span className="absolute -top-1 -end-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[9px] font-black leading-none text-white">
-          {unreadCount > 99 ? '99+' : unreadCount}
-        </span>
-      )}
-    </button>
-  )
+function formatDateTime(value, language) {
+  if (!value) return ''
+  const date = formatDate(value, language, { day: 'numeric', month: 'short', year: 'numeric' })
+  const time = formatTime(value, language)
+  return [date, time].filter(Boolean).join(' · ')
 }
 
 /**
- * One lead on the pipeline board. Everything the table row offers is reachable here:
- * click = details drawer, Ctrl/Cmd+click = full lead page, checkbox = bulk selection,
- * menu = meeting / call / follow-up, channel buttons = Messenger / Gmail.
+ * One lead on the pipeline board. Shows only the fields chosen in the pipeline settings
+ * (visibleFieldIds, in that order). Long text is cut and shown in full on hover.
+ * Click = details drawer, Ctrl/Cmd+click = lead page, long press = drag to another status.
  */
 export function CustomerPipelineCard({
   customer,
+  visibleFieldIds = [],
   selected = false,
   highlighted = false,
   tagLabel = '',
+  assigneeLabel = '',
   latestNote = '',
   channels = {},
   actions = {},
@@ -55,11 +40,38 @@ export function CustomerPipelineCard({
   const lead = getPipelineLead(customer)
   const leadId = getPipelineLeadId(customer)
   const name = lead.name || customer?.name || lead.email || customer?.email || t('customers.table.theCustomer')
-  const phone = lead.phone || customer?.phone
-  const nextActivity = getNextScheduledActivity(customer)
-  const NextActivityIcon = nextActivity?.type === 'call' ? Phone : Users
+  const language = i18n.language
+
+  const chipFields = visibleFieldIds.filter((id) => CHIP_FIELDS.has(id))
+  const nextActivity = visibleFieldIds.includes('nextActivity') ? getNextScheduledActivity(customer) : null
+  const showChannels = visibleFieldIds.includes('channels')
+
+  const renderLine = (id) => {
+    switch (id) {
+      case 'phone': return <CardLine key={id} icon={Phone} text={lead.phone || customer?.phone} dir="ltr" />
+      case 'email': return <CardLine key={id} icon={Mail} text={lead.email || customer?.email} dir="ltr" />
+      case 'company': return <CardLine key={id} icon={Briefcase} text={customer?.company || lead.company} />
+      case 'customerCode': return <CardLine key={id} icon={Hash} text={customer?.customer_code} dir="ltr" />
+      case 'assignedTo': return <CardLine key={id} icon={UserRound} text={assigneeLabel} />
+      case 'createdAt': return <CardLine key={id} label={t('customers.table.createdAt')} text={formatDateTime(customer?.created_at || lead.created_at, language)} />
+      case 'lastActionAt': return <CardLine key={id} icon={Clock} text={formatDateTime(lead.last_action_at, language)} />
+      case 'latestNote': return <NoteLine key={id} text={latestNote} />
+      default: return null
+    }
+  }
+
+  const renderChip = (id) => {
+    switch (id) {
+      case 'source': return <CustomerSourceBadge key={id} source={customer?.source || lead.source} iconOnly />
+      case 'leadId': return leadId ? <span key={id} dir="ltr" className="text-[10px] font-semibold text-[var(--text-muted)]">#{leadId}</span> : null
+      case 'tag': return <Chip key={id} text={tagLabel} />
+      case 'leadType': return <Chip key={id} text={lead.lead_type || customer?.lead_type} />
+      default: return null
+    }
+  }
 
   const handleOpen = (event) => {
+    event.stopPropagation()
     if (event.ctrlKey || event.metaKey) {
       actions.onOpenLeadPage?.(customer)
       return
@@ -76,92 +88,77 @@ export function CustomerPipelineCard({
     { id: 'follow-up', label: t('customers.page.actions.addFollowUp'), icon: <NotebookPen size={14} />, onSelect: () => actions.onAddFollowUp?.(customer) },
   ]
 
+  const lines = visibleFieldIds.map(renderLine).filter(Boolean)
+  const chips = chipFields.map(renderChip).filter(Boolean)
+  const hasChannels = Boolean(channels.messenger?.enabled || channels.gmail?.enabled)
+  const channelButtons = showChannels && hasChannels ? (
+    <ChannelButtons
+      channels={channels}
+      labels={{ messenger: t('customers.table.openMessengerChat'), gmail: t('customers.table.openGmailChat') }}
+      onOpenMessenger={() => actions.onOpenMessenger?.(customer)}
+      onOpenGmail={() => actions.onOpenGmail?.(customer)}
+    />
+  ) : null
+
   return (
     <PipelineCard
+      onClick={(event) => {
+        // Ignore clicks coming from portaled menus/tooltips rendered inside this React tree.
+        if (event.currentTarget.contains(event.target)) handleOpen(event)
+      }}
       className={cn(
-        'space-y-2 p-2.5',
+        'cursor-pointer space-y-1.5 p-2 active:cursor-grabbing',
         selected && 'border-[var(--brand-accent)] ring-1 ring-[var(--brand-accent)]',
         highlighted && !selected && 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)]'
       )}
     >
-      <div className="flex items-start gap-2">
+      <div className="flex items-start gap-1.5">
         <input
           type="checkbox"
           checked={selected}
           onChange={() => onToggleSelect?.(customer)}
-          onMouseDown={stopDrag}
-          className="mt-1 h-3.5 w-3.5 shrink-0 cursor-pointer accent-[var(--brand-accent)]"
+          onClick={(event) => event.stopPropagation()}
+          className="mt-0.5 h-3.5 w-3.5 shrink-0 cursor-pointer accent-[var(--brand-accent)]"
           aria-label={t('customers.page.actions.selectCustomer', { name })}
         />
-        <button type="button" onClick={handleOpen} className="min-w-0 flex-1 text-start" title={t('customers.pipeline.card.openHint')}>
-          <span className="line-clamp-2 text-sm font-bold text-[var(--text)] hover:underline">{name}</span>
-          {phone && <span dir="ltr" className="mt-0.5 block truncate text-xs text-[var(--text-muted)]">{phone}</span>}
+        <button type="button" onClick={handleOpen} className="min-w-0 flex-1 text-start text-sm font-bold leading-5 text-[var(--text)] hover:underline">
+          <TruncatedText text={name} />
         </button>
+        {chips.length > 0 && <span className="flex shrink-0 items-center gap-1">{chips.filter((chip) => chip.key === 'source' || chip.key === 'leadId')}</span>}
         <DropdownMenu
           align="end"
           items={menuItems}
           trigger={(
             <button
               type="button"
-              onMouseDown={stopDrag}
-              className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[var(--text-muted)] hover:bg-[var(--surface-2)]"
+              onClick={(event) => event.stopPropagation()}
+              className="-me-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[var(--text-muted)] hover:bg-[var(--surface-2)]"
               aria-label={t('customers.pipeline.card.actions')}
               title={t('customers.pipeline.card.actions')}
             >
-              <MoreVertical size={15} />
+              <MoreVertical size={14} />
             </button>
           )}
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5">
-        <CustomerSourceBadge source={customer?.source || lead.source} iconOnly />
-        {leadId && <span dir="ltr" className="text-[11px] font-semibold text-[var(--text-muted)]">#{leadId}</span>}
-        {tagLabel && (
-          <span className="max-w-full truncate rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-2 py-0.5 text-[11px] font-bold text-[var(--text)]">
-            {tagLabel}
-          </span>
-        )}
-      </div>
-
-      {latestNote && (
-        <p className="flex items-start gap-1 text-xs text-[var(--text-muted)]" title={latestNote}>
-          <StickyNote size={12} className="mt-0.5 shrink-0" />
-          <span className="line-clamp-2">{latestNote}</span>
-        </p>
+      {chips.some((chip) => chip.key === 'tag' || chip.key === 'leadType') && (
+        <div className="flex min-w-0 flex-wrap items-center gap-1">
+          {chips.filter((chip) => chip.key === 'tag' || chip.key === 'leadType')}
+        </div>
       )}
 
-      {(nextActivity || channels.messenger?.enabled || channels.gmail?.enabled) && (
-        <div className="flex items-center justify-between gap-2 border-t border-[var(--border)] pt-2">
-          {nextActivity ? (
-            <span className="inline-flex min-w-0 items-center gap-1 text-[11px] font-semibold text-[var(--text-muted)]" title={nextActivity.title || ''}>
-              <CalendarClock size={12} className="shrink-0" />
-              <NextActivityIcon size={12} className="shrink-0" />
-              <span className="truncate">
-                {formatDate(nextActivity.start_at, i18n.language, { day: 'numeric', month: 'short' })} · {formatTime(nextActivity.start_at, i18n.language)}
-              </span>
-            </span>
-          ) : <span />}
-          <span className="flex items-center gap-1.5">
-            {channels.messenger?.enabled && (
-              <ChannelButton
-                icon={<MessengerLogoIcon size={15} />}
-                unreadCount={channels.messenger.unreadCount}
-                label={t('customers.table.openMessengerChat')}
-                onClick={() => actions.onOpenMessenger?.(customer)}
-                className="border-[var(--border)] text-[#0A7CFF] hover:bg-[var(--surface-2)]"
-              />
-            )}
-            {channels.gmail?.enabled && (
-              <ChannelButton
-                icon={<GmailLogoIcon size={15} />}
-                unreadCount={channels.gmail.unreadCount}
-                label={t('customers.table.openGmailChat')}
-                onClick={() => actions.onOpenGmail?.(customer)}
-                className="border-[var(--border)] text-[#D93025] hover:bg-[var(--surface-2)]"
-              />
-            )}
-          </span>
+      {lines.length > 0 && <div className="space-y-1">{lines}</div>}
+
+      {(nextActivity || channelButtons) && (
+        <div className="flex items-center justify-between gap-2 border-t border-[var(--border)] pt-1.5">
+          <div className="min-w-0 flex-1">
+            <NextActivityLine
+              activity={nextActivity}
+              text={nextActivity ? formatDateTime(nextActivity.start_at, language) : ''}
+            />
+          </div>
+          {channelButtons}
         </div>
       )}
     </PipelineCard>

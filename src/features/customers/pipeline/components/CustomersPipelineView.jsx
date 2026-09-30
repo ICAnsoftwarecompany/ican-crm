@@ -1,13 +1,13 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Columns3, Search, X } from 'lucide-react'
+import { Columns3 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { EmptyState } from '../../../../shared/components/feedback/EmptyState'
 import { Skeleton } from '../../../../shared/components/feedback/Skeleton'
 import { PipelineBoard } from '../../../../shared/components/pipeline-board'
 import { Button } from '../../../../shared/components/ui/Button'
-import { Input } from '../../../../shared/components/ui/Input'
+import { useUsers } from '../../../users/hooks/useUsers'
 import { PIPELINE_ITEM_ID_FIELD, PIPELINE_STAGE_FIELD, UNSTAGED_PIPELINE_STAGE_ID } from '../constants'
 import {
   buildPipelineStages,
@@ -17,11 +17,22 @@ import {
   hasCustomerChannel,
   toPipelineItems,
 } from '../utils/customerPipeline'
+import { usePipelineCardFields } from '../hooks/usePipelineCardFields'
 import { CustomerPipelineCard } from './CustomerPipelineCard'
+import { CustomersPipelineToolbar } from './CustomersPipelineToolbar'
+import { PipelineCardSettingsDrawer } from './PipelineCardSettingsDrawer'
+
+const COLUMN_WIDTH = 272
+// Each column scrolls on its own so the board's horizontal scrollbar stays in view.
+const COLUMN_BODY_CLASS = 'max-h-[calc(100vh-15rem)] min-h-24 overflow-y-auto overscroll-contain pe-0.5'
+
+function getUserLabel(user) {
+  return user?.name || user?.username || user?.email || ''
+}
 
 function BoardSkeleton() {
   return (
-    <div className="grid grid-cols-[repeat(4,minmax(260px,1fr))] gap-4 overflow-hidden">
+    <div className="grid grid-cols-[repeat(4,272px)] gap-3 overflow-hidden">
       {Array.from({ length: 4 }, (_, index) => (
         <div key={index} className="space-y-2 rounded-md border border-[var(--border)] bg-[var(--surface-2)] p-2">
           <Skeleton className="h-5 w-1/2" />
@@ -71,6 +82,13 @@ export function CustomersPipelineView({
   const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [selectedKeys, setSelectedKeys] = useState(() => new Set())
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const cardFields = usePipelineCardFields()
+  const usersQuery = useUsers()
+  const userById = useMemo(
+    () => new Map((Array.isArray(usersQuery.data) ? usersQuery.data : []).map((user) => [String(user.id), user])),
+    [usersQuery.data]
+  )
 
   const items = useMemo(() => toPipelineItems(filterCustomersBySearch(rows, search), statuses), [rows, search, statuses])
   const stages = useMemo(
@@ -125,6 +143,8 @@ export function CustomersPipelineView({
     return (
       <CustomerPipelineCard
         customer={customer}
+        visibleFieldIds={cardFields.visibleFieldIds}
+        assigneeLabel={getUserLabel(userById.get(String(lead.assigned_to ?? '')))}
         selected={selectedKeys.has(customer[PIPELINE_ITEM_ID_FIELD])}
         highlighted={Boolean(activeCustomerKey) && activeCustomerKey === customer[PIPELINE_ITEM_ID_FIELD]}
         tagLabel={lead.tag?.tag || lead.tag?.name || ''}
@@ -141,30 +161,16 @@ export function CustomersPipelineView({
   }
 
   const toolbar = (
-    <div className="flex flex-wrap items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2">
-      <div className="w-full sm:w-72">
-        <Input
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder={t('customers.pipeline.searchPlaceholder')}
-          aria-label={t('customers.pipeline.searchPlaceholder')}
-          startIcon={<Search size={15} />}
-          className="h-9"
-        />
-      </div>
-      <span className="text-xs font-semibold text-[var(--text-muted)]">
-        {t('customers.pipeline.shownCount', { count: visibleCount })}
-      </span>
-      {selectedRows.length > 0 && (
-        <Button variant="ghost" size="sm" onClick={clearSelection} className="gap-1">
-          <X size={14} />
-          {t('customers.pipeline.clearSelection', { count: selectedRows.length })}
-        </Button>
-      )}
-      <div className="ms-auto flex min-w-0 flex-wrap items-center gap-2">
-        {renderToolbarActions?.({ selectedRows, selectedCount: selectedRows.length, clearSelection })}
-      </div>
-    </div>
+    <CustomersPipelineToolbar
+      search={search}
+      onSearchChange={setSearch}
+      visibleCount={visibleCount}
+      selectedCount={selectedRows.length}
+      onClearSelection={clearSelection}
+      onOpenSettings={() => setSettingsOpen(true)}
+    >
+      {renderToolbarActions?.({ selectedRows, selectedCount: selectedRows.length, clearSelection })}
+    </CustomersPipelineToolbar>
   )
 
   let content
@@ -200,6 +206,9 @@ export function CustomersPipelineView({
           </div>
         )}
         onItemMove={handleItemMove}
+        dragMode="longPress"
+        columnWidth={COLUMN_WIDTH}
+        columnBodyClassName={COLUMN_BODY_CLASS}
       />
     )
   }
@@ -215,6 +224,14 @@ export function CustomersPipelineView({
           </Button>
         </div>
       )}
+      <PipelineCardSettingsDrawer
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        fields={cardFields.fields}
+        onToggle={cardFields.toggleField}
+        onMove={cardFields.moveField}
+        onReset={cardFields.resetFields}
+      />
     </div>
   )
 }
