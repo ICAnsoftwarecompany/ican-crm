@@ -4,30 +4,22 @@ import { Loader2, Plus } from 'lucide-react'
 
 import { useTeams } from '../../teams/hooks/useTeams'
 import { useUsers } from '../../users/hooks/useUsers'
+import { useCurrentUserId } from '../hooks/useCurrentUserId'
 import { getTaskPriorityMetaMap, getTaskTypeMetaMap } from '../utils/taskMeta'
-
-const DEFAULT_FORM = {
-  title: '',
-  description: '',
-  type: 'follow_up',
-  priority: 'medium',
-  visibility: 'shared',
-  due_date: '',
-  due_time: '',
-  reminder_type: 'system',
-  reminder_before: '30',
-  reminder_unit: 'minutes',
-  taskable_type: 'App\\Models\\Lead',
-  taskable_id: '',
-  users: [],
-  teams: [],
-  attachments: [],
-}
+import { resolveTaskableAlias } from '../constants/taskableTypes'
+import { buildTaskPayload, TASK_FORM_DEFAULTS } from '../utils/taskPayload'
+import { TaskLinkFields } from './form/TaskLinkFields'
+import { TaskScheduleFields } from './form/TaskScheduleFields'
 
 function normalizeInitialValues(initialValues = {}) {
+  const values = { ...TASK_FORM_DEFAULTS, ...(initialValues || {}) }
+  const isTodo = values.type === 'todo'
   return {
-    ...DEFAULT_FORM,
-    ...initialValues,
+    ...values,
+    // A To-Do is private by default unless the caller says otherwise.
+    visibility: initialValues?.visibility || (isTodo ? 'private' : TASK_FORM_DEFAULTS.visibility),
+    taskable_type: resolveTaskableAlias(values.taskable_type),
+    taskable_id: values.taskable_id ? String(values.taskable_id) : '',
     users: Array.isArray(initialValues?.users) ? initialValues.users.map((item) => Number(item)).filter(Number.isFinite) : [],
     teams: Array.isArray(initialValues?.teams) ? initialValues.teams.map((item) => Number(item)).filter(Number.isFinite) : [],
     attachments: [],
@@ -53,6 +45,8 @@ export function TaskForm({
   const { t } = useTranslation()
   const resolvedSubmitLabel = submitLabel ?? t('tasks.form.submitLabel')
   const [form, setForm] = useState(() => normalizeInitialValues(initialValues))
+  const [visibilityTouched, setVisibilityTouched] = useState(Boolean(initialValues?.visibility))
+  const currentUserId = useCurrentUserId()
   const usersQuery = useUsers()
   const teamsQuery = useTeams()
 
@@ -76,7 +70,14 @@ export function TaskForm({
   ], [t])
 
   const updateField = (field, value) => {
-    setForm((current) => ({ ...current, [field]: value }))
+    if (field === 'visibility') setVisibilityTouched(true)
+    setForm((current) => {
+      const next = { ...current, [field]: value }
+      // Switching to/from To-Do flips the default visibility until the user picks one.
+      if (field === 'type' && !visibilityTouched) next.visibility = value === 'todo' ? 'private' : 'shared'
+      if (field === 'taskable_type' && !value) next.taskable_id = ''
+      return next
+    })
   }
 
   const toggleListValue = (field, rawValue) => {
@@ -100,24 +101,7 @@ export function TaskForm({
     event.preventDefault()
     if (!form.title.trim() || isSaving) return
 
-    const payload = {
-      title: form.title.trim(),
-      description: form.description?.trim?.() || '',
-      type: form.type,
-      priority: form.priority,
-      visibility: form.visibility,
-      due_time: form.due_time || '',
-      due_date: form.due_date || '',
-      reminder_type: form.reminder_type,
-      reminder_before: form.reminder_before || '',
-      reminder_unit: form.reminder_unit,
-      taskable_type: form.taskable_type,
-      taskable_id: form.taskable_id || '',
-      users: form.users,
-      teams: form.teams,
-      attachments: form.attachments,
-    }
-
+    const payload = buildTaskPayload(form, { currentUserId })
     await onSubmit?.(payload)
   }
 
@@ -158,15 +142,7 @@ export function TaskForm({
           </select>
         </label>
 
-        <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-          {t('tasks.form.dateLabel')}
-          <input type="date" value={form.due_date} onChange={(event) => updateField('due_date', event.target.value)} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-sm" />
-        </label>
-
-        <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-          {t('tasks.form.timeLabel')}
-          <input type="time" value={form.due_time} onChange={(event) => updateField('due_time', event.target.value)} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-sm" />
-        </label>
+        <TaskScheduleFields form={form} onChange={updateField} />
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
           {t('tasks.form.visibilityLabel')}
@@ -194,19 +170,7 @@ export function TaskForm({
           </select>
         </label>
 
-        {!hideTaskableFields && (
-          <>
-            <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-              taskable_type
-              <input value={form.taskable_type} onChange={(event) => updateField('taskable_type', event.target.value)} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-sm" />
-            </label>
-
-            <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-              taskable_id
-              <input value={form.taskable_id} onChange={(event) => updateField('taskable_id', event.target.value)} className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-sm" />
-            </label>
-          </>
-        )}
+        {!hideTaskableFields && <TaskLinkFields form={form} onChange={updateField} />}
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)] sm:col-span-2">
           {t('tasks.form.usersLabel')}

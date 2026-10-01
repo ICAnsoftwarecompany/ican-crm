@@ -1,12 +1,13 @@
 import { useTranslation } from 'react-i18next'
-import { CalendarClock, ChevronLeft, ChevronRight, FolderKanban, ListTodo, Plus, Sparkles } from 'lucide-react'
+import { CalendarClock, CheckSquare, ChevronLeft, ChevronRight, FolderKanban, ListTodo, Plus, Sparkles } from 'lucide-react'
 
 function getSmartViews(t) {
   return [
-    { id: 'all', label: t('tasks.page.allTasks'), icon: ListTodo },
-    { id: 'today', label: t('tasks.workspace.dueToday'), icon: CalendarClock },
-    { id: 'overdue', label: t('activities.derivedStates.overdue'), icon: Sparkles },
-    { id: 'in_progress', label: t('activities.status.in_progress'), icon: FolderKanban },
+    { id: 'todo', label: t('tasks.workspace.myTodo'), icon: CheckSquare, metricKey: 'todo' },
+    { id: 'all', label: t('tasks.page.allTasks'), icon: ListTodo, metricKey: 'total' },
+    { id: 'today', label: t('tasks.workspace.dueToday'), icon: CalendarClock, metricKey: 'today' },
+    { id: 'overdue', label: t('activities.derivedStates.overdue'), icon: Sparkles, metricKey: 'overdue' },
+    { id: 'in_progress', label: t('activities.status.in_progress'), icon: FolderKanban, metricKey: 'inProgress' },
   ]
 }
 
@@ -79,7 +80,7 @@ export function TasksWorkspaceSidebar({
           <section>
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.16em] text-[var(--text-muted)]">{t('tasks.workspace.smartViews')}</p>
             <div className="space-y-1.5">
-              {smartViews.map(({ id, label, icon: Icon }) => {
+              {smartViews.map(({ id, label, icon: Icon, metricKey }) => {
                 const active = activeSmartView === id
                 return (
                   <button
@@ -97,9 +98,11 @@ export function TasksWorkspaceSidebar({
                       <Icon size={14} />
                       {label}
                     </span>
-                    <span className="rounded-full bg-[var(--surface)] px-1.5 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
-                      {metrics?.[id === 'all' ? 'total' : id === 'today' ? 'today' : id === 'overdue' ? 'overdue' : 'inProgress'] || 0}
-                    </span>
+                    {metrics?.[metricKey] !== undefined && (
+                      <span className="rounded-full bg-[var(--surface)] px-1.5 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
+                        {metrics[metricKey] || 0}
+                      </span>
+                    )}
                   </button>
                 )
               })}

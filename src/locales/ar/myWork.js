@@ -38,7 +38,7 @@ export default {
       "viewAll": "التقويم"
     },
     "tasks": {
-      "title": "مهامي المستحقة",
+      "title": "قائمة مهامي",
       "empty": "لا توجد مهام مستحقة اليوم"
     },
     "leads": {
