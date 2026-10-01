@@ -1,0 +1,148 @@
+/*
+ * Login background — slow, painterly light in the tenant's brand colors.
+ * Inspired by the brushed-light hero on openai.com/codex.
+ *
+ * Every color is derived from the runtime brand tokens with color-mix(), so
+ * a tenant that changes --brand-primary / --brand-accent in Appearance
+ * settings gets a matching background with no code change.
+ */
+
+.login-aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--brand-accent) 10%, var(--brand-bg)) 0%, var(--brand-bg) 60%);
+}
+
+.login-aurora__blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  will-change: transform;
+  opacity: 0.9;
+}
+
+/* Large teal wash sweeping in from the top start corner. */
+.login-aurora__blob--a {
+  width: 70vmax;
+  height: 46vmax;
+  inset-block-start: -18vmax;
+  inset-inline-start: -16vmax;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--brand-accent) 55%, white) 0%, transparent 100%);
+  animation: login-drift-a 26s ease-in-out infinite alternate;
+}
+
+/* Deep navy body on the end side — the "weight" of the composition. */
+.login-aurora__blob--b {
+  width: 62vmax;
+  height: 62vmax;
+  inset-block-start: -8vmax;
+  inset-inline-end: -26vmax;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--brand-primary-l) 70%, var(--brand-accent)) 0%, transparent 100%);
+  opacity: 0.75;
+  animation: login-drift-b 32s ease-in-out infinite alternate;
+}
+
+/* Bright core of light that the headline sits in. */
+.login-aurora__blob--c {
+  width: 44vmax;
+  height: 30vmax;
+  inset-block-start: 14vh;
+  inset-inline-start: 28vw;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.95) 0%, transparent 100%);
+  animation: login-drift-c 22s ease-in-out infinite alternate;
+}
+
+/* Deep teal pooling at the bottom, like the dark corner on the Codex hero. */
+.login-aurora__blob--d {
+  width: 58vmax;
+  height: 40vmax;
+  inset-block-end: -22vmax;
+  inset-inline-start: -10vmax;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--ai-text) 75%, var(--brand-primary)) 0%, transparent 100%);
+  opacity: 0.65;
+  animation: login-drift-d 36s ease-in-out infinite alternate;
+}
+
+/* Brushed streaks: stretched turbulence, rotated, blended over the light. */
+.login-aurora__streaks {
+  position: absolute;
+  inset: -60%;
+  width: 220%;
+  height: 220%;
+  opacity: 0.42;
+  mix-blend-mode: soft-light;
+  transform: rotate(-28deg);
+  animation: login-streak 40s linear infinite alternate;
+}
+
+/* Fine grain so the gradients never band on large screens. */
+.login-aurora__grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* Keeps the form area calm and readable whatever the blobs are doing. */
+.login-aurora__veil {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 55% at 50% 62%, color-mix(in srgb, var(--brand-bg) 55%, transparent) 0%, transparent 70%);
+}
+
+.dark .login-aurora {
+  background:
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--brand-primary) 70%, var(--brand-bg)) 0%, var(--brand-bg) 65%);
+}
+.dark .login-aurora__blob--a { background: radial-gradient(closest-side, color-mix(in srgb, var(--brand-accent) 60%, transparent) 0%, transparent 100%); opacity: 0.55; }
+.dark .login-aurora__blob--b { background: radial-gradient(closest-side, var(--brand-primary-l) 0%, transparent 100%); opacity: 0.9; }
+.dark .login-aurora__blob--c { background: radial-gradient(closest-side, color-mix(in srgb, var(--brand-accent) 30%, transparent) 0%, transparent 100%); opacity: 0.6; }
+.dark .login-aurora__blob--d { background: radial-gradient(closest-side, color-mix(in srgb, var(--ai-text) 45%, transparent) 0%, transparent 100%); opacity: 0.35; }
+.dark .login-aurora__streaks { opacity: 0.09; mix-blend-mode: screen; }
+.dark .login-aurora__veil {
+  background: radial-gradient(60% 55% at 50% 62%, color-mix(in srgb, var(--brand-bg) 60%, transparent) 0%, transparent 70%);
+}
+
+@keyframes login-drift-a {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+  100% { transform: translate3d(9vw, 7vh, 0) rotate(14deg) scale(1.12); }
+}
+@keyframes login-drift-b {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(-8vw, 10vh, 0) scale(0.92); }
+}
+@keyframes login-drift-c {
+  0%   { transform: translate3d(-4vw, 0, 0) scale(0.95); }
+  100% { transform: translate3d(6vw, -4vh, 0) scale(1.08); }
+}
+@keyframes login-drift-d {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+  100% { transform: translate3d(12vw, -6vh, 0) rotate(-10deg); }
+}
+@keyframes login-streak {
+  0%   { transform: rotate(-28deg) translate3d(-3%, 0, 0); }
+  100% { transform: rotate(-24deg) translate3d(3%, -2%, 0); }
+}
+
+/* Entrance: the hero and card rise once, together. */
+.login-enter {
+  animation: login-enter 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.login-enter--late { animation-delay: 120ms; }
+
+@keyframes login-enter {
+  from { opacity: 0; transform: translate3d(0, 14px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-aurora__blob,
+  .login-aurora__streaks,
+  .login-enter {
+    animation: none;
+  }
+}

@@ -1,23 +1,28 @@
 import { useMutation } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
-import { useTranslation } from 'react-i18next'
 import { authApi } from '../api/authApi'
-import { useAuthStore } from '../../../store/authStore'
+import { useCompleteSignIn } from './useCompleteSignIn'
 
+/** Rejects responses that "succeed" without a token, so they surface as an error. */
+export async function requireToken(promise) {
+  const data = await promise
+  if (!data?.token) {
+    const error = new Error('Missing token in sign-in response')
+    error.response = { status: 500, data }
+    throw error
+  }
+  return data
+}
+
+/**
+ * Username + password sign-in.
+ * Errors are not toasted here: the form shows them inline (see
+ * resolveLoginError) so they stay visible until the user acts.
+ */
 export function useLogin() {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-  const setAuth = useAuthStore((s) => s.setAuth)
+  const completeSignIn = useCompleteSignIn()
 
   return useMutation({
-    mutationFn: authApi.login,
-    onSuccess: (data) => {
-      setAuth(data.token, data.user || { login: data.login })
-      navigate('/')
-    },
-    onError: () => {
-      toast.error(t('auth.loginError'))
-    },
+    mutationFn: (credentials) => requireToken(authApi.login(credentials)),
+    onSuccess: (data, credentials) => completeSignIn(data, credentials.login),
   })
 }
