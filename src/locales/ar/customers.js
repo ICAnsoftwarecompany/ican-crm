@@ -882,52 +882,6 @@ export default {
     "noResults": "لا توجد نتائج",
     "noResultsDescription": "لا توجد ملاحظات تطابق الفلاتر الحالية."
   },
-  "tasksTab": {
-    "types": {
-      "follow_up": "متابعة",
-      "call": "مكالمة",
-      "email": "بريد",
-      "meeting": "اجتماع",
-      "todo": "مهمة"
-    },
-    "priorities": {
-      "low": "منخفضة",
-      "medium": "متوسطة",
-      "high": "عالية",
-      "urgent": "عاجلة"
-    },
-    "statuses": {
-      "pending": "قيد الانتظار",
-      "in_progress": "جاري العمل",
-      "completed": "مكتملة",
-      "cancelled": "ملغاة"
-    },
-    "untitled": "مهمة بدون عنوان",
-    "create": "إنشاء مهمة",
-    "createDescription": "أضف مهمة مرتبطة بهذا الليد وحدد موعدها وأولويتها.",
-    "form": {
-      "title": "عنوان المهمة",
-      "titlePlaceholder": "مثال: متابعة العميل",
-      "description": "الوصف",
-      "descriptionPlaceholder": "اكتب تفاصيل مختصرة للمهمة",
-      "type": "النوع",
-      "priority": "الأولوية",
-      "date": "التاريخ",
-      "time": "الوقت",
-      "visibility": "الظهور",
-      "shared": "مشتركة",
-      "private": "خاصة"
-    },
-    "loading": "جاري تحميل المهام...",
-    "loadError": "تعذر تحميل المهام.",
-    "empty": "لا توجد مهام مرتبطة بهذا العميل حالياً.",
-    "created": "تم إنشاء المهمة",
-    "createFailed": "تعذر إنشاء المهمة",
-    "noLead": "لا يمكن عرض المهام قبل تحديد الليد المرتبط بهذا العميل.",
-    "title": "مهام العميل",
-    "linkedCount": "{{count}} مهمة مرتبطة",
-    "refresh": "تحديث المهام"
-  },
   "statusLog": {
     "actions": {
       "created": "إنشاء العميل",

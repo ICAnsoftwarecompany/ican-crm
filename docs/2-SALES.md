@@ -139,7 +139,7 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 - **Floating chats:** WhatsApp / Messenger / Mail / SMS chat windows from `features/conversations/components/floating-chat/` (see [3-FEATURES.md → Conversations](3-FEATURES.md#conversations)).
 - **Extend:** new tab = component in `tabs/` + entry in `DRAWER_TABS` + branch in `ActiveTabContent`; new quick action = component in `quick-actions/` added to `CustomerQuickActions.jsx`. Tab and quick-action order are user-sortable (long press) and stored in `customer-details-drawer-tabs-order` / `customer-details-quick-actions-order`.
 - **API:** customers info, definitions, `leadsApi.saveAction`/`updateTag`, `interestedsApi` (`POST /api/tenant/interesteds/save|edite|delete`), meetings, tasks.
-- **Known issues:** Notes/Files/Emails/Calendar tabs are minimal; the Tasks tab is a separate mini-implementation (not the Tasks workspace); fully translated since 2026-10-02 00:55 (Africa/Cairo) (drawer, tabs, quick actions, `/lead/:customerId`); drawer Mail/SMS chats are local stubs (no backend); oversized main file.
+- **Known issues:** Notes/Files/Emails/Calendar tabs are minimal; the Tasks tab is now the Tasks feature's `EntityTasksPanel` (2026-10-02 02:40 (Africa/Cairo): quick actions task / call / meeting, tick to complete, task drawer in place — see [Tasks](3-FEATURES.md#tasks)); fully translated since 2026-10-02 00:55 (Africa/Cairo) (drawer, tabs, quick actions, `/lead/:customerId`); drawer Mail/SMS chats are local stubs (no backend); oversized main file.
 
 ## Bulk actions
 
@@ -240,5 +240,5 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 
 - **P0 — Leads vs Customers model is mixed (architectural decision required):** separate `features/leads` and `features/customers` APIs, while the customer record nests `lead` and most UI reads `customer.lead.*`. Decide with the backend before new domains (e.g. Customer Service tickets) attach to "the customer".
 - Large route-owned implementations under `pages/customers` (`CustomersPage.jsx`, drawer, proposals) should migrate into features incrementally, with tests first.
-- Customer drawer Tasks tab duplicates the Tasks domain; the eight Leads Center placeholder routes need real pages or removal from the internal sidebar.
+- ~~Customer drawer Tasks tab duplicates the Tasks domain~~ (resolved 2026-10-02 02:40 (Africa/Cairo), tasks F2); the eight Leads Center placeholder routes need real pages or removal from the internal sidebar.
 - Remaining hardcoded Arabic copy in the activity timeline, `DataTable` operator labels and some drawer parts; visual RTL/LTR and dark-mode QA not verified on authenticated routes.

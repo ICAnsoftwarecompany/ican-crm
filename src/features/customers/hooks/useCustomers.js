@@ -3,8 +3,9 @@ import { customersApi } from '../api/customersApi'
 import { QUERY_KEYS } from '../../../shared/constants/queryKeys'
 import { extractList } from '../../../shared/utils/apiResponse'
 
-export function useCustomers(filters) {
+export function useCustomers(filters, options = {}) {
   return useInfiniteQuery({
+    ...options,
     queryKey: QUERY_KEYS.customers.list(filters),
     queryFn: async ({ pageParam }) => {
       const params = {

@@ -1,5 +1,39 @@
 export default {
+  "entity": {
+    "title": "Tasks for this customer",
+    "openCount": "{{count}} open tasks",
+    "refresh": "Refresh",
+    "loadFailed": "Could not load tasks",
+    "empty": "No tasks for this customer yet. Start with a call or a follow-up.",
+    "noOpen": "No open tasks",
+    "openGroup": "Open tasks",
+    "closedGroup": "Done and cancelled ({{count}})",
+    "noRecord": "There is no linked record to show tasks for."
+  },
+  "quickActions": {
+    "task": "Task",
+    "call": "Schedule a call",
+    "meeting": "Schedule a meeting",
+    "follow_up": "Follow-up task",
+    "dialogTitleFor": "{{action}} — {{name}}",
+    "dialogDescription": "The task is linked to this customer and shows in their Tasks tab.",
+    "defaultTitle": {
+      "task": "Task: {{name}}",
+      "call": "Call {{name}}",
+      "meeting": "Meeting with {{name}}",
+      "follow_up": "Follow up with {{name}}"
+    }
+  },
   "taskable": {
+    "openRecord": "Open the record",
+    "recordLabel": "Record",
+    "searchPlaceholder": "Search by name, phone or email",
+    "searchHint": "Type at least two letters, or the record number",
+    "searching": "Searching…",
+    "searchFailed": "Search failed",
+    "noResults": "No results",
+    "useNumber": "Use number #{{id}}",
+    "clear": "Remove link",
     "label": "Linked to",
     "none": "Nothing (personal task)",
     "personal": "Personal",
@@ -90,6 +124,7 @@ export default {
     "atTime": "{{day}} • {{time}}"
   },
   "page": {
+    "allLinks": "All",
     "allTasks": "All Tasks",
     "overdueFilter": "Overdue",
     "statusFilterLabel": "Status Filter",

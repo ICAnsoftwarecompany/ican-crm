@@ -882,52 +882,6 @@ export default {
     "noResults": "No results",
     "noResultsDescription": "No notes match the current filters."
   },
-  "tasksTab": {
-    "types": {
-      "follow_up": "Follow-up",
-      "call": "Call",
-      "email": "Email",
-      "meeting": "Meeting",
-      "todo": "Task"
-    },
-    "priorities": {
-      "low": "Low",
-      "medium": "Medium",
-      "high": "High",
-      "urgent": "Urgent"
-    },
-    "statuses": {
-      "pending": "Pending",
-      "in_progress": "In progress",
-      "completed": "Completed",
-      "cancelled": "Cancelled"
-    },
-    "untitled": "Untitled task",
-    "create": "Create task",
-    "createDescription": "Add a task linked to this lead and set its due date and priority.",
-    "form": {
-      "title": "Task title",
-      "titlePlaceholder": "e.g. Follow up with the customer",
-      "description": "Description",
-      "descriptionPlaceholder": "Write a short description of the task",
-      "type": "Type",
-      "priority": "Priority",
-      "date": "Date",
-      "time": "Time",
-      "visibility": "Visibility",
-      "shared": "Shared",
-      "private": "Private"
-    },
-    "loading": "Loading tasks...",
-    "loadError": "Could not load tasks.",
-    "empty": "No tasks are linked to this customer yet.",
-    "created": "Task created",
-    "createFailed": "Could not create the task",
-    "noLead": "Tasks can't be shown until the lead linked to this customer is known.",
-    "title": "Customer tasks",
-    "linkedCount": "{{count}} linked tasks",
-    "refresh": "Refresh tasks"
-  },
   "statusLog": {
     "actions": {
       "created": "Customer created",

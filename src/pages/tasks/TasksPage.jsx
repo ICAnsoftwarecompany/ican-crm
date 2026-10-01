@@ -7,6 +7,7 @@ import { WorkflowLauncher } from '../../features/workflow-engine'
 
 import { TaskBoard } from '../../features/tasks/components/board/TaskBoard'
 import { TodoPanel } from '../../features/tasks/components/todo/TodoPanel'
+import { getTaskableTypes, getTaskTaskable } from '../../features/tasks/constants/taskableTypes'
 import { TaskCalendarView } from '../../features/tasks/components/TaskCalendarView'
 import { TaskDrawer } from '../../features/tasks/components/TaskDrawer'
 import { TaskFormDialog } from '../../features/tasks/components/TaskFormDialog'
@@ -94,6 +95,8 @@ export function TasksPage() {
   const isTodoView = activeQuickFilter === 'todo'
   const [statusFilter, setStatusFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')
+  // 'all' | 'personal' | a taskable alias ('lead', 'customer', …)
+  const [linkFilter, setLinkFilter] = useState('all')
   const [activeBoardId, setActiveBoardId] = useState('main')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
@@ -210,6 +213,10 @@ export function TasksPage() {
 
       if (statusFilter !== 'all' && String(task?.status || '').toLowerCase() !== statusFilter) return false
       if (typeFilter !== 'all' && String(task?.type || '').toLowerCase() !== typeFilter) return false
+      if (linkFilter !== 'all') {
+        const link = getTaskTaskable(task)
+        if (linkFilter === 'personal' ? link : link?.type !== linkFilter) return false
+      }
 
       if (activeQuickFilter === 'today') {
         const due = getTaskDateTime(task)
@@ -229,7 +236,7 @@ export function TasksPage() {
 
       return true
     })
-  }, [activeQuickFilter, mergedTasks, search, statusFilter, typeFilter])
+  }, [activeQuickFilter, linkFilter, mergedTasks, search, statusFilter, typeFilter])
 
   const selectedTask = useMemo(() => (
     visibleTasks.find((task) => String(task?.id) === String(taskIdParam))
@@ -254,7 +261,7 @@ export function TasksPage() {
         <SummaryCard title={t('activities.scheduleDialog.priorityOptions.urgent')} value={metrics.urgent} active={activeQuickFilter === 'urgent'} onClick={() => setActiveQuickFilter('urgent')} />
       </div>
 
-      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
         <label className="grid gap-1 text-[11px] font-bold text-[var(--text-muted)]">
           {t('tasks.page.statusFilterLabel')}
           <select
@@ -279,6 +286,21 @@ export function TasksPage() {
             <option value="all">{t('tasks.page.allTypes')}</option>
             {typeOptions.map((type) => (
               <option key={type} value={type}>{getTaskTypeMeta(type, t).label}</option>
+            ))}
+          </select>
+        </label>
+
+        <label className="grid gap-1 text-[11px] font-bold text-[var(--text-muted)]">
+          {t('tasks.taskable.label')}
+          <select
+            value={linkFilter}
+            onChange={(event) => setLinkFilter(event.target.value)}
+            className="h-9 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-semibold"
+          >
+            <option value="all">{t('tasks.page.allLinks')}</option>
+            <option value="personal">{t('tasks.taskable.personal')}</option>
+            {getTaskableTypes().map((type) => (
+              <option key={type.id} value={type.id}>{t(type.labelKey)}</option>
             ))}
           </select>
         </label>

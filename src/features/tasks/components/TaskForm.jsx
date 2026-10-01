@@ -75,7 +75,8 @@ export function TaskForm({
       const next = { ...current, [field]: value }
       // Switching to/from To-Do flips the default visibility until the user picks one.
       if (field === 'type' && !visibilityTouched) next.visibility = value === 'todo' ? 'private' : 'shared'
-      if (field === 'taskable_type' && !value) next.taskable_id = ''
+      // A new record type means a new record: the old id/name belong to the previous type.
+      if (field === 'taskable_type') { next.taskable_id = ''; next.taskable_name = '' }
       return next
     })
   }

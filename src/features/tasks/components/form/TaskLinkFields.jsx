@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { getTaskableTypes } from '../../constants/taskableTypes'
+import { getTaskableType, getTaskableTypes } from '../../constants/taskableTypes'
+import { TaskablePicker } from './TaskablePicker'
 import { fieldInputClass, fieldLabelClass } from './taskFormStyles'
 
 /**
@@ -24,7 +25,20 @@ export function TaskLinkFields({ form, onChange }) {
         </select>
       </label>
 
-      {form.taskable_type ? (
+      {form.taskable_type && getTaskableType(form.taskable_type)?.fromRecord ? (
+        <div className={fieldLabelClass}>
+          {t('tasks.taskable.recordLabel')}
+          <TaskablePicker
+            type={form.taskable_type}
+            value={form.taskable_id}
+            name={form.taskable_name}
+            onChange={(id, name) => {
+              onChange('taskable_id', id)
+              onChange('taskable_name', name)
+            }}
+          />
+        </div>
+      ) : form.taskable_type ? (
         <label className={fieldLabelClass}>
           {t('tasks.taskable.idLabel')}
           <input

@@ -26,6 +26,7 @@ describe('buildTaskPayload', () => {
       users: [2],
     })
     expect(payload).not.toHaveProperty('period_type')
+    expect(payload).not.toHaveProperty('taskable_name')
   })
 
   it('a week To-Do: due by the end of the week, private, assigned to me, no link', () => {

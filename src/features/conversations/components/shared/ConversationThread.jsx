@@ -16,6 +16,7 @@ import {
   Volume2,
   X,
 } from 'lucide-react'
+import { CreateTaskButton, taskableFromCrmRecord } from '../../../tasks'
 import { ConversationComposer } from './ConversationComposer'
 import { ConversationMessages } from './ConversationMessages'
 import { MediaGalleryDialog } from './MediaGalleryDialog'
@@ -388,6 +389,10 @@ export function ConversationThread({
                 <UserPlus size={12} />
                 تحويل
               </button>
+            ) : null}
+            {linkedCustomer ? (
+              // Follow-up task linked to the conversation's customer (tasks F2, 2026-10-02).
+              <CreateTaskButton taskable={taskableFromCrmRecord(linkedCustomer)} action="follow_up" compact />
             ) : null}
             {typeof headerActions === 'function' ? headerActions(detailsSource) : headerActions}
             <button

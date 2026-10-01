@@ -18,7 +18,7 @@ function useDueLabel(task) {
 }
 
 /** A To-Do row: done checkbox, type icon, title (opens the task), link, due label, priority. */
-export function TodoItemRow({ task, onToggle, onOpen, isPending = false }) {
+export function TodoItemRow({ task, onToggle, onOpen, isPending = false, hideLink = false }) {
   const { t } = useTranslation()
   const done = isTaskCompleted(task)
   const overdue = isTaskOverdue(task)
@@ -49,7 +49,7 @@ export function TodoItemRow({ task, onToggle, onOpen, isPending = false }) {
           </span>
         </span>
         <span className="mt-1 flex flex-wrap items-center gap-1.5">
-          <TaskLinkChip task={task} showPersonal={false} className="py-0.5" />
+          {!hideLink && <TaskLinkChip task={task} showPersonal={false} linkable={false} className="py-0.5" />}
           {dueLabel && (
             <span className={`text-[11px] font-bold ${overdue ? 'text-red-600 dark:text-red-400' : 'text-[var(--text-muted)]'}`}>{dueLabel}</span>
           )}

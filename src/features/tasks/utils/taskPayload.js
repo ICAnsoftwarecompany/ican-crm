@@ -21,6 +21,7 @@ export const TASK_FORM_DEFAULTS = {
   reminder_unit: 'minutes',
   taskable_type: '',
   taskable_id: '',
+  taskable_name: '', // display only, never sent
   users: [],
   teams: [],
   attachments: [],
@@ -49,6 +50,7 @@ export function taskToFormValues(task = {}) {
     reminder_unit: task?.reminder_unit || 'minutes',
     taskable_type: resolveTaskableAlias(task?.taskable_type),
     taskable_id: task?.taskable_id ? String(task.taskable_id) : '',
+    taskable_name: task?.taskable?.name || task?.taskable?.full_name || '',
     users: toIdList(task?.users),
     teams: toIdList(task?.teams),
   }

@@ -1,5 +1,39 @@
 export default {
+  "entity": {
+    "title": "مهام هذا العميل",
+    "openCount": "{{count}} مهمة مفتوحة",
+    "refresh": "تحديث",
+    "loadFailed": "تعذر تحميل المهام",
+    "empty": "لا توجد مهام لهذا العميل بعد. ابدأ بمكالمة أو مهمة متابعة.",
+    "noOpen": "لا توجد مهام مفتوحة",
+    "openGroup": "المهام المفتوحة",
+    "closedGroup": "المنجزة والملغاة ({{count}})",
+    "noRecord": "لا يوجد سجل مرتبط لعرض مهامه."
+  },
+  "quickActions": {
+    "task": "مهمة",
+    "call": "جدولة مكالمة",
+    "meeting": "جدولة اجتماع",
+    "follow_up": "مهمة متابعة",
+    "dialogTitleFor": "{{action}} — {{name}}",
+    "dialogDescription": "المهمة مرتبطة بهذا العميل وستظهر في تاب المهام عنده.",
+    "defaultTitle": {
+      "task": "مهمة: {{name}}",
+      "call": "مكالمة مع {{name}}",
+      "meeting": "اجتماع مع {{name}}",
+      "follow_up": "متابعة {{name}}"
+    }
+  },
   "taskable": {
+    "openRecord": "فتح صفحة السجل",
+    "recordLabel": "السجل",
+    "searchPlaceholder": "ابحث بالاسم أو الهاتف أو البريد",
+    "searchHint": "اكتب حرفين على الأقل، أو رقم السجل",
+    "searching": "جارٍ البحث…",
+    "searchFailed": "تعذر البحث",
+    "noResults": "لا توجد نتائج",
+    "useNumber": "استخدام الرقم #{{id}}",
+    "clear": "إزالة الربط",
     "label": "مرتبطة بـ",
     "none": "لا شيء (مهمة شخصية)",
     "personal": "مهمة شخصية",
@@ -90,6 +124,7 @@ export default {
     "atTime": "{{day}} • {{time}}"
   },
   "page": {
+    "allLinks": "الكل",
     "allTasks": "كل المهام",
     "overdueFilter": "متأخرة",
     "statusFilterLabel": "فلتر الحالة",
