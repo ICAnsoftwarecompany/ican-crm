@@ -1,4 +1,61 @@
 export default {
+  "taskable": {
+    "label": "مرتبطة بـ",
+    "none": "لا شيء (مهمة شخصية)",
+    "personal": "مهمة شخصية",
+    "idLabel": "رقم السجل",
+    "idPlaceholder": "مثال: 15",
+    "types": {
+      "lead": "عميل محتمل",
+      "customer": "عميل",
+      "deal": "صفقة"
+    }
+  },
+  "todo": {
+    "title": "قائمة مهامي",
+    "subtitle": "مهامك الشخصية ومهام العملاء المسندة لك، مرتبة حسب اليوم والأسبوع والشهر",
+    "views": {
+      "today": "اليوم",
+      "week": "هذا الأسبوع",
+      "month": "هذا الشهر",
+      "overdue": "المتأخر"
+    },
+    "viewsLabel": "فترة العرض",
+    "groups": {
+      "overdue": "متأخر",
+      "timed": "بمواعيد",
+      "untimed": "بدون ساعة محددة",
+      "carried": "مفتوحة من مهام الأسبوع والشهر",
+      "done": "تم إنجازها"
+    },
+    "quickAdd": {
+      "placeholder": "أضف مهمة لـ{{period}} واضغط Enter",
+      "label": "إضافة مهمة سريعة",
+      "submit": "إضافة",
+      "created": "تمت إضافة المهمة",
+      "failed": "تعذرت إضافة المهمة"
+    },
+    "empty": {
+      "today": "لا توجد مهام لليوم. أضف مهمة من الحقل بالأعلى.",
+      "week": "لا توجد مهام لهذا الأسبوع.",
+      "month": "لا توجد مهام لهذا الشهر.",
+      "overdue": "لا توجد مهام متأخرة."
+    },
+    "complete": "تعليم كمنجزة",
+    "reopen": "إعادة فتح",
+    "completedToast": "تم إنجاز المهمة",
+    "reopenedToast": "أعيد فتح المهمة",
+    "statusFailed": "تعذر تحديث المهمة",
+    "dueBy": "حتى {{date}}",
+    "loading": "جارٍ تحميل المهام…",
+    "loadFailed": "تعذر تحميل المهام",
+    "more": "+{{count}} أخرى",
+    "periodBadge": {
+      "day": "مهمة يوم",
+      "week": "مهمة أسبوع",
+      "month": "مهمة شهر"
+    }
+  },
   "types": {
     "email": "بريد",
     "todo": "مهمة"
@@ -98,6 +155,7 @@ export default {
     "sortButton": "ترتيب"
   },
   "workspace": {
+    "myTodo": "قائمة مهامي",
     "dueToday": "مستحقة اليوم",
     "title": "مساحة العمل",
     "expandSidebar": "توسيع الشريط الجانبي",
@@ -154,6 +212,15 @@ export default {
     "createDescription": "أنشئ مهمة جديدة وحدد البيانات المطلوبة."
   },
   "form": {
+    "periodLabel": "توقيت المهمة",
+    "periodOptions": {
+      "exact": "ميعاد محدد",
+      "day": "خلال يوم",
+      "week": "خلال أسبوع",
+      "month": "خلال شهر"
+    },
+    "periodDateLabel": "أي يوم داخل الفترة",
+    "periodHint": "ستستحق حتى نهاية {{date}}",
     "submitLabel": "حفظ المهمة",
     "titleLabel": "عنوان المهمة",
     "titlePlaceholder": "مثال: متابعة العميل",

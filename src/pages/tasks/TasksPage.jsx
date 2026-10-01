@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { WorkflowLauncher } from '../../features/workflow-engine'
 
 import { TaskBoard } from '../../features/tasks/components/board/TaskBoard'
+import { TodoPanel } from '../../features/tasks/components/todo/TodoPanel'
 import { TaskCalendarView } from '../../features/tasks/components/TaskCalendarView'
 import { TaskDrawer } from '../../features/tasks/components/TaskDrawer'
 import { TaskFormDialog } from '../../features/tasks/components/TaskFormDialog'
@@ -88,7 +89,9 @@ export function TasksPage() {
   const [createInitialValues, setCreateInitialValues] = useState(null)
   const [optimisticStatuses, setOptimisticStatuses] = useState({})
   const [search, setSearch] = useState('')
-  const [activeQuickFilter, setActiveQuickFilter] = useState('all')
+  // `?smart=todo` opens "My to-do list" directly (link from My Work).
+  const [activeQuickFilter, setActiveQuickFilter] = useState(() => searchParams.get('smart') || 'all')
+  const isTodoView = activeQuickFilter === 'todo'
   const [statusFilter, setStatusFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')
   const [activeBoardId, setActiveBoardId] = useState('main')
@@ -306,11 +309,12 @@ export function TasksPage() {
             view={view}
             onViewChange={setView}
             onCreateTask={() => {
-              setCreateInitialValues(null)
+              // In "My to-do list" the form opens as a To-Do for today.
+              setCreateInitialValues(isTodoView ? { type: 'todo', period_type: 'day' } : null)
               setIsCreateOpen(true)
             }}
-            showFilters={view !== 'board'}
-            filtersContent={view !== 'board' ? filterContent : null}
+            showFilters={view !== 'board' && !isTodoView}
+            filtersContent={view !== 'board' && !isTodoView ? filterContent : null}
             extraActions={(
               <WorkflowLauncher context={{ module: 'tasks', entity: 'task' }} variant="outline" size="sm">
                 {t('workflow.builder.createAutomation')}
@@ -321,23 +325,29 @@ export function TasksPage() {
         sidebarCollapsed={sidebarCollapsed}
       >
         <section className="space-y-2">
-          {tasksQuery.isLoading && (
+          {isTodoView && (
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+              <TodoPanel onOpenTask={openTask} />
+            </div>
+          )}
+
+          {!isTodoView && tasksQuery.isLoading && (
             <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text-muted)]">{t('tasks.sidebarPanel.loadingTasks')}</div>
           )}
 
-          {!tasksQuery.isLoading && !visibleTasks.length && (
+          {!isTodoView && !tasksQuery.isLoading && !visibleTasks.length && (
             <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text-muted)]">
               {t('tasks.page.noMatchingTasksFiltered')}
             </div>
           )}
 
-          {!tasksQuery.isLoading && view === 'list' && visibleTasks.map((task) => (
+          {!isTodoView && !tasksQuery.isLoading && view === 'list' && visibleTasks.map((task) => (
             <button key={task.id || `${task.title}-${task.due_date || ''}`} type="button" className="w-full text-start" onClick={() => openTask(task.id)}>
               <TaskCard task={task} />
             </button>
           ))}
 
-          {!tasksQuery.isLoading && view === 'board' && (
+          {!isTodoView && !tasksQuery.isLoading && view === 'board' && (
             <TaskBoard
               boardId={activeBoardId}
               tasks={visibleTasks}
@@ -356,7 +366,8 @@ export function TasksPage() {
                   priority: 'medium',
                   status: 'pending',
                   visibility: 'shared',
-                  taskable_type: 'App\\Models\\Lead',
+                  // Board quick-add creates an unlinked task (no lead with an empty id).
+                  taskable_type: '',
                   taskable_id: '',
                   due_date: '',
                   due_time: '',
@@ -386,7 +397,7 @@ export function TasksPage() {
             />
           )}
 
-          {!tasksQuery.isLoading && view === 'calendar' && (
+          {!isTodoView && !tasksQuery.isLoading && view === 'calendar' && (
             <TaskCalendarView
               tasks={visibleTasks}
               onOpenTask={openTask}

@@ -38,7 +38,7 @@ export default {
       "viewAll": "Calendar"
     },
     "tasks": {
-      "title": "My tasks due",
+      "title": "My to-do list",
       "empty": "No tasks due today"
     },
     "leads": {

@@ -26,6 +26,9 @@ import {
   isTaskOverdue,
 } from '../utils/taskMeta'
 import { TaskForm } from './TaskForm'
+import { TaskLinkChip } from './TaskLinkChip'
+import { taskToFormValues } from '../utils/taskPayload'
+import { getTaskPeriod } from '../utils/todoPeriods'
 
 function getNotes(task) {
   if (Array.isArray(task?.notes)) return task.notes
@@ -215,6 +218,12 @@ export function TaskDrawer({
                 <CalendarClock size={13} className="me-1 inline" />
                 {dueLabel}
               </span>
+              {getTaskPeriod(task) && (
+                <span className="rounded-full bg-[var(--surface)] px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">
+                  {t(`tasks.todo.periodBadge.${getTaskPeriod(task)}`)}
+                </span>
+              )}
+              <TaskLinkChip task={task} />
             </div>
 
             {getTaskDescription(task) && (
@@ -245,22 +254,7 @@ export function TaskDrawer({
             <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
               <h3 className="mb-2 text-sm font-black text-[var(--text)]">{t('tasks.drawer.editTaskTitle')}</h3>
               <TaskForm
-                initialValues={{
-                  title: task.title || '',
-                  description: task.description || '',
-                  type: task.type || 'todo',
-                  priority: task.priority || 'medium',
-                  visibility: task.visibility || 'shared',
-                  due_date: task.due_date || '',
-                  due_time: task.due_time || '',
-                  reminder_type: task.reminder_type || 'system',
-                  reminder_before: String(task.reminder_before || '30'),
-                  reminder_unit: task.reminder_unit || 'minutes',
-                  taskable_type: task.taskable_type || 'App\\Models\\Lead',
-                  taskable_id: task.taskable_id || '',
-                  users: (task.users || []).map((item) => Number(item?.id || item)).filter(Number.isFinite),
-                  teams: (task.teams || []).map((item) => Number(item?.id || item)).filter(Number.isFinite),
-                }}
+                initialValues={taskToFormValues(task)}
                 onSubmit={handleSaveEdit}
                 submitLabel={t('tasks.drawer.saveChanges')}
                 isSaving={mutations.update.isPending}

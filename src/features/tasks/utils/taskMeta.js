@@ -75,14 +75,32 @@ export function getTaskDateTime(task) {
   return Number.isNaN(date.getTime()) ? null : date
 }
 
+/**
+ * The moment a task is late after. A task with a date but no time (a To-Do "by Thursday") is due
+ * by the end of that day, not at 00:00 — otherwise it would be overdue from the first minute.
+ */
+export function getTaskDeadline(task) {
+  const due = getTaskDateTime(task)
+  if (!due) return null
+  if (getTaskDueTime(task)) return due
+  const end = new Date(due)
+  end.setHours(23, 59, 59, 999)
+  return end
+}
+
 export function isTaskCompleted(task) {
   return String(task?.status || '').toLowerCase() === 'completed'
 }
 
+export function isTaskClosed(task) {
+  const status = String(task?.status || '').toLowerCase()
+  return status === 'completed' || status === 'cancelled'
+}
+
 export function isTaskOverdue(task, now = new Date()) {
-  const due = getTaskDateTime(task)
-  if (!due) return false
-  return due.getTime() < now.getTime() && !isTaskCompleted(task)
+  const deadline = getTaskDeadline(task)
+  if (!deadline) return false
+  return deadline.getTime() < now.getTime() && !isTaskClosed(task)
 }
 
 export function formatTaskDateLabel(task, locale, t) {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { taskToCalendarEvent, tasksToCalendarEvents } from './taskEventAdapter'
+import { buildTaskUpdatePayload, taskToCalendarEvent, tasksToCalendarEvents } from './taskEventAdapter'
 
 describe('taskToCalendarEvent', () => {
   it('maps a task with a due date and time to a timed calendar event', () => {
@@ -45,5 +45,20 @@ describe('tasksToCalendarEvents', () => {
 
   it('returns an empty array for no input', () => {
     expect(tasksToCalendarEvents()).toEqual([])
+  })
+})
+
+describe('buildTaskUpdatePayload', () => {
+  it('keeps the lead link of a linked task and applies the new date', () => {
+    const payload = buildTaskUpdatePayload(
+      { id: 1, title: 'Call', type: 'call', taskable_type: 'App\\Models\\Lead', taskable_id: 5, due_date: '2026-09-18', due_time: '10:00' },
+      { due_date: '2026-09-20' },
+    )
+    expect(payload).toMatchObject({ taskable_type: 'App\\Models\\Lead', taskable_id: '5', due_date: '2026-09-20', due_time: '10:00' })
+  })
+
+  it('never attaches a lead to a personal To-Do', () => {
+    const payload = buildTaskUpdatePayload({ id: 2, title: 'Mine', type: 'todo', due_date: '2026-09-18' }, { due_date: '2026-09-19' })
+    expect(payload).toMatchObject({ taskable_type: '', taskable_id: '', period_type: '', due_date: '2026-09-19' })
   })
 })

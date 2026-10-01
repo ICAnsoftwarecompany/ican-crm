@@ -1,6 +1,6 @@
 # ICAN CRM — Documentation index
 
-> **Documentation update:** 2026-10-01 23:55 (Africa/Cairo) — login showcase slider and Arabic login guide. 2026-10-01 23:30 (Africa/Cairo) — login page and sign-in methods (`features/auth` README). 2026-10-01 02:35 (Africa/Cairo) — Meta campaign wizard READMEs added. 2026-10-01 01:49 (Africa/Cairo) — reports & charts engine added. 2026-10-01 00:55 (Africa/Cairo) — My Work added. Earlier: 2026-10-01 00:25 (Africa/Cairo) — Communication hub, sub-sidebar, module pages, AI setup, README index and change log added.
+> **Documentation update:** 2026-10-02 01:35 (Africa/Cairo) — Tasks & To-Do spec (`tasks/TASKS-TODO-SPEC.md`) and `features/tasks` README. 2026-10-01 23:55 (Africa/Cairo) — login showcase slider and Arabic login guide. 2026-10-01 23:30 (Africa/Cairo) — login page and sign-in methods (`features/auth` README). 2026-10-01 02:35 (Africa/Cairo) — Meta campaign wizard READMEs added. 2026-10-01 01:49 (Africa/Cairo) — reports & charts engine added. 2026-10-01 00:55 (Africa/Cairo) — My Work added. Earlier: 2026-10-01 00:25 (Africa/Cairo) — Communication hub, sub-sidebar, module pages, AI setup, README index and change log added.
 
 Start here. Every doc in this folder, what it covers, and its sections. Rules for agents and contributors are in
 [../CLAUDE.md](../CLAUDE.md). **If a doc and the code disagree, the code wins.** When you change a feature, update its
@@ -14,6 +14,7 @@ doc in the same change.
 | 4 | [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md) | You work on the Customer Hub (`features/service`, `/service/*`) or the customer portal (`/portal/*`) |
 | — | [customer-service/SERVICE-MASTER-SPEC.md](customer-service/SERVICE-MASTER-SPEC.md) | Backend contract and business rules for Customer Service (Arabic) |
 | — | [customer-service/SERVICE-BRIEF.md](customer-service/SERVICE-BRIEF.md) | The decision brief behind the spec (Arabic) |
+| — | [tasks/TASKS-TODO-SPEC.md](tasks/TASKS-TODO-SPEC.md) | Tasks and To-Do: concepts, UI, rules, frontend code and the phased backend contract (Arabic) |
 | — | `Proposal Template Builder.pdf` | Reference design for the proposals builder |
 
 ## 1-ARCHITECTURE.md — Architecture & rules
@@ -86,6 +87,7 @@ doc in the same change.
 | Shared module page shells (placeholder, notice, module settings page) | [shared/components/module-pages](../src/shared/components/module-pages/README.md) |
 | Shared AI setup page (and the boundary with the future `features/ai`) | [shared/components/ai-setup](../src/shared/components/ai-setup/README.md) |
 | Auth — login page, showcase slider, sign-in methods, proposed Google/WebAuthn/PIN contract | [features/auth](../src/features/auth/README.md) · Arabic page guide [pages/auth/README_AR.md](../src/pages/auth/README_AR.md) |
+| Tasks & To-Do — taskable registry, To-Do periods, payload builder, To-Do panel, how to link a new entity | [features/tasks](../src/features/tasks/README.md) · spec [docs/tasks/TASKS-TODO-SPEC.md](tasks/TASKS-TODO-SPEC.md) |
 | My Work (شغلي) — sections, rules, registry, how to add a section | [features/my-work](../src/features/my-work/README.md) · route [pages/my-work](../src/pages/my-work/README.md) |
 | Meta campaign wizard (create campaign: stages, drafts, geo targeting, data sources, publish) | [features/campaigns/meta-wizard](../src/features/campaigns/meta-wizard/README.md) · full Arabic guide [pages/campaigns/pages/CampaignCreatePage/README_AR.md](../src/pages/campaigns/pages/CampaignCreatePage/README_AR.md) |
 | Communication hub (conversations, calls, meetings, team chat) | [features/communication](../src/features/communication/README.md) · routes [pages/communication](../src/pages/communication/README.md) |
@@ -106,6 +108,7 @@ Newest first. Every docs change also carries a `YYYY-MM-DD HH:mm (Africa/Cairo)`
 
 | When | What changed | Where |
 |---|---|---|
+| 2026-10-02 01:35 (Africa/Cairo) | Tasks & To-Do F1: To-Do = task `type: todo` with a day/week/month period (saved as due by the period's last day + optional `period_type`/`period_date`); "My to-do list" panel in `/tasks?smart=todo` and My Work; taskable registry (`lead`/`customer` aliases → backend model names, no more default Lead with empty id); shared `buildTaskPayload`; date-only tasks due at end of day; new spec with the phased backend contract | new `tasks/TASKS-TODO-SPEC.md` · 3-FEATURES (Tasks, My Work) · this index · `CLAUDE.md` · READMEs `features/tasks` (new), `features/my-work` |
 | 2026-10-02 00:55 (Africa/Cairo) | Leads Center i18n pass: fixed `customers.drawer` / `customers.followUp` / `customers.statusChange` being nested under `customers.table` (raw keys showed in the drawer, follow-up and status-reason dialogs); moved every hardcoded string in `pages/customers` (table, hovers, products dialog, activity timeline, bulk actions, drawer + tabs + quick actions, lead details page, status board, customization, sales teams, placeholders) and `features/customers` to `locales/*/customers.js`; activity timeline dates follow the UI language | 2-SALES (Leads Center pages, Customer details drawer) |
 | 2026-10-01 23:55 (Africa/Cairo) | Login page: hero replaced by an auto-playing showcase slider of the system's areas (customers, teams and routing, calls and meetings, conversations, campaigns, automation and reports); background motion stronger and follows the active slide; split desktop layout; Arabic page guide | this index · READMEs `features/auth`, `pages/auth/README_AR.md` |
 | 2026-10-01 23:30 (Africa/Cairo) | Login page redesigned (animated brand background, tenant chip, language/theme toggles); clear sign-in errors (no more "wrong password" for server/network failures, no session modal on a wrong password); return to the requested page after sign-in; shared `BrandLogo`; Google / Face ID / fingerprint + PIN UI ready behind `VITE_AUTH_METHODS` with a proposed backend contract | 1-ARCHITECTURE (Tenant, auth, httpClient) · this index · README `features/auth` |

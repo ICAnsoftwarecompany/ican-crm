@@ -1,4 +1,5 @@
 import { getTaskDateTime, getTaskDueTime, getTaskTitle } from '../../tasks/utils/taskMeta'
+import { buildTaskPayload, taskToFormValues } from '../../tasks/utils/taskPayload'
 
 /**
  * Task -> CalendarEvent. Tasks store due date/time as two separate strings
@@ -29,27 +30,14 @@ export function tasksToCalendarEvents(tasks = []) {
 }
 
 /**
- * The task update endpoint expects the full record (see TaskForm's submit
- * and TaskDrawer's edit-mode initialValues, which this mirrors) — there is
- * no confirmed partial-patch contract, so a drag-to-reschedule must rebuild
- * the whole payload rather than sending just the changed date fields.
+ * The task update endpoint expects the full record — there is no confirmed partial-patch contract,
+ * so a drag-to-reschedule rebuilds the whole payload with the same builder TaskForm uses
+ * (`features/tasks/utils/taskPayload`). A dragged period To-Do becomes a dated To-Do (its period is
+ * cleared), and a personal task stays personal (no default lead link).
  */
 export function buildTaskUpdatePayload(task, overrides = {}) {
   return {
-    title: task?.title || '',
-    description: task?.description || '',
-    type: task?.type || 'todo',
-    priority: task?.priority || 'medium',
-    visibility: task?.visibility || 'shared',
-    due_date: task?.due_date || '',
-    due_time: task?.due_time || '',
-    reminder_type: task?.reminder_type || 'system',
-    reminder_before: String(task?.reminder_before || '30'),
-    reminder_unit: task?.reminder_unit || 'minutes',
-    taskable_type: task?.taskable_type || 'App\\Models\\Lead',
-    taskable_id: task?.taskable_id || '',
-    users: (task?.users || []).map((item) => Number(item?.id || item)).filter(Number.isFinite),
-    teams: (task?.teams || []).map((item) => Number(item?.id || item)).filter(Number.isFinite),
+    ...buildTaskPayload({ ...taskToFormValues(task), period_type: '' }),
     ...overrides,
   }
 }

@@ -1,4 +1,61 @@
 export default {
+  "taskable": {
+    "label": "Linked to",
+    "none": "Nothing (personal task)",
+    "personal": "Personal",
+    "idLabel": "Record number",
+    "idPlaceholder": "e.g. 15",
+    "types": {
+      "lead": "Lead",
+      "customer": "Customer",
+      "deal": "Deal"
+    }
+  },
+  "todo": {
+    "title": "My to-do list",
+    "subtitle": "Your personal to-dos and the customer tasks assigned to you, by day, week and month",
+    "views": {
+      "today": "Today",
+      "week": "This week",
+      "month": "This month",
+      "overdue": "Overdue"
+    },
+    "viewsLabel": "Period",
+    "groups": {
+      "overdue": "Overdue",
+      "timed": "Scheduled",
+      "untimed": "Any time",
+      "carried": "Still open from this week and month",
+      "done": "Done"
+    },
+    "quickAdd": {
+      "placeholder": "Add a to-do for {{period}} and press Enter",
+      "label": "Quick add",
+      "submit": "Add",
+      "created": "To-do added",
+      "failed": "Could not add the to-do"
+    },
+    "empty": {
+      "today": "Nothing for today. Add a to-do above.",
+      "week": "Nothing for this week.",
+      "month": "Nothing for this month.",
+      "overdue": "Nothing overdue."
+    },
+    "complete": "Mark as done",
+    "reopen": "Reopen",
+    "completedToast": "Task completed",
+    "reopenedToast": "Task reopened",
+    "statusFailed": "Could not update the task",
+    "dueBy": "By {{date}}",
+    "loading": "Loading tasks…",
+    "loadFailed": "Could not load tasks",
+    "more": "+{{count}} more",
+    "periodBadge": {
+      "day": "Day to-do",
+      "week": "Week to-do",
+      "month": "Month to-do"
+    }
+  },
   "types": {
     "email": "Email",
     "todo": "Task"
@@ -98,6 +155,7 @@ export default {
     "sortButton": "Sort"
   },
   "workspace": {
+    "myTodo": "My to-do list",
     "dueToday": "Due Today",
     "title": "Workspace",
     "expandSidebar": "Expand sidebar",
@@ -154,6 +212,15 @@ export default {
     "createDescription": "Create a new task and set the required data."
   },
   "form": {
+    "periodLabel": "Timing",
+    "periodOptions": {
+      "exact": "Exact time",
+      "day": "Within a day",
+      "week": "Within a week",
+      "month": "Within a month"
+    },
+    "periodDateLabel": "Any day in the period",
+    "periodHint": "Due by the end of {{date}}",
     "submitLabel": "Save Task",
     "titleLabel": "Task Title",
     "titlePlaceholder": "e.g. Follow up with customer",
