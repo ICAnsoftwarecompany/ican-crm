@@ -31,7 +31,7 @@
   inset-block-start: -18vmax;
   inset-inline-start: -16vmax;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--brand-accent) 55%, white) 0%, transparent 100%);
-  animation: login-drift-a 26s ease-in-out infinite alternate;
+  animation: login-drift-a 14s ease-in-out infinite alternate;
 }
 
 /* Deep navy body on the end side — the "weight" of the composition. */
@@ -42,7 +42,7 @@
   inset-inline-end: -26vmax;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--brand-primary-l) 70%, var(--brand-accent)) 0%, transparent 100%);
   opacity: 0.75;
-  animation: login-drift-b 32s ease-in-out infinite alternate;
+  animation: login-drift-b 18s ease-in-out infinite alternate;
 }
 
 /* Bright core of light that the headline sits in. */
@@ -52,7 +52,7 @@
   inset-block-start: 14vh;
   inset-inline-start: 28vw;
   background: radial-gradient(closest-side, rgba(255, 255, 255, 0.95) 0%, transparent 100%);
-  animation: login-drift-c 22s ease-in-out infinite alternate;
+  animation: login-drift-c 11s ease-in-out infinite alternate;
 }
 
 /* Deep teal pooling at the bottom, like the dark corner on the Codex hero. */
@@ -63,7 +63,38 @@
   inset-inline-start: -10vmax;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--ai-text) 75%, var(--brand-primary)) 0%, transparent 100%);
   opacity: 0.65;
-  animation: login-drift-d 36s ease-in-out infinite alternate;
+  animation: login-drift-d 20s ease-in-out infinite alternate;
+}
+
+/*
+ * The light composition as a whole. LoginBackground moves it (inline
+ * transform) to a new spot for every showcase slide, so changing slide
+ * visibly sweeps the light across the page.
+ */
+.login-aurora__stage {
+  position: absolute;
+  inset: -12%;
+  transition: transform 2.4s cubic-bezier(0.45, 0, 0.2, 1);
+  will-change: transform;
+}
+
+/* Slow rotating beam of brand light behind everything. */
+.login-aurora__beam {
+  position: absolute;
+  inset: -30%;
+  background: conic-gradient(from 0deg at 50% 50%,
+    transparent 0deg,
+    color-mix(in srgb, var(--brand-accent) 22%, transparent) 40deg,
+    transparent 95deg,
+    color-mix(in srgb, var(--brand-primary-l) 18%, transparent) 200deg,
+    transparent 260deg);
+  filter: blur(40px);
+  animation: login-beam 30s linear infinite;
+}
+.dark .login-aurora__beam { opacity: 0.8; }
+
+@keyframes login-beam {
+  to { transform: rotate(360deg); }
 }
 
 /* Brushed streaks: stretched turbulence, rotated, blended over the light. */
@@ -75,7 +106,7 @@
   opacity: 0.42;
   mix-blend-mode: soft-light;
   transform: rotate(-28deg);
-  animation: login-streak 40s linear infinite alternate;
+  animation: login-streak 16s ease-in-out infinite alternate;
 }
 
 /* Fine grain so the gradients never band on large screens. */
@@ -91,7 +122,7 @@
 .login-aurora__veil {
   position: absolute;
   inset: 0;
-  background: radial-gradient(60% 55% at 50% 62%, color-mix(in srgb, var(--brand-bg) 55%, transparent) 0%, transparent 70%);
+  background: radial-gradient(55% 60% at 30% 55%, color-mix(in srgb, var(--brand-bg) 55%, transparent) 0%, transparent 70%);
 }
 
 .dark .login-aurora {
@@ -104,28 +135,39 @@
 .dark .login-aurora__blob--d { background: radial-gradient(closest-side, color-mix(in srgb, var(--ai-text) 45%, transparent) 0%, transparent 100%); opacity: 0.35; }
 .dark .login-aurora__streaks { opacity: 0.09; mix-blend-mode: screen; }
 .dark .login-aurora__veil {
-  background: radial-gradient(60% 55% at 50% 62%, color-mix(in srgb, var(--brand-bg) 60%, transparent) 0%, transparent 70%);
+  background: radial-gradient(55% 60% at 30% 55%, color-mix(in srgb, var(--brand-bg) 60%, transparent) 0%, transparent 70%);
+}
+/* The veil sits behind the showcase text, which is on the start side. */
+[dir='rtl'] .login-aurora__veil {
+  background: radial-gradient(55% 60% at 70% 55%, color-mix(in srgb, var(--brand-bg) 55%, transparent) 0%, transparent 70%);
+}
+.dark[dir='rtl'] .login-aurora__veil {
+  background: radial-gradient(55% 60% at 70% 55%, color-mix(in srgb, var(--brand-bg) 60%, transparent) 0%, transparent 70%);
 }
 
 @keyframes login-drift-a {
   0%   { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
-  100% { transform: translate3d(9vw, 7vh, 0) rotate(14deg) scale(1.12); }
+  50%  { transform: translate3d(14vw, 4vh, 0) rotate(18deg) scale(1.18); }
+  100% { transform: translate3d(6vw, 12vh, 0) rotate(-6deg) scale(1.05); }
 }
 @keyframes login-drift-b {
   0%   { transform: translate3d(0, 0, 0) scale(1); }
-  100% { transform: translate3d(-8vw, 10vh, 0) scale(0.92); }
+  50%  { transform: translate3d(-14vw, 6vh, 0) scale(1.1); }
+  100% { transform: translate3d(-6vw, 16vh, 0) scale(0.9); }
 }
 @keyframes login-drift-c {
   0%   { transform: translate3d(-4vw, 0, 0) scale(0.95); }
-  100% { transform: translate3d(6vw, -4vh, 0) scale(1.08); }
+  50%  { transform: translate3d(10vw, 6vh, 0) scale(1.15); }
+  100% { transform: translate3d(-2vw, -6vh, 0) scale(1.02); }
 }
 @keyframes login-drift-d {
   0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
-  100% { transform: translate3d(12vw, -6vh, 0) rotate(-10deg); }
+  50%  { transform: translate3d(18vw, -10vh, 0) rotate(-14deg); }
+  100% { transform: translate3d(6vw, -2vh, 0) rotate(8deg); }
 }
 @keyframes login-streak {
-  0%   { transform: rotate(-28deg) translate3d(-3%, 0, 0); }
-  100% { transform: rotate(-24deg) translate3d(3%, -2%, 0); }
+  0%   { transform: rotate(-30deg) translate3d(-6%, 0, 0); }
+  100% { transform: rotate(-22deg) translate3d(6%, -4%, 0); }
 }
 
 /* Entrance: the hero and card rise once, together. */
@@ -139,10 +181,41 @@
   to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
+/* ── Showcase slider ─────────────────────────────────────────────── */
+
+/* Each part of a new slide rises in turn (--stagger set inline). */
+.showcase-stagger {
+  animation: showcase-in 620ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--stagger, 0) * 70ms);
+}
+
+@keyframes showcase-in {
+  from { opacity: 0; transform: translate3d(0, 16px, 0); filter: blur(4px); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+}
+
+/* Fill of the active dot; its animationend advances the slider. */
+.showcase-progress {
+  width: 0;
+  animation-name: showcase-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes showcase-progress {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .login-aurora__blob,
+  .login-aurora__beam,
   .login-aurora__streaks,
-  .login-enter {
+  .login-enter,
+  .showcase-stagger {
     animation: none;
   }
+  .login-aurora__stage { transition: none; }
+  /* .showcase-progress keeps running: it is a thin progress fill, and
+     auto-play already starts paused for these users (useShowcase). */
 }

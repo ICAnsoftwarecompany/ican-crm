@@ -1,6 +1,6 @@
 # features/auth — sign-in, session and login methods
 
-_Updated 2026-10-01 23:30 (Africa/Cairo)._
+_Updated 2026-10-01 23:55 (Africa/Cairo). Full Arabic walkthrough of the page: [pages/auth/README_AR.md](../../pages/auth/README_AR.md)._
 
 ## What it owns
 
@@ -23,7 +23,11 @@ _Updated 2026-10-01 23:30 (Africa/Cairo)._
 | `components/LoginForm.jsx` | Password form: autocomplete hints, autofocus, trimmed username, Caps Lock warning, inline error. |
 | `components/AlternativeMethods.jsx` | Google / Face ID / Fingerprint buttons; disabled with a "Soon" tag until enabled. |
 | `components/BiometricPanel.jsx` + `PinInput.jsx` | Biometric prompt with automatic PIN fallback. |
-| `components/LoginBackground.jsx` + `loginBackground.css` | Animated brand-colored background (pure CSS, honors reduced motion). |
+| `components/LoginBackground.jsx` + `loginBackground.css` | Animated brand-colored background (pure CSS, honors reduced motion); `light` prop moves the light per showcase slide. Also holds the showcase animations. |
+| `components/LoginShowcase.jsx` | Auto-playing slider of the system's areas (7 slides × 4 points): dots with progress, prev/pause/next, arrow keys, swipe. |
+| `constants/showcaseSlides.js` | Slide order, icons, background light position, `SHOWCASE_INTERVAL_MS`. Copy lives in `auth.showcase.slides.*`. |
+| `hooks/useShowcase.js` | Slider state; pauses on hover/focus/hidden tab; starts paused under reduced motion. Timing is the CSS progress bar's `animationend`. |
+| `components/LoginCard.jsx` | The sign-in card (tenant chip, form, alternative methods, biometric panel, Google return). |
 
 The logo lives in `shared/components/brand/BrandLogo.jsx` and is shared with the sidebar.
 
