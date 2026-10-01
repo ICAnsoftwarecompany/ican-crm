@@ -3,23 +3,25 @@ import { cn } from '../../../../shared/utils/cn'
 import { useLocalStorage } from '../../../../shared/components/data-table/hooks/useLocalStorage'
 import { CustomerStatusesTab } from './CustomerStatusesTab'
 import { CustomerTagsTab } from './CustomerTagsTab'
+import { useTranslation } from 'react-i18next'
 
 const TABS = [
   {
     id: 'statuses',
-    label: 'حالات العملاء',
+    labelKey: 'customers.customization.tabs.statuses',
     icon: CheckCircle2,
     component: CustomerStatusesTab,
   },
   {
     id: 'tags',
-    label: 'تاج العملاء',
+    labelKey: 'customers.customization.tabs.tags',
     icon: Tags,
     component: CustomerTagsTab,
   },
 ]
 
 export function CustomerCustomizationPage() {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useLocalStorage('customers-customization-active-tab', TABS[0].id)
   const activeTabConfig = TABS.find((tab) => tab.id === activeTab) || TABS[0]
   const ActiveTabComponent = activeTabConfig.component
@@ -32,16 +34,16 @@ export function CustomerCustomizationPage() {
             <SlidersHorizontal size={19} />
           </div>
           <div className="min-w-0">
-            <h1 className="text-xl font-bold text-[var(--text)]">الإعداد والتخصيص</h1>
+            <h1 className="text-xl font-bold text-[var(--text)]">{t('customers.customization.title')}</h1>
             <p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">
-              إدارة إعدادات العملاء في تبويبات منفصلة، مع حفظ آخر تبويب تم فتحه بعد تحديث الصفحة.
+              {t('customers.customization.description')}
             </p>
           </div>
         </div>
       </header>
 
       <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)]">
-        <div className="flex gap-1 overflow-x-auto border-b border-[var(--border)] p-2" role="tablist" aria-label="تبويبات الإعداد والتخصيص">
+        <div className="flex gap-1 overflow-x-auto border-b border-[var(--border)] p-2" role="tablist" aria-label={t('customers.customization.tabsAria')}>
           {TABS.map((tab) => {
             const Icon = tab.icon
             const isActive = activeTabConfig.id === tab.id
@@ -62,7 +64,7 @@ export function CustomerCustomizationPage() {
                 )}
               >
                 <Icon size={16} />
-                {tab.label}
+                {t(tab.labelKey)}
               </button>
             )
           })}

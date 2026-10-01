@@ -1,11 +1,13 @@
+import { useTranslation } from 'react-i18next'
 export function SocialMessageRecipientsPreview({ recipients = [] }) {
+  const { t } = useTranslation()
   const recipientsPreview = recipients.slice(0, 4)
   const extraRecipientsCount = Math.max(0, recipients.length - recipientsPreview.length)
 
   return (
     <div className="rounded-xl border border-[#D7EEF0] bg-[#F8FEFF] p-3">
       <div className="text-xs font-black text-[var(--text)]">
-        العملاء المحددون ({recipients.length})
+        {t('customers.socialMessaging.selectedRecipients', { count: recipients.length })}
       </div>
       <div className="mt-2 flex flex-wrap gap-1.5">
         {recipientsPreview.map((recipient) => (

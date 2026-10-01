@@ -24,6 +24,7 @@ import {
   SocialMessagingBulkActions,
   StatusChangeReasonDialog,
 } from './selection-actions'
+import { useTranslation } from 'react-i18next'
 
 const PIN_MODE_STORAGE_KEY = 'customers-bulk-actions-pin-mode'
 
@@ -125,6 +126,7 @@ export function CustomersBulkActions({
   onDone,
   onAddLeadNote,
 }) {
+  const { t } = useTranslation()
   const [statusId, setStatusId] = useState('')
   const [tagId, setTagId] = useState('')
   const [pinMode, setPinMode] = useLocalStorage(PIN_MODE_STORAGE_KEY, 'none')
@@ -171,10 +173,10 @@ export function CustomersBulkActions({
       ...status,
       disabled: blockedForMultiple,
       disabledReason: blockedForMultiple
-        ? 'هذه الحالة تتطلب سببًا ولا يمكن اختيارها مع أكثر من ليد'
+        ? t('customers.bulkActions.reasonStatusMultiBlocked')
         : '',
     }
-  }), [isSingleLeadSelection, statuses])
+  }), [isSingleLeadSelection, statuses, t])
 
   useEffect(() => {
     if (!selectedStatus) return
@@ -240,10 +242,12 @@ export function CustomersBulkActions({
         lead_id: leadId,
         action: 'create_activity',
         type: requiresReasonForStatus ? 'note-to-lead' : 'status_change',
-        title: requiresReasonForStatus ? `سبب تغيير الحالة إلى ${nextStatusTitle}` : `تغيير الحالة إلى ${nextStatusTitle}`,
+        title: requiresReasonForStatus
+          ? t('customers.pipeline.activity.reasonTitle', { status: nextStatusTitle })
+          : t('customers.pipeline.activity.title', { status: nextStatusTitle }),
         description: requiresReasonForStatus
           ? reasonText
-          : `تم تغيير حالة العميل المحتمل إلى ${nextStatusTitle}`,
+          : t('customers.bulkActions.statusChangedDescription', { status: nextStatusTitle }),
         note: requiresReasonForStatus ? reasonText : '',
         data: {
           source: 'customers_bulk_actions',
@@ -260,7 +264,7 @@ export function CustomersBulkActions({
     if (!hasSelection || !selectedStatus) return
 
     if (requiresReason(selectedStatus) && !isSingleLeadSelection) {
-      toast.info('هذه الحالة تتطلب سببًا، لذلك يمكن اختيارها مع ليد واحد فقط.')
+      toast.info(t('customers.bulkActions.reasonStatusSingleOnly'))
       return
     }
 
@@ -274,9 +278,9 @@ export function CustomersBulkActions({
       await applyStatusToSelectedRows()
 
       setStatusId('')
-      finishAction(`تم تغيير حالة ${leadIds.length} عميل محتمل`)
+      finishAction(t('customers.bulkActions.statusChangedCount', { count: leadIds.length }))
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر تغيير حالات العملاء المحتملين المحددين'))
+      toast.error(extractMessage(error, t('customers.bulkActions.statusChangeFailed')))
     }
   }
 
@@ -289,7 +293,9 @@ export function CustomersBulkActions({
       if (schedulePayload?.type) {
         await meetingMutations.create.mutateAsync({
           ...schedulePayload,
-          title: schedulePayload.title || `${schedulePayload.type === 'call' ? 'مكالمة' : 'اجتماع'} متابعة الحالة`,
+          title: schedulePayload.title || (schedulePayload.type === 'call'
+            ? t('customers.pipeline.activity.followUpCall')
+            : t('customers.pipeline.activity.followUpMeeting')),
           description: schedulePayload.description || reason,
         })
       }
@@ -297,9 +303,9 @@ export function CustomersBulkActions({
       setStatusId('')
       setIsReasonDialogOpen(false)
       setReasonStatus(null)
-      finishAction('تم تغيير الحالة مع حفظ السبب')
+      finishAction(t('customers.bulkActions.statusChangedWithReason'))
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر تغيير الحالة مع السبب'))
+      toast.error(extractMessage(error, t('customers.bulkActions.statusWithReasonFailed')))
     }
   }
 
@@ -313,15 +319,15 @@ export function CustomersBulkActions({
       })
 
       setTagId('')
-      finishAction(`تم تغيير تاج ${leadIds.length} عميل محتمل`)
+      finishAction(t('customers.bulkActions.tagChangedCount', { count: leadIds.length }))
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر تغيير تاج العملاء المحتملين المحددين'))
+      toast.error(extractMessage(error, t('customers.bulkActions.tagChangeFailed')))
     }
   }
 
   const handleOpenMessageBox = (channelId) => {
     if (!hasSelection) {
-      toast.info('اختر عميلا محتملا واحدا على الأقل لفتح صندوق الرسالة.')
+      toast.info(t('customers.socialMessaging.selectAtLeastOne'))
       return
     }
 

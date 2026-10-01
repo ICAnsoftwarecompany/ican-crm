@@ -1,7 +1,9 @@
 import { Plus } from 'lucide-react'
 import { Button } from '../../../../../../shared/components/ui/Button'
+import { useTranslation } from 'react-i18next'
 
 export function AddFollowUpBulkAction({ disabled = false, onClick }) {
+  const { t } = useTranslation()
   return (
     <Button
       variant="ai"
@@ -10,13 +12,13 @@ export function AddFollowUpBulkAction({ disabled = false, onClick }) {
       disabled={disabled}
       title={
         disabled
-          ? 'إضافة متابعة متاحة عند اختيار عميل محتمل واحد فقط'
-          : 'إضافة متابعة على العميل المحتمل المحدد'
+          ? t('customers.bulkActions.followUpSingleOnly')
+          : t('customers.bulkActions.followUpForSelected')
       }
       className="whitespace-nowrap"
     >
       <Plus size={14} />
-      إضافة متابعة
+      {t('customers.followUp.addFollowUp')}
     </Button>
   )
 }

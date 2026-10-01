@@ -1,45 +1,47 @@
 import { AppDrawer } from '../../../shared/components/overlays/AppDrawer'
+import { useTranslation } from 'react-i18next'
 
 const sections = [
   {
-    title: 'كثافة العرض',
-    items: ['مريح', 'متوسط', 'مضغوط'],
+    id: 'density',
+    items: ['comfortable', 'medium', 'compact'],
   },
   {
-    title: 'الأعمدة',
-    items: ['إظهار وإخفاء الأعمدة', 'إعادة ترتيب الأعمدة من شريط الجدول عند توفرها'],
+    id: 'columns',
+    items: ['showHide', 'reorder'],
   },
   {
-    title: 'تثبيت الأعمدة',
-    items: ['التثبيت يتم من أيقونة القفل داخل رأس العمود', 'إلغاء التثبيت من نفس الأيقونة'],
+    id: 'pinning',
+    items: ['pinFromHeader', 'unpin'],
   },
   {
-    title: 'الخط والتنسيق',
-    items: ['حجم الخط', 'وزن الخط', 'ألوان الصفوف والخلايا والأعمدة من أدوات الجدول'],
+    id: 'typography',
+    items: ['fontSize', 'fontWeight', 'colors'],
   },
   {
-    title: 'الحفظ',
-    items: ['إعدادات التنسيق تحفظ عبر قواعد تنسيق الجدول', 'تفضيلات العرض المحلية محفوظة في LocalStorage'],
+    id: 'saving',
+    items: ['formattingRules', 'localPreferences'],
   },
 ]
 
 export function TableSettingsDrawer({ open, onClose }) {
+  const { t } = useTranslation()
   return (
     <AppDrawer
       open={open}
       onClose={onClose}
-      title="إعدادات الجدول"
-      description="اختصارات لإعدادات العرض الحالية بدون تكرار منطق DataTable."
+      title={t('customers.tableSettings.title')}
+      description={t('customers.tableSettings.description')}
       size="lg"
       className="w-full sm:w-[30rem]"
     >
       <div className="space-y-3">
         {sections.map((section) => (
-          <section key={section.title} className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
-            <h3 className="text-sm font-bold text-[var(--text)]">{section.title}</h3>
+          <section key={section.id} className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
+            <h3 className="text-sm font-bold text-[var(--text)]">{t(`customers.tableSettings.sections.${section.id}.title`)}</h3>
             <ul className="mt-2 space-y-1 text-sm leading-6 text-[var(--text-muted)]">
               {section.items.map((item) => (
-                <li key={item}>{item}</li>
+                <li key={item}>{t(`customers.tableSettings.sections.${section.id}.${item}`)}</li>
               ))}
             </ul>
           </section>

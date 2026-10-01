@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next'
 export function SocialMessageHelpText() {
+  const { t } = useTranslation()
   return (
     <div className="text-xs font-semibold text-[var(--text-muted)]">
-      جاهز للربط لاحقا مع API الرسائل. سيتم إرسال نفس النص لكل العملاء المحددين.
+      {t('customers.socialMessaging.helpText')}
     </div>
   )
 }

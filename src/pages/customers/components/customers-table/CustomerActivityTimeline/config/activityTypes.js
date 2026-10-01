@@ -13,26 +13,27 @@ import {
   Trophy,
   UserRound,
 } from 'lucide-react'
+import i18n from 'i18next'
 
 export const activityTypes = {
-  status_change: { label: 'تغيير الحالة', category: 'status', icon: ArrowRightLeft, tone: 'blue' },
-  note: { label: 'ملاحظة', category: 'notes', icon: StickyNote, tone: 'amber' },
-  'note-to-lead': { label: 'متابعة', category: 'notes', icon: FileText, tone: 'amber' },
-  interested_products: { label: 'المنتجات المهتم بها', category: 'products', icon: Package, tone: 'violet' },
-  call: { label: 'مكالمة', category: 'communication', icon: Phone, tone: 'emerald' },
-  meeting: { label: 'اجتماع', category: 'communication', icon: Calendar, tone: 'cyan' },
-  whatsapp: { label: 'واتساب', category: 'communication', icon: MessageCircle, tone: 'green' },
-  email: { label: 'بريد إلكتروني', category: 'communication', icon: Mail, tone: 'blue' },
-  task: { label: 'مهمة', category: 'task', icon: CheckSquare, tone: 'indigo' },
-  assigned: { label: 'تعيين', category: 'assignment', icon: UserRound, tone: 'slate' },
-  proposal: { label: 'عرض سعر', category: 'proposal', icon: FileText, tone: 'indigo' },
-  deal: { label: 'صفقة', category: 'deal', icon: Trophy, tone: 'emerald', importance: 'milestone' },
-  deal_won: { label: 'صفقة ناجحة', category: 'deal', icon: Trophy, tone: 'emerald', importance: 'milestone' },
-  deal_lost: { label: 'صفقة مفقودة', category: 'lost', icon: CircleX, tone: 'red', importance: 'milestone' },
-  lost: { label: 'خسارة عميل محتمل', category: 'lost', icon: CircleX, tone: 'red', importance: 'milestone' },
-  lead_created: { label: 'إنشاء عميل محتمل', category: 'system', icon: Activity, tone: 'slate', importance: 'milestone' },
-  customer_created: { label: 'إنشاء عميل', category: 'system', icon: Activity, tone: 'slate', importance: 'milestone' },
-  default: { label: 'نشاط', category: 'other', icon: Activity, tone: 'slate' },
+status_change: { labelKey: 'customers.activityTimeline.types.statusChange', category: 'status', icon: ArrowRightLeft, tone: 'blue' },
+note: { labelKey: 'customers.activityTimeline.types.note', category: 'notes', icon: StickyNote, tone: 'amber' },
+'note-to-lead': { labelKey: 'customers.activityTimeline.types.followUp', category: 'notes', icon: FileText, tone: 'amber' },
+interested_products: { labelKey: 'customers.activityTimeline.types.interestedProducts', category: 'products', icon: Package, tone: 'violet' },
+call: { labelKey: 'customers.activityTimeline.types.call', category: 'communication', icon: Phone, tone: 'emerald' },
+meeting: { labelKey: 'customers.activityTimeline.types.meeting', category: 'communication', icon: Calendar, tone: 'cyan' },
+whatsapp: { labelKey: 'customers.activityTimeline.types.whatsapp', category: 'communication', icon: MessageCircle, tone: 'green' },
+email: { labelKey: 'customers.activityTimeline.types.email', category: 'communication', icon: Mail, tone: 'blue' },
+task: { labelKey: 'customers.activityTimeline.types.task', category: 'task', icon: CheckSquare, tone: 'indigo' },
+assigned: { labelKey: 'customers.activityTimeline.types.assigned', category: 'assignment', icon: UserRound, tone: 'slate' },
+proposal: { labelKey: 'customers.activityTimeline.types.proposal', category: 'proposal', icon: FileText, tone: 'indigo' },
+deal: { labelKey: 'customers.activityTimeline.types.deal', category: 'deal', icon: Trophy, tone: 'emerald', importance: 'milestone' },
+deal_won: { labelKey: 'customers.activityTimeline.types.dealWon', category: 'deal', icon: Trophy, tone: 'emerald', importance: 'milestone' },
+deal_lost: { labelKey: 'customers.activityTimeline.types.dealLost', category: 'lost', icon: CircleX, tone: 'red', importance: 'milestone' },
+lost: { labelKey: 'customers.activityTimeline.types.lost', category: 'lost', icon: CircleX, tone: 'red', importance: 'milestone' },
+lead_created: { labelKey: 'customers.activityTimeline.types.leadCreated', category: 'system', icon: Activity, tone: 'slate', importance: 'milestone' },
+customer_created: { labelKey: 'customers.activityTimeline.types.customerCreated', category: 'system', icon: Activity, tone: 'slate', importance: 'milestone' },
+default: { labelKey: 'customers.activityTimeline.types.activity', category: 'other', icon: Activity, tone: 'slate' },
 }
 
 export const toneClasses = {
@@ -85,5 +86,6 @@ export const toneClasses = {
 
 export function getActivityTypeConfig(type) {
   const key = String(type || '').trim().toLowerCase()
-  return activityTypes[key] || activityTypes.default
+  const config = activityTypes[key] || activityTypes.default
+  return { ...config, label: i18n.t(config.labelKey) }
 }

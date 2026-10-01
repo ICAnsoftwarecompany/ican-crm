@@ -4,8 +4,10 @@ import { Button } from '../../../../shared/components/ui/Button'
 import { AddLeadAction } from './AddLeadAction'
 import { ImportLeadsAction } from './ImportLeadsAction'
 import { ExportLeadsAction } from './ExportLeadsAction'
+import { useTranslation } from 'react-i18next'
 
 export function LeadsActionsMenu({ onAdd, onImport, onExport }) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const menuRef = useRef(null)
   const hasActions = Boolean(onAdd || onImport || onExport)
@@ -45,7 +47,7 @@ export function LeadsActionsMenu({ onAdd, onImport, onExport }) {
         aria-expanded={open}
       >
         <Plus size={16} />
-        إجراء عميل محتمل
+        {t('customers.pageActions.leadAction')}
         <ChevronDown size={14} className={open ? 'rotate-180 transition-transform' : 'transition-transform'} />
       </Button>
 

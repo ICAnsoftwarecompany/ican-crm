@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, Settings } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function CustomerPlaceholderPage({
   title,
@@ -9,13 +10,14 @@ export function CustomerPlaceholderPage({
   actions,
   children,
 }) {
+  const { t } = useTranslation()
   const cards = useMemo(
     () => [
-      'استخدم نفس بيانات مركز العملاء المحتملين عند توصيل هذه الصفحة.',
-      'المسار يعمل داخل تخطيط مركز العملاء المحتملين بدون تكرار القائمة الرئيسية.',
-      'يمكن استبدال هذا المحتوى بمكوّن متخصص لاحقا.',
+      t('customers.placeholders.cards.sameData'),
+      t('customers.placeholders.cards.layout'),
+      t('customers.placeholders.cards.replaceLater'),
     ],
-    []
+    [t]
   )
 
   return (
@@ -37,7 +39,7 @@ export function CustomerPlaceholderPage({
             className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-[#E2E6F0] bg-transparent px-4 text-sm font-medium text-[var(--text)] transition-colors hover:bg-[#F8FAFF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00C2CB] dark:border-[#1E2D4A] dark:hover:bg-[#111827]"
           >
             <ArrowLeft size={16} />
-            كل العملاء المحتملين
+            {t('customers.placeholders.allLeads')}
           </Link>
         </div>
       </header>

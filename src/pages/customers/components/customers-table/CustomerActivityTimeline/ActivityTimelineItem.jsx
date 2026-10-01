@@ -4,12 +4,14 @@ import { ActivityDetails } from './ActivityDetails'
 import { getActivityTypeConfig, toneClasses } from './config/activityTypes'
 import { formatActivityTime } from './utils/formatActivityDate'
 import { getActivityRenderer } from './utils/getActivityRenderer'
+import { useTranslation } from 'react-i18next'
 
 export function ActivityTimelineItem({ activity, isFirst, isLast, expanded, onToggle }) {
+  const { t } = useTranslation()
   const typeConfig = getActivityTypeConfig(activity?.type)
   const tone = toneClasses[typeConfig.tone] || toneClasses.slate
   const RenderActivity = getActivityRenderer(activity)
-  const userName = activity?.userName || activity?.user?.name || 'غير معروف'
+  const userName = activity?.userName || activity?.user?.name || t('customers.activityTimeline.unknownUser')
 
   return (
     <div className="grid grid-cols-[1.6rem_minmax(0,1fr)] gap-1.5">
@@ -46,7 +48,7 @@ export function ActivityTimelineItem({ activity, isFirst, isLast, expanded, onTo
             className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-black text-[#007A80] hover:text-[#005f64]"
           >
             <ChevronDown size={12} className={expanded ? 'rotate-180 transition-transform' : 'transition-transform'} />
-            {expanded ? 'إخفاء التفاصيل' : 'عرض التفاصيل'}
+            {expanded ? t('customers.activityTimeline.hideDetails') : t('customers.activityTimeline.showDetails')}
           </button>
 
           {expanded ? <ActivityDetails activity={activity} /> : null}

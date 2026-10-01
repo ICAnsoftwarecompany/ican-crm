@@ -10,6 +10,7 @@ import { cn } from '../../../../../shared/utils/cn'
 import { StatusChangeReasonDialog } from '../../bulk-actions/selection-actions/status/StatusChangeReasonDialog'
 import { formatDateTimeForApi } from '../customerDetailsUtils'
 import { QuickActionButton } from './QuickActionButton'
+import { useTranslation } from 'react-i18next'
 
 function getLeadId(customer) {
   return customer?.lead_id || customer?.lead?.id
@@ -51,6 +52,7 @@ function getMenuPosition(anchor) {
 }
 
 export function StatusQuickAction({ customer, statuses = [], currentStatus, onChanged }) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [isReasonDialogOpen, setIsReasonDialogOpen] = useState(false)
   const [reasonStatus, setReasonStatus] = useState(null)
@@ -95,8 +97,10 @@ export function StatusQuickAction({ customer, statuses = [], currentStatus, onCh
       lead_id: leadId,
       action: 'create_activity',
       type: statusRequiresReason ? 'note-to-lead' : 'status_change',
-      title: statusRequiresReason ? `سبب تغيير الحالة إلى ${statusLabel}` : `تغيير الحالة إلى ${statusLabel}`,
-      description: statusRequiresReason ? reasonText : `تم تغيير حالة العميل إلى ${statusLabel}`,
+      title: statusRequiresReason
+        ? t('customers.pipeline.activity.reasonTitle', { status: statusLabel })
+        : t('customers.pipeline.activity.title', { status: statusLabel }),
+      description: statusRequiresReason ? reasonText : t('customers.quickActions.statusChangedDescription', { status: statusLabel }),
       note: statusRequiresReason ? reasonText : '',
       data: {
         source: 'customer_details_quick_actions',
@@ -107,7 +111,7 @@ export function StatusQuickAction({ customer, statuses = [], currentStatus, onCh
       activity_at: formatDateTimeForApi(new Date()),
     })
 
-    toast.success('تم تغيير حالة العميل')
+    toast.success(t('customers.quickActions.statusChanged'))
     setOpen(false)
     onChanged?.({
       customer,
@@ -130,7 +134,7 @@ export function StatusQuickAction({ customer, statuses = [], currentStatus, onCh
     try {
       await changeStatus(status)
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر تغيير حالة العميل'))
+      toast.error(extractMessage(error, t('customers.quickActions.statusChangeFailed')))
     }
   }
 
@@ -143,7 +147,9 @@ export function StatusQuickAction({ customer, statuses = [], currentStatus, onCh
       if (schedulePayload?.type) {
         await meetingMutations.create.mutateAsync({
           ...schedulePayload,
-          title: schedulePayload.title || `${schedulePayload.type === 'call' ? 'مكالمة' : 'اجتماع'} متابعة الحالة`,
+          title: schedulePayload.title || (schedulePayload.type === 'call'
+            ? t('customers.pipeline.activity.followUpCall')
+            : t('customers.pipeline.activity.followUpMeeting')),
           description: schedulePayload.description || reason,
         })
       }
@@ -151,7 +157,7 @@ export function StatusQuickAction({ customer, statuses = [], currentStatus, onCh
       setIsReasonDialogOpen(false)
       setReasonStatus(null)
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر تغيير الحالة مع حفظ السبب'))
+      toast.error(extractMessage(error, t('customers.bulkActions.statusWithReasonFailed')))
     }
   }
 
@@ -159,7 +165,7 @@ export function StatusQuickAction({ customer, statuses = [], currentStatus, onCh
     <span ref={buttonWrapRef} className="inline-flex">
       <QuickActionButton
         icon={RefreshCw}
-        label="تغيير الحالة"
+        label={t('customers.quickActions.changeStatus')}
         accentClassName="text-[#64748B]"
         onClick={() => {
           if (!canOpen || mutations.saveAction.isPending) return
@@ -167,7 +173,7 @@ export function StatusQuickAction({ customer, statuses = [], currentStatus, onCh
           setOpen((value) => !value)
         }}
         alert={false}
-        alertTitle={canOpen ? 'تغيير حالة العميل' : 'لا توجد حالات متاحة لهذا العميل'}
+        alertTitle={canOpen ? t('customers.quickActions.changeCustomerStatus') : t('customers.quickActions.noStatusesAvailable')}
       />
 
       {open && typeof document !== 'undefined' ? createPortal(
@@ -181,7 +187,7 @@ export function StatusQuickAction({ customer, statuses = [], currentStatus, onCh
           }}
         >
           <div className="mb-1 px-2 py-1 text-[11px] font-black text-[var(--text-muted)]">
-            اختر حالة جديدة
+            {t('customers.quickActions.chooseNewStatus')}
           </div>
           <div className="space-y-1">
             {statuses.map((status) => {
@@ -202,7 +208,9 @@ export function StatusQuickAction({ customer, statuses = [], currentStatus, onCh
                       : 'text-[var(--text)] hover:bg-[#F8FEFF]',
                     mutations.saveAction.isPending && 'cursor-wait opacity-70'
                   )}
-                  title={`تغيير حالة العميل إلى: ${label}${reasonRequired ? ' - تتطلب سبب' : ''}`}
+                  title={reasonRequired
+                    ? t('customers.quickActions.changeStatusToWithReason', { status: label })
+                    : t('customers.quickActions.changeStatusTo', { status: label })}
                 >
                   <span
                     className="h-2.5 w-2.5 shrink-0 rounded-full border border-[#E2E8F0]"
@@ -211,7 +219,7 @@ export function StatusQuickAction({ customer, statuses = [], currentStatus, onCh
                   <span className="min-w-0 flex-1 truncate">{label}</span>
                   {reasonRequired ? (
                     <span className="shrink-0 rounded-full bg-[#FEF3C7] px-1.5 py-0.5 text-[10px] font-black text-[#92400E]">
-                      سبب
+                      {t('customers.quickActions.reasonBadge')}
                     </span>
                   ) : null}
                   {selected ? <Check size={14} className="shrink-0" /> : null}

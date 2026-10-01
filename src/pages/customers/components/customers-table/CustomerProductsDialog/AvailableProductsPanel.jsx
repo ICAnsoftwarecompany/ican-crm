@@ -2,11 +2,12 @@ import { useMemo, useState } from 'react'
 import { PackageSearch, RefreshCw, Search } from 'lucide-react'
 import { ProductCard } from './ProductCard'
 import { renderSafeValue } from '../customerMarketingUtils'
+import { useTranslation } from 'react-i18next'
 
 const TYPE_FILTERS = [
-  { value: 'all', label: 'الكل' },
-  { value: 'product', label: 'المنتجات' },
-  { value: 'service', label: 'الخدمات' },
+  { value: 'all', labelKey: 'customers.productsDialog.filterAll' },
+  { value: 'product', labelKey: 'customers.productsDialog.filterProducts' },
+  { value: 'service', labelKey: 'customers.productsDialog.filterServices' },
 ]
 
 function normalizeText(value) {
@@ -68,6 +69,7 @@ export function AvailableProductsPanel({
   onRetry,
   onOpenProductInfo,
 }) {
+  const { t } = useTranslation()
   const [typeFilter, setTypeFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
@@ -105,9 +107,9 @@ export function AvailableProductsPanel({
               <PackageSearch size={16} />
             </span>
             <div className="min-w-0">
-              <h3 className="break-words text-sm font-black text-[var(--text)]">منتجات غير مهتم بها</h3>
+              <h3 className="break-words text-sm font-black text-[var(--text)]">{t('customers.productsDialog.notInterestedTitle')}</h3>
               <p className="text-xs font-semibold text-[var(--text-muted)]">
-                منتجات: {productCount} | خدمات: {serviceCount}
+                {t('customers.productsDialog.productServiceCounts', { products: productCount, services: serviceCount })}
               </p>
             </div>
           </div>
@@ -123,7 +125,7 @@ export function AvailableProductsPanel({
               type="search"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="بحث في كل بيانات المنتجات..."
+              placeholder={t('customers.productsDialog.searchPlaceholder')}
               className="h-9 w-full rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] ps-9 pe-3 text-xs font-bold text-[var(--text)] outline-none transition focus:border-[#00C2CB] focus:bg-white"
             />
           </label>
@@ -140,7 +142,7 @@ export function AvailableProductsPanel({
                     : 'text-[#64748B] hover:bg-white/70 hover:text-[var(--text)]'
                 }`}
               >
-                {option.label}
+                {t(option.labelKey)}
               </button>
             ))}
           </div>
@@ -150,7 +152,7 @@ export function AvailableProductsPanel({
             onChange={(event) => setCategoryFilter(event.target.value)}
             className="h-9 min-w-40 rounded-lg border border-[#D7EEF0] bg-white px-3 text-xs font-black text-[var(--text)] outline-none transition focus:border-[#00C2CB]"
           >
-            <option value="">كل الفئات</option>
+            <option value="">{t('customers.productsDialog.allCategories')}</option>
             {categoryOptions.map((categoryName) => (
               <option key={categoryName} value={categoryName}>{categoryName}</option>
             ))}
@@ -161,20 +163,20 @@ export function AvailableProductsPanel({
       <div className="min-h-0 flex-1 space-y-2 overflow-auto p-3">
         {isLoading ? (
           <div className="rounded-xl border border-dashed border-[#CBD5E1] bg-[#F8FAFC] p-5 text-center text-sm font-bold text-[var(--text-muted)]">
-            جاري تحميل المنتجات...
+            {t('customers.productsDialog.loadingProducts')}
           </div>
         ) : null}
 
         {isError ? (
           <div className="space-y-3 rounded-xl border border-red-100 bg-red-50 p-5 text-center text-sm font-bold text-red-700">
-            <div>تعذر تحميل المنتجات</div>
+            <div>{t('customers.productsDialog.loadProductsError')}</div>
             <button
               type="button"
               onClick={onRetry}
               className="inline-flex items-center gap-1 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-black text-red-700 transition hover:bg-red-100"
             >
               <RefreshCw size={13} />
-              إعادة المحاولة
+              {t('customers.productsDialog.retry')}
             </button>
           </div>
         ) : null}
@@ -193,7 +195,7 @@ export function AvailableProductsPanel({
 
         {!isLoading && !isError && !filteredProducts.length ? (
           <div className="rounded-xl border border-dashed border-[#CBD5E1] bg-[#F8FAFC] p-5 text-center text-sm font-bold text-[var(--text-muted)]">
-            لا توجد منتجات مطابقة للفلاتر الحالية
+            {t('customers.productsDialog.noMatchingProducts')}
           </div>
         ) : null}
       </div>

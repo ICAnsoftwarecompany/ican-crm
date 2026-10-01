@@ -3,13 +3,15 @@ import { createPortal } from 'react-dom'
 import { ChevronDown } from 'lucide-react'
 
 import { cn } from '../../../../../shared/utils/cn'
+import { useTranslation } from 'react-i18next'
 
 export function QuickActionMenu({ icon: Icon, label, accentClassName, alert = false, alertTitle, options = [] }) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [menuPosition, setMenuPosition] = useState(null)
   const buttonRef = useRef(null)
   const menuRef = useRef(null)
-  const hint = `${label} - اضغط مطولًا واسحب يمين أو يسار لتغيير الترتيب`
+  const hint = t('customers.quickActions.reorderHint', { label })
 
   const updateMenuPosition = () => {
     const rect = buttonRef.current?.getBoundingClientRect()

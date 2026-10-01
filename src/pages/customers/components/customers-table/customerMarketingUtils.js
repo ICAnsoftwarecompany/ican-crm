@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+
 function safeText(value) {
   if (value === null || value === undefined || value === '') return ''
   return String(value)
@@ -102,7 +104,7 @@ export function getCustomerMarketingSource(row) {
     return {
       kind: 'form',
       label: 'Form',
-      title: formName || 'Facebook Lead Form',
+      title: formName || i18n.t('customers.table.source.facebookLeadForm'),
       description: lead.form.description || '',
       code: lead.form.code || '',
       externalId: lead.form.external_id || '',
@@ -128,7 +130,7 @@ export function getCustomerMarketingSource(row) {
     return {
       kind: 'ad',
       label: 'Ad',
-      title: adName || 'Ad',
+      title: adName || i18n.t('customers.table.source.ad'),
       description: lead.ad.description || '',
       code: lead.ad.code || '',
       externalId: lead.ad.external_id || '',
@@ -153,7 +155,7 @@ export function getCustomerMarketingSource(row) {
     return {
       kind: 'campaign',
       label: 'Campaign',
-      title: campaignName || 'Campaign',
+      title: campaignName || i18n.t('customers.table.source.campaign'),
       description: lead.campaign.description || '',
       code: lead.campaign.code || '',
       externalId: lead.campaign.external_id || '',
@@ -176,7 +178,7 @@ export function getCustomerMarketingSource(row) {
   return {
     kind: 'manual',
     label: 'Manual',
-    title: firstText(lead?.source, row?.source, row?.linked_type) || 'Manual',
+    title: firstText(lead?.source, row?.source, row?.linked_type) || i18n.t('customers.table.source.manual'),
     description: '',
     code: '',
     externalId: '',
@@ -185,7 +187,7 @@ export function getCustomerMarketingSource(row) {
     campaignName: '',
     adName: '',
     formName: '',
-    manualName: firstText(lead?.source, row?.source, lead?.linked_type, row?.linked_type) || 'Manual',
+    manualName: firstText(lead?.source, row?.source, lead?.linked_type, row?.linked_type) || i18n.t('customers.table.source.manual'),
     startDate: '',
     endDate: '',
     budget: '',

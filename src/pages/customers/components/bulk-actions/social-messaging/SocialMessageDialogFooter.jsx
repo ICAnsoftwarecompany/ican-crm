@@ -1,5 +1,6 @@
 import { Send } from 'lucide-react'
 import { Button } from '../../../../../shared/components/ui/Button'
+import { useTranslation } from 'react-i18next'
 
 export function SocialMessageDialogFooter({
   canSend = false,
@@ -7,9 +8,10 @@ export function SocialMessageDialogFooter({
   onCancel,
   onSend,
 }) {
+  const { t } = useTranslation()
   return (
     <>
-      <Button type="button" variant="outline" onClick={onCancel}>إلغاء</Button>
+      <Button type="button" variant="outline" onClick={onCancel}>{t('customers.socialMessaging.cancel')}</Button>
       <Button
         type="button"
         variant="ai"
@@ -19,7 +21,7 @@ export function SocialMessageDialogFooter({
         className="min-w-32"
       >
         <Send size={15} />
-        إرسال الرسالة
+        {t('customers.socialMessaging.send')}
       </Button>
     </>
   )

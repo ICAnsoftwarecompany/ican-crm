@@ -1,5 +1,7 @@
+import i18n from 'i18next'
+
 export function getCustomerLabel(customer) {
-  return customer?.name || customer?.email || customer?.phone || `عميل #${customer?.id}`
+  return customer?.name || customer?.email || customer?.phone || i18n.t('customers.leadDetails.customerNumber', { id: customer?.id })
 }
 
 export function filterCustomersByKeyword(customers = [], keyword = '') {

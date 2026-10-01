@@ -8,6 +8,8 @@ import { extractMessage } from '../../../../shared/utils/apiResponse'
 import { Button } from '../../../../shared/components/ui/Button'
 import { Spinner } from '../../../../shared/components/ui/Spinner'
 import { StatusDefinitionDialog } from './StatusDefinitionDialog'
+import { useTranslation } from 'react-i18next'
+import i18n from 'i18next'
 
 function flattenStatuses(response) {
   const data = response?.data
@@ -36,32 +38,33 @@ function getLeadStatuses(statuses = []) {
 }
 
 function getStageKindLabel(status) {
-  if (isEnabled(status?.is_deal)) return 'حالة التعاقد/الشراء'
-  if (isEnabled(status?.is_lost)) return 'حالة الخسارة'
-  if (isEnabled(status?.is_retarget)) return 'حالة إعادة الاستهداف'
-  return 'حالة عادية'
+  if (isEnabled(status?.is_deal)) return i18n.t('customers.customization.stageKinds.deal')
+  if (isEnabled(status?.is_lost)) return i18n.t('customers.customization.stageKinds.lost')
+  if (isEnabled(status?.is_retarget)) return i18n.t('customers.customization.stageKinds.retarget')
+  return i18n.t('customers.customization.stageKinds.normal')
 }
 
 function getEnabledMeta(status) {
   const entries = []
 
   if (isEnabled(status?.is_deal)) {
-    entries.push('حالة التعاقد/الشراء')
+    entries.push(i18n.t('customers.customization.stageKinds.deal'))
   }
   if (isEnabled(status?.is_lost)) {
-    entries.push('حالة الخسارة')
+    entries.push(i18n.t('customers.customization.stageKinds.lost'))
   }
   if (isEnabled(status?.is_retarget)) {
-    entries.push('حالة إعادة الاستهداف')
+    entries.push(i18n.t('customers.customization.stageKinds.retarget'))
   }
   if (isEnabled(status?.has_resone)) {
-    entries.push('إجبار وجود سبب')
+    entries.push(i18n.t('customers.customization.reasonRequired'))
   }
 
   return entries
 }
 
 export function CustomerStatusesTab() {
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [dialogMode, setDialogMode] = useState(null)
   const [selectedStatus, setSelectedStatus] = useState(null)
@@ -79,24 +82,24 @@ export function CustomerStatusesTab() {
   const createStatusMutation = useMutation({
     mutationFn: definitionsApi.createStatus,
     onSuccess: () => {
-      toast.success('تمت إضافة الحالة')
+      toast.success(t('customers.customization.statusAdded'))
       invalidateStatuses()
       closeDialog()
     },
     onError: (error) => {
-      toast.error(extractMessage(error, 'تعذر إضافة الحالة'))
+      toast.error(extractMessage(error, t('customers.customization.statusAddFailed')))
     },
   })
 
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, payload }) => definitionsApi.updateStatus(id, payload),
     onSuccess: () => {
-      toast.success('تم تعديل الحالة')
+      toast.success(t('customers.customization.statusUpdated'))
       invalidateStatuses()
       closeDialog()
     },
     onError: (error) => {
-      toast.error(extractMessage(error, 'تعذر تعديل الحالة'))
+      toast.error(extractMessage(error, t('customers.customization.statusUpdateFailed')))
     },
   })
 
@@ -133,9 +136,9 @@ export function CustomerStatusesTab() {
     <div className="space-y-4">
       <div className="flex flex-col gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-base font-bold text-[var(--text)]">تعريف حالات Lead</h2>
+          <h2 className="text-base font-bold text-[var(--text)]">{t('customers.customization.statusesTitle')}</h2>
           <p className="mt-1 text-sm leading-6 text-[var(--text-muted)]">
-            الحالات هنا تعمل دائمًا كـ lead و active=1، وترتب كتسليم مراحل حسب الأولوية.
+            {t('customers.customization.statusesDescription')}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -146,11 +149,11 @@ export function CustomerStatusesTab() {
             className="gap-2"
           >
             <RefreshCw size={16} className={statusesQuery.isFetching ? 'animate-spin' : ''} />
-            تحديث
+            {t('customers.customization.refresh')}
           </Button>
           <Button variant="primary" className="gap-2" onClick={openCreateDialog}>
             <Plus size={16} />
-            تعريف حالة
+            {t('customers.customization.defineStatus')}
           </Button>
         </div>
       </div>
@@ -163,19 +166,19 @@ export function CustomerStatusesTab() {
 
       {statusesQuery.isError && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          {extractMessage(statusesQuery.error, 'تعذر تحميل الحالات')}
+          {extractMessage(statusesQuery.error, t('customers.customization.statusesLoadFailed'))}
         </div>
       )}
 
       {!statusesQuery.isLoading && !statusesQuery.isError && leadStatuses.length === 0 && (
         <div className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface)] p-6 text-center text-sm text-[var(--text-muted)]">
-          لا توجد حالات Lead مسجلة بعد.
+          {t('customers.customization.noStatuses')}
         </div>
       )}
 
       {!statusesQuery.isLoading && !statusesQuery.isError && leadStatuses.length > 0 && (
         <section className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3">
-          <div className="mb-3 text-sm font-bold text-[var(--text-muted)]">تسلسل مراحل الـ Lead حسب الترتيب</div>
+          <div className="mb-3 text-sm font-bold text-[var(--text-muted)]">{t('customers.customization.stagesSequence')}</div>
           <div className="flex flex-wrap items-stretch gap-2">
             {leadStatuses.map((status, index) => {
               const enabledMeta = getEnabledMeta(status)
@@ -188,7 +191,7 @@ export function CustomerStatusesTab() {
                       <span
                         className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/20"
                         style={{ backgroundColor: status.color || '#64748B' }}
-                        title="لون الحالة"
+                        title={t('customers.customization.statusColor')}
                       >
                         <CheckCircle2 size={18} className="text-white" />
                       </span>
@@ -197,7 +200,7 @@ export function CustomerStatusesTab() {
                         <div className="flex items-center justify-between gap-2">
                           <h4 className="truncate text-sm font-black text-[var(--text)]">{status.status}</h4>
                           <span className="rounded-full bg-[#EEF6FF] px-2 py-0.5 text-xs font-bold text-[#1D4ED8]">
-                            ترتيب {status.priority ?? '-'}
+                            {t('customers.customization.order', { value: status.priority ?? '-' })}
                           </span>
                         </div>
 
@@ -223,7 +226,7 @@ export function CustomerStatusesTab() {
                         className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-[var(--border)] px-2.5 text-xs font-semibold text-[var(--text)] hover:bg-[var(--surface-2)]"
                       >
                         <Edit3 size={14} />
-                        تعديل
+                        {t('customers.customization.edit')}
                       </button>
                     </div>
                   </article>

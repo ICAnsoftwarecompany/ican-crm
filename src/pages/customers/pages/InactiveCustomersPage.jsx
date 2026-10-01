@@ -1,11 +1,13 @@
 import { UserRoundX } from 'lucide-react'
 import { CustomerPlaceholderPage } from './CustomerPlaceholderPage'
+import { useTranslation } from 'react-i18next'
 
 export function InactiveCustomersPage() {
+  const { t } = useTranslation()
   return (
     <CustomerPlaceholderPage
-      title="غير النشطين"
-      description="متابعة العملاء المحتملين الذين لم يحدث معهم نشاط أو تواصل لفترة طويلة."
+      title={t('customers.placeholders.inactive.title')}
+      description={t('customers.placeholders.inactive.description')}
       icon={UserRoundX}
     />
   )

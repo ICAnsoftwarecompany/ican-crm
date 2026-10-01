@@ -1,13 +1,15 @@
 import { Check } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function StatusTabsSelector({ statuses = [], selectedStatusIds = [], onToggleStatus }) {
+  const { t } = useTranslation()
   const selectedSet = new Set(selectedStatusIds.map(String))
 
   return (
     <div className="min-w-0">
       <div className="mb-1 flex items-center justify-between gap-2">
         <span className="rounded-full bg-[#E8F9FA] px-2 py-0.5 text-[11px] font-bold text-[#007A80]">
-          {selectedStatusIds.length} محدد
+          {t('customers.statusBoard.selectedCount', { count: selectedStatusIds.length })}
         </span>
       </div>
 

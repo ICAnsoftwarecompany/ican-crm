@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { FormDialog } from '../../../../shared/components/overlays/FormDialog'
 import { Input } from '../../../../shared/components/ui/Input'
 import { Select } from '../../../../shared/components/ui/Select'
+import { useTranslation } from 'react-i18next'
+import i18n from 'i18next'
 
 const DEFAULT_FORM = {
   status: '',
@@ -12,15 +14,15 @@ const DEFAULT_FORM = {
 }
 
 const STAGE_KIND_OPTIONS = [
-  { value: 'normal', label: 'حالة عادية' },
-  { value: 'deal', label: 'حالة التعاقد/الشراء' },
-  { value: 'lost', label: 'حالة الخسارة' },
-  { value: 'retarget', label: 'حالة إعادة الاستهداف' },
+  { value: 'normal', get label() { return i18n.t('customers.customization.stageKinds.normal') } },
+  { value: 'deal', get label() { return i18n.t('customers.customization.stageKinds.deal') } },
+  { value: 'lost', get label() { return i18n.t('customers.customization.stageKinds.lost') } },
+  { value: 'retarget', get label() { return i18n.t('customers.customization.stageKinds.retarget') } },
 ]
 
 const REASON_OPTIONS = [
-  { value: '1', label: 'نعم - إجبار وجود سبب' },
-  { value: '0', label: 'لا' },
+  { value: '1', get label() { return i18n.t('customers.customization.reasonYes') } },
+  { value: '0', get label() { return i18n.t('customers.customization.reasonNo') } },
 ]
 
 function toBit(value) {
@@ -86,6 +88,7 @@ export function StatusDefinitionDialog({
   onClose,
   onSubmit,
 }) {
+  const { t } = useTranslation()
   const [form, setForm] = useState(DEFAULT_FORM)
   const [formError, setFormError] = useState('')
 
@@ -100,8 +103,8 @@ export function StatusDefinitionDialog({
     [selectedStatus?.id, statuses]
   )
 
-  const submitText = mode === 'edit' ? 'حفظ التعديل' : 'إضافة'
-  const title = mode === 'edit' ? 'تعديل تعريف الحالة' : 'تعريف حالة جديدة'
+  const submitText = mode === 'edit' ? t('customers.customization.saveChanges') : t('customers.customization.add')
+  const title = mode === 'edit' ? t('customers.customization.editStatusDefinition') : t('customers.customization.newStatusDefinition')
 
   const updateForm = (key, value) => {
     setForm((current) => ({ ...current, [key]: value }))
@@ -112,18 +115,18 @@ export function StatusDefinitionDialog({
     const payload = buildPayload(form)
 
     if (!payload.status) {
-      setFormError('اسم الحالة مطلوب')
+      setFormError(t('customers.customization.statusNameRequired'))
       return
     }
 
     if (!Number.isFinite(payload.priority) || payload.priority < 0) {
-      setFormError('الترتيب يجب أن يكون رقمًا صحيحًا أكبر من أو يساوي 0')
+      setFormError(t('customers.customization.orderInvalid'))
       return
     }
 
     const isReserved = reservedPriorities.includes(payload.priority)
     if (isReserved) {
-      setFormError(`الترتيب ${payload.priority} محجوز بالفعل، اختر ترتيبًا آخر`)
+      setFormError(t('customers.customization.orderTaken', { value: payload.priority }))
       return
     }
 
@@ -135,38 +138,38 @@ export function StatusDefinitionDialog({
       open={open}
       onClose={onClose}
       title={title}
-      description="تعريف الحالة يتم دائمًا كـ lead و active=1، مع اختيار نوع المرحلة والسبب والترتيب واللون."
+      description={t('customers.customization.statusDialogDescription')}
       onSubmit={handleSubmit}
       submitText={submitText}
       loading={loading}
       submitDisabled={!String(form.status || '').trim()}
     >
       <Input
-        label="اسم الحالة"
+        label={t('customers.customization.statusName')}
         value={form.status}
         onChange={(event) => updateForm('status', event.target.value)}
         error={formError}
-        placeholder="مثال: مرحلة التواصل الأول"
+        placeholder={t('customers.customization.statusNamePlaceholder')}
       />
 
       <Select
-        label="نوع المرحلة"
+        label={t('customers.customization.stageKind')}
         value={form.stageKind}
         onChange={(value) => updateForm('stageKind', value)}
         options={STAGE_KIND_OPTIONS}
-        placeholder="اختر نوع المرحلة"
+        placeholder={t('customers.customization.chooseStageKind')}
       />
 
       <Select
-        label="هل تحتاج الحالة سبب؟"
+        label={t('customers.customization.needsReason')}
         value={form.has_resone}
         onChange={(value) => updateForm('has_resone', value)}
         options={REASON_OPTIONS}
-        placeholder="اختر"
+        placeholder={t('customers.customization.choose')}
       />
 
       <Input
-        label="الترتيب"
+        label={t('customers.customization.orderLabel')}
         type="number"
         min="0"
         value={form.priority}
@@ -175,21 +178,21 @@ export function StatusDefinitionDialog({
       />
 
       <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-2 text-xs text-[#475569]">
-        <div className="font-semibold">الترتيبات المحجوزة حاليًا (lead):</div>
+        <div className="font-semibold">{t('customers.customization.reservedOrders')}</div>
         <div className="mt-1 flex flex-wrap gap-1.5">
           {reservedPriorities.length ? reservedPriorities.map((value) => (
             <span key={value} className="rounded-full border border-[#CBD5E1] bg-white px-2 py-0.5 font-semibold">
               {value}
             </span>
           )) : (
-            <span className="font-semibold text-[#64748B]">لا يوجد ترتيب محجوز</span>
+            <span className="font-semibold text-[#64748B]">{t('customers.customization.noReservedOrders')}</span>
           )}
         </div>
       </div>
 
       <div className="grid gap-2">
         <Input
-          label="اللون"
+          label={t('customers.customization.color')}
           type="text"
           value={form.color}
           onChange={(event) => updateForm('color', event.target.value)}
@@ -206,7 +209,7 @@ export function StatusDefinitionDialog({
           value={form.color || '#3B82F6'}
           onChange={(event) => updateForm('color', event.target.value)}
           className="h-9 w-20 cursor-pointer rounded border border-[var(--border)] bg-[var(--surface)] p-1"
-          aria-label="اختيار لون الحالة"
+          aria-label={t('customers.customization.chooseColor')}
         />
       </div>
     </FormDialog>

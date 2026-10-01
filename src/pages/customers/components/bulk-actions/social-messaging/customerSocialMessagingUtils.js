@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+
 export function getCustomerName(customer) {
   return (
     customer?.lead?.name ||
@@ -6,7 +8,7 @@ export function getCustomerName(customer) {
     customer?.email ||
     customer?.lead?.phone ||
     customer?.phone ||
-    'العميل'
+    i18n.t('customers.table.theCustomer')
   )
 }
 

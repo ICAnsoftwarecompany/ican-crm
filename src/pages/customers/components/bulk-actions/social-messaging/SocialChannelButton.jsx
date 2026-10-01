@@ -1,8 +1,10 @@
 import { cn } from '../../../../../shared/utils/cn'
 import { SocialChannelBadge } from './SocialChannelBadge'
+import { useTranslation } from 'react-i18next'
 
 export function SocialChannelButton({ channel, disabled = false, onClick, compact = false }) {
-  const label = disabled ? 'اختر عميلا محتملا واحدا على الأقل لفتح صندوق الرسالة' : `كتابة رسالة ${channel.label}`
+  const { t } = useTranslation()
+  const label = disabled ? t('customers.socialMessaging.selectAtLeastOne') : t('customers.socialMessaging.writeChannelMessage', { channel: channel.label })
 
   return (
     <button

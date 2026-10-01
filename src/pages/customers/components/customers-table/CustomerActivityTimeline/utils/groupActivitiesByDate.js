@@ -1,3 +1,4 @@
+import i18n from 'i18next'
 import { formatActivityDayLabel, toActivityDate } from './formatActivityDate'
 
 function buildDayKey(date) {
@@ -13,8 +14,8 @@ function getRelativeDayLabel(date) {
   const target = new Date(date.getFullYear(), date.getMonth(), date.getDate())
   const diffDays = Math.floor((today.getTime() - target.getTime()) / 86400000)
 
-  if (diffDays === 0) return 'اليوم'
-  if (diffDays === 1) return 'أمس'
+  if (diffDays === 0) return i18n.t('customers.activityTimeline.today')
+  if (diffDays === 1) return i18n.t('customers.activityTimeline.yesterday')
   return formatActivityDayLabel(date)
 }
 
@@ -28,7 +29,7 @@ export function groupActivitiesByDate(activities = []) {
     if (!groupsMap.has(key)) {
       groupsMap.set(key, {
         key,
-        label: date ? getRelativeDayLabel(date) : 'بدون تاريخ',
+        label: date ? getRelativeDayLabel(date) : i18n.t('customers.activityTimeline.noDate'),
         sortTime: date ? date.getTime() : 0,
         items: [],
       })

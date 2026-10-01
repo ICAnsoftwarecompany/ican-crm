@@ -4,12 +4,14 @@ import { toast } from 'sonner'
 
 import { QuickActionButton } from '../QuickActionButton'
 import { InterestFormDialog } from './InterestFormDialog'
+import { useTranslation } from 'react-i18next'
 
 function getLeadId(customer) {
   return customer?.lead_id || customer?.lead?.id
 }
 
 export function AddInterestQuickAction({ customer, onInterestChanged }) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const leadId = getLeadId(customer)
 
@@ -17,17 +19,17 @@ export function AddInterestQuickAction({ customer, onInterestChanged }) {
     <>
       <QuickActionButton
         icon={HeartHandshake}
-        label="إضافة اهتمام"
+        label={t('customers.interestForm.addTitle')}
         accentClassName="text-[#007A80]"
         onClick={() => {
           if (!leadId) {
-            toast.info('لا يوجد lead مرتبط بهذا العميل')
+            toast.info(t('customers.interestForm.noLead'))
             return
           }
           setOpen(true)
         }}
         alert={false}
-        alertTitle={leadId ? 'إضافة اهتمام للعميل' : 'لا يوجد lead مرتبط بهذا العميل'}
+        alertTitle={leadId ? t('customers.interestForm.addForCustomer') : t('customers.interestForm.noLead')}
       />
 
       <InterestFormDialog

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Loader2, Plus } from 'lucide-react'
 
 import { TASK_PRIORITIES, TASK_TYPES } from './taskUtils'
+import { useTranslation } from 'react-i18next'
 
 const INITIAL_FORM = {
   title: '',
@@ -17,6 +18,7 @@ const INITIAL_FORM = {
 }
 
 export function TaskCreateForm({ leadId, onSubmit, isSaving }) {
+  const { t } = useTranslation()
   const [form, setForm] = useState(INITIAL_FORM)
 
   const updateField = (field, value) => {
@@ -35,21 +37,21 @@ export function TaskCreateForm({ leadId, onSubmit, isSaving }) {
     <form onSubmit={handleSubmit} className="rounded-2xl border border-[#BEEFF2] bg-white p-3 shadow-sm">
       <div className="grid gap-2">
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-          عنوان المهمة
+          {t('customers.tasksTab.form.title')}
           <input
             value={form.title}
             onChange={(event) => updateField('title', event.target.value)}
-            placeholder="مثال: متابعة العميل"
+            placeholder={t('customers.tasksTab.form.titlePlaceholder')}
             className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm text-[var(--text)] outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#00A8B0]/15"
           />
         </label>
 
         <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-          الوصف
+          {t('customers.tasksTab.form.description')}
           <textarea
             value={form.description}
             onChange={(event) => updateField('description', event.target.value)}
-            placeholder="اكتب تفاصيل مختصرة للمهمة"
+            placeholder={t('customers.tasksTab.form.descriptionPlaceholder')}
             rows={3}
             className="min-h-20 resize-y rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[#00A8B0] focus:ring-2 focus:ring-[#00A8B0]/15"
           />
@@ -57,7 +59,7 @@ export function TaskCreateForm({ leadId, onSubmit, isSaving }) {
 
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-            النوع
+            {t('customers.tasksTab.form.type')}
             <select
               value={form.type}
               onChange={(event) => updateField('type', event.target.value)}
@@ -70,7 +72,7 @@ export function TaskCreateForm({ leadId, onSubmit, isSaving }) {
           </label>
 
           <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-            الأولوية
+            {t('customers.tasksTab.form.priority')}
             <select
               value={form.priority}
               onChange={(event) => updateField('priority', event.target.value)}
@@ -85,7 +87,7 @@ export function TaskCreateForm({ leadId, onSubmit, isSaving }) {
 
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
           <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-            التاريخ
+            {t('customers.tasksTab.form.date')}
             <input
               type="date"
               value={form.due_date}
@@ -95,7 +97,7 @@ export function TaskCreateForm({ leadId, onSubmit, isSaving }) {
           </label>
 
           <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-            الوقت
+            {t('customers.tasksTab.form.time')}
             <input
               type="time"
               value={form.due_time}
@@ -105,14 +107,14 @@ export function TaskCreateForm({ leadId, onSubmit, isSaving }) {
           </label>
 
           <label className="grid gap-1 text-xs font-bold text-[var(--text)]">
-            الظهور
+            {t('customers.tasksTab.form.visibility')}
             <select
               value={form.visibility}
               onChange={(event) => updateField('visibility', event.target.value)}
               className="h-10 rounded-lg border border-[#D7EEF0] bg-[#F8FEFF] px-3 text-sm text-[var(--text)]"
             >
-              <option value="shared">مشتركة</option>
-              <option value="private">خاصة</option>
+              <option value="shared">{t('customers.tasksTab.form.shared')}</option>
+              <option value="private">{t('customers.tasksTab.form.private')}</option>
             </select>
           </label>
         </div>
@@ -124,7 +126,7 @@ export function TaskCreateForm({ leadId, onSubmit, isSaving }) {
         className="mt-3 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[#007A80] px-4 text-sm font-black text-white transition-colors hover:bg-[#00656A] disabled:cursor-not-allowed disabled:bg-slate-300"
       >
         {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
-        إنشاء مهمة
+        {t('customers.tasksTab.create')}
       </button>
     </form>
   )

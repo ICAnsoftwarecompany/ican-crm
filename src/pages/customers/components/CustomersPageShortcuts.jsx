@@ -1,22 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Keyboard, MousePointerClick } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const shortcuts = [
-  { keys: ['Ctrl', 'ArrowLeft'], label: 'الانتقال للتاب التالية في حالات العملاء' },
-  { keys: ['Ctrl', 'ArrowRight'], label: 'الرجوع للتاب السابقة في حالات العملاء' },
-  { keys: ['Ctrl', 'P'], label: 'تثبيت أو إلغاء تثبيت إجراءات العملاء المحددين' },
-  { keys: ['Ctrl', 'A'], label: 'تحديد كل صفوف الجدول المفلترة أو إلغاء تحديد الكل' },
-  { keys: ['Ctrl', 'Click'], label: 'تحديد صف أو إلغاء تحديده' },
-  { keys: ['Double Click', 'Row'], label: 'فتح تفاصيل العميل' },
-  { keys: ['Ctrl', 'Double Click'], label: 'فتح صفحة الليد الكاملة' },
-  { keys: ['Double Click', 'Page'], label: 'إغلاق تفاصيل العميل عند الضغط خارج الدروار' },
-  { keys: ['Right Click'], label: 'فتح إجراءات الصفوف المحددة' },
-  { keys: ['Click Text'], label: 'نسخ النص داخل الخلية' },
-  { keys: ['Esc'], label: 'إغلاق الدروار أو القوائم المفتوحة' },
+  { keys: ['Ctrl', 'ArrowLeft'], labelKey: 'customers.shortcuts.nextStatusTab' },
+  { keys: ['Ctrl', 'ArrowRight'], labelKey: 'customers.shortcuts.prevStatusTab' },
+  { keys: ['Ctrl', 'P'], labelKey: 'customers.shortcuts.pinBulkActions' },
+  { keys: ['Ctrl', 'A'], labelKey: 'customers.shortcuts.selectAll' },
+  { keys: ['Ctrl', 'Click'], labelKey: 'customers.shortcuts.toggleRow' },
+  { keys: ['Double Click', 'Row'], labelKey: 'customers.shortcuts.openDetails' },
+  { keys: ['Ctrl', 'Double Click'], labelKey: 'customers.shortcuts.openLeadPage' },
+  { keys: ['Double Click', 'Page'], labelKey: 'customers.shortcuts.closeDetailsOutside' },
+  { keys: ['Right Click'], labelKey: 'customers.shortcuts.openRowActions' },
+  { keys: ['Click Text'], labelKey: 'customers.shortcuts.copyCellText' },
+  { keys: ['Esc'], labelKey: 'customers.shortcuts.closeOverlays' },
 ]
 
 function ShortcutKeys({ keys }) {
+  const { t } = useTranslation()
   return (
     <span className="inline-flex shrink-0 items-center gap-1">
       {keys.map((key) => (
@@ -24,7 +26,7 @@ function ShortcutKeys({ keys }) {
           key={key}
           className="rounded-md border border-[var(--border)] bg-[var(--surface-2)] px-1.5 py-0.5 text-[10px] font-black text-[var(--text)] shadow-sm"
         >
-          {key}
+          {t(`customers.shortcuts.keys.${key.replace(/\s+/g, '')}`, { defaultValue: key })}
         </kbd>
       ))}
     </span>
@@ -32,6 +34,7 @@ function ShortcutKeys({ keys }) {
 }
 
 export function CustomersPageShortcuts() {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 })
   const wrapperRef = useRef(null)
@@ -90,11 +93,11 @@ export function CustomersPageShortcuts() {
           setOpen((value) => !value)
         }}
         className="inline-flex h-8 items-center justify-center gap-2 rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] px-3 text-xs font-bold text-[#007A80] transition-colors hover:bg-[#E8F9FA]"
-        title="اختصارات صفحة العملاء"
-        aria-label="اختصارات صفحة العملاء"
+        title={t('customers.shortcuts.title')}
+        aria-label={t('customers.shortcuts.title')}
       >
         <Keyboard size={15} />
-        <span className="hidden sm:inline">الاختصارات</span>
+        <span className="hidden sm:inline">{t('customers.shortcuts.button')}</span>
       </button>
 
       {open && typeof document !== 'undefined' && createPortal(
@@ -108,18 +111,18 @@ export function CustomersPageShortcuts() {
               <MousePointerClick size={16} />
             </span>
             <div>
-              <h3 className="text-sm font-black text-[var(--text)]">اختصارات صفحة العملاء</h3>
-              <p className="text-xs text-[var(--text-muted)]">دليل سريع للأوامر المتاحة أثناء إدارة العملاء.</p>
+              <h3 className="text-sm font-black text-[var(--text)]">{t('customers.shortcuts.title')}</h3>
+              <p className="text-xs text-[var(--text-muted)]">{t('customers.shortcuts.description')}</p>
             </div>
           </div>
 
           <div className="space-y-1.5">
             {shortcuts.map((shortcut) => (
               <div
-                key={`${shortcut.keys.join('-')}-${shortcut.label}`}
+                key={`${shortcut.keys.join('-')}-${shortcut.labelKey}`}
                 className="flex min-w-0 items-center justify-between gap-3 rounded-lg px-2 py-1.5 hover:bg-[var(--surface-2)]"
               >
-                <span className="min-w-0 text-xs font-semibold text-[var(--text-muted)]">{shortcut.label}</span>
+                <span className="min-w-0 text-xs font-semibold text-[var(--text-muted)]">{t(shortcut.labelKey)}</span>
                 <ShortcutKeys keys={shortcut.keys} />
               </div>
             ))}

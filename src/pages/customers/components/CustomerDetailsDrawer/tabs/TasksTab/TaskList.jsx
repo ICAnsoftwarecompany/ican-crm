@@ -10,6 +10,7 @@ import {
   getTaskTitle,
   getTaskTypeLabel,
 } from './taskUtils'
+import { useTranslation } from 'react-i18next'
 
 function TaskCard({ task }) {
   const priority = getTaskPriorityMeta(task?.priority)
@@ -58,11 +59,12 @@ function TaskCard({ task }) {
 }
 
 export function TaskList({ tasks = [], isLoading, isError, onRetry, layoutMode = 'compact' }) {
+  const { t } = useTranslation()
   if (isLoading) {
     return (
       <div className="rounded-2xl border border-[#E5F7F8] bg-white p-5 text-center text-sm font-bold text-[var(--text-muted)]">
         <Loader2 size={18} className="mx-auto mb-2 animate-spin text-[#007A80]" />
-        جاري تحميل المهام...
+        {t('customers.tasksTab.loading')}
       </div>
     )
   }
@@ -70,10 +72,10 @@ export function TaskList({ tasks = [], isLoading, isError, onRetry, layoutMode =
   if (isError) {
     return (
       <div className="rounded-2xl border border-red-100 bg-red-50 p-4 text-sm font-bold text-red-700">
-        تعذر تحميل المهام.
+        {t('customers.tasksTab.loadError')}
         {onRetry && (
           <button type="button" onClick={onRetry} className="ms-2 underline">
-            إعادة المحاولة
+            {t('customers.productsDialog.retry')}
           </button>
         )}
       </div>
@@ -81,7 +83,7 @@ export function TaskList({ tasks = [], isLoading, isError, onRetry, layoutMode =
   }
 
   if (!tasks.length) {
-    return <EmptyPanel title="Tasks" description="لا توجد مهام مرتبطة بهذا العميل حالياً." />
+    return <EmptyPanel title={t('customers.drawer.tabs.tasks')} description={t('customers.tasksTab.empty')} />
   }
 
   return (

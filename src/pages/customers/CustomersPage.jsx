@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import i18n from 'i18next'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -59,7 +60,7 @@ function getTodayActivitiesByType(rows = [], type = 'meeting', nowTimestamp = Da
   rows.forEach((row) => {
     const lead = row?.lead || {}
     const customerId = row?.id || row?.customer_id || lead?.id || row?.lead_id || ''
-    const customerName = lead?.name || row?.name || row?.email || row?.phone || 'عميل'
+    const customerName = lead?.name || row?.name || row?.email || row?.phone || i18n.t('customers.drawer.unnamedCustomer')
 
     const meetings = Array.isArray(lead?.meetings) ? lead.meetings : []
     const activitiesFromMeetings = meetings.filter((activity) => normalizeActivityType(activity?.type) === normalizedType)
@@ -121,7 +122,7 @@ function getActivitiesByTypeInRange(rows = [], type = 'meeting', nowTimestamp = 
   rows.forEach((row) => {
     const lead = row?.lead || {}
     const customerId = row?.id || row?.customer_id || lead?.id || row?.lead_id || ''
-    const customerName = lead?.name || row?.name || row?.email || row?.phone || 'عميل'
+    const customerName = lead?.name || row?.name || row?.email || row?.phone || i18n.t('customers.drawer.unnamedCustomer')
 
     const meetings = Array.isArray(lead?.meetings) ? lead.meetings : []
     const activitiesFromMeetings = meetings.filter((activity) => normalizeActivityType(activity?.type) === normalizedType)
@@ -1364,9 +1365,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
                 ? t('customers.page.emptyTrash')
                 : freshLeadActive
                   ? t('customers.noFreshLeads')
-                  : true
-                  ? t('customers.noCustomers')
-                  : 'اختر حالة العميل أولًا لعرض العملاء'
+                  : t('customers.noCustomers')
             }
             enableSorting={true}
             enableFiltering={true}

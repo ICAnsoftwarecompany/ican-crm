@@ -7,8 +7,10 @@ import { extractMessage } from '../../../../../../shared/utils/apiResponse'
 import { TaskCreateDialog } from './TaskCreateDialog'
 import { TaskList } from './TaskList'
 import { getLeadTaskableId, LEAD_TASKABLE_TYPE, taskBelongsToLead } from './taskUtils'
+import { useTranslation } from 'react-i18next'
 
 export function TasksTab({ customer, layoutMode = 'compact' }) {
+  const { t } = useTranslation()
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const leadId = getLeadTaskableId(customer)
   const taskParams = useMemo(() => ({
@@ -32,18 +34,18 @@ export function TasksTab({ customer, layoutMode = 'compact' }) {
         taskable_type: LEAD_TASKABLE_TYPE,
         taskable_id: leadId,
       })
-      toast.success('تم إنشاء المهمة')
+      toast.success(t('customers.tasksTab.created'))
       setIsCreateDialogOpen(false)
       tasksQuery.refetch()
     } catch (error) {
-      toast.error(extractMessage(error, 'تعذر إنشاء المهمة'))
+      toast.error(extractMessage(error, t('customers.tasksTab.createFailed')))
     }
   }
 
   if (!leadId) {
     return (
       <div className="my-4 rounded-xl border border-dashed border-[#BEEFF2] bg-[#F8FEFF] p-6 text-center text-sm text-[var(--text-muted)]">
-        لا يمكن عرض المهام قبل تحديد الليد المرتبط بهذا العميل.
+        {t('customers.tasksTab.noLead')}
       </div>
     )
   }
@@ -56,8 +58,8 @@ export function TasksTab({ customer, layoutMode = 'compact' }) {
             <ListTodo size={18} />
           </span>
           <div className="min-w-0">
-            <h3 className="text-sm font-black text-[var(--text)]">مهام العميل</h3>
-            <p className="text-xs text-[var(--text-muted)]">{tasks.length} مهمة مرتبطة</p>
+            <h3 className="text-sm font-black text-[var(--text)]">{t('customers.tasksTab.title')}</h3>
+            <p className="text-xs text-[var(--text-muted)]">{t('customers.tasksTab.linkedCount', { count: tasks.length })}</p>
           </div>
         </div>
 
@@ -66,8 +68,8 @@ export function TasksTab({ customer, layoutMode = 'compact' }) {
             type="button"
             onClick={() => tasksQuery.refetch()}
             className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#D7EEF0] bg-white text-[#007A80] transition-colors hover:bg-[#E8F9FA]"
-            title="تحديث المهام"
-            aria-label="تحديث المهام"
+            title={t('customers.tasksTab.refresh')}
+            aria-label={t('customers.tasksTab.refresh')}
           >
             <RefreshCw size={15} className={tasksQuery.isFetching ? 'animate-spin' : ''} />
           </button>
@@ -77,7 +79,7 @@ export function TasksTab({ customer, layoutMode = 'compact' }) {
             className="inline-flex h-9 items-center gap-2 rounded-lg bg-[#007A80] px-3 text-xs font-black text-white transition-colors hover:bg-[#00656A]"
           >
             <Plus size={15} />
-            إنشاء مهمة
+            {t('customers.tasksTab.create')}
           </button>
         </div>
       </div>

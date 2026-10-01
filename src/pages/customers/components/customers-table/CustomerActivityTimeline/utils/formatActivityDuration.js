@@ -1,3 +1,7 @@
+import i18n from 'i18next'
+
+const d = (key, values) => i18n.t(`customers.activityTimeline.duration.${key}`, values)
+
 export function formatActivityDuration(seconds) {
   const value = Number(seconds)
   if (!Number.isFinite(value) || value <= 0) return '-'
@@ -9,19 +13,19 @@ export function formatActivityDuration(seconds) {
   const remainingSeconds = totalSeconds % 60
 
   if (days > 0) {
-    if (hours > 0) return `${days} يوم و${hours} ساعة تقريبا`
-    return `${days} يوم`
+    if (hours > 0) return d('daysHours', { days, hours })
+    return d('days', { days })
   }
 
   if (hours > 0) {
-    if (minutes > 0) return `${hours} ساعة و${minutes} دقيقة`
-    return `${hours} ساعة`
+    if (minutes > 0) return d('hoursMinutes', { hours, minutes })
+    return d('hours', { hours })
   }
 
   if (minutes > 0) {
-    if (remainingSeconds > 0) return `${minutes} دقيقة و${remainingSeconds} ثانية`
-    return `${minutes} دقيقة`
+    if (remainingSeconds > 0) return d('minutesSeconds', { minutes, seconds: remainingSeconds })
+    return d('minutes', { minutes })
   }
 
-  return `${remainingSeconds} ثانية`
+  return d('seconds', { seconds: remainingSeconds })
 }

@@ -64,7 +64,7 @@ function normalizeSingleActivity({ log, activity, index }) {
     type,
     category: config.category || 'other',
     importance: config.importance || null,
-    title: String(activity?.title || config.label || 'نشاط').trim(),
+    title: String(activity?.title || config.label).trim(),
     description: String(activity?.description || '').trim(),
     date,
     user: user && typeof user === 'object' ? { ...user } : null,

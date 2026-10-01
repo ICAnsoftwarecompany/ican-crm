@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 
 import { Badge } from '../../../../../shared/components/ui/Badge'
 import { DataTable } from '../../../../../shared/components/data-table'
+import { useTranslation } from 'react-i18next'
 
 function valueOrDash(value) {
   if (value === null || value === undefined || value === '') return '-'
@@ -34,13 +35,14 @@ function buildRows(customers = []) {
 }
 
 export function StatusCustomersColumn({ status, customers = [] }) {
+  const { t } = useTranslation()
   const color = status.color || '#64748B'
   const rows = useMemo(() => buildRows(customers), [customers])
 
   const columns = useMemo(() => [
     {
       id: 'name',
-      header: 'العميل',
+      header: t('customers.productsDialog.summary.customer'),
       accessor: '_displayName',
       searchable: true,
       sortable: true,
@@ -54,7 +56,7 @@ export function StatusCustomersColumn({ status, customers = [] }) {
     },
     {
       id: 'phone',
-      header: 'الهاتف',
+      header: t('customers.phone'),
       accessor: '_displayPhone',
       searchable: true,
       sortable: false,
@@ -64,7 +66,7 @@ export function StatusCustomersColumn({ status, customers = [] }) {
     },
     {
       id: 'email',
-      header: 'البريد',
+      header: t('customers.email'),
       accessor: '_displayEmail',
       searchable: true,
       sortable: true,
@@ -74,7 +76,7 @@ export function StatusCustomersColumn({ status, customers = [] }) {
     },
     {
       id: 'company',
-      header: 'الشركة',
+      header: t('customers.table.company'),
       accessor: '_displayCompany',
       searchable: true,
       sortable: true,
@@ -84,7 +86,7 @@ export function StatusCustomersColumn({ status, customers = [] }) {
     },
     {
       id: 'type',
-      header: 'النوع',
+      header: t('customers.homeTab.type'),
       accessor: '_displayType',
       searchable: true,
       sortable: true,
@@ -94,7 +96,7 @@ export function StatusCustomersColumn({ status, customers = [] }) {
     },
     {
       id: 'createdAt',
-      header: 'تاريخ الإنشاء',
+      header: t('customers.homeTab.creationDate'),
       accessor: '_displayCreatedAt',
       searchable: false,
       sortable: true,
@@ -102,7 +104,7 @@ export function StatusCustomersColumn({ status, customers = [] }) {
       width: 'w-36',
       render: (row) => valueOrDash(row._displayCreatedAt),
     },
-  ], [])
+  ], [t])
 
   return (
     <section className="flex min-h-0 min-w-0 flex-col rounded-xl border border-[var(--border)] bg-[#F8FEFF] shadow-sm">
@@ -113,7 +115,7 @@ export function StatusCustomersColumn({ status, customers = [] }) {
               <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
               <h2 className="truncate text-sm font-black text-[var(--text)]">{status.status}</h2>
             </div>
-            <div className="mt-1 text-xs text-[var(--text-muted)]">العملاء داخل هذه الحالة</div>
+            <div className="mt-1 text-xs text-[var(--text-muted)]">{t('customers.statusBoard.customersInStatus')}</div>
           </div>
           <span className="rounded-full bg-[#E8F9FA] px-3 py-1 text-xs font-black text-[#007A80]">
             {customers.length}
@@ -126,7 +128,7 @@ export function StatusCustomersColumn({ status, customers = [] }) {
           data={rows}
           columns={columns}
           tableId={`customer-status-board-${status.id}`}
-          emptyMessage="لا يوجد عملاء في هذه الحالة."
+          emptyMessage={t('customers.leadDetails.noCustomersInStatus')}
           enableSorting={true}
           enableFiltering={true}
           enablePagination={false}

@@ -8,6 +8,7 @@ import { useTeamMutations, useTeams, useUsers } from '../../../../features/teams
 import { displayValue, extractMessage } from '../../../../shared/utils/apiResponse'
 import { TeamDrawer } from './TeamDrawer'
 import { TeamMembersDrawer } from './TeamMembersDrawer'
+import { useTranslation } from 'react-i18next'
 
 const DEFAULT_FORM = {
   name: '',
@@ -118,6 +119,7 @@ function formatDate(value) {
 }
 
 export function CustomerTeamsPage() {
+  const { t } = useTranslation()
   const teamsQuery = useTeams()
   const usersQuery = useUsers()
   const mutations = useTeamMutations()
@@ -162,11 +164,11 @@ export function CustomerTeamsPage() {
         _membersText: memberLabels.join(', '),
         _membersCount: memberIds.length,
         _active: active,
-        _activeLabel: active ? 'نشط' : 'غير نشط',
+        _activeLabel: active ? t('customers.customization.active') : t('customers.customization.inactive'),
         _createdAtDisplay: formatDate(team.created_at),
       }
     })
-  }, [teams, userById])
+  }, [teams, userById, t])
   const openCreateDialog = () => {
     setDialogMode('create')
     setSelectedTeam(null)
@@ -294,7 +296,7 @@ export function CustomerTeamsPage() {
     setFormError('')
 
     if (!form.name.trim()) {
-      setFormError('اسم الفريق مطلوب')
+      setFormError(t('customers.salesTeams.nameRequired'))
       return
     }
 
@@ -320,14 +322,14 @@ export function CustomerTeamsPage() {
 
       closeDialog()
     } catch (error) {
-      setFormError(extractMessage(error, 'تعذر حفظ بيانات الفريق'))
+      setFormError(extractMessage(error, t('customers.salesTeams.saveFailed')))
     }
   }
 
   const columns = useMemo(() => [
     {
       id: 'name',
-      header: 'اسم الفريق',
+      header: t('customers.salesTeams.columns.name'),
       accessor: 'name',
       searchable: true,
       sortable: true,
@@ -341,7 +343,7 @@ export function CustomerTeamsPage() {
     },
     {
       id: 'leader',
-      header: 'قائد الفريق',
+      header: t('customers.salesTeams.columns.leader'),
       accessor: '_leaderLabel',
       searchable: true,
       sortable: true,
@@ -351,7 +353,7 @@ export function CustomerTeamsPage() {
     },
     {
       id: 'membersCount',
-      header: 'عدد الأعضاء',
+      header: t('customers.salesTeams.columns.membersCount'),
       accessor: '_membersCount',
       searchable: false,
       sortable: true,
@@ -365,17 +367,17 @@ export function CustomerTeamsPage() {
             openMembersDrawer(row)
           }}
           className="inline-flex"
-          title="عرض كل أعضاء الفريق"
+          title={t('customers.salesTeams.viewAllMembers')}
         >
           <Badge variant="info" className="cursor-pointer hover:ring-2 hover:ring-[#00C2CB]/30">
-            {row._membersCount} عضو
+            {t('customers.salesTeams.membersCountValue', { count: row._membersCount })}
           </Badge>
         </button>
       ),
     },
     {
       id: 'members',
-      header: 'الأعضاء',
+      header: t('customers.salesTeams.columns.members'),
       accessor: '_membersText',
       searchable: true,
       sortable: false,
@@ -396,7 +398,7 @@ export function CustomerTeamsPage() {
                     openMembersDrawer(row)
                   }}
                   className="inline-flex"
-                  title="عرض كل أعضاء الفريق"
+                  title={t('customers.salesTeams.viewAllMembers')}
                 >
                   <Badge variant="info" className="cursor-pointer hover:ring-2 hover:ring-[#00C2CB]/30">
                     {label}
@@ -412,7 +414,7 @@ export function CustomerTeamsPage() {
                   openMembersDrawer(row)
                 }}
                 className="inline-flex"
-                title="عرض باقي الأعضاء"
+                title={t('customers.salesTeams.viewRemainingMembers')}
               >
                 <Badge className="cursor-pointer hover:ring-2 hover:ring-[#00C2CB]/30">
                   +{row._memberIds.length - 6}
@@ -421,13 +423,13 @@ export function CustomerTeamsPage() {
             )}
           </div>
         ) : (
-          <span className="text-sm text-[var(--text-muted)]">لا يوجد أعضاء</span>
+          <span className="text-sm text-[var(--text-muted)]">{t('customers.salesTeams.noMembers')}</span>
         )
       ),
     },
     {
       id: 'status',
-      header: 'الحالة',
+      header: t('customers.salesTeams.columns.status'),
       accessor: '_activeLabel',
       searchable: true,
       sortable: true,
@@ -441,7 +443,7 @@ export function CustomerTeamsPage() {
     },
     {
       id: 'createdAt',
-      header: 'تاريخ الإنشاء',
+      header: t('customers.salesTeams.columns.createdAt'),
       accessor: '_createdAtDisplay',
       searchable: false,
       sortable: true,
@@ -451,7 +453,7 @@ export function CustomerTeamsPage() {
     },
     {
       id: 'actions',
-      header: 'الإجراءات',
+      header: t('customers.salesTeams.columns.actions'),
       accessor: 'id',
       searchable: false,
       sortable: false,
@@ -460,39 +462,39 @@ export function CustomerTeamsPage() {
       render: (row) => (
         <Button variant="outline" size="sm" onClick={() => openEditDialog(row)}>
           <Edit3 size={14} />
-          تعديل
+          {t('customers.customization.edit')}
         </Button>
       ),
     },
-  ], [])
+  ], [t])
 
   return (
     <div className="space-y-4">
       <PageToolbar
-        title="فرق السيلز"
-        description="إدارة فرق السيلز، تحديد قائد الفريق، وربط المستخدمين بكل فريق."
+        title={t('customers.salesTeams.title')}
+        description={t('customers.salesTeams.description')}
       >
         <Button variant="outline" onClick={() => teamsQuery.refetch()} disabled={teamsQuery.isFetching}>
           <RefreshCw size={16} className={teamsQuery.isFetching ? 'animate-spin' : ''} />
-          تحديث
+          {t('customers.customization.refresh')}
         </Button>
         <Button onClick={openCreateDialog}>
           <Plus size={16} />
-          فريق جديد
+          {t('customers.salesTeams.newTeam')}
         </Button>
       </PageToolbar>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
-          <div className="text-xs font-semibold text-[var(--text-muted)]">إجمالي الفرق</div>
+          <div className="text-xs font-semibold text-[var(--text-muted)]">{t('customers.salesTeams.totalTeams')}</div>
           <div className="mt-1 text-xl font-bold text-[var(--text)]">{teams.length}</div>
         </div>
         <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
-          <div className="text-xs font-semibold text-[var(--text-muted)]">إجمالي المستخدمين</div>
+          <div className="text-xs font-semibold text-[var(--text-muted)]">{t('customers.salesTeams.totalUsers')}</div>
           <div className="mt-1 text-xl font-bold text-[var(--text)]">{users.length}</div>
         </div>
         <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
-          <div className="text-xs font-semibold text-[var(--text-muted)]">مستخدمون بدون فرق</div>
+          <div className="text-xs font-semibold text-[var(--text-muted)]">{t('customers.salesTeams.usersWithoutTeams')}</div>
           <div className="mt-1 text-xl font-bold text-[var(--text)]">{usersWithoutTeamsCount}</div>
         </div>
       </div>
@@ -507,7 +509,7 @@ export function CustomerTeamsPage() {
           teamsQuery.refetch()
           usersQuery.refetch()
         }}
-        emptyMessage="لا توجد فرق - أنشئ أول فريق ثم اربط المستخدمين به"
+        emptyMessage={t('customers.salesTeams.empty')}
         enableSorting={true}
         enableFiltering={true}
         enablePagination={true}

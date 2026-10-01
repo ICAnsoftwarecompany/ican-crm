@@ -5,24 +5,25 @@ import { useLeadMutations } from '../../../../../../features/leads/hooks/useLead
 import { useProducts } from '../../../../../../features/products/hooks/useProducts'
 import { FormDialog } from '../../../../../../shared/components/overlays/FormDialog'
 import { extractMessage } from '../../../../../../shared/utils/apiResponse'
+import { useTranslation } from 'react-i18next'
 
 const INTEREST_LEVELS = [
-  { value: 'high', label: 'High' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'low', label: 'Low' },
+  { value: 'high', labelKey: 'activities.priority.high' },
+  { value: 'medium', labelKey: 'activities.priority.medium' },
+  { value: 'low', labelKey: 'activities.priority.low' },
 ]
 
 function getLeadId(customer) {
   return customer?.lead_id || customer?.lead?.id
 }
 
-function getCustomerName(customer) {
-  return customer?.name || customer?.lead?.name || customer?.email || customer?.phone || 'العميل'
+function getCustomerName(customer, t) {
+  return customer?.name || customer?.lead?.name || customer?.email || customer?.phone || t('customers.table.theCustomer')
 }
 
-function getProductLabel(product) {
+function getProductLabel(product, t) {
   return [
-    product?.name || `Product #${product?.id || ''}`,
+    product?.name || t('customers.activityTimeline.productNumber', { id: product?.id || '' }),
     product?.code ? `(${product.code})` : '',
     product?.price ? `- ${product.price}` : '',
   ].filter(Boolean).join(' ')
@@ -35,6 +36,7 @@ export function InterestFormDialog({
   onClose,
   onSaved,
 }) {
+  const { t } = useTranslation()
   const mutations = useLeadMutations()
   const productsQuery = useProducts()
   const products = productsQuery.data || []
@@ -61,12 +63,12 @@ export function InterestFormDialog({
 
   const handleSubmit = async () => {
     if (!leadId) {
-      setError('لا يوجد lead مرتبط بهذا العميل')
+      setError(t('customers.interestForm.noLead'))
       return
     }
 
     if (!productId) {
-      setError('اختر المنتج أولا')
+      setError(t('customers.interestForm.chooseProductFirst'))
       return
     }
 
@@ -88,11 +90,11 @@ export function InterestFormDialog({
         ? await mutations.updateInterested.mutateAsync({ ...payload, id: interest.id })
         : await mutations.saveInterested.mutateAsync(payload)
 
-      toast.success(isEdit ? 'تم تعديل الاهتمام' : 'تم إضافة الاهتمام')
+      toast.success(isEdit ? t('customers.interestForm.updated') : t('customers.interestForm.added'))
       onSaved?.(response, payload)
       onClose?.()
     } catch (requestError) {
-      toast.error(extractMessage(requestError, isEdit ? 'تعذر تعديل الاهتمام' : 'تعذر إضافة الاهتمام'))
+      toast.error(extractMessage(requestError, isEdit ? t('customers.interestForm.updateFailed') : t('customers.interestForm.addFailed')))
     }
   }
 
@@ -102,17 +104,17 @@ export function InterestFormDialog({
     <FormDialog
       open={open}
       onClose={onClose}
-      title={isEdit ? 'تعديل اهتمام' : 'إضافة اهتمام'}
-      description={`العميل: ${getCustomerName(customer)}`}
+      title={isEdit ? t('customers.interestForm.editTitle') : t('customers.interestForm.addTitle')}
+      description={t('customers.interestForm.customerLabel', { name: getCustomerName(customer, t) })}
       onSubmit={handleSubmit}
-      submitText={isEdit ? 'حفظ التعديل' : 'إضافة الاهتمام'}
+      submitText={isEdit ? t('customers.interestForm.saveChanges') : t('customers.interestForm.submitAdd')}
       loading={loading}
       submitDisabled={!leadId || !productId}
       size="lg"
       className="max-w-2xl"
     >
       <label className="grid gap-1.5 text-sm font-bold text-[var(--text)]">
-        <span>المنتج</span>
+        <span>{t('customers.interestForm.product')}</span>
         <select
           value={productId}
           onChange={(event) => {
@@ -122,10 +124,10 @@ export function InterestFormDialog({
           disabled={productsQuery.isLoading || loading}
           className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-sm font-semibold text-[var(--text)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#00C2CB]"
         >
-          <option value="">{productsQuery.isLoading ? 'جاري تحميل المنتجات...' : 'اختر المنتج'}</option>
+          <option value="">{productsQuery.isLoading ? t('customers.productsDialog.loadingProducts') : t('customers.interestForm.chooseProduct')}</option>
           {products.map((product) => (
             <option key={product.id} value={product.id}>
-              {getProductLabel(product)}
+              {getProductLabel(product, t)}
             </option>
           ))}
         </select>
@@ -133,12 +135,12 @@ export function InterestFormDialog({
 
       {selectedProduct ? (
         <div className="rounded-xl border border-[#E5F7F8] bg-[#F8FEFF] p-3 text-xs font-bold text-[var(--text-muted)]">
-          {selectedProduct.desc || selectedProduct.description || selectedProduct.code || 'تم اختيار المنتج'}
+          {selectedProduct.desc || selectedProduct.description || selectedProduct.code || t('customers.interestForm.productSelected')}
         </div>
       ) : null}
 
       <label className="grid gap-1.5 text-sm font-bold text-[var(--text)]">
-        <span>درجة الاهتمام</span>
+        <span>{t('customers.interestForm.interestLevel')}</span>
         <select
           value={interestLevel}
           onChange={(event) => setInterestLevel(event.target.value)}
@@ -147,21 +149,21 @@ export function InterestFormDialog({
         >
           {INTEREST_LEVELS.map((level) => (
             <option key={level.value} value={level.value}>
-              {level.label}
+              {t(level.labelKey)}
             </option>
           ))}
         </select>
       </label>
 
       <label className="grid gap-1.5 text-sm font-bold text-[var(--text)]">
-        <span>ملاحظة</span>
+        <span>{t('customers.interestForm.note')}</span>
         <textarea
           value={note}
           onChange={(event) => setNote(event.target.value)}
           rows={4}
           disabled={loading}
           className="w-full resize-y rounded-lg border border-[var(--border)] bg-white p-3 text-sm font-semibold text-[var(--text)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#00C2CB]"
-          placeholder="اكتب ملاحظة الاهتمام"
+          placeholder={t('customers.interestForm.notePlaceholder')}
         />
       </label>
 

@@ -5,10 +5,11 @@ import { Button } from '../../../../shared/components/ui/Button'
 import { Badge } from '../../../../shared/components/ui/Badge'
 import { Input } from '../../../../shared/components/ui/Input'
 import { cn } from '../../../../shared/utils/cn'
+import { useTranslation } from 'react-i18next'
 
 const TABS = [
-  { id: 'details', label: 'بيانات التيم', icon: UserCog },
-  { id: 'members', label: 'الأعضاء', icon: UsersRound },
+  { id: 'details', labelKey: 'customers.salesTeams.drawer.tabs.details', icon: UserCog },
+  { id: 'members', labelKey: 'customers.salesTeams.columns.members', icon: UsersRound },
 ]
 
 function normalizeId(value) {
@@ -46,6 +47,7 @@ export function TeamDrawer({
   onChange,
   onToggleMember,
 }) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('details')
   const [leaderSearch, setLeaderSearch] = useState('')
   const [leaderPickerOpen, setLeaderPickerOpen] = useState(false)
@@ -107,8 +109,8 @@ export function TeamDrawer({
       open={open}
       onClose={onClose}
       size="xl"
-      title={mode === 'create' ? 'إنشاء تيم جديد' : 'تعديل التيم'}
-      description="حدد بيانات التيم، قائد الفريق، ثم اختر الأعضاء المرتبطين به."
+      title={mode === 'create' ? t('customers.salesTeams.drawer.createTitle') : t('customers.salesTeams.drawer.editTitle')}
+      description={t('customers.salesTeams.drawer.description')}
     >
       <form onSubmit={handleSubmit} className="flex min-h-[calc(100vh-7.5rem)] flex-col">
         <div className="space-y-4">
@@ -136,7 +138,7 @@ export function TeamDrawer({
                   )}
                 >
                   <Icon size={16} />
-                  {tab.label}
+                  {t(tab.labelKey)}
                   {tab.id === 'members' && selectedMembersCount > 0 && (
                     <Badge variant="info" className="px-2 py-0">
                       {selectedMembersCount}
@@ -150,14 +152,14 @@ export function TeamDrawer({
           {activeTab === 'details' && (
             <div className="space-y-4">
               <Input
-                label="اسم التيم"
+                label={t('customers.salesTeams.drawer.name')}
                 value={form.name}
                 onChange={(event) => onChange('name', event.target.value)}
-                placeholder="مثال: فريق مبيعات القاهرة"
+                placeholder={t('customers.salesTeams.drawer.namePlaceholder')}
               />
 
               <div className="grid gap-1.5 text-sm font-medium text-[var(--text)]">
-                <span>قائد التيم</span>
+                <span>{t('customers.salesTeams.drawer.leader')}</span>
                 {selectedLeader && (
                   <div className="flex items-center justify-between gap-3 rounded-lg border border-[#A0ECF0] bg-[#E8F9FA] px-3 py-2">
                     <span className="min-w-0">
@@ -174,7 +176,7 @@ export function TeamDrawer({
                       type="button"
                       onClick={clearLeader}
                       className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[#007A80] hover:bg-white/70"
-                      aria-label="إزالة قائد التيم"
+                      aria-label={t('customers.salesTeams.drawer.removeLeader')}
                     >
                       <X size={16} />
                     </button>
@@ -194,7 +196,7 @@ export function TeamDrawer({
                       setLeaderSearch(event.target.value)
                       setLeaderPickerOpen(true)
                     }}
-                    placeholder={selectedLeader ? 'بحث لاختيار قائد آخر' : 'ابحث باسم المستخدم أو البريد'}
+                    placeholder={selectedLeader ? t('customers.salesTeams.drawer.searchAnotherLeader') : t('customers.salesTeams.drawer.searchUser')}
                     className="h-10 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 ps-9 text-sm text-[var(--text)] placeholder:text-[var(--text-light)] focus:outline-none focus:ring-2 focus:ring-[#00C2CB]"
                   />
 
@@ -231,7 +233,7 @@ export function TeamDrawer({
                         })
                       ) : (
                         <div className="p-3 text-sm text-[var(--text-muted)]">
-                          لا توجد نتائج مطابقة.
+                          {t('customers.salesTeams.noResults')}
                         </div>
                       )}
                     </div>
@@ -246,7 +248,7 @@ export function TeamDrawer({
                   onChange={(event) => onChange('active', event.target.checked)}
                   className="h-4 w-4 rounded border-slate-300"
                 />
-                التيم نشط
+                {t('customers.salesTeams.drawer.teamActive')}
               </label>
             </div>
           )}
@@ -255,12 +257,12 @@ export function TeamDrawer({
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <div className="text-sm font-semibold text-[var(--text)]">أعضاء التيم</div>
+                  <div className="text-sm font-semibold text-[var(--text)]">{t('customers.salesTeams.drawer.teamMembers')}</div>
                   <div className="text-xs text-[var(--text-muted)]">
-                    قائد التيم يظهر هنا للعلم فقط ولا يمكن اختياره كعضو.
+                    {t('customers.salesTeams.drawer.leaderNotSelectable')}
                   </div>
                 </div>
-                <Badge variant="info">{selectedMembersCount} عضو</Badge>
+                <Badge variant="info">{t('customers.salesTeams.membersCountValue', { count: selectedMembersCount })}</Badge>
               </div>
 
               <div className="relative">
@@ -272,7 +274,7 @@ export function TeamDrawer({
                   type="search"
                   value={membersSearch}
                   onChange={(event) => setMembersSearch(event.target.value)}
-                  placeholder="ابحث داخل بيانات المستخدمين"
+                  placeholder={t('customers.salesTeams.drawer.searchUsers')}
                   className="h-10 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 ps-9 text-sm text-[var(--text)] placeholder:text-[var(--text-light)] focus:outline-none focus:ring-2 focus:ring-[#00C2CB]"
                 />
                 {membersSearch.trim() && (
@@ -280,7 +282,7 @@ export function TeamDrawer({
                     type="button"
                     onClick={() => setMembersSearch('')}
                     className="absolute end-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-[var(--text-muted)] hover:bg-[var(--surface-2)]"
-                    aria-label="مسح بحث الأعضاء"
+                    aria-label={t('customers.salesTeams.drawer.clearMembersSearch')}
                   >
                     <X size={15} />
                   </button>
@@ -289,9 +291,9 @@ export function TeamDrawer({
 
               <label className="flex items-center justify-between gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2">
                 <span>
-                  <span className="block text-sm font-semibold text-[var(--text)]">بدون فرق فقط</span>
+                  <span className="block text-sm font-semibold text-[var(--text)]">{t('customers.salesTeams.drawer.withoutTeamsOnly')}</span>
                   <span className="block text-xs text-[var(--text-muted)]">
-                    عرض المستخدمين غير المرتبطين بأي فريق.
+                    {t('customers.salesTeams.drawer.withoutTeamsHint')}
                   </span>
                 </span>
                 <input
@@ -304,7 +306,7 @@ export function TeamDrawer({
               </label>
 
               <div className="text-xs text-[var(--text-muted)]">
-                المعروض: {filteredMemberUsers.length} من {users.length} مستخدم
+                {t('customers.salesTeams.drawer.shownCount', { shown: filteredMemberUsers.length, total: users.length })}
               </div>
 
               <div className="max-h-[calc(100vh-17rem)] overflow-y-auto rounded-lg border border-[var(--border)]">
@@ -330,7 +332,7 @@ export function TeamDrawer({
                             <span className="truncate text-sm font-medium text-[var(--text)]">
                               {getUserLabel(user)}
                             </span>
-                            {isLeader && <Badge variant="warning">قائد التيم</Badge>}
+                            {isLeader && <Badge variant="warning">{t('customers.salesTeams.drawer.leader')}</Badge>}
                           </span>
                           {user.email && (
                             <span className="block truncate text-xs text-[var(--text-muted)]">
@@ -345,7 +347,7 @@ export function TeamDrawer({
                                 </Badge>
                               ))
                             ) : (
-                              <span className="text-xs text-[var(--text-muted)]">بدون فريق</span>
+                              <span className="text-xs text-[var(--text-muted)]">{t('customers.salesTeams.drawer.noTeam')}</span>
                             )}
                             {linkedTeams.length > 3 && <Badge>+{linkedTeams.length - 3}</Badge>}
                           </span>
@@ -368,7 +370,7 @@ export function TeamDrawer({
                   })
                 ) : (
                   <div className="p-4 text-sm text-[var(--text-muted)]">
-                    {users.length ? 'لا توجد نتائج مطابقة.' : 'لا يوجد مستخدمون متاحون.'}
+                    {users.length ? t('customers.salesTeams.noResults') : t('customers.salesTeams.drawer.noUsers')}
                   </div>
                 )}
               </div>
@@ -378,10 +380,10 @@ export function TeamDrawer({
 
         <div className="mt-auto flex items-center justify-end gap-2 border-t border-[var(--border)] pt-4">
           <Button variant="outline" onClick={onClose} disabled={loading}>
-            إلغاء
+            {t('customers.socialMessaging.cancel')}
           </Button>
           <Button type="submit" loading={loading} disabled={!form.name.trim()}>
-            {mode === 'create' ? 'إنشاء التيم' : 'حفظ التعديل'}
+            {mode === 'create' ? t('customers.salesTeams.drawer.createSubmit') : t('customers.customization.saveChanges')}
           </Button>
         </div>
       </form>

@@ -3,8 +3,10 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { MeetingDataDrawer } from '../../../../features/call-meetings/components/MeetingDataDrawer'
 import { useMeetingInfo } from '../../../../features/meetings/hooks/useMeetings'
+import { useTranslation } from 'react-i18next'
 
 export function MeetingDetailPage() {
+  const { t } = useTranslation()
   const { meetingId } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
@@ -22,7 +24,7 @@ export function MeetingDetailPage() {
     <main className="space-y-4 p-4">
       {meetingQuery.isLoading ? (
         <div className="flex items-center justify-center gap-2 rounded-xl border border-[#E5F7F8] bg-[#F8FEFF] p-6 text-xs font-bold text-[#007A80]">
-          جاري تحميل بيانات الاجتماع...
+          {t('customers.placeholders.loadingMeeting')}
         </div>
       ) : (
         <MeetingDataDrawer

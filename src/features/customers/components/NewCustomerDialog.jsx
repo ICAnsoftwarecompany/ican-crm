@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
 import { FormDialog } from '../../../shared/components/overlays/FormDialog'
 import { Input } from '../../../shared/components/ui/Input'
 import { extractMessage } from '../../../shared/utils/apiResponse'
@@ -29,7 +28,7 @@ export function NewCustomerDialog({ isOpen, onClose, onSubmit, isLoading }) {
     setErrorMessage('')
 
     if (!form.name.trim() || !form.phone.trim()) {
-      setErrorMessage('الاسم ورقم الهاتف مطلوبان')
+      setErrorMessage(t('customers.newCustomerDialog.nameAndPhoneRequired'))
       return
     }
 
@@ -39,7 +38,7 @@ export function NewCustomerDialog({ isOpen, onClose, onSubmit, isLoading }) {
       setErrorMessage('')
       setTimeout(() => onClose(), 500)
     } catch (error) {
-      setErrorMessage(extractMessage(error, 'فشل إنشاء العميل'))
+      setErrorMessage(extractMessage(error, t('customers.newCustomerDialog.createFailed')))
     }
   }
 
@@ -53,7 +52,7 @@ export function NewCustomerDialog({ isOpen, onClose, onSubmit, isLoading }) {
       }}
       title={t('customers.newCustomer')}
       onSubmit={handleSubmit}
-      submitText={`${<Plus size={16} />} ${t('actions.add')}`}
+      submitText={t('actions.add')}
       loading={isLoading}
       size="md"
     >
@@ -86,14 +85,14 @@ export function NewCustomerDialog({ isOpen, onClose, onSubmit, isLoading }) {
         disabled={isLoading}
       />
       <Input
-        label="الشركة"
+        label={t('customers.table.company')}
         name="company"
         value={form.company}
         onChange={handleChange}
         disabled={isLoading}
       />
       <Input
-        label="المصدر"
+        label={t('customers.newCustomerDialog.source')}
         name="source"
         value={form.source}
         onChange={handleChange}
@@ -101,7 +100,7 @@ export function NewCustomerDialog({ isOpen, onClose, onSubmit, isLoading }) {
       />
 
       <label className="grid gap-1.5 text-sm font-medium font-arabic text-[var(--text)]">
-        النوع
+        {t('customers.newCustomerDialog.type')}
         <select
           name="type"
           value={form.type}
@@ -109,8 +108,8 @@ export function NewCustomerDialog({ isOpen, onClose, onSubmit, isLoading }) {
           disabled={isLoading}
           className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-[var(--text)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <option value="customer">Customer</option>
-          <option value="lead">Lead</option>
+          <option value="customer">{t('customers.newCustomerDialog.typeCustomer')}</option>
+          <option value="lead">{t('customers.newCustomerDialog.typeLead')}</option>
         </select>
       </label>
     </FormDialog>

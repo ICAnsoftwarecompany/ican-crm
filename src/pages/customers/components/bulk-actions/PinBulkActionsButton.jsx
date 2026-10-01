@@ -3,20 +3,22 @@ import { createPortal } from 'react-dom'
 import { Check, PanelTop, Pin, PinOff, Sidebar } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
 import { cn } from '../../../../shared/utils/cn'
+import { useTranslation } from 'react-i18next'
 
 const PIN_OPTIONS = [
-  { value: 'horizontal', label: 'تثبيت أفقي', description: 'أعلى الصفحة', icon: PanelTop },
-  { value: 'vertical', label: 'تثبيت رأسي', description: 'أعلى القائمة الجانبية', icon: Sidebar },
-  { value: 'none', label: 'إلغاء التثبيت', description: 'داخل الجدول فقط', icon: PinOff },
+  { value: 'horizontal', labelKey: 'customers.bulkActions.pin.horizontal', descriptionKey: 'customers.bulkActions.pin.horizontalDescription', icon: PanelTop },
+  { value: 'vertical', labelKey: 'customers.bulkActions.pin.vertical', descriptionKey: 'customers.bulkActions.pin.verticalDescription', icon: Sidebar },
+  { value: 'none', labelKey: 'customers.bulkActions.pin.none', descriptionKey: 'customers.bulkActions.pin.noneDescription', icon: PinOff },
 ]
 
 export function PinBulkActionsButton({ pinMode = 'none', onPinModeChange }) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const buttonWrapRef = useRef(null)
   const menuRef = useRef(null)
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0, width: 224 })
   const pinned = pinMode !== 'none'
-  const label = 'خيارات تثبيت إجراءات العملاء المحددين'
+  const label = t('customers.bulkActions.pin.options')
 
   const updateMenuPosition = () => {
     const button = buttonWrapRef.current
@@ -75,8 +77,8 @@ export function PinBulkActionsButton({ pinMode = 'none', onPinModeChange }) {
         size="icon"
         variant={pinned ? 'primary' : 'outline'}
         onClick={() => setOpen((value) => !value)}
-        title={`${label} (Ctrl + P للتبديل الأفقي)`}
-        aria-label={`${label} (Ctrl + P للتبديل الأفقي)`}
+        title={t('customers.bulkActions.pin.optionsWithShortcut', { label })}
+        aria-label={t('customers.bulkActions.pin.optionsWithShortcut', { label })}
         aria-haspopup="menu"
         aria-expanded={open}
       >
@@ -115,9 +117,9 @@ export function PinBulkActionsButton({ pinMode = 'none', onPinModeChange }) {
               >
                 <Icon size={15} className="shrink-0" />
                 <span className="min-w-0 flex-1">
-                  <span className="block font-black">{option.label}</span>
+                  <span className="block font-black">{t(option.labelKey)}</span>
                   <span className="mt-0.5 block text-[11px] font-semibold text-[var(--text-muted)]">
-                    {option.description}
+                    {t(option.descriptionKey)}
                   </span>
                 </span>
                 {active ? <Check size={14} className="shrink-0" /> : null}

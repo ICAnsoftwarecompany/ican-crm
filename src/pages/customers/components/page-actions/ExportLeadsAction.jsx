@@ -1,6 +1,8 @@
 import { Download } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function ExportLeadsAction({ onClick, closeMenu }) {
+  const { t } = useTranslation()
   if (!onClick) return null
 
   return (
@@ -14,7 +16,7 @@ export function ExportLeadsAction({ onClick, closeMenu }) {
       role="menuitem"
     >
       <Download size={15} />
-      تصدير العملاء المحتملين
+      {t('customers.pageActions.exportLeads')}
     </button>
   )
 }

@@ -277,6 +277,7 @@ function getLinkedAt(customer) {
 }
 
 function CustomerHeader({ customer, currentStatus, currentTag, statuses, isLoadingDetails, onStatusChanged }) {
+  const { t } = useTranslation()
   const source = customer.source || customer.lead?.source
   const linkedByName = getLinkedByName(customer)
   const linkedByTeamName = getLinkedByTeamName(customer)
@@ -295,7 +296,7 @@ function CustomerHeader({ customer, currentStatus, currentTag, statuses, isLoadi
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 flex-wrap items-start justify-between gap-2">
             <h3 className="min-w-0 max-w-full truncate text-base font-black text-[var(--text)]">
-              {fieldValue(customer.name || customer.email || customer.phone, 'عميل بدون اسم')}
+              {fieldValue(customer.name || customer.email || customer.phone, t('customers.drawer.unnamedCustomer'))}
             </h3>
             {isLoadingDetails && (
               <span className="rounded-full bg-white/80 px-2 py-0.5 text-[11px] font-semibold text-[#007A80]">
@@ -336,7 +337,7 @@ function CustomerHeader({ customer, currentStatus, currentTag, statuses, isLoadi
             {linkDate && (
               <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-[#E5F7F8] bg-white/80 px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">
                 <CalendarDays size={13} className="shrink-0 text-[#007A80]" />
-                <span className="min-w-0 max-w-36 truncate">ربط: {formatDateTime12(linkDate)}</span>
+                <span className="min-w-0 max-w-36 truncate">{t('customers.drawer.linked', { date: formatDateTime12(linkDate) })}</span>
               </span>
             )}
 
@@ -560,7 +561,7 @@ function CustomerHeaderModernLegacy({
   const linkedByTeamName = getLinkedByTeamName(customer)
   const linkDate = customer.link_date
   const statusColor = currentStatus?.color || '#64748B'
-  const customerName = fieldValue(customer.name || customer.email || customer.phone, 'عميل بدون اسم')
+  const customerName = fieldValue(customer.name || customer.email || customer.phone, t('customers.drawer.unnamedCustomer'))
   const createdAt = customer.created_at || customer.createdAt
   const statusLabel = currentStatus?.status || currentStatus?.name
   const tagLabel = getTagLabel(currentTag)
@@ -603,8 +604,8 @@ function CustomerHeaderModernLegacy({
             )}
             <span
               className="ms-auto inline-flex min-w-0 shrink-0"
-              title={`تاج العميل: ${tagLabel || 'بدون تاج'}`}
-              aria-label={`تاج العميل: ${tagLabel || 'بدون تاج'}`}
+              title={t('customers.drawer.tagTitle', { tag: tagLabel || t('customers.drawer.noTag') })}
+              aria-label={t('customers.drawer.tagTitle', { tag: tagLabel || t('customers.drawer.noTag') })}
             >
               <CustomerTagChanger
                 customer={customer}
@@ -645,7 +646,7 @@ function CustomerHeaderModernLegacy({
               {linkDate && (
                 <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full bg-[#F8FEFF] px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">
                   <CalendarDays size={13} className="shrink-0 text-[#007A80]" />
-                  <span className="min-w-0 max-w-36 truncate">ربط: {formatDateTime12(linkDate)}</span>
+                  <span className="min-w-0 max-w-36 truncate">{t('customers.drawer.linked', { date: formatDateTime12(linkDate) })}</span>
                 </span>
               )}
 
@@ -667,10 +668,10 @@ function CustomerHeaderModernLegacy({
             <Link
               to={`/lead/${detailsPageId}`}
               className="inline-flex h-7 items-center gap-1 rounded-lg border border-[#BEEFF2] bg-white px-2 text-[11px] font-black text-[#007A80] shadow-sm transition-colors hover:bg-[#E8F9FA]"
-              title="فتح صفحة العميل"
+              title={t('customers.drawer.openCustomerPage')}
             >
               <ExternalLink size={12} />
-              فتح
+              {t('customers.drawer.open')}
             </Link>
           )}
         </div>
@@ -706,7 +707,7 @@ function CustomerHeaderModernSplit({
   const linkedByTeamName = getLinkedByTeamName(customer)
   const linkDate = getLinkedAt(customer)
   const statusColor = currentStatus?.color || '#64748B'
-  const customerName = fieldValue(customer.name || customer.email || customer.phone, 'عميل بدون اسم')
+  const customerName = fieldValue(customer.name || customer.email || customer.phone, t('customers.drawer.unnamedCustomer'))
   const createdAt = customer.created_at || customer.createdAt
   const statusLabel = currentStatus?.status || currentStatus?.name
   const tagLabel = getTagLabel(currentTag)
@@ -756,7 +757,7 @@ function CustomerHeaderModernSplit({
                   </span>
                 ) : (
                   <span className="inline-flex rounded-full border border-[#E5F7F8] bg-[#F8FEFF] px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">
-                    بدون حالة
+                    {t('customers.drawer.noStatus')}
                   </span>
                 )}
                 <CustomerTagChanger
@@ -795,7 +796,7 @@ function CustomerHeaderModernSplit({
               </span>
             ) : (
               <span className="inline-flex rounded-full border border-[#E5F7F8] bg-white px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">
-                غير مربوط بمستخدم
+                {t('customers.drawer.notLinkedToUser')}
               </span>
             )}
 
@@ -810,7 +811,7 @@ function CustomerHeaderModernSplit({
           {linkDate && (
             <div className="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full bg-white px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">
               <CalendarDays size={13} className="shrink-0 text-[#007A80]" />
-              <span className="truncate">ربط: {formatDateTime12(linkDate)}</span>
+              <span className="truncate">{t('customers.drawer.linked', { date: formatDateTime12(linkDate) })}</span>
             </div>
           )}
 
@@ -818,10 +819,10 @@ function CustomerHeaderModernSplit({
             <Link
               to={`/lead/${detailsPageId}`}
               className="mt-2 hidden h-8 w-fit items-center gap-1 rounded-lg border border-[#BEEFF2] bg-white px-2 text-[11px] font-black text-[#007A80] shadow-sm transition-colors hover:bg-[#E8F9FA]"
-              title="فتح صفحة العميل"
+              title={t('customers.drawer.openCustomerPage')}
             >
               <ExternalLink size={13} />
-              فتح الصفحة
+              {t('customers.drawer.openPageButton')}
             </Link>
           )}
         </section>

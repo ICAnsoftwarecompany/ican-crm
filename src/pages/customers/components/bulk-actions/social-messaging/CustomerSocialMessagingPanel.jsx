@@ -8,6 +8,7 @@ import { SocialMessageComposer } from './SocialMessageComposer'
 import { SocialMessageDialogFooter } from './SocialMessageDialogFooter'
 import { SocialMessageHelpText } from './SocialMessageHelpText'
 import { SocialMessageRecipientsPreview } from './SocialMessageRecipientsPreview'
+import { useTranslation } from 'react-i18next'
 
 export function CustomerSocialMessagingPanel({
   customers = [],
@@ -16,6 +17,7 @@ export function CustomerSocialMessagingPanel({
   onClose,
   onSendMessage,
 }) {
+  const { t } = useTranslation()
   const [message, setMessage] = useState('')
   const [isSending, setIsSending] = useState(false)
 
@@ -34,12 +36,12 @@ export function CustomerSocialMessagingPanel({
   const handleSend = async () => {
     const trimmedMessage = message.trim()
     if (!trimmedMessage) {
-      toast.error('اكتب رسالة أولا.')
+      toast.error(t('customers.socialMessaging.writeMessageFirst'))
       return
     }
 
     if (!recipients.length) {
-      toast.error('لا يوجد عملاء صالحون للإرسال.')
+      toast.error(t('customers.socialMessaging.noValidRecipients'))
       return
     }
 
@@ -56,15 +58,15 @@ export function CustomerSocialMessagingPanel({
 
       if (typeof onSendMessage === 'function') {
         await onSendMessage(payload)
-        toast.success(`تم تجهيز الرسالة للإرسال إلى ${recipients.length} عميل.`)
+        toast.success(t('customers.socialMessaging.prepared', { count: recipients.length }))
       } else {
-        toast.info(`واجهة الرسائل جاهزة للربط بالـ API لاحقا (${recipients.length} عميل).`)
+        toast.info(t('customers.socialMessaging.notConnected', { count: recipients.length }))
       }
 
       setMessage('')
       onClose?.()
     } catch (error) {
-      toast.error(error?.message || 'تعذر تجهيز الرسالة.')
+      toast.error(error?.message || t('customers.socialMessaging.prepareFailed'))
     } finally {
       setIsSending(false)
     }
@@ -74,8 +76,8 @@ export function CustomerSocialMessagingPanel({
     <AppModal
       isOpen={isOpen}
       onClose={onClose}
-      title={`إرسال رسالة عبر ${activeChannel.label}`}
-      description={`سيتم إرسال نفس الرسالة إلى ${recipients.length} عميل`}
+      title={t('customers.socialMessaging.dialogTitle', { channel: activeChannel.label })}
+      description={t('customers.socialMessaging.dialogDescription', { count: recipients.length })}
       size="lg"
       className="max-w-2xl"
       footer={(

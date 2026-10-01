@@ -1,3 +1,4 @@
+import i18n from 'i18next'
 import { toast } from 'sonner'
 
 export function getCustomerPhone(customer) {
@@ -23,7 +24,7 @@ export function openExternalAction(url, missingMessage) {
 
 export function notifySoon(label) {
   toast.info(label, {
-    description: 'تم تجهيز الاختيار، ويمكن ربطه لاحقًا بتكامل مباشر.',
+    description: i18n.t('customers.quickActions.comingSoonDescription'),
     duration: 2800,
   })
 }

@@ -4,6 +4,8 @@ import { ArrowDownWideNarrow, ArrowUpWideNarrow, Clock3, FileText, Search, Stick
 import { useUsers } from '../../../../../features/users/hooks/useUsers'
 import { EmptyPanel } from '../CustomerDetailsTabPrimitives'
 import { fieldValue, formatDateTime12 } from '../customerDetailsUtils'
+import { useTranslation } from 'react-i18next'
+import i18n from 'i18next'
 
 function normalizeText(value) {
   return String(value || '').trim().toLowerCase()
@@ -59,7 +61,7 @@ function collectLeadNotes(customer) {
     .filter(isRequestedLeadNote)
     .map((activity) => ({
       id: activity?.id,
-      title: activity?.title || (activity?.type === 'note-to-lead' ? 'متابعة العميل' : 'ملاحظة العميل'),
+      title: activity?.title || (activity?.type === 'note-to-lead' ? i18n.t('customers.notesTab.customerFollowUp') : i18n.t('customers.notesTab.customerNote')),
       note: getActivityNote(activity),
       type: activity?.type,
       time: getActivityTime(activity),
@@ -70,7 +72,7 @@ function collectLeadNotes(customer) {
 
   const directNotes = (Array.isArray(customer?.notes) ? customer.notes : []).map((note, index) => ({
     id: note?.id || `note-${index}`,
-    title: note?.title || 'ملاحظة',
+    title: note?.title || i18n.t('customers.notesTab.note'),
     note: note?.body || note?.note || note?.content || '',
     type: note?.type || 'note',
     time: note?.activity_at || note?.created_at || note?.updated_at || '',
@@ -91,9 +93,9 @@ function collectLeadNotes(customer) {
 }
 
 function getTypeLabel(type) {
-  if (type === 'note-to-lead') return 'متابعة'
-  if (type === 'note') return 'ملاحظة'
-  return fieldValue(type, 'ملاحظة')
+  if (type === 'note-to-lead') return i18n.t('customers.notesTab.followUp')
+  if (type === 'note') return i18n.t('customers.notesTab.note')
+  return fieldValue(type, i18n.t('customers.notesTab.note'))
 }
 
 function getTimestamp(value) {
@@ -104,9 +106,9 @@ function getTimestamp(value) {
 function getUserLabel(note, userById) {
   if (note.userName) return note.userName
   const user = userById.get(String(note.userId))
-  if (user) return user.name || user.username || user.email || `User #${user.id}`
-  if (note.userId) return `User #${note.userId}`
-  return 'غير محدد'
+  if (user) return user.name || user.username || user.email || i18n.t('customers.notesTab.userNumber', { id: user.id })
+  if (note.userId) return i18n.t('customers.notesTab.userNumber', { id: note.userId })
+  return i18n.t('customers.activityTimeline.sources.unspecified')
 }
 
 function buildSearchText(note, userLabel) {
@@ -124,6 +126,8 @@ function buildSearchText(note, userLabel) {
 }
 
 export function NotesTab({ customer, layoutMode = 'compact' }) {
+  const { t, i18n: i18nInstance } = useTranslation()
+  const language = i18nInstance.language
   const [sortDirection, setSortDirection] = useState('desc')
   const [typeFilter, setTypeFilter] = useState('all')
   const [userFilter, setUserFilter] = useState('all')
@@ -135,16 +139,16 @@ export function NotesTab({ customer, layoutMode = 'compact' }) {
     () => new Map(users.map((user) => [String(user.id || user.user_id), user])),
     [users]
   )
-  const notes = useMemo(() => collectLeadNotes(customer), [customer])
+  const notes = useMemo(() => collectLeadNotes(customer), [customer, language])
   const noteViewItems = useMemo(() => notes.map((note) => ({
     ...note,
     userLabel: getUserLabel(note, userById),
     searchText: buildSearchText(note, getUserLabel(note, userById)),
-  })), [notes, userById])
+  })), [notes, userById, language])
   const typeOptions = useMemo(() => {
     const types = Array.from(new Set(noteViewItems.map((note) => note.type).filter(Boolean)))
     return types.map((type) => ({ value: type, label: getTypeLabel(type) }))
-  }, [noteViewItems])
+  }, [noteViewItems, language])
   const userOptions = useMemo(() => {
     const usersMap = new Map()
     noteViewItems.forEach((note) => {
@@ -169,8 +173,8 @@ export function NotesTab({ customer, layoutMode = 'compact' }) {
   if (!notes.length) {
     return (
       <EmptyPanel
-        title="الملاحظات"
-        description="لا توجد ملاحظات محفوظة لهذا العميل."
+        title={t('customers.notesTab.title')}
+        description={t('customers.notesTab.empty')}
       />
     )
   }
@@ -180,7 +184,7 @@ export function NotesTab({ customer, layoutMode = 'compact' }) {
       <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
         <h3 className="inline-flex items-center gap-2 text-base font-black text-[var(--text)]">
           <StickyNote size={17} className="text-[#007A80]" />
-          الملاحظات
+          {t('customers.notesTab.title')}
         </h3>
         <span className="rounded-full border border-[#BEEFF2] bg-[#E8F9FA] px-2.5 py-1 text-xs font-black text-[#007A80]">
           {filteredNotes.length} / {notes.length}
@@ -193,19 +197,19 @@ export function NotesTab({ customer, layoutMode = 'compact' }) {
             type="button"
             onClick={() => setSortDirection((value) => (value === 'desc' ? 'asc' : 'desc'))}
             className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] px-2 text-xs font-black text-[#007A80] transition-colors hover:bg-[#E8F9FA]"
-            title={sortDirection === 'desc' ? 'الترتيب من الأحدث للأقدم' : 'الترتيب من الأقدم للأحدث'}
+            title={sortDirection === 'desc' ? t('customers.notesTab.sortNewestFirst') : t('customers.notesTab.sortOldestFirst')}
           >
             {sortDirection === 'desc' ? <ArrowDownWideNarrow size={14} /> : <ArrowUpWideNarrow size={14} />}
-            <span>{sortDirection === 'desc' ? 'الأحدث' : 'الأقدم'}</span>
+            <span>{sortDirection === 'desc' ? t('customers.activityTimeline.newest') : t('customers.activityTimeline.oldest')}</span>
           </button>
 
           <select
             value={typeFilter}
             onChange={(event) => setTypeFilter(event.target.value)}
             className="h-9 min-w-[130px] rounded-lg border border-[#E5F7F8] bg-white px-2 text-xs font-bold text-[var(--text)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#00C2CB]"
-            title="فلتر النوع"
+            title={t('customers.notesTab.typeFilter')}
           >
-            <option value="all">كل الأنواع</option>
+            <option value="all">{t('customers.notesTab.allTypes')}</option>
             {typeOptions.map((option) => (
               <option key={option.value} value={option.value}>{option.label}</option>
             ))}
@@ -215,9 +219,9 @@ export function NotesTab({ customer, layoutMode = 'compact' }) {
             value={userFilter}
             onChange={(event) => setUserFilter(event.target.value)}
             className="h-9 min-w-[140px] rounded-lg border border-[#E5F7F8] bg-white px-2 text-xs font-bold text-[var(--text)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#00C2CB]"
-            title="فلتر المستخدم"
+            title={t('customers.notesTab.userFilter')}
           >
-            <option value="all">كل المستخدمين</option>
+            <option value="all">{t('customers.notesTab.allUsers')}</option>
             {userOptions.map((option) => (
               <option key={option.value} value={option.value}>{option.label}</option>
             ))}
@@ -227,8 +231,8 @@ export function NotesTab({ customer, layoutMode = 'compact' }) {
             type="button"
             onClick={() => setSearchOpen((value) => !value)}
             className="ms-auto inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] text-[#007A80] transition-colors hover:bg-[#E8F9FA]"
-            title="بحث في الملاحظات"
-            aria-label="بحث في الملاحظات"
+            title={t('customers.notesTab.search')}
+            aria-label={t('customers.notesTab.search')}
           >
             {searchOpen ? <X size={15} /> : <Search size={15} />}
           </button>
@@ -241,7 +245,7 @@ export function NotesTab({ customer, layoutMode = 'compact' }) {
               onChange={(event) => setSearchText(event.target.value)}
               autoFocus
               className="h-9 w-full rounded-lg border border-[#E5F7F8] bg-white px-3 text-sm font-semibold text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#00C2CB]"
-              placeholder="ابحث في النص، النوع، المستخدم، التاريخ أو البيانات..."
+              placeholder={t('customers.notesTab.searchPlaceholder')}
             />
           </div>
         ) : null}
@@ -249,8 +253,8 @@ export function NotesTab({ customer, layoutMode = 'compact' }) {
 
       {!filteredNotes.length ? (
         <EmptyPanel
-          title="لا توجد نتائج"
-          description="لا توجد ملاحظات تطابق الفلاتر الحالية."
+          title={t('customers.notesTab.noResults')}
+          description={t('customers.notesTab.noResultsDescription')}
         />
       ) : (
         <div className={layoutMode === 'wide' ? 'grid min-w-0 grid-cols-2 gap-3' : 'min-w-0 space-y-3'}>
@@ -273,7 +277,7 @@ export function NotesTab({ customer, layoutMode = 'compact' }) {
                 <div className="min-w-0 flex-1">
                   <div className="flex min-w-0 flex-wrap items-center gap-2">
                     <h4 className="min-w-0 flex-1 break-words text-sm font-black text-[var(--text)]">
-                      {fieldValue(note.title, 'ملاحظة')}
+                      {fieldValue(note.title, t('customers.notesTab.note'))}
                     </h4>
                     <span className="shrink-0 rounded-full border border-[#BEEFF2] bg-white px-2 py-0.5 text-[10px] font-black text-[#007A80]">
                       {getTypeLabel(note.type)}

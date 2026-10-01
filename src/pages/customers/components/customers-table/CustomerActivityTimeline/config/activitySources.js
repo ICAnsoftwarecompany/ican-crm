@@ -1,12 +1,14 @@
+import i18n from 'i18next'
+
 export const activitySources = {
-  customer_details_quick_actions: 'الإجراءات السريعة',
-  customer_details_drawer: 'بيانات العميل',
-  customers_bulk_actions: 'الإجراءات الجماعية',
-  follow_up_dialog: 'متابعة العميل',
+  customer_details_quick_actions: 'customers.activityTimeline.sources.quickActions',
+  customer_details_drawer: 'customers.activityTimeline.sources.customerDetails',
+  customers_bulk_actions: 'customers.activityTimeline.sources.bulkActions',
+  follow_up_dialog: 'customers.activityTimeline.sources.followUp',
 }
 
 export function getActivitySourceLabel(source) {
   const key = String(source || '').trim()
-  if (!key) return 'غير محدد'
-  return activitySources[key] || 'مصدر غير معروف'
+  if (!key) return i18n.t('customers.activityTimeline.sources.unspecified')
+  return activitySources[key] ? i18n.t(activitySources[key]) : i18n.t('customers.activityTimeline.sources.unknown')
 }

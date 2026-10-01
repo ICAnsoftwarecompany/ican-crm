@@ -2,6 +2,7 @@ import { BadgeCheck, CalendarClock, Eye, ImageIcon, Package, Tag } from 'lucide-
 import { buildCustomerAssetUrl } from '../CustomerTableDetailsDialogs/CustomerTableDetailsDialogs'
 import { renderSafeValue } from '../customerMarketingUtils'
 import { formatDataItems, formatDateTime, getProductDate } from './customerProductsDialogUtils'
+import { useTranslation } from 'react-i18next'
 
 function ProductImage({ product }) {
   const imageUrl = buildCustomerAssetUrl(product?.image || product?.raw?.image)
@@ -25,6 +26,7 @@ function ProductImage({ product }) {
 }
 
 export function ProductCard({ product, index, tone = 'interested', onOpenInfo }) {
+  const { t } = useTranslation()
   const dataItems = formatDataItems(product?.dataItems || [])
   const createdAt = formatDateTime(getProductDate(product))
   const raw = product?.raw || product?.linkRaw || product || {}
@@ -45,7 +47,7 @@ export function ProductCard({ product, index, tone = 'interested', onOpenInfo })
             </span>
             <div className="min-w-0 flex-1">
               <h3 className="break-words text-sm font-black text-[var(--text)]">
-                {product?.name || `Product ${product?.productId || index + 1}`}
+                {product?.name || t('customers.productsDialog.productFallback', { id: product?.productId || index + 1 })}
               </h3>
               <p className="break-words text-xs font-semibold text-[var(--text-muted)]">
                 {product?.description || product?.note || '-'}
@@ -55,10 +57,10 @@ export function ProductCard({ product, index, tone = 'interested', onOpenInfo })
               type="button"
               onClick={() => onOpenInfo?.(product)}
               className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg border border-[#BEEFF2] bg-white px-2 text-[11px] font-black text-[#007A80] transition hover:bg-[#E8F9FA]"
-              title="عرض تفاصيل المنتج"
+              title={t('customers.productsDialog.viewProductDetails')}
             >
               <Eye size={13} />
-              تفاصيل
+              {t('customers.productsDialog.details')}
             </button>
           </div>
 
@@ -76,7 +78,7 @@ export function ProductCard({ product, index, tone = 'interested', onOpenInfo })
             ) : null}
             {product?.categoryType ? (
               <span className="max-w-full break-words rounded-full border border-[#CBD5E1] bg-white px-2 py-0.5 text-[10px] font-black text-[#334155]">
-                {product.categoryType === 'service' ? 'خدمة' : product.categoryType === 'product' ? 'منتج' : product.categoryType}
+                {product.categoryType === 'service' ? t('customers.productsDialog.service') : product.categoryType === 'product' ? t('customers.productsDialog.product') : product.categoryType}
               </span>
             ) : null}
             {product?.price ? (
@@ -92,7 +94,7 @@ export function ProductCard({ product, index, tone = 'interested', onOpenInfo })
             {product?.isMain ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-2 py-0.5 text-[10px] font-black text-[#166534]">
                 <BadgeCheck size={11} />
-                Main
+                {t('customers.productsDialog.main')}
               </span>
             ) : null}
             {createdAt ? (
@@ -124,7 +126,7 @@ export function ProductCard({ product, index, tone = 'interested', onOpenInfo })
           ) : null}
 
           <details className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-2">
-            <summary className="cursor-pointer text-xs font-black text-[#007A80]">البيانات الخام</summary>
+            <summary className="cursor-pointer text-xs font-black text-[#007A80]">{t('customers.productsDialog.rawData')}</summary>
             <pre className="mt-2 max-h-44 overflow-auto whitespace-pre-wrap break-words text-[11px] leading-5 text-[#334155]">
               {JSON.stringify(raw, null, 2)}
             </pre>

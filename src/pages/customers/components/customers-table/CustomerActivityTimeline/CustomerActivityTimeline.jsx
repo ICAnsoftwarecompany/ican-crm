@@ -4,6 +4,7 @@ import { ActivityDateGroup } from './ActivityDateGroup'
 import { ActivityFilters } from './ActivityFilters'
 import { ActivityHeader } from './ActivityHeader'
 import { groupActivitiesByDate } from './utils/groupActivitiesByDate'
+import { useTranslation } from 'react-i18next'
 
 function toDayStartTimestamp(value) {
   if (!value) return Number.NaN
@@ -57,6 +58,7 @@ function computeCounts(activities) {
 }
 
 export function CustomerActivityTimeline({ activities = [] }) {
+  const { t } = useTranslation()
   const [activeFilter, setActiveFilter] = useState('all')
   const [searchText, setSearchText] = useState('')
   const [expandedId, setExpandedId] = useState(null)
@@ -140,7 +142,7 @@ export function CustomerActivityTimeline({ activities = [] }) {
                 className={`inline-flex h-9 items-center gap-2 rounded-lg border px-3 text-xs font-black transition ${searchText ? 'border-[#BEEFF2] bg-[#E8F9FA] text-[#007A80]' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
               >
                 <Search size={14} />
-                بحث
+                {t('customers.activityTimeline.search')}
               </button>
 
               {searchOpen && (
@@ -152,7 +154,7 @@ export function CustomerActivityTimeline({ activities = [] }) {
                       value={searchText}
                       autoFocus
                       onChange={(event) => setSearchText(event.target.value)}
-                      placeholder="بحث في الأنشطة"
+                      placeholder={t('customers.activityTimeline.searchPlaceholder')}
                       className="h-7 w-full border-0 bg-transparent text-sm font-semibold text-slate-700 outline-none placeholder:text-slate-400"
                     />
                   </div>
@@ -166,7 +168,7 @@ export function CustomerActivityTimeline({ activities = [] }) {
               className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#BEEFF2] bg-[#E8F9FA] px-3 text-xs font-black text-[#007A80] transition hover:bg-[#d9f3f5]"
             >
               <ArrowUpDown size={14} />
-              {sortDirection === 'desc' ? 'الأحدث' : 'الأقدم'}
+              {sortDirection === 'desc' ? t('customers.activityTimeline.newest') : t('customers.activityTimeline.oldest')}
             </button>
 
             <div className="relative">
@@ -176,14 +178,14 @@ export function CustomerActivityTimeline({ activities = [] }) {
                 className={`inline-flex h-9 items-center gap-2 rounded-lg border px-3 text-xs font-black transition ${hasDateFilter ? 'border-[#BEEFF2] bg-[#E8F9FA] text-[#007A80]' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
               >
                 <CalendarRange size={14} />
-                {hasDateFilter ? 'تاريخ محدد' : 'تاريخ'}
+                {hasDateFilter ? t('customers.activityTimeline.dateSelected') : t('customers.activityTimeline.date')}
               </button>
 
               {dateFilterOpen && (
                 <div className="absolute left-0 top-full z-20 mt-2 w-[280px] rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
                   <div className="grid gap-2 sm:grid-cols-2">
                     <label className="space-y-1 text-[11px] font-black text-slate-700">
-                      <span>من</span>
+                      <span>{t('customers.activityTimeline.from')}</span>
                       <input
                         type="date"
                         value={fromDate}
@@ -194,7 +196,7 @@ export function CustomerActivityTimeline({ activities = [] }) {
                     </label>
 
                     <label className="space-y-1 text-[11px] font-black text-slate-700">
-                      <span>إلى</span>
+                      <span>{t('customers.activityTimeline.to')}</span>
                       <input
                         type="date"
                         value={toDate}
@@ -215,7 +217,7 @@ export function CustomerActivityTimeline({ activities = [] }) {
                       className="mt-3 inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] font-black text-slate-600 transition hover:bg-slate-100"
                     >
                       <X size={12} />
-                      مسح التاريخ
+                      {t('customers.activityTimeline.clearDate')}
                     </button>
                   )}
                 </div>
@@ -227,7 +229,7 @@ export function CustomerActivityTimeline({ activities = [] }) {
               onChange={(event) => setSelectedUser(event.target.value)}
               className="h-9 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-[#00AEB8] focus:bg-white"
             >
-              <option value="all">المستخدمين</option>
+              <option value="all">{t('customers.activityTimeline.users')}</option>
               {availableUsers.map((user) => (
                 <option key={user.id} value={user.id}>{user.name}</option>
               ))}
@@ -244,7 +246,7 @@ export function CustomerActivityTimeline({ activities = [] }) {
               }}
               className="inline-flex h-9 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:bg-slate-50"
             >
-              مسح الفلاتر
+              {t('customers.activityTimeline.clearFilters')}
             </button>
           </div>
         </div>
@@ -266,9 +268,9 @@ export function CustomerActivityTimeline({ activities = [] }) {
           <div className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-500">
             <Activity size={22} />
           </div>
-          <h4 className="mt-3 text-sm font-black text-slate-800">لا توجد أنشطة مسجلة حتى الآن</h4>
+          <h4 className="mt-3 text-sm font-black text-slate-800">{t('customers.activityTimeline.emptyTitle')}</h4>
           <p className="mt-1 text-xs font-semibold text-slate-500">
-            سيظهر هنا سجل التفاعلات والتغييرات التي تتم على العميل.
+            {t('customers.activityTimeline.emptyDescription')}
           </p>
         </div>
       )}

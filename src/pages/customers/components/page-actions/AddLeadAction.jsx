@@ -1,6 +1,8 @@
 import { Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function AddLeadAction({ onClick, closeMenu }) {
+  const { t } = useTranslation()
   if (!onClick) return null
 
   return (
@@ -14,7 +16,7 @@ export function AddLeadAction({ onClick, closeMenu }) {
       role="menuitem"
     >
       <Plus size={15} />
-      إضافة عميل محتمل
+      {t('customers.pageActions.addLead')}
     </button>
   )
 }

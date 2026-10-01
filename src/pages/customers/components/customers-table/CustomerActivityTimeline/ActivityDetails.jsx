@@ -1,6 +1,7 @@
 import { getActivitySourceLabel } from './config/activitySources'
 import { formatActivityFullDate } from './utils/formatActivityDate'
 import { formatActivityDuration } from './utils/formatActivityDuration'
+import { useTranslation } from 'react-i18next'
 
 function DetailRow({ label, value }) {
   if (!value || value === '-') return null
@@ -14,6 +15,7 @@ function DetailRow({ label, value }) {
 }
 
 export function ActivityDetails({ activity }) {
+  const { t } = useTranslation()
   const actorName = activity?.userName || activity?.user?.name || '-'
   const fullDate = formatActivityFullDate(activity?.date)
   const source = getActivitySourceLabel(activity?.source)
@@ -21,11 +23,11 @@ export function ActivityDetails({ activity }) {
 
   return (
     <div className="mt-1.5 space-y-1 rounded-xl border border-slate-200 bg-slate-50 p-2">
-      <DetailRow label="الوصف" value={activity?.description || '-'} />
-      <DetailRow label="الموظف" value={actorName} />
-      <DetailRow label="وقت العملية" value={fullDate} />
-      <DetailRow label="زمن الاستجابة" value={responseTime} />
-      <DetailRow label="المصدر" value={source} />
+      <DetailRow label={t('customers.activityTimeline.details.description')} value={activity?.description || '-'} />
+      <DetailRow label={t('customers.activityTimeline.details.employee')} value={actorName} />
+      <DetailRow label={t('customers.activityTimeline.details.time')} value={fullDate} />
+      <DetailRow label={t('customers.activityTimeline.details.responseTime')} value={responseTime} />
+      <DetailRow label={t('customers.activityTimeline.details.source')} value={source} />
     </div>
   )
 }

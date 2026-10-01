@@ -124,6 +124,7 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
   - **Long press (≈250 ms, mouse or touch) then drag** a card to another column to change the lead status (`PipelineBoard dragMode="longPress"`, built on `@dnd-kit`; a short click still opens the card). This with the same `leadsApi.saveAction` payload as bulk/drawer status changes (`data.source: 'customers_pipeline'`). Statuses with `has_resone = 1` open the reason dialog first. The card moves optimistically in the `['customers','list']` cache and rolls back on error. Cards can't be dropped on "No status".
   - Not in the pipeline yet: the table's row alert colours (upcoming/overdue activity, new-message flash) and column customization.
 - **Persisted UI:** `main-sidebar-collapsed`, `customers-sidebar-collapsed`, `customers-bulk-actions-pin-mode`, `customers-view-mode` (`table` \| `pipeline`) and `customers-pipeline-card-fields` (via the DataTable `useLocalStorage` helper), DataTable `datatable-*-{tableId}` keys.
+- **i18n (2026-10-02 00:55 (Africa/Cairo)):** every Leads Center string lives in `locales/{ar,en}/customers.js` (`customers.*` sub-groups per area: `productsDialog`, `activityTimeline`, `bulkActions`, `socialMessaging`, `customization`, `salesTeams`, `statusBoard`, `placeholders`, …). Module-level option lists use `labelKey`/getters so labels follow a language switch.
 - **Known issues:** seven placeholder sub-routes (table above); `CustomersPage.jsx` is oversized and route-owned; `customersApi` logs responses to the console.
 
 ## Customer details drawer
@@ -138,7 +139,7 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 - **Floating chats:** WhatsApp / Messenger / Mail / SMS chat windows from `features/conversations/components/floating-chat/` (see [3-FEATURES.md → Conversations](3-FEATURES.md#conversations)).
 - **Extend:** new tab = component in `tabs/` + entry in `DRAWER_TABS` + branch in `ActiveTabContent`; new quick action = component in `quick-actions/` added to `CustomerQuickActions.jsx`. Tab and quick-action order are user-sortable (long press) and stored in `customer-details-drawer-tabs-order` / `customer-details-quick-actions-order`.
 - **API:** customers info, definitions, `leadsApi.saveAction`/`updateTag`, `interestedsApi` (`POST /api/tenant/interesteds/save|edite|delete`), meetings, tasks.
-- **Known issues:** Notes/Files/Emails/Calendar tabs are minimal; the Tasks tab is a separate mini-implementation (not the Tasks workspace) and not fully translated; drawer Mail/SMS chats are local stubs (no backend); oversized main file.
+- **Known issues:** Notes/Files/Emails/Calendar tabs are minimal; the Tasks tab is a separate mini-implementation (not the Tasks workspace); fully translated since 2026-10-02 00:55 (Africa/Cairo) (drawer, tabs, quick actions, `/lead/:customerId`); drawer Mail/SMS chats are local stubs (no backend); oversized main file.
 
 ## Bulk actions
 

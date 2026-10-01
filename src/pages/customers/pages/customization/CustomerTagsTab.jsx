@@ -10,6 +10,8 @@ import { FormDialog } from '../../../../shared/components/overlays/FormDialog'
 import { Input } from '../../../../shared/components/ui/Input'
 import { Select } from '../../../../shared/components/ui/Select'
 import { Spinner } from '../../../../shared/components/ui/Spinner'
+import { useTranslation } from 'react-i18next'
+import i18n from 'i18next'
 
 const DEFAULT_FORM = {
   tag: '',
@@ -18,14 +20,14 @@ const DEFAULT_FORM = {
 }
 
 const TAG_TYPE_OPTIONS = [
-  { value: 'customer', label: 'customer' },
-  { value: 'lead', label: 'lead' },
-  { value: 'deal', label: 'deal' },
+  { value: 'customer', get label() { return i18n.t('customers.customization.tagTypes.customer') } },
+  { value: 'lead', get label() { return i18n.t('customers.customization.tagTypes.lead') } },
+  { value: 'deal', get label() { return i18n.t('customers.customization.tagTypes.deal') } },
 ]
 
 const ACTIVE_OPTIONS = [
-  { value: '1', label: 'نشط' },
-  { value: '0', label: 'غير نشط' },
+  { value: '1', get label() { return i18n.t('customers.customization.active') } },
+  { value: '0', get label() { return i18n.t('customers.customization.inactive') } },
 ]
 
 function flattenTags(response) {
@@ -64,6 +66,7 @@ function buildPayload(form) {
 }
 
 export function CustomerTagsTab() {
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [dialogMode, setDialogMode] = useState(null)
   const [selectedTag, setSelectedTag] = useState(null)
@@ -83,24 +86,24 @@ export function CustomerTagsTab() {
   const createTagMutation = useMutation({
     mutationFn: definitionsApi.createTag,
     onSuccess: () => {
-      toast.success('تمت إضافة التاج')
+      toast.success(t('customers.customization.tagAdded'))
       invalidateTags()
       closeDialog()
     },
     onError: (error) => {
-      toast.error(extractMessage(error, 'تعذر إضافة التاج'))
+      toast.error(extractMessage(error, t('customers.customization.tagAddFailed')))
     },
   })
 
   const updateTagMutation = useMutation({
     mutationFn: ({ id, payload }) => definitionsApi.updateTag(id, payload),
     onSuccess: () => {
-      toast.success('تم تعديل التاج')
+      toast.success(t('customers.customization.tagUpdated'))
       invalidateTags()
       closeDialog()
     },
     onError: (error) => {
-      toast.error(extractMessage(error, 'تعذر تعديل التاج'))
+      toast.error(extractMessage(error, t('customers.customization.tagUpdateFailed')))
     },
   })
 
@@ -143,7 +146,7 @@ export function CustomerTagsTab() {
   const handleSubmit = () => {
     const payload = buildPayload(form)
     if (!payload.tag) {
-      setFormError('اسم التاج مطلوب')
+      setFormError(t('customers.customization.tagNameRequired'))
       return
     }
 
@@ -156,16 +159,16 @@ export function CustomerTagsTab() {
   }
 
   const isSaving = createTagMutation.isPending || updateTagMutation.isPending
-  const dialogTitle = dialogMode === 'edit' ? 'تعديل تاج' : 'إضافة تاج'
-  const submitText = dialogMode === 'edit' ? 'حفظ التعديل' : 'إضافة'
+  const dialogTitle = dialogMode === 'edit' ? t('customers.customization.editTag') : t('customers.customization.addTag')
+  const submitText = dialogMode === 'edit' ? t('customers.customization.saveChanges') : t('customers.customization.add')
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-base font-bold text-[var(--text)]">تاج العملاء</h2>
+          <h2 className="text-base font-bold text-[var(--text)]">{t('customers.customization.tabs.tags')}</h2>
           <p className="mt-1 text-sm leading-6 text-[var(--text-muted)]">
-            إدارة الوسوم المستخدمة لتجميع العملاء والليد والصفقات.
+            {t('customers.customization.tagsDescription')}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -176,11 +179,11 @@ export function CustomerTagsTab() {
             className="gap-2"
           >
             <RefreshCw size={16} className={tagsQuery.isFetching ? 'animate-spin' : ''} />
-            تحديث
+            {t('customers.customization.refresh')}
           </Button>
           <Button variant="primary" className="gap-2" onClick={openCreateDialog}>
             <Plus size={16} />
-            إضافة تاج
+            {t('customers.customization.addTag')}
           </Button>
         </div>
       </div>
@@ -193,13 +196,13 @@ export function CustomerTagsTab() {
 
       {tagsQuery.isError && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          {extractMessage(tagsQuery.error, 'تعذر تحميل التاجات')}
+          {extractMessage(tagsQuery.error, t('customers.customization.tagsLoadFailed'))}
         </div>
       )}
 
       {!tagsQuery.isLoading && !tagsQuery.isError && tags.length === 0 && (
         <div className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface)] p-6 text-center text-sm text-[var(--text-muted)]">
-          لا توجد تاجات مسجلة بعد.
+          {t('customers.customization.noTags')}
         </div>
       )}
 
@@ -222,7 +225,7 @@ export function CustomerTagsTab() {
                           </h4>
                           <p className="mt-1 inline-flex items-center gap-1 text-xs text-[var(--text-muted)]">
                             <Hash size={12} />
-                            {tag.active ? 'نشط' : 'غير نشط'} · {tag.type}
+                            {tag.active ? t('customers.customization.active') : t('customers.customization.inactive')} · {t(`customers.customization.tagTypes.${tag.type}`, { defaultValue: tag.type })}
                           </p>
                         </div>
                       </div>
@@ -231,8 +234,8 @@ export function CustomerTagsTab() {
                         type="button"
                         onClick={() => openEditDialog(tag)}
                         className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] text-[var(--text)] hover:bg-[var(--surface-2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00C2CB]"
-                        title="تعديل التاج"
-                        aria-label="تعديل التاج"
+                        title={t('customers.customization.editTag')}
+                        aria-label={t('customers.customization.editTag')}
                       >
                         <Edit3 size={15} />
                       </button>
@@ -249,34 +252,34 @@ export function CustomerTagsTab() {
         open={Boolean(dialogMode)}
         onClose={closeDialog}
         title={dialogTitle}
-        description="اكتب بيانات التاج كما سيتم إرسالها إلى API التعريفات."
+        description={t('customers.customization.tagDialogDescription')}
         onSubmit={handleSubmit}
         submitText={submitText}
         loading={isSaving}
         submitDisabled={!form.tag.trim()}
       >
         <Input
-          label="اسم التاج"
+          label={t('customers.customization.tagName')}
           value={form.tag}
           onChange={(event) => updateForm('tag', event.target.value)}
           error={formError}
-          placeholder="مثال: test"
+          placeholder={t('customers.customization.tagNamePlaceholder')}
         />
 
         <Select
-          label="النوع"
+          label={t('customers.customization.type')}
           value={form.type}
           onChange={(value) => updateForm('type', value)}
           options={TAG_TYPE_OPTIONS}
-          placeholder="اختر النوع"
+          placeholder={t('customers.customization.chooseType')}
         />
 
         <Select
-          label="الحالة"
+          label={t('customers.customization.state')}
           value={form.active}
           onChange={(value) => updateForm('active', value)}
           options={ACTIVE_OPTIONS}
-          placeholder="اختر الحالة"
+          placeholder={t('customers.customization.chooseState')}
         />
       </FormDialog>
     </div>

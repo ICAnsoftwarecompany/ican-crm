@@ -6,19 +6,23 @@ import { buildCustomerAssetUrl } from '../../../customers-table/CustomerTableDet
 import { InterestFormDialog } from '../../quick-actions/interests'
 import { EmptyPanel } from '../../CustomerDetailsTabPrimitives'
 import { fieldValue, formatDateTime12 } from '../../customerDetailsUtils'
+import { useTranslation } from 'react-i18next'
+import i18n from 'i18next'
 
 const INTEREST_LEVEL_META = {
-  high: { label: 'H', text: 'High', className: 'border-[#FCA5A5] bg-[#FEF2F2] text-[#B91C1C]' },
-  hight: { label: 'H', text: 'High', className: 'border-[#FCA5A5] bg-[#FEF2F2] text-[#B91C1C]' },
-  medium: { label: 'M', text: 'Medium', className: 'border-[#FDE68A] bg-[#FFFBEB] text-[#92400E]' },
-  low: { label: 'L', text: 'Low', className: 'border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]' },
+  high: { label: 'H', textKey: 'activities.priority.high', className: 'border-[#FCA5A5] bg-[#FEF2F2] text-[#B91C1C]' },
+  hight: { label: 'H', textKey: 'activities.priority.high', className: 'border-[#FCA5A5] bg-[#FEF2F2] text-[#B91C1C]' },
+  medium: { label: 'M', textKey: 'activities.priority.medium', className: 'border-[#FDE68A] bg-[#FFFBEB] text-[#92400E]' },
+  low: { label: 'L', textKey: 'activities.priority.low', className: 'border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]' },
 }
 
 function getInterestMeta(value = '') {
   const key = String(value || '').trim().toLowerCase()
-  return INTEREST_LEVEL_META[key] || {
+  const meta = INTEREST_LEVEL_META[key]
+  if (meta) return { ...meta, text: i18n.t(meta.textKey) }
+  return {
     label: key ? key.slice(0, 1).toUpperCase() : '-',
-    text: value || 'غير محدد',
+    text: value || i18n.t('customers.activityTimeline.levels.unspecified'),
     className: 'border-[#E2E8F0] bg-white text-[#475569]',
   }
 }
@@ -114,6 +118,7 @@ function ProductDataChips({ items = [] }) {
 }
 
 function InterestDetailsDialog({ interest, onClose }) {
+  const { t } = useTranslation()
   const product = interest?.product || interest?.products || {}
   const productDataItems = parseProductData(product?.data)
   const imageUrl = buildCustomerAssetUrl(product?.image)
@@ -122,7 +127,7 @@ function InterestDetailsDialog({ interest, onClose }) {
     <AppModal
       isOpen={Boolean(interest)}
       onClose={onClose}
-      title={product?.name || 'تفاصيل الاهتمام'}
+      title={product?.name || t('customers.interestsTab.details')}
       description={interest?.notes || product?.desc || ''}
       size="lg"
       className="max-w-5xl"
@@ -141,7 +146,7 @@ function InterestDetailsDialog({ interest, onClose }) {
 
           <div className="min-w-0 space-y-4">
             <DetailGrid
-              title="بيانات المنتج"
+              title={t('customers.interestsTab.productData')}
               data={{
                 id: product?.id,
                 code: product?.code,
@@ -153,7 +158,7 @@ function InterestDetailsDialog({ interest, onClose }) {
               }}
             />
             <DetailGrid
-              title="بيانات الاهتمام"
+              title={t('customers.interestsTab.interestData')}
               data={{
                 id: interest?.id,
                 lead_id: interest?.lead_id,
@@ -172,7 +177,7 @@ function InterestDetailsDialog({ interest, onClose }) {
         <ProductDataChips items={productDataItems} />
 
         <section className="space-y-2">
-          <h4 className="text-sm font-black text-slate-900">البيانات الخام</h4>
+          <h4 className="text-sm font-black text-slate-900">{t('customers.productsDialog.rawData')}</h4>
           <pre className="max-h-72 overflow-auto rounded-xl bg-slate-950 p-3 text-xs leading-6 text-slate-100">
             {JSON.stringify(interest || {}, null, 2)}
           </pre>
@@ -183,6 +188,7 @@ function InterestDetailsDialog({ interest, onClose }) {
 }
 
 export function InterestsTab({ customer, layoutMode = 'compact' }) {
+  const { t } = useTranslation()
   const [selectedInterest, setSelectedInterest] = useState(null)
   const [editingInterest, setEditingInterest] = useState(null)
   const interesteds = useMemo(() => getInteresteds(customer), [customer])
@@ -191,8 +197,8 @@ export function InterestsTab({ customer, layoutMode = 'compact' }) {
   if (!interesteds.length) {
     return (
       <EmptyPanel
-        title="لا توجد اهتمامات"
-        description="لم يتم تسجيل منتجات أو اهتمامات لهذا العميل حتى الآن."
+        title={t('customers.interestsTab.emptyTitle')}
+        description={t('customers.interestsTab.emptyDescription')}
       />
     )
   }
@@ -201,9 +207,9 @@ export function InterestsTab({ customer, layoutMode = 'compact' }) {
     <>
       <div className="min-w-0 space-y-3 py-4">
         <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
-          <h3 className="text-base font-black text-[var(--text)]">الاهتمامات</h3>
+          <h3 className="text-base font-black text-[var(--text)]">{t('customers.interestsTab.title')}</h3>
           <span className="rounded-full border border-[#BEEFF2] bg-[#E8F9FA] px-2.5 py-1 text-xs font-black text-[#007A80]">
-            {interesteds.length} منتج
+            {t('customers.interestsTab.productsCount', { count: interesteds.length })}
           </span>
         </div>
 
@@ -268,10 +274,10 @@ export function InterestsTab({ customer, layoutMode = 'compact' }) {
                         </span>
                       ) : null}
                       {interest?.is_deal ? (
-                        <span className="rounded-full bg-[#DCFCE7] px-2 py-1 text-[#166534]">Deal</span>
+                        <span className="rounded-full bg-[#DCFCE7] px-2 py-1 text-[#166534]">{t('customers.interestsTab.deal')}</span>
                       ) : null}
                       {interest?.is_lost ? (
-                        <span className="rounded-full bg-[#FEE2E2] px-2 py-1 text-[#B91C1C]">Lost</span>
+                        <span className="rounded-full bg-[#FEE2E2] px-2 py-1 text-[#B91C1C]">{t('customers.interestsTab.lost')}</span>
                       ) : null}
                     </div>
 
@@ -290,7 +296,7 @@ export function InterestsTab({ customer, layoutMode = 'compact' }) {
                     className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[#BEEFF2] bg-white px-2.5 text-xs font-black text-[#007A80] transition-colors hover:bg-[#E8F9FA]"
                   >
                     <Pencil size={14} />
-                    تعديل
+                    {t('customers.interestsTab.edit')}
                   </button>
                   <button
                     type="button"
@@ -298,7 +304,7 @@ export function InterestsTab({ customer, layoutMode = 'compact' }) {
                     className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] px-2.5 text-xs font-black text-[#007A80] transition-colors hover:bg-[#E8F9FA]"
                   >
                     <Eye size={14} />
-                    عرض
+                    {t('customers.interestsTab.view')}
                   </button>
                 </div>
               </article>

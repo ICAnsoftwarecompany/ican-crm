@@ -1,6 +1,8 @@
 import { Upload } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function ImportLeadsAction({ onClick, closeMenu }) {
+  const { t } = useTranslation()
   if (!onClick) return null
 
   return (
@@ -14,7 +16,7 @@ export function ImportLeadsAction({ onClick, closeMenu }) {
       role="menuitem"
     >
       <Upload size={15} />
-      استيراد عملاء محتملين
+      {t('customers.pageActions.importLeads')}
     </button>
   )
 }

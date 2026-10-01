@@ -3,15 +3,17 @@ import { MessageSquarePlus } from 'lucide-react'
 
 import { FollowUpNoteDialog } from '../../follow-up-note'
 import { QuickActionButton } from './QuickActionButton'
+import { useTranslation } from 'react-i18next'
 
 export function FollowUpQuickAction({ customer, currentStatus, statuses = [], onFollowUpAdded }) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
 
   return (
     <>
       <QuickActionButton
         icon={MessageSquarePlus}
-        label="إضافة متابعة"
+        label={t('customers.followUp.addFollowUp')}
         accentClassName="text-[#007A80]"
         onClick={() => setOpen(true)}
       />

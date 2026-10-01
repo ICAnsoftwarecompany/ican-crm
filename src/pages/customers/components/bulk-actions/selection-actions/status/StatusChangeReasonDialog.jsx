@@ -189,8 +189,8 @@ export function StatusChangeReasonDialog({
             <label className="space-y-1 text-xs font-bold text-[var(--text)]">
               <span>{t('customers.followUp.schedule.modeLabel')}</span>
               <select value={mode} onChange={(event) => setMode(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold">
-                <option value="online">online</option>
-                <option value="offline">offline</option>
+                <option value="online">{t('customers.scheduleOptions.mode.online')}</option>
+                <option value="offline">{t('customers.scheduleOptions.mode.offline')}</option>
               </select>
             </label>
             <label className="space-y-1 text-xs font-bold text-[var(--text)]">
@@ -208,8 +208,8 @@ export function StatusChangeReasonDialog({
               <label className="space-y-1 text-xs font-bold text-[var(--text)]">
                 <span>{t('customers.followUp.schedule.callProviderLabel')}</span>
                 <select value={callProvider} onChange={(event) => setCallProvider(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold">
-                  <option value="manual">manual</option>
-                  <option value="cloud_call_center">cloud_call_center</option>
+                  <option value="manual">{t('customers.scheduleOptions.callProvider.manual')}</option>
+                  <option value="cloud_call_center">{t('customers.scheduleOptions.callProvider.cloud_call_center')}</option>
                 </select>
               </label>
               <label className="space-y-1 text-xs font-bold text-[var(--text)]">
@@ -227,9 +227,9 @@ export function StatusChangeReasonDialog({
             <label className="space-y-1 text-xs font-bold text-[var(--text)]">
               <span>{t('customers.followUp.schedule.reminderTypeLabel')}</span>
               <select value={reminderType} onChange={(event) => setReminderType(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold">
-                <option value="system">system</option>
-                <option value="email">email</option>
-                <option value="both">both</option>
+                <option value="system">{t('customers.scheduleOptions.reminderType.system')}</option>
+                <option value="email">{t('customers.scheduleOptions.reminderType.email')}</option>
+                <option value="both">{t('customers.scheduleOptions.reminderType.both')}</option>
               </select>
             </label>
             <label className="space-y-1 text-xs font-bold text-[var(--text)]">
@@ -239,9 +239,9 @@ export function StatusChangeReasonDialog({
             <label className="space-y-1 text-xs font-bold text-[var(--text)]">
               <span>{t('customers.followUp.schedule.reminderUnitLabel')}</span>
               <select value={reminderUnit} onChange={(event) => setReminderUnit(event.target.value)} className="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 text-xs font-semibold">
-                <option value="minutes">minutes</option>
-                <option value="hours">hours</option>
-                <option value="days">days</option>
+                <option value="minutes">{t('customers.scheduleOptions.reminderUnit.minutes')}</option>
+                <option value="hours">{t('customers.scheduleOptions.reminderUnit.hours')}</option>
+                <option value="days">{t('customers.scheduleOptions.reminderUnit.days')}</option>
               </select>
             </label>
           </div>

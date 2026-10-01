@@ -11,6 +11,7 @@ import { CustomerStatusBoardBreadcrumbs } from './components/CustomerStatusBoard
 import { CustomerStatusBoardHeader } from './components/CustomerStatusBoardHeader'
 import { StatusCustomersColumn } from './components/StatusCustomersColumn'
 import { StatusTabsSelector } from './components/StatusTabsSelector'
+import { useTranslation } from 'react-i18next'
 
 function parseStatusIds(value) {
   if (!value) return []
@@ -21,6 +22,7 @@ function parseStatusIds(value) {
 }
 
 export function CustomerStatusBoardPage() {
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const initialStatusIds = parseStatusIds(searchParams.get('statuses'))
   const [selectedStatusIds, setSelectedStatusIds] = useLocalStorage(
@@ -85,19 +87,19 @@ export function CustomerStatusBoardPage() {
 
       {(statusesQuery.isLoading || customersQuery.isLoading) && (
         <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 text-sm text-[var(--text-muted)]">
-          جاري تحميل بيانات العرض...
+          {t('customers.statusBoard.loading')}
         </div>
       )}
 
       {(statusesQuery.isError || customersQuery.isError) && (
         <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
-          تعذر تحميل بيانات العرض المتعدد.
+          {t('customers.statusBoard.loadError')}
         </div>
       )}
 
       {!statusesQuery.isLoading && visibleStatuses.length === 0 && (
         <div className="rounded-xl border border-dashed border-[#BEEFF2] bg-[#F8FEFF] p-8 text-center text-sm text-[var(--text-muted)]">
-          اختر حالتين أو أكثر من الأعلى لعرض العملاء في أعمدة منفصلة.
+          {t('customers.statusBoard.chooseStatuses')}
         </div>
       )}
 
@@ -123,7 +125,7 @@ export function CustomerStatusBoardPage() {
             onClick={() => customersQuery.fetchNextPage()}
             loading={customersQuery.isFetchingNextPage}
           >
-            تحميل المزيد من العملاء
+            {t('customers.statusBoard.loadMore')}
           </Button>
         </div>
       )}

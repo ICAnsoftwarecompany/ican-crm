@@ -84,8 +84,8 @@ export function FollowUpScheduleSection({ form, updateForm }) {
                   onChange={(event) => updateForm('schedule_mode', event.target.value)}
                   className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-arabic text-[var(--text)] outline-none transition-colors focus:border-transparent focus:ring-2 focus:ring-[#00C2CB]"
                 >
-                  <option value="online">Online</option>
-                  <option value="offline">Offline</option>
+                  <option value="online">{t('customers.scheduleOptions.mode.online')}</option>
+                  <option value="offline">{t('customers.scheduleOptions.mode.offline')}</option>
                 </select>
               </label>
               <Input
@@ -113,8 +113,8 @@ export function FollowUpScheduleSection({ form, updateForm }) {
                     onChange={(event) => updateForm('schedule_call_provider', event.target.value)}
                     className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-arabic text-[var(--text)] outline-none transition-colors focus:border-transparent focus:ring-2 focus:ring-[#00C2CB]"
                   >
-                    <option value="manual">manual</option>
-                    <option value="cloud_call_center">cloud_call_center</option>
+                    <option value="manual">{t('customers.scheduleOptions.callProvider.manual')}</option>
+                    <option value="cloud_call_center">{t('customers.scheduleOptions.callProvider.cloud_call_center')}</option>
                   </select>
                 </label>
                 <Input
@@ -142,9 +142,9 @@ export function FollowUpScheduleSection({ form, updateForm }) {
                   onChange={(event) => updateForm('schedule_reminder_type', event.target.value)}
                   className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-arabic text-[var(--text)] outline-none transition-colors focus:border-transparent focus:ring-2 focus:ring-[#00C2CB]"
                 >
-                  <option value="system">system</option>
-                  <option value="email">email</option>
-                  <option value="both">both</option>
+                  <option value="system">{t('customers.scheduleOptions.reminderType.system')}</option>
+                  <option value="email">{t('customers.scheduleOptions.reminderType.email')}</option>
+                  <option value="both">{t('customers.scheduleOptions.reminderType.both')}</option>
                 </select>
               </label>
               <Input
@@ -161,9 +161,9 @@ export function FollowUpScheduleSection({ form, updateForm }) {
                   onChange={(event) => updateForm('schedule_reminder_unit', event.target.value)}
                   className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-arabic text-[var(--text)] outline-none transition-colors focus:border-transparent focus:ring-2 focus:ring-[#00C2CB]"
                 >
-                  <option value="minutes">minutes</option>
-                  <option value="hours">hours</option>
-                  <option value="days">days</option>
+                  <option value="minutes">{t('customers.scheduleOptions.reminderUnit.minutes')}</option>
+                  <option value="hours">{t('customers.scheduleOptions.reminderUnit.hours')}</option>
+                  <option value="days">{t('customers.scheduleOptions.reminderUnit.days')}</option>
                 </select>
               </label>
             </div>

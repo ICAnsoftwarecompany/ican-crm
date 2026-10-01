@@ -4,10 +4,11 @@ import { AppDrawer } from '../../../../shared/components/overlays/AppDrawer'
 import { Button } from '../../../../shared/components/ui/Button'
 import { Badge } from '../../../../shared/components/ui/Badge'
 import { cn } from '../../../../shared/utils/cn'
+import { useTranslation } from 'react-i18next'
 
 const TABS = [
-  { id: 'current', label: 'الأعضاء الحاليون', icon: UsersRound },
-  { id: 'add', label: 'إضافة أعضاء', icon: Plus },
+  { id: 'current', labelKey: 'customers.salesTeams.members.tabs.current', icon: UsersRound },
+  { id: 'add', labelKey: 'customers.salesTeams.members.tabs.add', icon: Plus },
 ]
 
 function normalizeId(value) {
@@ -75,6 +76,7 @@ export function TeamMembersDrawer({
   onAttachUsers,
   onDetachUsers,
 }) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('current')
   const [currentSearch, setCurrentSearch] = useState('')
   const [availableSearch, setAvailableSearch] = useState('')
@@ -151,7 +153,7 @@ export function TeamMembersDrawer({
       setSelectedAvailableIds(new Set())
       setActiveTab('current')
     } catch (err) {
-      setError(err?.response?.data?.message || err?.message || 'تعذر إضافة الأعضاء')
+      setError(err?.response?.data?.message || err?.message || t('customers.salesTeams.members.addFailed'))
     }
   }
 
@@ -164,7 +166,7 @@ export function TeamMembersDrawer({
       await onDetachUsers(normalizedIds)
       setSelectedCurrentIds(new Set())
     } catch (err) {
-      setError(err?.response?.data?.message || err?.message || 'تعذر إلغاء ربط الأعضاء')
+      setError(err?.response?.data?.message || err?.message || t('customers.salesTeams.members.unlinkFailed'))
     }
   }
 
@@ -198,7 +200,7 @@ export function TeamMembersDrawer({
             </Badge>
           ))
         ) : (
-          <span className="text-xs text-[var(--text-muted)]">بدون فرق مرتبطة</span>
+          <span className="text-xs text-[var(--text-muted)]">{t('customers.salesTeams.members.noLinkedTeams')}</span>
         )}
       </div>
     )
@@ -209,7 +211,7 @@ export function TeamMembersDrawer({
       open={open}
       onClose={onClose}
       size="lg"
-      title="أعضاء الفريق"
+      title={t('customers.salesTeams.members.title')}
       description={team ? getTeamName(team) : ''}
     >
       <div className="space-y-4">
@@ -220,8 +222,8 @@ export function TeamMembersDrawer({
         )}
 
         <div className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2">
-          <span className="text-sm font-semibold text-[var(--text)]">إجمالي الأعضاء</span>
-          <Badge variant="info">{currentMembers.length} عضو</Badge>
+          <span className="text-sm font-semibold text-[var(--text)]">{t('customers.salesTeams.members.total')}</span>
+          <Badge variant="info">{t('customers.salesTeams.membersCountValue', { count: currentMembers.length })}</Badge>
         </div>
 
         <div className="grid grid-cols-2 gap-2 rounded-lg bg-[var(--surface-2)] p-1">
@@ -242,7 +244,7 @@ export function TeamMembersDrawer({
                 )}
               >
                 <Icon size={16} />
-                {tab.label}
+                {t(tab.labelKey)}
               </button>
             )
           })}
@@ -259,7 +261,7 @@ export function TeamMembersDrawer({
                 type="search"
                 value={currentSearch}
                 onChange={(event) => setCurrentSearch(event.target.value)}
-                placeholder="ابحث في الأعضاء الحاليين"
+                placeholder={t('customers.salesTeams.members.searchCurrent')}
                 className="h-10 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 ps-9 text-sm text-[var(--text)] placeholder:text-[var(--text-light)] focus:outline-none focus:ring-2 focus:ring-[#00C2CB]"
               />
             </div>
@@ -272,7 +274,7 @@ export function TeamMembersDrawer({
                 className="w-full"
               >
                 <Trash2 size={16} />
-                إلغاء ربط المحدد ({selectedCurrentIds.size})
+                {t('customers.salesTeams.members.unlinkSelected', { count: selectedCurrentIds.size })}
               </Button>
             )}
 
@@ -310,7 +312,7 @@ export function TeamMembersDrawer({
                           loading={loading}
                         >
                           <X size={14} />
-                          فك الربط
+                          {t('customers.salesTeams.members.unlink')}
                         </Button>
                       </div>
                     </div>
@@ -319,7 +321,7 @@ export function TeamMembersDrawer({
               </div>
             ) : (
               <div className="rounded-lg border border-dashed border-[var(--border)] p-6 text-center text-sm text-[var(--text-muted)]">
-                {currentMembers.length ? 'لا توجد نتائج مطابقة.' : 'لا يوجد أعضاء داخل هذا الفريق.'}
+                {currentMembers.length ? t('customers.salesTeams.noResults') : t('customers.salesTeams.members.empty')}
               </div>
             )}
           </div>
@@ -336,7 +338,7 @@ export function TeamMembersDrawer({
                 type="search"
                 value={availableSearch}
                 onChange={(event) => setAvailableSearch(event.target.value)}
-                placeholder="ابحث عن مستخدمين لإضافتهم"
+                placeholder={t('customers.salesTeams.members.searchToAdd')}
                 className="h-10 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 ps-9 text-sm text-[var(--text)] placeholder:text-[var(--text-light)] focus:outline-none focus:ring-2 focus:ring-[#00C2CB]"
               />
             </div>
@@ -348,7 +350,7 @@ export function TeamMembersDrawer({
               className="w-full"
             >
               <Plus size={16} />
-              إضافة المحدد ({selectedAvailableIds.size})
+              {t('customers.salesTeams.members.addSelected', { count: selectedAvailableIds.size })}
             </Button>
 
             {filteredAvailableUsers.length ? (
@@ -384,7 +386,7 @@ export function TeamMembersDrawer({
               </div>
             ) : (
               <div className="rounded-lg border border-dashed border-[var(--border)] p-6 text-center text-sm text-[var(--text-muted)]">
-                لا يوجد مستخدمون متاحون للإضافة.
+                {t('customers.salesTeams.members.noUsersToAdd')}
               </div>
             )}
           </div>

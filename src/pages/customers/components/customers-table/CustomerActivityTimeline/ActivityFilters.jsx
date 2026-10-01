@@ -1,12 +1,14 @@
+import { useTranslation } from 'react-i18next'
 const FILTERS = [
-  { id: 'all', label: 'الكل' },
-  { id: 'status', label: 'الحالات' },
-  { id: 'notes', label: 'الملاحظات' },
-  { id: 'products', label: 'المنتجات' },
-  { id: 'communication', label: 'التواصل' },
+  { id: 'all', labelKey: 'customers.activityTimeline.filters.all' },
+  { id: 'status', labelKey: 'customers.activityTimeline.filters.status' },
+  { id: 'notes', labelKey: 'customers.activityTimeline.filters.notes' },
+  { id: 'products', labelKey: 'customers.activityTimeline.filters.products' },
+  { id: 'communication', labelKey: 'customers.activityTimeline.filters.communication' },
 ]
 
 export function ActivityFilters({ activeFilter, onFilterChange, counts }) {
+  const { t } = useTranslation()
   return (
     <div className="flex flex-wrap items-center gap-2">
       {FILTERS.map((filter) => {
@@ -24,7 +26,7 @@ export function ActivityFilters({ activeFilter, onFilterChange, counts }) {
                 : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
             }`}
           >
-            <span>{filter.label}</span>
+            <span>{t(filter.labelKey)}</span>
             <span className="rounded-full bg-white/80 px-1.5 py-0.5 text-[10px]">{count}</span>
           </button>
         )

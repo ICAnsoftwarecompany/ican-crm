@@ -2,6 +2,8 @@ import { Activity, Clock3, Loader2, MapPin, Timer, UserRound } from 'lucide-reac
 
 import { EmptyPanel } from '../../CustomerDetailsTabPrimitives'
 import { fieldValue, formatDateTime12 } from '../../customerDetailsUtils'
+import { useTranslation } from 'react-i18next'
+import i18n from 'i18next'
 
 function getFallbackLeadLogs(customer) {
   if (Array.isArray(customer?.lead_log)) return customer.lead_log
@@ -13,23 +15,25 @@ function getFallbackLeadLogs(customer) {
 
 function getActionLabel(action) {
   const labels = {
-    created: 'إنشاء العميل',
-    create_activity: 'نشاط جديد',
-    status_change: 'تغيير حالة',
-    call: 'مكالمة',
-    meeting: 'اجتماع',
+    created: 'customers.statusLog.actions.created',
+    create_activity: 'customers.statusLog.actions.createActivity',
+    status_change: 'customers.statusLog.actions.statusChange',
+    call: 'customers.statusLog.actions.call',
+    meeting: 'customers.statusLog.actions.meeting',
   }
 
-  return labels[action] || fieldValue(action, 'حدث')
+  return labels[action] ? i18n.t(labels[action]) : fieldValue(action, i18n.t('customers.statusLog.actions.event'))
 }
 
 function formatResponseTime(seconds) {
   const value = Number(seconds)
   if (!Number.isFinite(value)) return null
-  if (value < 60) return `${value} ثانية`
+  if (value < 60) return i18n.t('customers.activityTimeline.duration.seconds', { seconds: value })
   const minutes = Math.floor(value / 60)
   const remainingSeconds = value % 60
-  return remainingSeconds ? `${minutes} دقيقة و ${remainingSeconds} ثانية` : `${minutes} دقيقة`
+  return remainingSeconds
+    ? i18n.t('customers.activityTimeline.duration.minutesSeconds', { minutes, seconds: remainingSeconds })
+    : i18n.t('customers.activityTimeline.duration.minutes', { minutes })
 }
 
 function getLogNote(log) {
@@ -75,18 +79,19 @@ function LogActivity({ activity }) {
 }
 
 function StatusChangeLine({ log }) {
+  const { t } = useTranslation()
   if (!log.old_status_title && !log.new_status_title) return null
 
   return (
     <div className="mt-2 flex min-w-0 flex-wrap items-center gap-2 text-xs font-bold">
       {log.old_status_title && (
         <span className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[var(--text-muted)]">
-          من: {log.old_status_title}
+          {t('customers.statusLog.from', { status: log.old_status_title })}
         </span>
       )}
       {log.new_status_title && (
         <span className="rounded-full border border-[#BEEFF2] bg-[#E8F9FA] px-2 py-1 text-[#007A80]">
-          إلى: {log.new_status_title}
+          {t('customers.statusLog.to', { status: log.new_status_title })}
         </span>
       )}
     </div>
@@ -94,6 +99,7 @@ function StatusChangeLine({ log }) {
 }
 
 export function StatusActionTab({ customer, logs = [], isLoading, error, layoutMode = 'compact' }) {
+  const { t } = useTranslation()
   const fallbackLogs = getFallbackLeadLogs(customer)
   const resolvedLogs = (logs.length ? logs : fallbackLogs).filter(isStatusLog)
 
@@ -101,7 +107,7 @@ export function StatusActionTab({ customer, logs = [], isLoading, error, layoutM
     return (
       <div className="flex items-center justify-center gap-2 rounded-xl border border-[#E5F7F8] bg-white p-4 text-xs font-bold text-[#007A80]">
         <Loader2 size={15} className="animate-spin" />
-        جاري تحميل سجل العميل...
+        {t('customers.statusLog.loading')}
       </div>
     )
   }
@@ -109,8 +115,8 @@ export function StatusActionTab({ customer, logs = [], isLoading, error, layoutM
   if (error && !resolvedLogs.length) {
     return (
       <EmptyPanel
-        title="تعذر تحميل سجل العميل"
-        description={error?.response?.data?.message || error?.message || 'حدث خطأ أثناء تحميل الأحداث.'}
+        title={t('customers.statusLog.loadError')}
+        description={error?.response?.data?.message || error?.message || t('customers.statusLog.loadErrorDescription')}
       />
     )
   }
@@ -118,8 +124,8 @@ export function StatusActionTab({ customer, logs = [], isLoading, error, layoutM
   if (!resolvedLogs.length) {
     return (
       <EmptyPanel
-        title="لا يوجد سجل حالات"
-        description="لم يتم تسجيل أحداث على هذا العميل حتى الآن."
+        title={t('customers.statusLog.emptyTitle')}
+        description={t('customers.statusLog.emptyDescription')}
       />
     )
   }

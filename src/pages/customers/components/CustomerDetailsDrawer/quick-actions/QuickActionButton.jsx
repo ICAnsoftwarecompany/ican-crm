@@ -1,6 +1,7 @@
 import { createElement, isValidElement } from 'react'
 
 import { cn } from '../../../../../shared/utils/cn'
+import { useTranslation } from 'react-i18next'
 
 export function QuickActionButton({
   icon: Icon,
@@ -12,7 +13,8 @@ export function QuickActionButton({
   badgeContent = null,
   hideLabel = false,
 }) {
-  const hint = `${label} - اضغط مطولا واسحب يمين أو يسار لتغيير الترتيب`
+  const { t } = useTranslation()
+  const hint = t('customers.quickActions.reorderHint', { label })
   const iconNode = isValidElement(Icon)
     ? Icon
     : createElement(Icon, { size: 15, className: 'shrink-0' })

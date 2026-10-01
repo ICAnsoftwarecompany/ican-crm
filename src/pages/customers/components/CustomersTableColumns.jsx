@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import i18n from 'i18next'
 import { PanelRightOpen, Plus } from 'lucide-react'
 
 import { Badge } from '../../../shared/components/ui/Badge'
@@ -161,7 +162,7 @@ function CustomerNotePreview({
   activityAt = '',
   title = '',
   userName = '',
-  label = 'Note',
+  label = '',
   tone = 'slate',
 }) {
   if (!note) return null
@@ -189,66 +190,6 @@ function getLatestLeadNote(row, latestLeadNotes) {
   const leadId = resolveLeadId(row)
   if (!leadId || !latestLeadNotes?.get) return null
   return latestLeadNotes.get(String(leadId)) || null
-}
-
-function DelayedFullTextHover({ text = '', children }) {
-  return (
-    <CustomerTableHoverCard
-      content={text}
-      width={420}
-      estimatedHeight={260}
-      wrapperClassName="relative"
-      cardClassName="font-bold leading-6 text-[#334155]"
-    >
-      {children}
-    </CustomerTableHoverCard>
-  )
-}
-
-function LeadNoteHoverDetails({ activity }) {
-  const data = activity?.data && typeof activity.data === 'object' ? activity.data : null
-  const rows = [
-    { label: 'الملاحظة', value: activity?.note || activity?.data?.note || activity?.description },
-    { label: 'العنوان', value: activity?.title },
-    { label: 'النوع', value: activity?.type },
-    { label: 'التاريخ', value: formatDateTime(activity?.activity_at) },
-    { label: 'تاريخ الإنشاء', value: formatDateTime(activity?.created_at) },
-    { label: 'آخر تحديث', value: formatDateTime(activity?.updated_at) },
-    { label: 'المستخدم', value: activity?.user?.name || activity?.user?.username },
-    { label: 'بريد المستخدم', value: activity?.user?.email },
-    { label: 'User ID', value: activity?.user_id || activity?.user?.id },
-    { label: 'Log ID', value: activity?.user_lead_log_id || activity?.id },
-  ].filter((item) => item.value && item.value !== '-')
-
-  return (
-    <div className="space-y-3">
-      <div className="text-sm font-black text-[#007A80]">بيانات المتابعة</div>
-      <div className="grid gap-1.5 sm:grid-cols-2">
-        {rows.map((item) => (
-          <div key={item.label} className="min-w-0 rounded-lg border border-[#E2E8F0] bg-white px-2 py-1.5">
-            <div className="text-[10px] font-black text-[#64748B]">{item.label}</div>
-            <div className="mt-0.5 whitespace-pre-wrap break-words text-xs font-bold text-[var(--text)]">
-              {item.value}
-            </div>
-          </div>
-        ))}
-      </div>
-      {data ? (
-        <details className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-2">
-          <summary className="cursor-pointer text-[11px] font-black text-[#007A80]">بيانات إضافية</summary>
-          <pre className="mt-2 max-h-36 overflow-auto whitespace-pre-wrap break-words text-[11px] leading-5 text-[#334155]">
-            {JSON.stringify(data, null, 2)}
-          </pre>
-        </details>
-      ) : null}
-      <details className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-2">
-        <summary className="cursor-pointer text-[11px] font-black text-[#007A80]">كل بيانات المتابعة</summary>
-        <pre className="mt-2 max-h-44 overflow-auto whitespace-pre-wrap break-words text-[11px] leading-5 text-[#334155]">
-          {JSON.stringify(activity, null, 2)}
-        </pre>
-      </details>
-    </div>
-  )
 }
 
 function LatestLeadNoteCell({ row, latestLeadNotes, onAddLeadNote, t }) {
@@ -362,19 +303,19 @@ function getActivityStatusMeta(statusValue = '') {
   const status = String(statusValue || '').trim().toLowerCase()
 
   if (status === 'scheduled') {
-    return { label: 'Scheduled', className: 'border-[#FDE68A] bg-[#FFFBEB] text-[#92400E]' }
+    return { label: i18n.t('activities.status.scheduled'), className: 'border-[#FDE68A] bg-[#FFFBEB] text-[#92400E]' }
   }
 
   if (status === 'in_progress') {
-    return { label: 'In Progress', className: 'border-[#BFDBFE] bg-[#EFF6FF] text-[#1D4ED8]' }
+    return { label: i18n.t('activities.status.in_progress'), className: 'border-[#BFDBFE] bg-[#EFF6FF] text-[#1D4ED8]' }
   }
 
   if (status === 'completed') {
-    return { label: 'Completed', className: 'border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]' }
+    return { label: i18n.t('activities.status.completed'), className: 'border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]' }
   }
 
   if (status === 'cancelled') {
-    return { label: 'Cancelled', className: 'border-[#FECACA] bg-[#FEF2F2] text-[#991B1B]' }
+    return { label: i18n.t('activities.status.cancelled'), className: 'border-[#FECACA] bg-[#FEF2F2] text-[#991B1B]' }
   }
 
   return { label: renderNullable(statusValue), className: 'border-[#E2E8F0] bg-white text-[#475569]' }
@@ -384,19 +325,19 @@ function getActivityPriorityMeta(priorityValue = '') {
   const priority = normalizePriority(priorityValue)
 
   if (priority === 'urgent') {
-    return { label: 'Urgent', className: 'border-[#EF4444] bg-[#FEE2E2] text-[#991B1B]' }
+    return { label: i18n.t('activities.priority.urgent'), className: 'border-[#EF4444] bg-[#FEE2E2] text-[#991B1B]' }
   }
 
   if (priority === 'high') {
-    return { label: 'High', className: 'border-[#F97316] bg-[#FFF7ED] text-[#9A3412]' }
+    return { label: i18n.t('activities.priority.high'), className: 'border-[#F97316] bg-[#FFF7ED] text-[#9A3412]' }
   }
 
   if (priority === 'medium') {
-    return { label: 'Medium', className: 'border-[#F59E0B] bg-[#FFFBEB] text-[#92400E]' }
+    return { label: i18n.t('activities.priority.medium'), className: 'border-[#F59E0B] bg-[#FFFBEB] text-[#92400E]' }
   }
 
   if (priority === 'low') {
-    return { label: 'Low', className: 'border-[#22C55E] bg-[#F0FDF4] text-[#166534]' }
+    return { label: i18n.t('activities.priority.low'), className: 'border-[#22C55E] bg-[#F0FDF4] text-[#166534]' }
   }
 
   return { label: renderNullable(priorityValue), className: 'border-[#E2E8F0] bg-white text-[#475569]' }
@@ -519,41 +460,6 @@ function resolveInProgressActivityByType(row, expectedType, nowTimestamp) {
     .sort((first, second) => parseBackendLocalTimestamp(first?.start_at) - parseBackendLocalTimestamp(second?.start_at))[0]
 }
 
-function renderActivityDetails(activity, { includeTypeMode = false } = {}) {
-  if (!activity) {
-    return <span className="text-xs font-semibold text-[var(--text-muted)]">-</span>
-  }
-
-  const statusMeta = getActivityStatusMeta(activity?.status)
-  const detailText = [activity?.title, activity?.description].filter(Boolean).join(' - ')
-  const modeLabel = includeTypeMode && activity?.mode ? String(activity.mode) : ''
-  const typeLabel = includeTypeMode ? normalizeActivityType(activity?.type) : ''
-
-  return (
-    <div className="w-full min-w-0 space-y-1.5">
-      <div className="text-xs font-black text-[var(--text)]">{formatBackendDateTime(activity?.start_at)}</div>
-      <div className="break-words text-[11px] font-semibold text-[var(--text-muted)]" title={detailText || '-'}>
-        {detailText || '-'}
-      </div>
-      <div className="flex flex-wrap items-center gap-1.5">
-        <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-black ${statusMeta.className}`}>
-          {statusMeta.label}
-        </span>
-        {includeTypeMode && typeLabel ? (
-          <span className="inline-flex items-center rounded-full border border-[#D7EEF0] bg-[#F8FEFF] px-2 py-0.5 text-[10px] font-bold text-[#0F766E]">
-            {typeLabel}
-          </span>
-        ) : null}
-        {includeTypeMode && modeLabel ? (
-          <span className="inline-flex items-center rounded-full border border-[#E2E8F0] bg-white px-2 py-0.5 text-[10px] font-bold text-[#334155]">
-            {modeLabel}
-          </span>
-        ) : null}
-      </div>
-    </div>
-  )
-}
-
 function renderActivityMainInfo(activity, remainingLabel, isReminderAlert = false) {
   if (!activity) {
     return <span className="text-xs font-semibold text-[var(--text-muted)]">-</span>
@@ -595,129 +501,6 @@ function getActivityReportsCount(activity) {
 
   const raw = String(value).trim()
   return raw ? raw : null
-}
-
-function ScheduledActivityHover({ activity, remainingLabel, includeMode = false }) {
-  const statusMeta = getActivityStatusMeta(activity?.status)
-  const priorityMeta = getActivityPriorityMeta(activity?.priority)
-  const details = [
-    { label: 'العنوان', value: activity?.title },
-    { label: 'الحالة', value: statusMeta.label, className: statusMeta.className },
-    { label: 'الأولوية', value: priorityMeta.label, className: priorityMeta.className },
-    { label: 'النوع', value: normalizeActivityType(activity?.type) },
-    includeMode ? { label: 'طريقة التواصل', value: activity?.mode } : null,
-    { label: 'البداية', value: formatBackendDateTime(activity?.start_at) },
-    { label: 'النهاية', value: formatBackendDateTime(activity?.end_at) },
-    { label: 'التذكير', value: remainingLabel },
-    { label: 'قبل التذكير', value: activity?.reminder_before ? `${activity.reminder_before} ${activity?.reminder_unit || ''}` : '' },
-    { label: 'تم الإنشاء', value: formatBackendDateTime(activity?.created_at) },
-    { label: 'آخر تحديث', value: formatBackendDateTime(activity?.updated_at) },
-  ].filter((item) => item?.value && item.value !== '-')
-
-  return (
-    <div className="space-y-3">
-      <div>
-        <div className="text-[11px] font-black text-[#007A80]">الملاحظة</div>
-        <div className="mt-1 whitespace-pre-wrap break-words rounded-lg bg-[#F8FEFF] px-2 py-1.5 text-xs font-bold text-[#334155]">
-          {getActivityNoteText(activity)}
-        </div>
-      </div>
-      <div className="grid gap-1.5 sm:grid-cols-2">
-        {details.map((detail) => (
-          <div key={detail.label} className="min-w-0 rounded-lg border border-[#E2E8F0] bg-white px-2 py-1.5">
-            <div className="text-[10px] font-black text-[#64748B]">{detail.label}</div>
-            {detail.className ? (
-              <span className={`mt-1 inline-flex max-w-full items-center rounded-full border px-2 py-0.5 text-[10px] font-black ${detail.className}`}>
-                <span className="min-w-0 break-words">{detail.value}</span>
-              </span>
-            ) : (
-              <div className="mt-0.5 break-words text-xs font-bold text-[var(--text)]">{detail.value}</div>
-            )}
-          </div>
-        ))}
-      </div>
-      {activity?.data && typeof activity.data === 'object' ? (
-        <details className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-2">
-          <summary className="cursor-pointer text-[11px] font-black text-[#007A80]">بيانات إضافية</summary>
-          <pre className="mt-2 max-h-36 overflow-auto whitespace-pre-wrap break-words text-[11px] leading-5 text-[#334155]">
-            {JSON.stringify(activity.data, null, 2)}
-          </pre>
-        </details>
-      ) : null}
-    </div>
-  )
-}
-
-function DelayedActivityHover({ content, children }) {
-  const [visible, setVisible] = useState(false)
-  const [position, setPosition] = useState(null)
-  const anchorRef = useRef(null)
-  const timerRef = useRef(null)
-
-  const updatePosition = () => {
-    const rect = anchorRef.current?.getBoundingClientRect()
-    if (!rect || typeof window === 'undefined') return
-
-    const width = Math.min(480, window.innerWidth - 16)
-    const left = Math.max(8, Math.min(rect.left, window.innerWidth - width - 8))
-    const bottomTop = rect.bottom + 6
-    const top = bottomTop > window.innerHeight - 340
-      ? Math.max(8, rect.top - 340 - 6)
-      : bottomTop
-
-    setPosition({ top, left, width })
-  }
-
-  const showDelayed = () => {
-    window.clearTimeout(timerRef.current)
-    timerRef.current = window.setTimeout(() => {
-      updatePosition()
-      setVisible(true)
-    }, 500)
-  }
-
-  const hide = () => {
-    window.clearTimeout(timerRef.current)
-    setVisible(false)
-  }
-
-  useEffect(() => {
-    if (!visible) return undefined
-
-    window.addEventListener('scroll', updatePosition, true)
-    window.addEventListener('resize', updatePosition)
-
-    return () => {
-      window.removeEventListener('scroll', updatePosition, true)
-      window.removeEventListener('resize', updatePosition)
-    }
-  }, [visible])
-
-  useEffect(() => () => window.clearTimeout(timerRef.current), [])
-
-  return (
-    <div
-      ref={anchorRef}
-      className="min-w-0"
-      onMouseEnter={showDelayed}
-      onMouseLeave={hide}
-      onFocus={showDelayed}
-      onBlur={hide}
-    >
-      {children}
-      {visible && position && content ? createPortal(
-        <div
-          className="fixed z-[160000] max-h-[min(420px,calc(100vh-1rem))] overflow-y-auto rounded-xl border border-[#D8E7EA] bg-white p-3 text-xs shadow-2xl"
-          style={{ top: position.top, left: position.left, width: position.width }}
-          onMouseEnter={() => window.clearTimeout(timerRef.current)}
-          onMouseLeave={hide}
-        >
-          {content}
-        </div>,
-        document.body
-      ) : null}
-    </div>
-  )
 }
 
 function renderScheduledActivitySummary(activity, nowTimestamp, { includeMode = false, onChangeScheduledActivityStatus, t } = {}) {

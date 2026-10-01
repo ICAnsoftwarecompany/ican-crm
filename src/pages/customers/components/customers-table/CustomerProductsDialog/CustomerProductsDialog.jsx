@@ -6,8 +6,10 @@ import { InterestedProductsPanel } from './InterestedProductsPanel'
 import { LeadSummaryRow } from './LeadSummaryRow'
 import { ProductInfoContent, ProductInfoDialog } from './ProductInfoDialog'
 import { splitProductsByInterest } from './customerProductsDialogUtils'
+import { useTranslation } from 'react-i18next'
 
 export function CustomerProductsDialog({ row, products = [], customerRows = [], open, onClose }) {
+  const { t } = useTranslation()
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [dualViewEnabled, setDualViewEnabled] = useState(false)
   const productsQuery = useProducts()
@@ -21,8 +23,8 @@ export function CustomerProductsDialog({ row, products = [], customerRows = [], 
     <AppModal
       isOpen={Boolean(open)}
       onClose={onClose}
-      title="المنتجات والاهتمامات"
-      description="مقارنة منتجات العميل المهتم بها مع باقي منتجات الكتالوج"
+      title={t('customers.productsDialog.title')}
+      description={t('customers.productsDialog.description')}
       size="lg"
       className="flex h-[min(88vh,860px)] min-h-[520px] w-[min(96vw,1280px)] max-w-[96vw] resize flex-col overflow-hidden"
       contentClassName="min-h-0 flex-1 overflow-hidden"

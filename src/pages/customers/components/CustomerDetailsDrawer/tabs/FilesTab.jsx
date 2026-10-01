@@ -2,8 +2,10 @@ import { Paperclip } from 'lucide-react'
 
 import { EmptyPanel } from '../CustomerDetailsTabPrimitives'
 import { fieldValue } from '../customerDetailsUtils'
+import { useTranslation } from 'react-i18next'
 
 export function FilesTab({ customer, layoutMode = 'compact' }) {
+  const { t } = useTranslation()
   const files = Array.isArray(customer.files) ? customer.files : []
 
   return files.length ? (
@@ -18,6 +20,6 @@ export function FilesTab({ customer, layoutMode = 'compact' }) {
       ))}
     </div>
   ) : (
-    <EmptyPanel title="Files" description="لا توجد ملفات مرفوعة لهذا العميل." />
+    <EmptyPanel title={t('customers.drawer.tabs.files')} description={t('customers.homeTab.noFiles')} />
   )
 }

@@ -5,12 +5,14 @@ import { useLeadMutations } from '../../../../features/leads/hooks/useLeads'
 import { Button } from '../../../../shared/components/ui/Button'
 import { cn } from '../../../../shared/utils/cn'
 import { formatDateTimeForApi } from './customerDetailsUtils'
+import { useTranslation } from 'react-i18next'
 
 function getLeadId(customer) {
   return customer?.lead_id || customer?.lead?.id
 }
 
 export function CustomerStatusChanger({ customer, statuses = [], currentStatus, onChanged, compact = false, className }) {
+  const { t } = useTranslation()
   const [selectedStatusId, setSelectedStatusId] = useState('')
   const mutations = useLeadMutations()
   const leadId = getLeadId(customer)
@@ -24,8 +26,8 @@ export function CustomerStatusChanger({ customer, statuses = [], currentStatus, 
       lead_id: leadId,
       action: 'create_activity',
       type: 'status_change',
-      title: `تغيير الحالة إلى ${selectedStatus.status}`,
-      description: `تم تغيير حالة العميل إلى ${selectedStatus.status}`,
+      title: t('customers.pipeline.activity.title', { status: selectedStatus.status }),
+      description: t('customers.quickActions.statusChangedDescription', { status: selectedStatus.status }),
       note: '',
       data: {
         source: 'customer_details_drawer',
@@ -60,7 +62,7 @@ export function CustomerStatusChanger({ customer, statuses = [], currentStatus, 
         onChange={(event) => setSelectedStatusId(event.target.value)}
         className="h-9 min-w-0 rounded-lg border border-[var(--border)] bg-white px-2 text-xs font-semibold text-[var(--text)]"
       >
-        <option value="">اختر حالة جديدة</option>
+        <option value="">{t('customers.quickActions.chooseNewStatus')}</option>
         {statuses.map((status) => (
           <option key={status.id} value={status.id}>
             {status.status}
@@ -78,7 +80,7 @@ export function CustomerStatusChanger({ customer, statuses = [], currentStatus, 
         className="justify-center gap-2"
       >
         <RefreshCw size={14} />
-        تغيير الحالة
+        {t('customers.quickActions.changeStatus')}
       </Button>
     </div>
   )

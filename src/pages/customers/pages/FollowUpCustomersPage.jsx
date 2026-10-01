@@ -1,11 +1,13 @@
 import { BellRing } from 'lucide-react'
 import { CustomerPlaceholderPage } from './CustomerPlaceholderPage'
+import { useTranslation } from 'react-i18next'
 
 export function FollowUpCustomersPage() {
+  const { t } = useTranslation()
   return (
     <CustomerPlaceholderPage
-      title="يحتاجون متابعة"
-      description="قائمة العملاء المحتملين الذين يحتاجون إلى تواصل أو إجراء تال من فريق المبيعات."
+      title={t('customers.placeholders.followUp.title')}
+      description={t('customers.placeholders.followUp.description')}
       icon={BellRing}
     />
   )

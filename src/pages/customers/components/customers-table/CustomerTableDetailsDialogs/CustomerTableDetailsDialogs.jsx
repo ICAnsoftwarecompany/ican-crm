@@ -21,6 +21,7 @@ import {
   parseMarketingData,
   renderSafeValue,
 } from '../customerMarketingUtils'
+import { useTranslation } from 'react-i18next'
 
 function getTenantBaseURL() {
   try {
@@ -40,12 +41,13 @@ export function buildCustomerAssetUrl(path) {
 }
 
 function DetailGrid({ data }) {
+  const { t } = useTranslation()
   const entries = Object.entries(data || {}).filter(([, value]) => (
     value !== null && value !== undefined && value !== ''
   ))
 
   if (!entries.length) {
-    return <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm font-semibold text-slate-500">لا توجد بيانات تفصيلية</div>
+    return <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm font-semibold text-slate-500">{t('customers.detailsDialogs.noDetails')}</div>
   }
 
   return (
@@ -61,6 +63,7 @@ function DetailGrid({ data }) {
 }
 
 function DataItemsList({ items = [] }) {
+  const { t } = useTranslation()
   const normalizedItems = items
     .flatMap((item) => Object.entries(item || {}).map(([key, value]) => ({ key, value })))
     .filter((item) => item.key)
@@ -69,7 +72,7 @@ function DataItemsList({ items = [] }) {
 
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-black text-slate-900">البيانات الإضافية</h4>
+      <h4 className="text-sm font-black text-slate-900">{t('customers.detailsDialogs.additionalData')}</h4>
       <div className="flex flex-wrap gap-2">
         {normalizedItems.map((item) => (
           <span
@@ -87,6 +90,7 @@ function DataItemsList({ items = [] }) {
 }
 
 export function ProductDetailsDialog({ product, onClose }) {
+  const { t } = useTranslation()
   const imageUrl = buildCustomerAssetUrl(product?.image)
   const dataItems = parseMarketingData(product?.data)
 
@@ -94,7 +98,7 @@ export function ProductDetailsDialog({ product, onClose }) {
     <AppModal
       isOpen={Boolean(product)}
       onClose={onClose}
-      title={product?.name || 'تفاصيل المنتج'}
+      title={product?.name || t('customers.productsDialog.productDetails')}
       description={product?.note || product?.description || ''}
       size="lg"
       className="max-w-5xl"
@@ -118,12 +122,12 @@ export function ProductDetailsDialog({ product, onClose }) {
               </span>
               {product?.price ? (
                 <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
-                  السعر: {product.price}
+                  {t('customers.detailsDialogs.priceValue', { value: product.price })}
                 </span>
               ) : null}
               {product?.interestLevel ? (
                 <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">
-                  الاهتمام: {product.interestLevel}
+                  {t('customers.detailsDialogs.interestValue', { value: product.interestLevel })}
                 </span>
               ) : null}
             </div>
@@ -144,7 +148,7 @@ export function ProductDetailsDialog({ product, onClose }) {
         <DataItemsList items={dataItems} />
 
         <div className="space-y-2">
-          <h4 className="text-sm font-black text-slate-900">البيانات الخام</h4>
+          <h4 className="text-sm font-black text-slate-900">{t('customers.productsDialog.rawData')}</h4>
           <pre className="max-h-72 overflow-auto rounded-xl bg-slate-950 p-3 text-xs leading-6 text-slate-100">
             {JSON.stringify(product?.raw || product?.linkRaw || product || {}, null, 2)}
           </pre>
@@ -155,6 +159,7 @@ export function ProductDetailsDialog({ product, onClose }) {
 }
 
 export function SourceDetailsDialog({ source, onClose }) {
+  const { t } = useTranslation()
   const imageUrl = buildCustomerAssetUrl(source?.image || source?.raw?.image)
   const raw = source?.raw || {}
 
@@ -162,7 +167,7 @@ export function SourceDetailsDialog({ source, onClose }) {
     <AppModal
       isOpen={Boolean(source)}
       onClose={onClose}
-      title={source?.title || 'تفاصيل المصدر'}
+      title={source?.title || t('customers.detailsDialogs.sourceDetails')}
       description={source?.description || ''}
       size="lg"
       className="max-w-5xl"
@@ -171,7 +176,7 @@ export function SourceDetailsDialog({ source, onClose }) {
         <div className="flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-1 rounded-full border border-[#BEEFF2] bg-[#E8F9FA] px-3 py-1 text-xs font-black text-[#007A80]">
             <BadgeInfo size={14} />
-            {source?.label || source?.kind || 'Source'}
+            {source?.kind ? t(`customers.table.source.${source.kind}`, { defaultValue: source?.label || source.kind }) : t('customers.detailsDialogs.source')}
           </span>
           {source?.status ? <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">{source.status}</span> : null}
           {source?.platform ? <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">{source.platform}</span> : null}
@@ -201,14 +206,14 @@ export function SourceDetailsDialog({ source, onClose }) {
 
         {raw.fields ? (
           <div className="space-y-2">
-            <h4 className="text-sm font-black text-slate-900">حقول الفورم</h4>
+            <h4 className="text-sm font-black text-slate-900">{t('customers.detailsDialogs.formFields')}</h4>
             <DetailGrid data={raw.fields} />
           </div>
         ) : null}
 
         {Array.isArray(source?.linkedProducts) && source.linkedProducts.length ? (
           <div className="space-y-2">
-            <h4 className="text-sm font-black text-slate-900">المنتجات المرتبطة</h4>
+            <h4 className="text-sm font-black text-slate-900">{t('customers.table.source.linkedProducts')}</h4>
             <div className="grid gap-2 md:grid-cols-2">
               {source.linkedProducts.map((product) => (
                 <div key={product.id} className="rounded-xl border border-slate-200 bg-white p-3">
@@ -221,7 +226,7 @@ export function SourceDetailsDialog({ source, onClose }) {
         ) : null}
 
         <div className="space-y-2">
-          <h4 className="text-sm font-black text-slate-900">البيانات الخام</h4>
+          <h4 className="text-sm font-black text-slate-900">{t('customers.productsDialog.rawData')}</h4>
           <pre className="max-h-72 overflow-auto rounded-xl bg-slate-950 p-3 text-xs leading-6 text-slate-100">
             {JSON.stringify(raw, null, 2)}
           </pre>
@@ -493,7 +498,8 @@ export function LeadActivitiesDialog({ row, open, onClose, t }) {
   )
 }
 
-export function OpenDetailsButton({ onClick, label = 'Open' }) {
+export function OpenDetailsButton({ onClick, label = '' }) {
+  const { t } = useTranslation()
   return (
     <button
       type="button"
@@ -503,10 +509,10 @@ export function OpenDetailsButton({ onClick, label = 'Open' }) {
         onClick?.()
       }}
       className="inline-flex h-7 shrink-0 items-center gap-1 rounded-full border border-[#BEEFF2] bg-white px-2 text-[10px] font-black text-[#007A80] transition hover:bg-[#E8F9FA]"
-      title={label}
+      title={label || t('customers.drawer.open')}
     >
       <ExternalLink size={12} />
-      {label}
+      {label || t('customers.drawer.open')}
     </button>
   )
 }
