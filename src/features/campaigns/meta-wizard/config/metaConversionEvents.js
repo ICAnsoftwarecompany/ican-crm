@@ -1,0 +1,26 @@
+// Standard events Meta can optimize for (Pixel / Conversions API / app).
+export const META_CONVERSION_EVENTS = Object.freeze([
+  'LEAD',
+  'COMPLETE_REGISTRATION',
+  'CONTACT',
+  'SUBMIT_APPLICATION',
+  'SCHEDULE',
+  'PURCHASE',
+  'ADD_TO_CART',
+  'INITIATED_CHECKOUT',
+  'ADD_PAYMENT_INFO',
+  'SUBSCRIBE',
+  'START_TRIAL',
+  'CONTENT_VIEW',
+  'SEARCH',
+  'FIND_LOCATION',
+  'DONATE',
+  'CUSTOMIZE_PRODUCT',
+])
+
+export const DEFAULT_EVENT_BY_OBJECTIVE = Object.freeze({
+  OUTCOME_LEADS: 'LEAD',
+  OUTCOME_SALES: 'PURCHASE',
+  OUTCOME_ENGAGEMENT: 'CONTACT',
+  OUTCOME_APP_PROMOTION: 'PURCHASE',
+})
