@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ChevronDown, GripVertical, Pin, Sparkles } from 'lucide-react'
 import { cn } from '../../utils/cn'
+import { BrandLogo } from '../brand/BrandLogo'
 import { useLocalStorage } from '../data-table/hooks/useLocalStorage'
 import { useNavigation } from '../../../app/navigation/useNavigation'
 import { applySidebarSectionOrder, moveSidebarSection } from './sidebarSectionOrder'
@@ -263,7 +264,7 @@ export function Sidebar({ collapsed }) {
     >
       {/* Workspace chip */}
       <button className="flex items-center gap-2 mx-3 mt-3 mb-2 h-9 px-2 rounded-lg hover:bg-[var(--shell-hover)] transition-colors">
-        <LogoMark />
+        <BrandLogo size={32} />
         {!collapsed && (
           <>
             <span className="font-latin font-semibold text-[14px] text-[var(--text)] truncate">
@@ -332,15 +333,5 @@ export function Sidebar({ collapsed }) {
       )}
 
     </aside>
-  )
-}
-
-function LogoMark() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="32" height="32" rx="8" fill="#111827" fillOpacity="0.95" />
-      <text x="5" y="22" fontFamily="DM Sans, sans-serif" fontWeight="700" fontSize="14" fill="white">IC</text>
-      <circle cx="27" cy="5" r="4" fill="#00C2CB" />
-    </svg>
   )
 }
