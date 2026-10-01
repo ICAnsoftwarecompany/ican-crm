@@ -42,6 +42,15 @@ export function getTaskType(task) {
   return String(task?.type || 'todo').toLowerCase()
 }
 
+/** To-Dos (`type: 'todo'`) have their own page (/todo); task lists leave them out. */
+export function isTodoTask(task) {
+  return getTaskType(task) === 'todo'
+}
+
+export function withoutTodos(tasks) {
+  return (Array.isArray(tasks) ? tasks : []).filter((task) => !isTodoTask(task))
+}
+
 export function getTaskTypeMeta(type, t) {
   const map = getTaskTypeMetaMap(t)
   return map[String(type || '').toLowerCase()] || { label: type || t('tasks.types.todo'), icon: ClipboardCheck }

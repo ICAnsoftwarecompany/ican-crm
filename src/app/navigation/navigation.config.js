@@ -32,6 +32,7 @@
  */
 
 import {
+  ClipboardCheck,
   LayoutDashboard,
   UserCheck,
   PhoneCall,
@@ -287,6 +288,13 @@ export const navigationConfig = [
         labelKey: 'nav.tasks',
         icon: CheckSquare,
         path: '/tasks',
+      },
+      {
+        // Personal To-Do list, separate from /tasks since 2026-10-02.
+        id: 'todo',
+        labelKey: 'nav.todo',
+        icon: ClipboardCheck,
+        path: '/todo',
       },
       {
         id: 'calendar',

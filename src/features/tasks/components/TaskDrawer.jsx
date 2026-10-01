@@ -22,10 +22,13 @@ import {
   getTaskQuickStatusLabel,
   getTaskStatusMeta,
   getTaskTitle,
+  getTaskType,
   getTaskTypeMeta,
   isTaskOverdue,
 } from '../utils/taskMeta'
 import { TaskForm } from './TaskForm'
+import { TodoForm } from './todo/TodoForm'
+import { todoToFormValues } from '../utils/todoForm'
 import { TaskLinkChip } from './TaskLinkChip'
 import { taskToFormValues } from '../utils/taskPayload'
 import { getTaskPeriod } from '../utils/todoPeriods'
@@ -253,12 +256,22 @@ export function TaskDrawer({
           {isEditing && (
             <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
               <h3 className="mb-2 text-sm font-black text-[var(--text)]">{t('tasks.drawer.editTaskTitle')}</h3>
-              <TaskForm
-                initialValues={taskToFormValues(task)}
-                onSubmit={handleSaveEdit}
-                submitLabel={t('tasks.drawer.saveChanges')}
-                isSaving={mutations.update.isPending}
-              />
+              {/* A To-Do is edited with the short To-Do form; any other task with the full form. */}
+              {getTaskType(task) === 'todo' ? (
+                <TodoForm
+                  initialValues={todoToFormValues(task)}
+                  onSubmit={handleSaveEdit}
+                  submitLabel={t('tasks.drawer.saveChanges')}
+                  isSaving={mutations.update.isPending}
+                />
+              ) : (
+                <TaskForm
+                  initialValues={taskToFormValues(task)}
+                  onSubmit={handleSaveEdit}
+                  submitLabel={t('tasks.drawer.saveChanges')}
+                  isSaving={mutations.update.isPending}
+                />
+              )}
             </section>
           )}
 

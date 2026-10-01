@@ -67,7 +67,7 @@ Legacy/transitional (don't copy these patterns, don't add to them):
 | Social media | `features/social-media`, `pages/social-media` | [Social media](docs/3-FEATURES.md#social-media) |
 | Deals / opportunities | `features/deals`, `features/opportunities` | [Deals](docs/2-SALES.md#deals), [Opportunities](docs/2-SALES.md#opportunities) |
 | Proposals | `features/proposals`, `pages/customers/pages/proposals` | [Proposals](docs/2-SALES.md#proposals) |
-| Tasks & To-Do (`/tasks`, `?smart=todo`; To-Do = task `type: todo` + period) | `features/tasks` | [Tasks](docs/3-FEATURES.md#tasks), [Spec + backend contract](docs/tasks/TASKS-TODO-SPEC.md), [README](src/features/tasks/README.md) |
+| Tasks (`/tasks`) & To-Do (`/todo`, header To-Do panel; To-Do = task `type: todo` + period, own short form) | `features/tasks`, `pages/tasks`, `pages/todo` | [Tasks](docs/3-FEATURES.md#tasks), [Spec + backend contract](docs/tasks/TASKS-TODO-SPEC.md), [README](src/features/tasks/README.md) |
 | Automation | `features/workflow-engine` + `shared/components/visual-flow` | [Workflow engine](docs/3-FEATURES.md#workflow-engine-and-automation), [Visual Flow](docs/1-ARCHITECTURE.md#visual-flow) |
 | Data table | `shared/components/data-table` (canonical table) | [DataTable](docs/1-ARCHITECTURE.md#datatable) |
 | Sidebar / navigation | `app/navigation`, `shared/components/layout` | [Sidebar & navigation](docs/1-ARCHITECTURE.md#sidebar-and-navigation) |

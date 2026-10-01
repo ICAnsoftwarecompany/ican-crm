@@ -1,9 +1,8 @@
 import { useTranslation } from 'react-i18next'
-import { CalendarClock, CheckSquare, ChevronLeft, ChevronRight, FolderKanban, ListTodo, Plus, Sparkles } from 'lucide-react'
+import { CalendarClock, ChevronLeft, ChevronRight, FolderKanban, ListTodo, Plus, Sparkles } from 'lucide-react'
 
 function getSmartViews(t) {
   return [
-    { id: 'todo', label: t('tasks.workspace.myTodo'), icon: CheckSquare, metricKey: 'todo' },
     { id: 'all', label: t('tasks.page.allTasks'), icon: ListTodo, metricKey: 'total' },
     { id: 'today', label: t('tasks.workspace.dueToday'), icon: CalendarClock, metricKey: 'today' },
     { id: 'overdue', label: t('activities.derivedStates.overdue'), icon: Sparkles, metricKey: 'overdue' },

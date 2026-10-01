@@ -41,6 +41,7 @@ export default {
   "automationOverview": "نظرة عامة",
   "leadGeneration": "توليد العملاء المحتملين",
   "tasks": "المهام",
+  "todo": "قائمة مهامي",
   "calendar": "التقويم",
   "teamChat": "الشات الداخلي",
   "products": "المنتجات والخدمات",

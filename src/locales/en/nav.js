@@ -41,6 +41,7 @@ export default {
   "automationOverview": "Overview",
   "leadGeneration": "Lead Generation",
   "tasks": "Tasks",
+  "todo": "My to-do list",
   "calendar": "Calendar",
   "teamChat": "Team Chat",
   "products": "Products & Services",

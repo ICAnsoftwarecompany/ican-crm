@@ -3,12 +3,12 @@ import { ListTodo } from 'lucide-react'
 
 import { cn } from '../../../shared/utils/cn'
 import { useTasks } from '../hooks/useTasks'
-import { getTaskSummaryMetrics } from '../utils/taskMeta'
+import { getTaskSummaryMetrics, withoutTodos } from '../utils/taskMeta'
 
 export function TasksNavbarButton({ active = false, onClick }) {
   const { t } = useTranslation()
   const tasksQuery = useTasks({ per_page: 40 })
-  const tasks = Array.isArray(tasksQuery.data) ? tasksQuery.data : []
+  const tasks = withoutTodos(tasksQuery.data)
   const unreadCount = getTaskSummaryMetrics(tasks).unread
 
   return (

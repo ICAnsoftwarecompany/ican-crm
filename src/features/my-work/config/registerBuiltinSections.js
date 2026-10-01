@@ -8,6 +8,7 @@ import { registerMyWorkSection } from '../registry/myWorkRegistry'
 import { MessagesSection } from '../sections/MessagesSection'
 import { MyLeadsSection } from '../sections/MyLeadsSection'
 import { MyTasksSection } from '../sections/MyTasksSection'
+import { TodoSection } from '../sections/TodoSection'
 import { OverdueSection } from '../sections/OverdueSection'
 import { ServiceWorkSection } from '../sections/ServiceWorkSection'
 import { TodayActivitiesSection } from '../sections/TodayActivitiesSection'
@@ -15,6 +16,7 @@ import { TodayActivitiesSection } from '../sections/TodayActivitiesSection'
 registerMyWorkSection({ id: 'overdue', order: 10, size: 'wide', focuses: FOCUS_EVERYONE, component: OverdueSection })
 registerMyWorkSection({ id: 'today', order: 20, focuses: FOCUS_EVERYONE, component: TodayActivitiesSection })
 registerMyWorkSection({ id: 'tasks', order: 30, focuses: FOCUS_EVERYONE, component: MyTasksSection })
+registerMyWorkSection({ id: 'todo', order: 35, focuses: FOCUS_EVERYONE, component: TodoSection })
 registerMyWorkSection({ id: 'leads', order: 40, focuses: [MY_WORK_FOCUS.sales], module: 'sales', component: MyLeadsSection })
 registerMyWorkSection({ id: 'service', order: 50, focuses: [MY_WORK_FOCUS.service], module: 'customer_service', component: ServiceWorkSection })
 registerMyWorkSection({ id: 'messages', order: 60, focuses: FOCUS_EVERYONE, component: MessagesSection })

@@ -46,6 +46,36 @@ export default {
     }
   },
   "todo": {
+    "form": {
+      "createTitle": "مهمة جديدة في قائمتي",
+      "createDescription": "عنوان وموعد تقريبي يكفيان. باقي الخيارات اختيارية.",
+      "titleLabel": "العنوان",
+      "titlePlaceholder": "ماذا تريد أن تنجز؟",
+      "whenLabel": "متى؟",
+      "when": {
+        "today": "اليوم",
+        "tomorrow": "غدًا",
+        "week": "هذا الأسبوع",
+        "month": "هذا الشهر",
+        "date": "تاريخ محدد"
+      },
+      "timeOptional": "الساعة (اختياري)",
+      "notesLabel": "ملاحظات",
+      "notesPlaceholder": "تفاصيل اختيارية",
+      "moreOptions": "خيارات إضافية: ربط بعميل وتذكير",
+      "reminderNeedsTime": "التذكير يتاح عند اختيار تاريخ وساعة محددين.",
+      "submit": "إضافة إلى قائمتي"
+    },
+    "panel": {
+      "title": "قائمة مهامي",
+      "summary": "{{count}} مفتوحة اليوم",
+      "openPage": "فتح صفحة قائمة مهامي",
+      "openButton": "فتح",
+      "close": "إغلاق",
+      "newButton": "جديدة",
+      "ariaLabel": "قائمة مهامي",
+      "buttonTitle": "قائمة مهامي (To-Do)"
+    },
     "title": "قائمة مهامي",
     "subtitle": "مهامك الشخصية ومهام العملاء المسندة لك، مرتبة حسب اليوم والأسبوع والشهر",
     "views": {
@@ -190,7 +220,6 @@ export default {
     "sortButton": "ترتيب"
   },
   "workspace": {
-    "myTodo": "قائمة مهامي",
     "dueToday": "مستحقة اليوم",
     "title": "مساحة العمل",
     "expandSidebar": "توسيع الشريط الجانبي",

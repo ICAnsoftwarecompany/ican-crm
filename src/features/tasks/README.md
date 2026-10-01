@@ -1,6 +1,7 @@
 # features/tasks — Tasks and To-Do
 
-> **Documentation update:** 2026-10-02 02:40 (Africa/Cairo) — F2: `EntityTasksPanel`, `CreateTaskButton`, `TaskablePicker`, `useEntityTasks`, registry `getPath`/`fromRecord`, Linked-to filter (§2, §3, §4, §6, §7).
+> **Documentation update:** 2026-10-02 03:00 (Africa/Cairo) — To-Do separated: `/todo` page, header `TodoNavbarButton` + `TodoSidebarPanel`, short `TodoForm` (`utils/todoForm.js`); task lists exclude To-Dos (`withoutTodos`).
+> 2026-10-02 02:40 (Africa/Cairo) — F2: `EntityTasksPanel`, `CreateTaskButton`, `TaskablePicker`, `useEntityTasks`, registry `getPath`/`fromRecord`, Linked-to filter (§2, §3, §4, §6, §7).
 > 2026-10-02 01:35 (Africa/Cairo) — README created with the To-Do (F1) work: taskable
 > registry, To-Do periods, shared payload builder, To-Do panel, new form fields.
 
@@ -16,8 +17,9 @@ until the backend contract in the spec lands).
 - **To-Do = a task with `type: 'todo'`**, usually personal (no taskable), that may belong to a **period**
   (day / week / month) instead of an exact time. Same model, same endpoints — no separate API.
 - The **taskable registry**: which CRM records a task can be linked to (lead, customer, …) and how they are sent.
-- UI: `/tasks` workspace (smart views incl. **My to-do list**, list / board / calendar), `TaskDrawer`, `TaskForm`,
-  header button + sidebar panel, and the reusable **To-Do panel** used by `/tasks?smart=todo` and My Work.
+- UI: `/tasks` workspace (no To-Dos; smart views, list / board / calendar), `TaskDrawer`, `TaskForm`, header Tasks
+  button + panel; and the **To-Do** UI: `/todo` page (`pages/todo`), header To-Do button + panel, the short
+  `TodoForm`, and the To-Do list panel (also in My Work).
 
 ## 2. Folder map
 
@@ -32,18 +34,19 @@ until the backend contract in the spec lands).
 | `constants/taskableTypes.js` | Taskable registry: `registerTaskableType`, `resolveTaskableAlias`, `toBackendTaskableType`, `getTaskTaskable`, `buildTaskablePayload`. Tested. |
 | `utils/taskMeta.js` | Labels/meta, `getTaskDateTime`, **`getTaskDeadline`** (date-only = end of day), `isTaskOverdue` (closed tasks never overdue). |
 | `utils/todoPeriods.js` | Period ranges (week starts Saturday), `buildTodoSchedule`, `groupTodoItems(view)`, `isTaskOnMyList`. Tested. |
+| `utils/todoForm.js` | To-Do form model: `TODO_WHEN_OPTIONS` (today / tomorrow / week / month / date), `buildTodoPayload`, `todoToFormValues`, `todoHasTime`. Tested. |
 | `utils/taskPayload.js` | `buildTaskPayload(form)` / `taskToFormValues(task)` — the only place request bodies are built (form, quick add, calendar drag). Tested. |
 | `components/TaskForm.jsx` + `components/form/` | Form; `TaskLinkFields` (linked to + record no.), `TaskScheduleFields` (date/time, or To-Do period). |
 | `components/TaskDrawer.jsx` | Details, edit, status, notes, attachments; shows `TaskLinkChip` and the period badge. |
 | `components/TaskLinkChip.jsx` | "Lead #15 · name" / "Personal"; a link to the record page when `getPath` resolves (`linkable={false}` inside buttons). |
 | `components/entity/` | `EntityTasksPanel` (a record's tasks + quick actions + drawer; customer drawer Tasks tab), `CreateTaskButton` (form opened linked, typed and pre-titled; also in the conversation header). Tested. |
 | `components/form/TaskablePicker.jsx` | Leads Center search (`useCustomers` from `features/customers`) → id via the type's `fromRecord`; a typed number can be used as-is. |
-| `components/todo/` | `TodoPanel` (owns view), `TodoPanelView` (presentational, tested), `TodoViewTabs`, `TodoQuickAdd`, `TodoItemRow`. |
+| `components/todo/` | `TodoForm` (short form, tested) + `TodoFormDialog`, `TodoNavbarButton` + `TodoSidebarPanel` (header), `TodoPanel` (owns view), `TodoPanelView` (presentational, tested), `TodoViewTabs`, `TodoQuickAdd`, `TodoItemRow`. |
 | `components/board/`, `workspace/`, `TaskKanbanView`, `TaskCalendarView`, `TasksNavbarButton`, `TasksSidebarPanel` | Existing workspace UI (boards are static, see gaps). |
 | `repositories/taskBoardRepository.js` | Static board/list definitions. |
 | `workflow/taskWorkflowDefinition.js` | Workflow-engine module definition. |
 
-Route page: `pages/tasks/TasksPage.jsx` (`?view=list|board|calendar`, `?taskId=`, `?smart=todo`).
+Route pages: `pages/tasks/TasksPage.jsx` (`?view=list|board|calendar`, `?taskId=`; `?smart=todo` redirects to `/todo`) and [`pages/todo/TodoPage.jsx`](../../pages/todo/README.md) (`?taskId=`).
 
 ## 3. Rules (tested)
 
@@ -53,6 +56,8 @@ Route page: `pages/tasks/TasksPage.jsx` (`?view=list|board|calendar`, `?taskId=`
 | Week starts Saturday (`DEFAULT_WEEK_START = 6`) for every user, so a "week" To-Do means the same for the whole team | `todoPeriods.js` |
 | Deadline: date + time, or end of day when there is no time. Overdue = deadline passed and not completed/cancelled | `taskMeta.js` |
 | On my list: I am the assignee / in `users[]`, or I created it and it has no users | `isTaskOnMyList` |
+| The To-Do list shows `type: 'todo'` only; task lists (`/tasks`, header Tasks panel, My Work tasks) leave To-Dos out | `useTodoList`, `withoutTodos` |
+| A To-Do needs only a title; when defaults to today; reminder only with date + time | `buildTodoPayload` |
 | A To-Do with no users is assigned to the current user; default visibility `private` | `buildTaskPayload`, `TaskForm` |
 | No link → `taskable_type: ''` and `taskable_id: ''` (never a lead with an empty id) | `buildTaskablePayload` |
 | Groups per view: overdue · timed · untimed · carried (today only, needs `period_type` from the backend) · done | `groupTodoItems` |
@@ -66,6 +71,8 @@ Route page: `pages/tasks/TasksPage.jsx` (`?view=list|board|calendar`, `?taskId=`
 import {
   useTasks, useTaskMutations, useTodoList,
   TaskDrawer, TaskLinkChip, TodoPanel, TodoPanelView,
+  TodoForm, TodoFormDialog, TodoNavbarButton, TodoSidebarPanel,
+  buildTodoPayload, todoToFormValues, TODO_WHEN_OPTIONS, isTodoTask, withoutTodos,
   EntityTasksPanel, CreateTaskButton, useEntityTasks,
   taskableFromCrmRecord, isTaskLinkedTo, getTaskLinkPath,
   getTaskDateTime, getTaskDeadline, getTaskDueDate, isTaskClosed, isTaskCompleted, isTaskOverdue,
@@ -112,5 +119,6 @@ return <TodoPanelView todo={todo} view={view} onViewChange={setView} onOpenTask=
 
 | When | Change |
 |---|---|
+| 2026-10-02 03:00 (Africa/Cairo) | To-Do separated from Tasks: `/todo` page, header To-Do button + panel, short To-Do form (drawer edits To-Dos with it), `withoutTodos` in task lists, `todo` hidden from the task form's types; tasks page header wraps instead of squeezing. |
 | 2026-10-02 02:40 (Africa/Cairo) | F2: `EntityTasksPanel` replaces the customer drawer's mini Tasks tab (old files and `customers.tasksTab.*` removed); `CreateTaskButton` quick actions (drawer + conversation header); `TaskablePicker`; `/tasks` Linked-to filter; chip links; `useCustomers` gained an `options` arg and `features/customers/index.js`. |
 | 2026-10-02 01:35 (Africa/Cairo) | README created. F1: taskable registry, To-Do periods and groups, deadline rule, shared payload builder, form link/timing fields, To-Do panel in `/tasks?smart=todo` and My Work, link/period badges in the drawer, no default lead link on board quick-add and calendar drag; tests. |

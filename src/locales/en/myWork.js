@@ -37,8 +37,9 @@ export default {
       "empty": "No calls or meetings today",
       "viewAll": "Calendar"
     },
+    "todo": {"title": "My to-do list"},
     "tasks": {
-      "title": "My to-do list",
+      "title": "My tasks due",
       "empty": "No tasks due today"
     },
     "leads": {

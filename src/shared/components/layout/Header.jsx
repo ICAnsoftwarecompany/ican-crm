@@ -9,6 +9,7 @@ import { MessengerLogoIcon, MessengerNavbarButton } from '../../../features/conv
 import { GmailNavbarButton } from '../../../features/conversations/components/GmailNavbarButton'
 import { WhatsappNavbarButton } from '../../../features/conversations/components/WhatsappNavbarButton'
 import { TasksNavbarButton } from '../../../features/tasks/components/TasksNavbarButton'
+import { TodoNavbarButton } from '../../../features/tasks'
 import { InternalChatNavbarButton } from '../../../features/internal-chat'
 import { NotificationCenterButton } from '../../../features/notifications'
 import { LiveMeetingIndicator } from '../../../features/call-meetings'
@@ -33,6 +34,8 @@ export function Header({
   onToggleWhatsappSidebar,
   tasksSidebarOpen = false,
   onToggleTasksSidebar,
+  todoSidebarOpen = false,
+  onToggleTodoSidebar,
   internalChatSidebarOpen = false,
   onToggleInternalChatSidebar,
   activeUsersSidebarOpen = false,
@@ -60,7 +63,7 @@ export function Header({
         paddingInlineStart: collapsed
           ? 'calc(var(--sidebar-collapsed) + 16px)'
           : 'calc(var(--sidebar-width) + 16px)',
-        paddingInlineEnd: messengerSidebarOpen || gmailSidebarOpen || whatsappSidebarOpen || tasksSidebarOpen || internalChatSidebarOpen
+        paddingInlineEnd: messengerSidebarOpen || gmailSidebarOpen || whatsappSidebarOpen || tasksSidebarOpen || todoSidebarOpen || internalChatSidebarOpen
           ? 'calc(var(--messenger-sidebar-width) + 16px)'
           : '16px',
       }}
@@ -112,6 +115,11 @@ export function Header({
         <TasksNavbarButton
           active={tasksSidebarOpen}
           onClick={onToggleTasksSidebar}
+        />
+
+        <TodoNavbarButton
+          active={todoSidebarOpen}
+          onClick={onToggleTodoSidebar}
         />
 
         <InternalChatNavbarButton

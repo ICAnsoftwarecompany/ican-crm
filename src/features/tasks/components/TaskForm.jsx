@@ -53,7 +53,12 @@ export function TaskForm({
   const users = useMemo(() => toEntityList(usersQuery.data), [usersQuery.data])
   const teams = useMemo(() => toEntityList(teamsQuery.data), [teamsQuery.data])
 
-  const taskTypes = useMemo(() => Object.entries(getTaskTypeMetaMap(t)).map(([value, meta]) => ({ value, label: meta.label })), [t])
+  // To-Dos have their own short form (components/todo/TodoForm); the task form offers 'todo' only
+  // when it is already a To-Do's type.
+  const initialType = initialValues?.type
+  const taskTypes = useMemo(() => Object.entries(getTaskTypeMetaMap(t))
+    .filter(([value]) => value !== 'todo' || initialType === 'todo')
+    .map(([value, meta]) => ({ value, label: meta.label })), [t, initialType])
   const taskPriorities = useMemo(() => Object.entries(getTaskPriorityMetaMap(t)).map(([value, meta]) => ({ value, label: meta.label })), [t])
   const taskVisibility = useMemo(() => [
     { value: 'private', label: t('tasks.visibility.private') },

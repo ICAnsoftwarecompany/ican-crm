@@ -1,12 +1,11 @@
 import { useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Navigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ListTodo, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { WorkflowLauncher } from '../../features/workflow-engine'
 
 import { TaskBoard } from '../../features/tasks/components/board/TaskBoard'
-import { TodoPanel } from '../../features/tasks/components/todo/TodoPanel'
 import { getTaskableTypes, getTaskTaskable } from '../../features/tasks/constants/taskableTypes'
 import { TaskCalendarView } from '../../features/tasks/components/TaskCalendarView'
 import { TaskDrawer } from '../../features/tasks/components/TaskDrawer'
@@ -15,6 +14,7 @@ import { TasksWorkspace } from '../../features/tasks/components/workspace/TasksW
 import { TasksWorkspaceHeader } from '../../features/tasks/components/workspace/TasksWorkspaceHeader'
 import { TasksWorkspaceSidebar } from '../../features/tasks/components/workspace/TasksWorkspaceSidebar'
 import { useTaskMutations, useTasks } from '../../features/tasks/hooks/useTasks'
+import { withoutTodos } from '../../features/tasks/utils/taskMeta'
 import {
   getTaskDateTime,
   getTaskPriorityMeta,
@@ -86,13 +86,12 @@ function TaskCard({ task }) {
 export function TasksPage() {
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
+  const legacyTodoLink = searchParams.get('smart') === 'todo'
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [createInitialValues, setCreateInitialValues] = useState(null)
   const [optimisticStatuses, setOptimisticStatuses] = useState({})
   const [search, setSearch] = useState('')
-  // `?smart=todo` opens "My to-do list" directly (link from My Work).
-  const [activeQuickFilter, setActiveQuickFilter] = useState(() => searchParams.get('smart') || 'all')
-  const isTodoView = activeQuickFilter === 'todo'
+  const [activeQuickFilter, setActiveQuickFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')
   // 'all' | 'personal' | a taskable alias ('lead', 'customer', …)
@@ -105,7 +104,8 @@ export function TasksPage() {
 
   const tasksQuery = useTasks({ per_page: 100 })
   const mutations = useTaskMutations()
-  const tasks = Array.isArray(tasksQuery.data) ? tasksQuery.data : []
+  // To-Dos have their own page (/todo) since 2026-10-02.
+  const tasks = useMemo(() => withoutTodos(tasksQuery.data), [tasksQuery.data])
 
   const mergedTasks = useMemo(() => (
     tasks.map((task) => {
@@ -308,6 +308,9 @@ export function TasksPage() {
     </>
   )
 
+  // Old link to the To-Do smart view (before To-Dos got their own page).
+  if (legacyTodoLink) return <Navigate to="/todo" replace />
+
   return (
     <>
       <TasksWorkspace
@@ -331,12 +334,11 @@ export function TasksPage() {
             view={view}
             onViewChange={setView}
             onCreateTask={() => {
-              // In "My to-do list" the form opens as a To-Do for today.
-              setCreateInitialValues(isTodoView ? { type: 'todo', period_type: 'day' } : null)
+              setCreateInitialValues(null)
               setIsCreateOpen(true)
             }}
-            showFilters={view !== 'board' && !isTodoView}
-            filtersContent={view !== 'board' && !isTodoView ? filterContent : null}
+            showFilters={view !== 'board'}
+            filtersContent={view !== 'board' ? filterContent : null}
             extraActions={(
               <WorkflowLauncher context={{ module: 'tasks', entity: 'task' }} variant="outline" size="sm">
                 {t('workflow.builder.createAutomation')}
@@ -347,29 +349,23 @@ export function TasksPage() {
         sidebarCollapsed={sidebarCollapsed}
       >
         <section className="space-y-2">
-          {isTodoView && (
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-              <TodoPanel onOpenTask={openTask} />
-            </div>
-          )}
-
-          {!isTodoView && tasksQuery.isLoading && (
+          {tasksQuery.isLoading && (
             <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text-muted)]">{t('tasks.sidebarPanel.loadingTasks')}</div>
           )}
 
-          {!isTodoView && !tasksQuery.isLoading && !visibleTasks.length && (
+          {!tasksQuery.isLoading && !visibleTasks.length && (
             <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text-muted)]">
               {t('tasks.page.noMatchingTasksFiltered')}
             </div>
           )}
 
-          {!isTodoView && !tasksQuery.isLoading && view === 'list' && visibleTasks.map((task) => (
+          {!tasksQuery.isLoading && view === 'list' && visibleTasks.map((task) => (
             <button key={task.id || `${task.title}-${task.due_date || ''}`} type="button" className="w-full text-start" onClick={() => openTask(task.id)}>
               <TaskCard task={task} />
             </button>
           ))}
 
-          {!isTodoView && !tasksQuery.isLoading && view === 'board' && (
+          {!tasksQuery.isLoading && view === 'board' && (
             <TaskBoard
               boardId={activeBoardId}
               tasks={visibleTasks}
@@ -419,7 +415,7 @@ export function TasksPage() {
             />
           )}
 
-          {!isTodoView && !tasksQuery.isLoading && view === 'calendar' && (
+          {!tasksQuery.isLoading && view === 'calendar' && (
             <TaskCalendarView
               tasks={visibleTasks}
               onOpenTask={openTask}

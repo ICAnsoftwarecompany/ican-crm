@@ -10,6 +10,7 @@ import { MessengerSidebarPanel } from '../../../features/conversations/component
 import { GmailSidebarPanel } from '../../../features/conversations/components/GmailSidebarPanel'
 import { WhatsappSidebarPanel } from '../../../features/conversations/components/WhatsappSidebarPanel'
 import { TasksSidebarPanel } from '../../../features/tasks/components/TasksSidebarPanel'
+import { TodoSidebarPanel } from '../../../features/tasks'
 import { ActiveUsersSidebarPanel } from '../../../features/users/components/ActiveUsersSidebarPanel'
 import { InternalChatSidebarPanel } from '../../../features/internal-chat'
 import { OPEN_MESSENGER_SIDEBAR_EVENT } from '../../../features/conversations/constants/messengerSidebarEvents'
@@ -26,6 +27,7 @@ export function MainLayout() {
   const [whatsappSidebarOpen, setWhatsappSidebarOpen] = useState(false)
   const [whatsappSidebarTarget, setWhatsappSidebarTarget] = useState({ whatsappConversationId: '' })
   const [tasksSidebarOpen, setTasksSidebarOpen] = useState(false)
+  const [todoSidebarOpen, setTodoSidebarOpen] = useState(false)
   const [internalChatSidebarOpen, setInternalChatSidebarOpen] = useState(false)
   const [activeUsersSidebarOpen, setActiveUsersSidebarOpen] = useState(false)
   useGlobalMessengerNotifications()
@@ -39,6 +41,7 @@ export function MainLayout() {
     setGmailSidebarOpen(false)
     setWhatsappSidebarOpen(false)
     setTasksSidebarOpen(false)
+    setTodoSidebarOpen(false)
     setInternalChatSidebarOpen(false)
     setActiveUsersSidebarOpen(false)
   }, [i18n.language])
@@ -54,6 +57,7 @@ export function MainLayout() {
         email: String(detail.email || ''),
       })
       setTasksSidebarOpen(false)
+      setTodoSidebarOpen(false)
       setGmailSidebarOpen(false)
       setWhatsappSidebarOpen(false)
       setInternalChatSidebarOpen(false)
@@ -71,6 +75,7 @@ export function MainLayout() {
         email: String(detail.email || ''),
       })
       setTasksSidebarOpen(false)
+      setTodoSidebarOpen(false)
       setInternalChatSidebarOpen(false)
       setActiveUsersSidebarOpen(false)
       setGmailSidebarOpen(false)
@@ -86,7 +91,7 @@ export function MainLayout() {
     }
   }, [])
 
-  const activeRightSidebar = messengerSidebarOpen || gmailSidebarOpen || whatsappSidebarOpen || tasksSidebarOpen || internalChatSidebarOpen || activeUsersSidebarOpen
+  const activeRightSidebar = messengerSidebarOpen || gmailSidebarOpen || whatsappSidebarOpen || tasksSidebarOpen || todoSidebarOpen || internalChatSidebarOpen || activeUsersSidebarOpen
 
   useEffect(() => {
     const rightOffset = activeRightSidebar ? 'min(390px, calc(100vw - 72px))' : '0px'
@@ -127,6 +132,7 @@ export function MainLayout() {
               const next = !open
               if (next) {
                 setTasksSidebarOpen(false)
+                setTodoSidebarOpen(false)
                 setGmailSidebarOpen(false)
                 setWhatsappSidebarOpen(false)
                 setInternalChatSidebarOpen(false)
@@ -142,6 +148,7 @@ export function MainLayout() {
                 setMessengerSidebarOpen(false)
                 setWhatsappSidebarOpen(false)
                 setTasksSidebarOpen(false)
+                setTodoSidebarOpen(false)
                 setInternalChatSidebarOpen(false)
               }
               return next
@@ -155,6 +162,7 @@ export function MainLayout() {
                 setMessengerSidebarOpen(false)
                 setGmailSidebarOpen(false)
                 setTasksSidebarOpen(false)
+                setTodoSidebarOpen(false)
                 setInternalChatSidebarOpen(false)
               }
               return next
@@ -165,6 +173,22 @@ export function MainLayout() {
             setTasksSidebarOpen((open) => {
               const next = !open
               if (next) {
+                setTodoSidebarOpen(false)
+                setMessengerSidebarOpen(false)
+                setGmailSidebarOpen(false)
+                setWhatsappSidebarOpen(false)
+                setInternalChatSidebarOpen(false)
+                setActiveUsersSidebarOpen(false)
+              }
+              return next
+            })
+          }}
+          todoSidebarOpen={todoSidebarOpen}
+          onToggleTodoSidebar={() => {
+            setTodoSidebarOpen((open) => {
+              const next = !open
+              if (next) {
+                setTasksSidebarOpen(false)
                 setMessengerSidebarOpen(false)
                 setGmailSidebarOpen(false)
                 setWhatsappSidebarOpen(false)
@@ -183,6 +207,7 @@ export function MainLayout() {
                 setGmailSidebarOpen(false)
                 setWhatsappSidebarOpen(false)
                 setTasksSidebarOpen(false)
+                setTodoSidebarOpen(false)
                 setActiveUsersSidebarOpen(false)
               }
               return next
@@ -197,6 +222,7 @@ export function MainLayout() {
                 setGmailSidebarOpen(false)
                 setWhatsappSidebarOpen(false)
                 setTasksSidebarOpen(false)
+                setTodoSidebarOpen(false)
                 setInternalChatSidebarOpen(false)
               }
               return next
@@ -233,6 +259,11 @@ export function MainLayout() {
       <TasksSidebarPanel
         open={tasksSidebarOpen}
         onClose={() => setTasksSidebarOpen(false)}
+      />
+
+      <TodoSidebarPanel
+        open={todoSidebarOpen}
+        onClose={() => setTodoSidebarOpen(false)}
       />
 
       <InternalChatSidebarPanel

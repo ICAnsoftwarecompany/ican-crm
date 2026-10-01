@@ -59,6 +59,7 @@ import { SnapchatPage } from '../../pages/social-media/pages/platforms/SnapchatP
 import { AutomationCenterPage } from '../../pages/automation/AutomationCenterPage'
 import { FacebookCallbackPage } from '../../pages/integrations/FacebookCallbackPage'
 import { TasksPage } from '../../pages/tasks/TasksPage'
+import { TodoPage } from '../../pages/todo/TodoPage'
 import { CalendarPage } from '../../pages/calendar/CalendarPage'
 import { ProductsLayout } from '../../pages/products/layout/ProductsLayout'
 import { ProductsReportsPage } from '../../pages/products/ProductsReportsPage'
@@ -204,6 +205,7 @@ export const router = createBrowserRouter([
       },
       { path: 'automation', element: <AutomationCenterPage /> },
       { path: 'tasks', element: <TasksPage /> },
+      { path: 'todo', element: <TodoPage /> },
       { path: 'calendar', element: <CalendarPage /> },
       {
         path: 'products',

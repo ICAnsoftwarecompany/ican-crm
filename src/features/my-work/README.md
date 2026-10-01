@@ -1,6 +1,6 @@
 # features/my-work — "My Work" (شغلي)
 
-> **Documentation update:** 2026-10-02 01:35 (Africa/Cairo) — "My tasks due" section replaced by the tasks feature's To-Do list (§2, §3, §6, §10). 2026-10-01 00:55 (Africa/Cairo) — folder created.
+> **Documentation update:** 2026-10-02 03:00 (Africa/Cairo) — "My tasks due" restored (To-Dos excluded) and a separate `todo` section added. 2026-10-02 01:35 (Africa/Cairo) — "My tasks due" section replaced by the tasks feature's To-Do list (§2, §3, §6, §10). 2026-10-01 00:55 (Africa/Cairo) — folder created.
 
 **Status:** PARTIAL — page, sections, registry and tests are live on real APIs (activities, tasks, my-leads,
 conversations, team chat, Customer Hub read model). "Mine" filtering is client-side and roles come from a
@@ -45,7 +45,8 @@ so there are no two items called "شغلي".
 |---|---|---|---|---|---|
 | `overdue` | المتأخر | all, sales, service | — | my activities + my tasks, `isOverdueActivity` / `isTaskOverdue` | activity → `ActivityPreviewDrawer`, task → `TaskDrawer` |
 | `today` | مكالمات واجتماعات اليوم | all, sales, service | — | my open activities starting today | `ActivityPreviewDrawer` |
-| `tasks` | قائمة مهامي | all, sales, service | — | `useTodoList(view)` from `features/tasks`: Today / This week / This month / Overdue tabs, quick add (a To-Do in the tab's period), tick to complete; 6 rows per group; "view all" → `/tasks?smart=todo` | `TaskDrawer` |
+| `tasks` | مهامي المستحقة | all, sales, service | — | my open tasks (To-Dos excluded) due by end of today | `TaskDrawer` |
+| `todo` | قائمة مهامي | all, sales, service | — | `useTodoList(view)` from `features/tasks` (To-Dos only): Today / This week / This month / Overdue tabs, quick add, tick to complete; 6 rows per group; "view all" → `/todo` | `TaskDrawer` (To-Do form) |
 | `leads` | أحدث العملاء المحتملين المسندين لي | all, sales | `sales` | `GET /api/tenant/sales/dashboard/my-leads` (`useSalesDashboard`) | `/leads/:customerId` (or `/LeadsCenter` when the id is missing) |
 | `service` | طلبات وأعمال خدمة العملاء | all, service | `customer_service` | `GET /api/tenant/my-work` via the Customer Hub `MyWorkList` (lazy) | the item's own link |
 | `messages` | الرسائل | all, sales, service | — | `useConversationUnreadSummary` + `useChatUnreadCount` | the matching inbox |
@@ -58,6 +59,7 @@ unread = customer channels + team chat.
 | Rule | Definition |
 |---|---|
 | **My activity** | I am `assignedUser` **or** one of `participants` (any shape: id, `{ id }`, `{ user: { id } }`). This covers internal meetings with no single assignee. |
+| **To-Dos** | `type: 'todo'` tasks are left out of every task rule here (`isTodoTask`); they only appear in the `todo` section. |
 | **My task** | I am `user` / `assigned_user` / `assignedTo` / `assigned_to` / `user_id`, or in `users[]`. |
 | **Open** | status is not `completed` / `cancelled` (case-insensitive). |
 | **Today's activity** | open and `startAt` is on today's calendar date; sorted by time. |
@@ -171,5 +173,6 @@ A heavy or optional domain should be imported lazily inside its section (see `Se
 
 | When | Change |
 |---|---|
+| 2026-10-02 03:00 (Africa/Cairo) | `tasks` section back to "My tasks due" (To-Dos excluded in `useMyTasks`); new `todo` section (`sections/TodoSection.jsx`, order 35) with the To-Do list, "view all" → `/todo`. |
 | 2026-10-02 01:35 (Africa/Cairo) | `tasks` section now renders the tasks feature's To-Do list (`useTodoList` + `TodoPanelView`): period tabs, quick add, tick to complete, link to `/tasks?smart=todo`. Title "My to-do list" / "قائمة مهامي". Summary tile unchanged (tasks due). |
 | 2026-10-01 00:55 (Africa/Cairo) | Folder created: page, six sections, registry, rules, hooks, tests; public exports added to tasks, calendar, analytics and conversations; Customer Hub nav label renamed to avoid a duplicate "شغلي". |

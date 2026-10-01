@@ -46,6 +46,36 @@ export default {
     }
   },
   "todo": {
+    "form": {
+      "createTitle": "New to-do",
+      "createDescription": "A title and a rough time are enough. Everything else is optional.",
+      "titleLabel": "Title",
+      "titlePlaceholder": "What do you want to get done?",
+      "whenLabel": "When?",
+      "when": {
+        "today": "Today",
+        "tomorrow": "Tomorrow",
+        "week": "This week",
+        "month": "This month",
+        "date": "Pick a date"
+      },
+      "timeOptional": "Time (optional)",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "Optional details",
+      "moreOptions": "More options: link a customer, reminder",
+      "reminderNeedsTime": "Reminders need a date and a time.",
+      "submit": "Add to my list"
+    },
+    "panel": {
+      "title": "My to-do list",
+      "summary": "{{count}} open today",
+      "openPage": "Open the to-do page",
+      "openButton": "Open",
+      "close": "Close",
+      "newButton": "New",
+      "ariaLabel": "My to-do list",
+      "buttonTitle": "My to-do list"
+    },
     "title": "My to-do list",
     "subtitle": "Your personal to-dos and the customer tasks assigned to you, by day, week and month",
     "views": {
@@ -190,7 +220,6 @@ export default {
     "sortButton": "Sort"
   },
   "workspace": {
-    "myTodo": "My to-do list",
     "dueToday": "Due Today",
     "title": "Workspace",
     "expandSidebar": "Expand sidebar",

@@ -29,6 +29,7 @@ import {
   getTaskTypeMeta,
   isTaskOverdue,
   taskMatchesQuery,
+  withoutTodos,
 } from '../utils/taskMeta'
 
 function HeaderActions({ onOpenPage, onClose }) {
@@ -103,7 +104,7 @@ export function TasksSidebarPanel({ open, onClose }) {
   const [query, setQuery] = useState('')
   const [selectedTaskId, setSelectedTaskId] = useState('')
   const tasksQuery = useTasks({ per_page: 40 })
-  const list = Array.isArray(tasksQuery.data) ? tasksQuery.data : []
+  const list = useMemo(() => withoutTodos(tasksQuery.data), [tasksQuery.data])
   const metrics = getTaskSummaryMetrics(list)
   const filteredTasks = useMemo(() => list.filter((task) => taskMatchesQuery(task, query)), [list, query])
 

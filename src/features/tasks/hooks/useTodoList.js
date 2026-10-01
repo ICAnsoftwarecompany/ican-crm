@@ -3,13 +3,13 @@ import { useTaskMutations, useTasks } from './useTasks'
 import { useCurrentUserId } from './useCurrentUserId'
 import { buildTaskPayload, TASK_FORM_DEFAULTS } from '../utils/taskPayload'
 import { countOpenTodoItems, groupTodoItems, isTaskOnMyList, TODO_VIEWS, VIEW_PERIOD } from '../utils/todoPeriods'
-import { isTaskCompleted } from '../utils/taskMeta'
+import { getTaskType, isTaskCompleted } from '../utils/taskMeta'
 
 // Same params as the calendar and My Work, so the three share one cached request.
 const LIST_PARAMS = { per_page: 200 }
 
 /**
- * The signed-in user's To-Do list for a view (today / week / month / overdue), built on the normal
+ * The signed-in user's To-Dos (`type: 'todo'` only) for a view (today / week / month / overdue), built on the normal
  * task endpoints: list = `GET /tasks`, quick add = `POST /tasks` (type todo + period), done =
  * `PATCH /tasks/{id}/status`. "Mine" is filtered client-side until the backend supports
  * `assigned_to=me`.
@@ -22,7 +22,8 @@ export function useTodoList(view = 'today') {
 
   const mine = useMemo(() => {
     const list = Array.isArray(query.data) ? query.data : []
-    return list.filter((task) => isTaskOnMyList(task, userId))
+    // Since 2026-10-02 the To-Do list shows To-Dos only; other tasks live on /tasks.
+    return list.filter((task) => getTaskType(task) === 'todo' && isTaskOnMyList(task, userId))
   }, [query.data, userId])
 
   const groups = useMemo(() => groupTodoItems(mine, view, new Date()), [mine, view])
