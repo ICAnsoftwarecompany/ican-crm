@@ -67,3 +67,27 @@ describe('resolveEnabledLoginMethods', () => {
     expect(methods.has(LOGIN_METHOD.FACE_ID)).toBe(false)
   })
 })
+
+describe('SHOWCASE_SLIDES', async () => {
+  const { SHOWCASE_SLIDES } = await import('./constants/showcaseSlides')
+  const ar = (await import('../../locales/ar/auth.js')).default
+  const en = (await import('../../locales/en/auth.js')).default
+
+  it('has unique ids and four points per slide', () => {
+    const ids = SHOWCASE_SLIDES.map((slide) => slide.id)
+    expect(new Set(ids).size).toBe(ids.length)
+    SHOWCASE_SLIDES.forEach((slide) => expect(slide.points).toHaveLength(4))
+  })
+
+  it('has copy for every slide and point in both languages', () => {
+    for (const locale of [ar, en]) {
+      for (const slide of SHOWCASE_SLIDES) {
+        const copy = locale.showcase.slides[slide.id]
+        expect(copy?.area && copy?.title && copy?.subtitle).toBeTruthy()
+        for (const point of slide.points) {
+          expect(copy.points[point.id]?.title && copy.points[point.id]?.text).toBeTruthy()
+        }
+      }
+    }
+  })
+})

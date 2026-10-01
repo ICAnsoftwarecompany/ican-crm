@@ -4,14 +4,24 @@ import './loginBackground.css'
  * Animated, brand-colored background for the login page.
  * Pure CSS + two inline SVG filters (no canvas, no JS loop), so it costs
  * almost nothing and freezes automatically under prefers-reduced-motion.
+ *
+ * `light` ({ x, y, r } in vw / vh / deg) moves the whole light composition;
+ * the page passes the active showcase slide's position so the light sweeps
+ * across the screen whenever the slide changes.
  */
-export function LoginBackground() {
+export function LoginBackground({ light = { x: 0, y: 0, r: 0 } }) {
   return (
     <div className="login-aurora" aria-hidden="true">
-      <div className="login-aurora__blob login-aurora__blob--a" />
-      <div className="login-aurora__blob login-aurora__blob--b" />
-      <div className="login-aurora__blob login-aurora__blob--c" />
-      <div className="login-aurora__blob login-aurora__blob--d" />
+      <div
+        className="login-aurora__stage"
+        style={{ transform: `translate3d(${light.x}vw, ${light.y}vh, 0) rotate(${light.r}deg)` }}
+      >
+        <div className="login-aurora__beam" />
+        <div className="login-aurora__blob login-aurora__blob--a" />
+        <div className="login-aurora__blob login-aurora__blob--b" />
+        <div className="login-aurora__blob login-aurora__blob--c" />
+        <div className="login-aurora__blob login-aurora__blob--d" />
+      </div>
 
       <svg className="login-aurora__streaks" width="100%" height="100%" preserveAspectRatio="none">
         <filter id="login-streak-filter">

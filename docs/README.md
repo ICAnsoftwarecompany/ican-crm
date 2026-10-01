@@ -1,6 +1,6 @@
 # ICAN CRM — Documentation index
 
-> **Documentation update:** 2026-10-01 23:30 (Africa/Cairo) — login page and sign-in methods (`features/auth` README). 2026-10-01 02:35 (Africa/Cairo) — Meta campaign wizard READMEs added. 2026-10-01 01:49 (Africa/Cairo) — reports & charts engine added. 2026-10-01 00:55 (Africa/Cairo) — My Work added. Earlier: 2026-10-01 00:25 (Africa/Cairo) — Communication hub, sub-sidebar, module pages, AI setup, README index and change log added.
+> **Documentation update:** 2026-10-01 23:55 (Africa/Cairo) — login showcase slider and Arabic login guide. 2026-10-01 23:30 (Africa/Cairo) — login page and sign-in methods (`features/auth` README). 2026-10-01 02:35 (Africa/Cairo) — Meta campaign wizard READMEs added. 2026-10-01 01:49 (Africa/Cairo) — reports & charts engine added. 2026-10-01 00:55 (Africa/Cairo) — My Work added. Earlier: 2026-10-01 00:25 (Africa/Cairo) — Communication hub, sub-sidebar, module pages, AI setup, README index and change log added.
 
 Start here. Every doc in this folder, what it covers, and its sections. Rules for agents and contributors are in
 [../CLAUDE.md](../CLAUDE.md). **If a doc and the code disagree, the code wins.** When you change a feature, update its
@@ -85,7 +85,7 @@ doc in the same change.
 | Shared reports & charts engine (every Reports page and chart; palette, rules, how to add a page) | [shared/components/reports](../src/shared/components/reports/README.md) |
 | Shared module page shells (placeholder, notice, module settings page) | [shared/components/module-pages](../src/shared/components/module-pages/README.md) |
 | Shared AI setup page (and the boundary with the future `features/ai`) | [shared/components/ai-setup](../src/shared/components/ai-setup/README.md) |
-| Auth — login page, sign-in methods, proposed Google/WebAuthn/PIN contract | [features/auth](../src/features/auth/README.md) |
+| Auth — login page, showcase slider, sign-in methods, proposed Google/WebAuthn/PIN contract | [features/auth](../src/features/auth/README.md) · Arabic page guide [pages/auth/README_AR.md](../src/pages/auth/README_AR.md) |
 | My Work (شغلي) — sections, rules, registry, how to add a section | [features/my-work](../src/features/my-work/README.md) · route [pages/my-work](../src/pages/my-work/README.md) |
 | Meta campaign wizard (create campaign: stages, drafts, geo targeting, data sources, publish) | [features/campaigns/meta-wizard](../src/features/campaigns/meta-wizard/README.md) · full Arabic guide [pages/campaigns/pages/CampaignCreatePage/README_AR.md](../src/pages/campaigns/pages/CampaignCreatePage/README_AR.md) |
 | Communication hub (conversations, calls, meetings, team chat) | [features/communication](../src/features/communication/README.md) · routes [pages/communication](../src/pages/communication/README.md) |
@@ -106,6 +106,7 @@ Newest first. Every docs change also carries a `YYYY-MM-DD HH:mm (Africa/Cairo)`
 
 | When | What changed | Where |
 |---|---|---|
+| 2026-10-01 23:55 (Africa/Cairo) | Login page: hero replaced by an auto-playing showcase slider of the system's areas (customers, teams and routing, calls and meetings, conversations, campaigns, automation and reports); background motion stronger and follows the active slide; split desktop layout; Arabic page guide | this index · READMEs `features/auth`, `pages/auth/README_AR.md` |
 | 2026-10-01 23:30 (Africa/Cairo) | Login page redesigned (animated brand background, tenant chip, language/theme toggles); clear sign-in errors (no more "wrong password" for server/network failures, no session modal on a wrong password); return to the requested page after sign-in; shared `BrandLogo`; Google / Face ID / fingerprint + PIN UI ready behind `VITE_AUTH_METHODS` with a proposed backend contract | 1-ARCHITECTURE (Tenant, auth, httpClient) · this index · README `features/auth` |
 | 2026-10-01 02:35 (Africa/Cairo) | Meta campaign wizard rebuilt in `features/campaigns/meta-wizard` (multi-draft side panel, guided stages with live validation, Meta-style location targeting, full objective/destination matrix, Ads stage ready for the create-ad API with demo data, CRM lead routing, resumable publish); `campaignWizard` locale module; old `campaigns.create.*` keys removed | 3-FEATURES (Ad campaigns and Meta integrations) · this index · READMEs `features/campaigns/meta-wizard`, `pages/campaigns/pages/CampaignCreatePage/README_AR.md` |
 | 2026-10-01 01:49 (Africa/Cairo) | Shared reports & charts engine (`shared/components/reports`, 8 validated chart tokens, `/playground/reports`); Reports pages for Leads Center, Calls, Meetings, Conversations, Team chat, Products; rule 12 in `CLAUDE.md` | 1-ARCHITECTURE (Reports and charts, Definition of Done) · 2-SALES (Leads Center pages) · 3-FEATURES (Communication hub, Products) · `CLAUDE.md` · READMEs `shared/components/reports`, `features/communication` |
