@@ -5,36 +5,7 @@ import { useCurrentUserId } from '../../hooks/useCurrentUserId'
 import { buildTodoPayload, TODO_FORM_DEFAULTS, TODO_PRIORITIES, TODO_WHEN_OPTIONS, todoHasTime } from '../../utils/todoForm'
 import { TaskLinkFields } from '../form/TaskLinkFields'
 import { fieldInputClass, fieldLabelClass } from '../form/taskFormStyles'
-
-function ChoiceChips({ label, options, value, onChange, renderLabel }) {
-  return (
-    <div className={fieldLabelClass}>
-      <span>{label}</span>
-      <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-1.5">
-        {options.map((option) => {
-          const active = value === option
-          return (
-            <button
-              key={option}
-              type="button"
-              role="radio"
-              aria-checked={active}
-              onClick={() => onChange(option)}
-              className={[
-                'h-8 rounded-lg border px-2.5 text-xs font-black transition-colors',
-                active
-                  ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]'
-                  : 'border-[var(--border)] bg-[var(--surface-2)] text-[var(--text-muted)] hover:text-[var(--text)]',
-              ].join(' ')}
-            >
-              {renderLabel(option)}
-            </button>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
+import { ChoiceChips } from '../form/ChoiceChips'
 
 /**
  * The To-Do form: a title and *when* (today / tomorrow / this week / this month / a date) are all a

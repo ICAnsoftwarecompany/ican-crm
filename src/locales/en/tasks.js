@@ -1,4 +1,29 @@
 export default {
+  "list": {
+    "empty": "No tasks yet. Type your first one in the line above.",
+    "groups": {
+      "overdue": "Overdue",
+      "today": "Today",
+      "upcoming": "Upcoming",
+      "undated": "No date",
+      "done": "Done and cancelled"
+    },
+    "quickAdd": {
+      "placeholder": "Add a task… and press Enter",
+      "label": "Quick add a task",
+      "submit": "Add",
+      "whenLabel": "When",
+      "when": {
+        "today": "Today",
+        "tomorrow": "Tomorrow",
+        "none": "No date"
+      },
+      "moreDetails": "More details"
+    },
+    "allLinks": "Any link",
+    "clearFilters": "Clear filters",
+    "panelSummary": "{{today}} today · {{overdue}} overdue"
+  },
   "entity": {
     "title": "Tasks for this customer",
     "openCount": "{{count}} open tasks",
@@ -277,6 +302,19 @@ export default {
     "createDescription": "Create a new task and set the required data."
   },
   "form": {
+    "whenLabel": "When?",
+    "when": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "date": "Pick a date",
+      "none": "No date"
+    },
+    "assigneesLabel": "Assigned to",
+    "me": "Me",
+    "assignMe": "Assign to me",
+    "removeAssignee": "Remove",
+    "searchPeople": "Search a teammate to add",
+    "moreOptions": "More options: notes, visibility, reminder, teams, attachments",
     "periodLabel": "Timing",
     "periodOptions": {
       "exact": "Exact time",

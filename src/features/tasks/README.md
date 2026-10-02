@@ -1,6 +1,7 @@
 # features/tasks — Tasks and To-Do
 
-> **Documentation update:** 2026-10-02 03:25 (Africa/Cairo) — API shape fix: Laravel date cast + `00:00:00` time + `assignments[]` (§3); `undated` group.
+> **Documentation update:** 2026-10-02 03:35 (Africa/Cairo) — UX pass: quick add, grouped list, one-line filters, single-column header panel, reordered task form (§2, §7).
+> 2026-10-02 03:25 (Africa/Cairo) — API shape fix: Laravel date cast + `00:00:00` time + `assignments[]` (§3); `undated` group.
 > 2026-10-02 03:00 (Africa/Cairo) — To-Do separated: `/todo` page, header `TodoNavbarButton` + `TodoSidebarPanel`, short `TodoForm` (`utils/todoForm.js`); task lists exclude To-Dos (`withoutTodos`).
 > 2026-10-02 02:40 (Africa/Cairo) — F2: `EntityTasksPanel`, `CreateTaskButton`, `TaskablePicker`, `useEntityTasks`, registry `getPath`/`fromRecord`, Linked-to filter (§2, §3, §4, §6, §7).
 > 2026-10-02 01:35 (Africa/Cairo) — README created with the To-Do (F1) work: taskable
@@ -35,9 +36,13 @@ until the backend contract in the spec lands).
 | `constants/taskableTypes.js` | Taskable registry: `registerTaskableType`, `resolveTaskableAlias`, `toBackendTaskableType`, `getTaskTaskable`, `buildTaskablePayload`. Tested. |
 | `utils/taskMeta.js` | Labels/meta, `getTaskDateTime`, **`getTaskDeadline`** (date-only = end of day), `isTaskOverdue` (closed tasks never overdue). |
 | `utils/todoPeriods.js` | Period ranges (week starts Saturday), `buildTodoSchedule`, `groupTodoItems(view)`, `isTaskOnMyList`. Tested. |
+| `utils/taskGroups.js` · `utils/taskFilters.js` · `utils/taskQuickAdd.js` | Due-date groups; smart view + filters + counts; quick-add payload. Tested. |
+| `hooks/useTaskToggle.js` | Tick/untick any task with spinners and toasts. |
 | `utils/todoForm.js` | To-Do form model: `TODO_WHEN_OPTIONS` (today / tomorrow / week / month / date), `buildTodoPayload`, `todoToFormValues`, `todoHasTime`. Tested. |
 | `utils/taskPayload.js` | `buildTaskPayload(form)` / `taskToFormValues(task)` — the only place request bodies are built (form, quick add, calendar drag). Tested. |
-| `components/TaskForm.jsx` + `components/form/` | Form; `TaskLinkFields` (linked to + record no.), `TaskScheduleFields` (date/time, or To-Do period). |
+| `components/TaskForm.jsx` + `components/form/` | Full task form ordered by use (title, kind chips, when, linked to, assignees, priority; notes / visibility / reminder / teams / attachments folded). Parts: `ChoiceChips`, `TaskWhenFields` (today / tomorrow / date / none + time), `AssigneePicker` (search, "me" default), `TaskLinkFields` + `TaskablePicker`, `TaskScheduleFields` (To-Do periods). Tested. |
+| `components/list/` | `TaskQuickAdd` (title + kind + when, Enter; "More details" → full form), `TaskGroupedList` (overdue / today / upcoming / no date / done folded), `TaskRow` (tick, kind, link, assignee initials, due, priority). Tested. |
+| `components/workspace/TaskFiltersBar.jsx` | Status · kind · linked-to selects on one line + clear. |
 | `components/TaskDrawer.jsx` | Details, edit, status, notes, attachments; shows `TaskLinkChip` and the period badge. |
 | `components/TaskLinkChip.jsx` | "Lead #15 · name" / "Personal"; a link to the record page when `getPath` resolves (`linkable={false}` inside buttons). |
 | `components/entity/` | `EntityTasksPanel` (a record's tasks + quick actions + drawer; customer drawer Tasks tab), `CreateTaskButton` (form opened linked, typed and pre-titled; also in the conversation header). Tested. |
@@ -122,6 +127,7 @@ return <TodoPanelView todo={todo} view={view} onViewChange={setView} onOpenTask=
 
 | When | Change |
 |---|---|
+| 2026-10-02 03:35 (Africa/Cairo) | UX pass: `/tasks` list = quick add + grouped rows (summary tiles and fake board counts removed, filters on one line); header Tasks panel = one column with quick add and grouped rows; task form reordered (kind/when/priority chips, assignee search with me by default, extras folded). |
 | 2026-10-02 03:25 (Africa/Cairo) | Fix: To-Dos did not show on `/todo` — the API's ISO `due_date` joined with `due_time` made an invalid date. Date part only, midnight = no time, assignees from `assignments[]` (also in My Work), undated group. |
 | 2026-10-02 03:00 (Africa/Cairo) | To-Do separated from Tasks: `/todo` page, header To-Do button + panel, short To-Do form (drawer edits To-Dos with it), `withoutTodos` in task lists, `todo` hidden from the task form's types; tasks page header wraps instead of squeezing. |
 | 2026-10-02 02:40 (Africa/Cairo) | F2: `EntityTasksPanel` replaces the customer drawer's mini Tasks tab (old files and `customers.tasksTab.*` removed); `CreateTaskButton` quick actions (drawer + conversation header); `TaskablePicker`; `/tasks` Linked-to filter; chip links; `useCustomers` gained an `options` arg and `features/customers/index.js`. |

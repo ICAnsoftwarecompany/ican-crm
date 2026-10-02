@@ -1,4 +1,29 @@
 export default {
+  "list": {
+    "empty": "لا توجد مهام بعد. اكتب أول مهمة في السطر بالأعلى.",
+    "groups": {
+      "overdue": "متأخرة",
+      "today": "اليوم",
+      "upcoming": "القادمة",
+      "undated": "بدون موعد",
+      "done": "المنجزة والملغاة"
+    },
+    "quickAdd": {
+      "placeholder": "أضف مهمة… واضغط Enter",
+      "label": "إضافة مهمة سريعة",
+      "submit": "إضافة",
+      "whenLabel": "متى",
+      "when": {
+        "today": "اليوم",
+        "tomorrow": "غدًا",
+        "none": "بدون موعد"
+      },
+      "moreDetails": "تفاصيل أكثر"
+    },
+    "allLinks": "كل الارتباطات",
+    "clearFilters": "مسح الفلاتر",
+    "panelSummary": "{{today}} اليوم · {{overdue}} متأخرة"
+  },
   "entity": {
     "title": "مهام هذا العميل",
     "openCount": "{{count}} مهمة مفتوحة",
@@ -277,6 +302,19 @@ export default {
     "createDescription": "أنشئ مهمة جديدة وحدد البيانات المطلوبة."
   },
   "form": {
+    "whenLabel": "متى؟",
+    "when": {
+      "today": "اليوم",
+      "tomorrow": "غدًا",
+      "date": "تاريخ محدد",
+      "none": "بدون موعد"
+    },
+    "assigneesLabel": "المسؤول",
+    "me": "أنا",
+    "assignMe": "إسناد لي",
+    "removeAssignee": "إزالة",
+    "searchPeople": "ابحث عن زميل لإضافته",
+    "moreOptions": "خيارات إضافية: ملاحظات، الخصوصية، التذكير، الفرق، المرفقات",
     "periodLabel": "توقيت المهمة",
     "periodOptions": {
       "exact": "ميعاد محدد",

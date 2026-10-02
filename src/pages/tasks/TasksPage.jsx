@@ -6,95 +6,38 @@ import { toast } from 'sonner'
 import { WorkflowLauncher } from '../../features/workflow-engine'
 
 import { TaskBoard } from '../../features/tasks/components/board/TaskBoard'
-import { getTaskableTypes, getTaskTaskable } from '../../features/tasks/constants/taskableTypes'
 import { TaskCalendarView } from '../../features/tasks/components/TaskCalendarView'
 import { TaskDrawer } from '../../features/tasks/components/TaskDrawer'
 import { TaskFormDialog } from '../../features/tasks/components/TaskFormDialog'
+import { TaskGroupedList } from '../../features/tasks/components/list/TaskGroupedList'
+import { TaskQuickAdd } from '../../features/tasks/components/list/TaskQuickAdd'
+import { TaskFiltersBar } from '../../features/tasks/components/workspace/TaskFiltersBar'
 import { TasksWorkspace } from '../../features/tasks/components/workspace/TasksWorkspace'
 import { TasksWorkspaceHeader } from '../../features/tasks/components/workspace/TasksWorkspaceHeader'
 import { TasksWorkspaceSidebar } from '../../features/tasks/components/workspace/TasksWorkspaceSidebar'
+import { useTaskToggle } from '../../features/tasks/hooks/useTaskToggle'
 import { useTaskMutations, useTasks } from '../../features/tasks/hooks/useTasks'
-import { withoutTodos } from '../../features/tasks/utils/taskMeta'
-import {
-  getTaskDateTime,
-  getTaskPriorityMeta,
-  getTaskStatusMeta,
-  getTaskStatusOptions,
-  getTaskSummaryMetrics,
-  getTaskTitle,
-  getTaskTypeMeta,
-  getTaskTypeOptions,
-  isTaskOverdue,
-  taskMatchesQuery,
-} from '../../features/tasks/utils/taskMeta'
+import { countSmartViews, filterTasks } from '../../features/tasks/utils/taskFilters'
+import { getTaskStatusOptions, getTaskTypeOptions, withoutTodos } from '../../features/tasks/utils/taskMeta'
+import { Skeleton } from '../../shared/components/feedback/Skeleton'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
 import { extractMessage } from '../../shared/utils/apiResponse'
-import { formatDate as formatDateWithLocale } from '../../shared/utils/dateTime'
+import { formatDateInput, formatTimeInput } from '../../shared/utils/dateTime'
 
-function SummaryCard({ title, value, active = false, onClick }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={[
-        'rounded-xl border px-3 py-2 text-start transition-colors',
-        active
-          ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)]'
-          : 'border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-2)]',
-      ].join(' ')}
-    >
-      <div className="text-[11px] font-bold text-[var(--text-muted)]">{title}</div>
-      <div className="mt-1 text-lg font-black text-[var(--text)]">{value}</div>
-    </button>
-  )
-}
-
-function TaskCard({ task }) {
-  const { t, i18n } = useTranslation()
-  const typeMeta = getTaskTypeMeta(task?.type, t)
-  const priorityMeta = getTaskPriorityMeta(task?.priority, t)
-  const statusMeta = getTaskStatusMeta(task?.status, t)
-  const overdue = isTaskOverdue(task)
-  const due = getTaskDateTime(task)
-  const dueLabel = due
-    ? formatDateWithLocale(due, i18n.language, { dateStyle: 'medium', timeStyle: 'short' })
-    : t('tasks.fallback.noDueDate')
-  const TypeIcon = typeMeta.icon
-
-  return (
-    <article className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <div className="flex items-center gap-1.5">
-            <TypeIcon size={14} className="shrink-0 text-[var(--brand-accent)]" />
-            <h3 className="truncate text-sm font-black text-[var(--text)]">{getTaskTitle(task, t)}</h3>
-          </div>
-        </div>
-        <span className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[10px] font-black ${priorityMeta.className}`}>
-          {priorityMeta.label}
-        </span>
-      </div>
-
-      <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] font-bold">
-        <span className={`rounded-full px-2 py-1 ${statusMeta.tone}`}>{statusMeta.label}</span>
-        <span className={overdue ? 'text-red-600' : 'text-[var(--text-muted)]'}>{dueLabel}</span>
-      </div>
-    </article>
-  )
-}
-
+/**
+ * /tasks — team and customer tasks (To-Dos live on /todo). List view: quick add + tasks grouped by
+ * due date with tick-to-complete; board and calendar views; filters on one line; drawer via `?taskId=`.
+ */
 export function TasksPage() {
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const legacyTodoLink = searchParams.get('smart') === 'todo'
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [createInitialValues, setCreateInitialValues] = useState(null)
-  const [optimisticStatuses, setOptimisticStatuses] = useState({})
   const [search, setSearch] = useState('')
-  const [activeQuickFilter, setActiveQuickFilter] = useState('all')
+  const [smartView, setSmartView] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')
-  // 'all' | 'personal' | a taskable alias ('lead', 'customer', …)
   const [linkFilter, setLinkFilter] = useState('all')
   const [activeBoardId, setActiveBoardId] = useState('main')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -104,37 +47,29 @@ export function TasksPage() {
 
   const tasksQuery = useTasks({ per_page: 100 })
   const mutations = useTaskMutations()
+  const { toggle, pendingIds } = useTaskToggle()
   // To-Dos have their own page (/todo) since 2026-10-02.
   const tasks = useMemo(() => withoutTodos(tasksQuery.data), [tasksQuery.data])
-
-  const mergedTasks = useMemo(() => (
-    tasks.map((task) => {
-      const optimisticStatus = optimisticStatuses[task?.id]
-      if (!optimisticStatus) return task
-      return { ...task, status: optimisticStatus }
-    })
-  ), [optimisticStatuses, tasks])
-
-  const metrics = getTaskSummaryMetrics(tasks)
+  const metrics = useMemo(() => countSmartViews(tasks), [tasks])
   const statusOptions = useMemo(() => getTaskStatusOptions(tasks), [tasks])
-  const typeOptions = useMemo(() => getTaskTypeOptions(tasks, t), [tasks, t])
+  const typeOptions = useMemo(() => getTaskTypeOptions(tasks, t).filter((type) => type !== 'todo'), [tasks, t])
+  const visibleTasks = useMemo(
+    () => filterTasks(tasks, { view: smartView, status: statusFilter, type: typeFilter, link: linkFilter, search }),
+    [linkFilter, search, smartView, statusFilter, tasks, typeFilter],
+  )
 
-  const setView = (nextView) => {
+  const setParam = (key, value) => {
     const next = new URLSearchParams(searchParams)
-    next.set('view', nextView)
+    if (value) next.set(key, String(value))
+    else next.delete(key)
     setSearchParams(next)
   }
+  const openTask = (taskId) => setParam('taskId', taskId)
+  const closeTask = () => setParam('taskId', '')
 
-  const openTask = (taskId) => {
-    const next = new URLSearchParams(searchParams)
-    next.set('taskId', String(taskId))
-    setSearchParams(next)
-  }
-
-  const closeTask = () => {
-    const next = new URLSearchParams(searchParams)
-    next.delete('taskId')
-    setSearchParams(next)
+  const openCreate = (values = null) => {
+    setCreateInitialValues(values)
+    setIsCreateOpen(true)
   }
 
   const handleCreateTask = async (payload) => {
@@ -143,50 +78,14 @@ export function TasksPage() {
       toast.success(t('tasks.page.createdToast'))
       setIsCreateOpen(false)
       setCreateInitialValues(null)
-      tasksQuery.refetch()
     } catch (error) {
       toast.error(extractMessage(error, t('tasks.page.createFailedToast')))
     }
   }
 
-  const handleStatusChange = async (taskIdRaw, nextStatus) => {
-    const taskId = Number(taskIdRaw)
-    if (!Number.isFinite(taskId) || !nextStatus) return
-
-    setOptimisticStatuses((current) => ({ ...current, [taskId]: nextStatus }))
-
-    try {
-      await mutations.changeStatus.mutateAsync({
-        taskId,
-        payload: { status: nextStatus },
-      })
-      toast.success(t('tasks.drawer.statusUpdated'))
-    } catch (error) {
-      setOptimisticStatuses((current) => {
-        const next = { ...current }
-        delete next[taskId]
-        return next
-      })
-      toast.error(extractMessage(error, t('tasks.page.statusUpdateFailed')))
-    } finally {
-      tasksQuery.refetch()
-    }
-  }
-
   const handleCreateFromCalendar = (date) => {
     const d = new Date(date)
-    if (Number.isNaN(d.getTime())) {
-      setCreateInitialValues(null)
-      setIsCreateOpen(true)
-      return
-    }
-
-    const pad = (part) => String(part).padStart(2, '0')
-    const dueDate = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-    const dueTime = `${pad(d.getHours())}:${pad(d.getMinutes())}`
-
-    setCreateInitialValues({ due_date: dueDate, due_time: dueTime })
-    setIsCreateOpen(true)
+    openCreate(Number.isNaN(d.getTime()) ? null : { due_date: formatDateInput(d), due_time: formatTimeInput(d) })
   }
 
   usePageHeader({
@@ -195,121 +94,37 @@ export function TasksPage() {
     actions: (
       <button
         type="button"
-        onClick={() => {
-          setCreateInitialValues(null)
-          setIsCreateOpen(true)
-        }}
+        onClick={() => openCreate()}
         className="h-8 px-2.5 inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-sm text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors"
       >
         <Plus size={14} />
-        <span className="font-latin hidden lg:inline">{t('tasks.page.newTask')}</span>
+        <span className="hidden lg:inline">{t('tasks.page.newTask')}</span>
       </button>
     ),
   })
 
-  const visibleTasks = useMemo(() => {
-    return mergedTasks.filter((task) => {
-      if (!taskMatchesQuery(task, search)) return false
-
-      if (statusFilter !== 'all' && String(task?.status || '').toLowerCase() !== statusFilter) return false
-      if (typeFilter !== 'all' && String(task?.type || '').toLowerCase() !== typeFilter) return false
-      if (linkFilter !== 'all') {
-        const link = getTaskTaskable(task)
-        if (linkFilter === 'personal' ? link : link?.type !== linkFilter) return false
-      }
-
-      if (activeQuickFilter === 'today') {
-        const due = getTaskDateTime(task)
-        if (!due) return false
-        const now = new Date()
-        return (
-          due.getFullYear() === now.getFullYear() &&
-          due.getMonth() === now.getMonth() &&
-          due.getDate() === now.getDate()
-        )
-      }
-
-      if (activeQuickFilter === 'overdue') return isTaskOverdue(task)
-      if (activeQuickFilter === 'in_progress') return String(task?.status || '').toLowerCase() === 'in_progress'
-      if (activeQuickFilter === 'completed') return String(task?.status || '').toLowerCase() === 'completed'
-      if (activeQuickFilter === 'urgent') return String(task?.priority || '').toLowerCase() === 'urgent'
-
-      return true
-    })
-  }, [activeQuickFilter, linkFilter, mergedTasks, search, statusFilter, typeFilter])
-
-  const selectedTask = useMemo(() => (
-    visibleTasks.find((task) => String(task?.id) === String(taskIdParam))
-    || mergedTasks.find((task) => String(task?.id) === String(taskIdParam))
-    || null
-  ), [mergedTasks, taskIdParam, visibleTasks])
-
+  // Boards are static definitions (no backend yet); only the main board has a real count.
   const boardItems = [
     { id: 'main', name: t('tasks.page.mainBoard'), count: visibleTasks.length, accent: 'bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]' },
-    { id: 'sales', name: t('tasks.page.salesTeamBoard'), count: Math.max(0, Math.ceil(visibleTasks.length / 2)), accent: 'bg-[#EEF2FF] text-[#4F46E5] dark:bg-[#27254f] dark:text-[#a5b4fc]' },
-    { id: 'followups', name: t('tasks.page.followUpsBoard'), count: Math.max(0, Math.ceil(visibleTasks.length / 3)), accent: 'bg-[#FFF7ED] text-[#C2410C] dark:bg-[#431f0d] dark:text-[#fdba74]' },
+    { id: 'sales', name: t('tasks.page.salesTeamBoard'), accent: 'bg-[#EEF2FF] text-[#4F46E5] dark:bg-[#27254f] dark:text-[#a5b4fc]' },
+    { id: 'followups', name: t('tasks.page.followUpsBoard'), accent: 'bg-[#FFF7ED] text-[#C2410C] dark:bg-[#431f0d] dark:text-[#fdba74]' },
   ]
-
-  const filterContent = (
-    <>
-      <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6">
-        <SummaryCard title={t('tasks.page.allTasks')} value={metrics.total} active={activeQuickFilter === 'all'} onClick={() => setActiveQuickFilter('all')} />
-        <SummaryCard title={t('activities.derivedStates.today')} value={metrics.today} active={activeQuickFilter === 'today'} onClick={() => setActiveQuickFilter('today')} />
-        <SummaryCard title={t('tasks.page.overdueFilter')} value={metrics.overdue} active={activeQuickFilter === 'overdue'} onClick={() => setActiveQuickFilter('overdue')} />
-        <SummaryCard title={t('activities.status.in_progress')} value={metrics.inProgress} active={activeQuickFilter === 'in_progress'} onClick={() => setActiveQuickFilter('in_progress')} />
-        <SummaryCard title={t('tasks.statuses.completed')} value={metrics.completed} active={activeQuickFilter === 'completed'} onClick={() => setActiveQuickFilter('completed')} />
-        <SummaryCard title={t('activities.scheduleDialog.priorityOptions.urgent')} value={metrics.urgent} active={activeQuickFilter === 'urgent'} onClick={() => setActiveQuickFilter('urgent')} />
-      </div>
-
-      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
-        <label className="grid gap-1 text-[11px] font-bold text-[var(--text-muted)]">
-          {t('tasks.page.statusFilterLabel')}
-          <select
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
-            className="h-9 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-semibold"
-          >
-            <option value="all">{t('activities.form.allStatuses')}</option>
-            {statusOptions.map((status) => (
-              <option key={status} value={status}>{getTaskStatusMeta(status, t).label}</option>
-            ))}
-          </select>
-        </label>
-
-        <label className="grid gap-1 text-[11px] font-bold text-[var(--text-muted)]">
-          {t('tasks.page.typeFilterLabel')}
-          <select
-            value={typeFilter}
-            onChange={(event) => setTypeFilter(event.target.value)}
-            className="h-9 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-semibold"
-          >
-            <option value="all">{t('tasks.page.allTypes')}</option>
-            {typeOptions.map((type) => (
-              <option key={type} value={type}>{getTaskTypeMeta(type, t).label}</option>
-            ))}
-          </select>
-        </label>
-
-        <label className="grid gap-1 text-[11px] font-bold text-[var(--text-muted)]">
-          {t('tasks.taskable.label')}
-          <select
-            value={linkFilter}
-            onChange={(event) => setLinkFilter(event.target.value)}
-            className="h-9 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-semibold"
-          >
-            <option value="all">{t('tasks.page.allLinks')}</option>
-            <option value="personal">{t('tasks.taskable.personal')}</option>
-            {getTaskableTypes().map((type) => (
-              <option key={type.id} value={type.id}>{t(type.labelKey)}</option>
-            ))}
-          </select>
-        </label>
-      </div>
-    </>
-  )
 
   // Old link to the To-Do smart view (before To-Dos got their own page).
   if (legacyTodoLink) return <Navigate to="/todo" replace />
+
+  const filtersBar = (
+    <TaskFiltersBar
+      statusOptions={statusOptions}
+      typeOptions={typeOptions}
+      status={statusFilter}
+      type={typeFilter}
+      link={linkFilter}
+      onStatusChange={setStatusFilter}
+      onTypeChange={setTypeFilter}
+      onLinkChange={setLinkFilter}
+    />
+  )
 
   return (
     <>
@@ -317,11 +132,11 @@ export function TasksPage() {
         sidebar={(
           <TasksWorkspaceSidebar
             boards={boardItems}
-            activeSmartView={activeQuickFilter}
+            activeSmartView={smartView}
             activeBoardId={activeBoardId}
-            onSmartViewChange={setActiveQuickFilter}
+            onSmartViewChange={setSmartView}
             onBoardChange={setActiveBoardId}
-            onAddBoard={() => setIsCreateOpen(true)}
+            onAddBoard={() => openCreate()}
             onToggleCollapse={() => setSidebarCollapsed((value) => !value)}
             collapsed={sidebarCollapsed}
             metrics={metrics}
@@ -332,13 +147,10 @@ export function TasksPage() {
             search={search}
             onSearchChange={setSearch}
             view={view}
-            onViewChange={setView}
-            onCreateTask={() => {
-              setCreateInitialValues(null)
-              setIsCreateOpen(true)
-            }}
+            onViewChange={(next) => setParam('view', next)}
+            onCreateTask={() => openCreate()}
             showFilters={view !== 'board'}
-            filtersContent={view !== 'board' ? filterContent : null}
+            filtersContent={view !== 'board' ? filtersBar : null}
             extraActions={(
               <WorkflowLauncher context={{ module: 'tasks', entity: 'task' }} variant="outline" size="sm">
                 {t('workflow.builder.createAutomation')}
@@ -348,79 +160,73 @@ export function TasksPage() {
         )}
         sidebarCollapsed={sidebarCollapsed}
       >
-        <section className="space-y-2">
-          {tasksQuery.isLoading && (
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text-muted)]">{t('tasks.sidebarPanel.loadingTasks')}</div>
-          )}
+        <section className="space-y-3">
+          {view === 'list' && <TaskQuickAdd onOpenFull={openCreate} />}
 
-          {!tasksQuery.isLoading && !visibleTasks.length && (
-            <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text-muted)]">
-              {t('tasks.page.noMatchingTasksFiltered')}
+          {tasksQuery.isLoading ? (
+            <div className="space-y-2 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-5/6" />
+              <Skeleton className="h-10 w-2/3" />
             </div>
-          )}
+          ) : tasksQuery.isError ? (
+            <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+              {t('tasks.todo.loadFailed')}{' '}
+              <button type="button" onClick={() => tasksQuery.refetch()} className="font-black underline">{t('common.retry')}</button>
+            </div>
+          ) : (
+            <>
+              {view === 'list' && (
+                <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2 sm:p-3">
+                  <TaskGroupedList
+                    tasks={visibleTasks}
+                    onOpen={openTask}
+                    onToggle={toggle}
+                    pendingIds={pendingIds}
+                    emptyText={tasks.length ? t('tasks.page.noMatchingTasksFiltered') : t('tasks.list.empty')}
+                  />
+                </div>
+              )}
 
-          {!tasksQuery.isLoading && view === 'list' && visibleTasks.map((task) => (
-            <button key={task.id || `${task.title}-${task.due_date || ''}`} type="button" className="w-full text-start" onClick={() => openTask(task.id)}>
-              <TaskCard task={task} />
-            </button>
-          ))}
+              {view === 'board' && (
+                <TaskBoard
+                  boardId={activeBoardId}
+                  tasks={visibleTasks}
+                  onOpenTask={openTask}
+                  onQuickComplete={toggle}
+                  onCreateTask={(listId, titleValue, board) => {
+                    if (!titleValue?.trim()) return
+                    handleCreateTask({
+                      title: titleValue.trim(),
+                      description: '',
+                      type: 'follow_up',
+                      priority: 'medium',
+                      status: 'pending',
+                      visibility: 'shared',
+                      // Board quick-add creates an unlinked task (no lead with an empty id).
+                      taskable_type: '',
+                      taskable_id: '',
+                      due_date: '',
+                      due_time: '',
+                      users: [],
+                      teams: [],
+                      board_id: board || activeBoardId,
+                      board_list_id: listId,
+                    })
+                  }}
+                  onDeleteTask={(task) => {
+                    if (!task?.id) return
+                    mutations.remove.mutateAsync(task.id)
+                      .then(() => toast.success(t('tasks.page.deletedToast')))
+                      .catch((error) => toast.error(extractMessage(error, t('tasks.page.deleteFailedToast'))))
+                  }}
+                />
+              )}
 
-          {!tasksQuery.isLoading && view === 'board' && (
-            <TaskBoard
-              boardId={activeBoardId}
-              tasks={visibleTasks}
-              onOpenTask={openTask}
-              onQuickComplete={(task) => {
-                if (!task?.id) return
-                handleStatusChange(task.id, 'completed')
-              }}
-              onCreateTask={(listId, titleValue, board) => {
-                if (!titleValue || !titleValue.trim()) return
-
-                const payload = {
-                  title: titleValue.trim(),
-                  description: '',
-                  type: 'follow_up',
-                  priority: 'medium',
-                  status: 'pending',
-                  visibility: 'shared',
-                  // Board quick-add creates an unlinked task (no lead with an empty id).
-                  taskable_type: '',
-                  taskable_id: '',
-                  due_date: '',
-                  due_time: '',
-                  users: [],
-                  teams: [],
-                  attachments: [],
-                  board_id: board || activeBoardId,
-                  board_list_id: listId,
-                }
-
-                mutations.create.mutateAsync(payload).then(() => {
-                  toast.success(t('tasks.page.createdToast'))
-                  tasksQuery.refetch()
-                }).catch((error) => {
-                  toast.error(extractMessage(error, t('tasks.page.createFailedToast')))
-                })
-              }}
-              onDeleteTask={(task) => {
-                if (!task?.id) return
-                mutations.remove.mutateAsync(task.id).then(() => {
-                  toast.success(t('tasks.page.deletedToast'))
-                  tasksQuery.refetch()
-                }).catch((error) => {
-                  toast.error(extractMessage(error, t('tasks.page.deleteFailedToast')))
-                })
-              }}
-            />
-          )}
-
-          {!tasksQuery.isLoading && view === 'calendar' && (
-            <TaskCalendarView
-              tasks={visibleTasks}
-              onOpenTask={openTask}
-              onCreateAt={handleCreateFromCalendar}
-            />
+              {view === 'calendar' && (
+                <TaskCalendarView tasks={visibleTasks} onOpenTask={openTask} onCreateAt={handleCreateFromCalendar} />
+              )}
+            </>
           )}
         </section>
       </TasksWorkspace>
@@ -441,13 +247,10 @@ export function TasksPage() {
 
       <TaskDrawer
         open={Boolean(taskIdParam)}
-        taskId={selectedTask?.id || taskIdParam}
+        taskId={taskIdParam}
         onClose={closeTask}
         onUpdated={tasksQuery.refetch}
-        onDeleted={() => {
-          closeTask()
-          tasksQuery.refetch()
-        }}
+        onDeleted={closeTask}
       />
     </>
   )

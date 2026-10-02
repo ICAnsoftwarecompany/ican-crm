@@ -87,7 +87,7 @@ export function TasksWorkspaceSidebar({
                     type="button"
                     onClick={() => onSmartViewChange?.(id)}
                     className={[
-                      'flex w-full items-center justify-between rounded-xl border px-2.5 py-2 text-left text-xs font-black transition-colors',
+                      'flex w-full items-center justify-between rounded-xl border px-2.5 py-2 text-start text-xs font-black transition-colors',
                       active
                         ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]'
                         : 'border-transparent bg-transparent text-[var(--text-muted)] hover:border-[var(--border)] hover:bg-[var(--surface)]',
@@ -119,7 +119,7 @@ export function TasksWorkspaceSidebar({
                     type="button"
                     onClick={() => onBoardChange?.(board.id)}
                     className={[
-                      'flex w-full items-center justify-between rounded-xl border px-2.5 py-2 text-left text-xs font-black transition-colors',
+                      'flex w-full items-center justify-between rounded-xl border px-2.5 py-2 text-start text-xs font-black transition-colors',
                       active
                         ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]'
                         : 'border-transparent bg-transparent text-[var(--text-muted)] hover:border-[var(--border)] hover:bg-[var(--surface)]',
@@ -129,9 +129,11 @@ export function TasksWorkspaceSidebar({
                       <span className={`inline-flex h-2.5 w-2.5 rounded-full ${board.accent || 'bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]'}`} />
                       {board.name}
                     </span>
-                    <span className="rounded-full bg-[var(--surface)] px-1.5 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
-                      {board.count || 0}
-                    </span>
+                    {typeof board.count === 'number' && (
+                      <span className="rounded-full bg-[var(--surface)] px-1.5 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
+                        {board.count}
+                      </span>
+                    )}
                   </button>
                 )
               })}

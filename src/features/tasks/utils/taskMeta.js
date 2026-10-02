@@ -98,6 +98,23 @@ export function getTaskDateTime(task) {
   return Number.isNaN(date.getTime()) ? null : date
 }
 
+/** Assignees as `[{ id, name }]` (names when the API includes the user objects). */
+export function getTaskAssignees(task) {
+  if (!task) return []
+  const byId = new Map()
+  const add = (user, fallbackId) => {
+    const id = user?.id ?? user?.user_id ?? fallbackId
+    if (id === undefined || id === null || id === '') return
+    const key = String(id)
+    const name = user?.name || user?.username || byId.get(key)?.name || ''
+    byId.set(key, { id: key, name })
+  }
+  ;(Array.isArray(task.users) ? task.users : []).forEach((user) => (typeof user === 'object' ? add(user) : add(null, user)))
+  ;(Array.isArray(task.assignments) ? task.assignments : []).forEach((item) => add(item?.user, item?.user_id))
+  if (task.user && typeof task.user === 'object') add(task.user)
+  return [...byId.values()]
+}
+
 /**
  * Ids of the users a task is assigned to, whatever shape the API used: `users[]`, `assignments[]`
  * (`{ user_id, user }` — the current tasks API), or a single `user` / `assigned_to` / `user_id`.
