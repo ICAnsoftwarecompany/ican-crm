@@ -87,6 +87,7 @@ export default {
     "viewsLabel": "Period",
     "groups": {
       "overdue": "Overdue",
+      "undated": "No date",
       "timed": "Scheduled",
       "untimed": "Any time",
       "carried": "Still open from this week and month",

@@ -84,8 +84,9 @@ describe('groupTodoItems', () => {
     expect(ids(groups.timed)).toEqual([1])
     expect(ids(groups.untimed)).toEqual([2, 3])
     expect(ids(groups.carried)).toEqual([5])
+    expect(ids(groups.undated)).toEqual([8])
     expect(ids(groups.done)).toEqual([6])
-    expect(countOpenTodoItems(groups)).toBe(5)
+    expect(countOpenTodoItems(groups)).toBe(6)
   })
 
   it('week: everything due this week (past days included), nothing carried', () => {
@@ -96,10 +97,12 @@ describe('groupTodoItems', () => {
     expect(ids(groups.carried)).toEqual([])
   })
 
-  it('month includes later dates; undated tasks never show', () => {
+  it('month includes later dates; undated To-Dos sit in their own group', () => {
     const groups = groupTodoItems(tasks, 'month', NOW)
     expect(ids(groups.untimed)).toContain(7)
     expect(ids([...groups.timed, ...groups.untimed])).not.toContain(8)
+    expect(ids(groups.undated)).toEqual([8])
+    expect(groupTodoItems(tasks, 'overdue', NOW).undated).toEqual([])
   })
 
   it('overdue: open tasks past their deadline, oldest first', () => {

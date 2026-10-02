@@ -5,6 +5,7 @@
  */
 import { buildTaskablePayload, resolveTaskableAlias } from '../constants/taskableTypes'
 import { buildTodoSchedule, DEFAULT_WEEK_START, getTaskPeriod, isTodoPeriod } from './todoPeriods'
+import { getTaskDueDate, getTaskDueTime, getTaskUserIds } from './taskMeta'
 
 export const TASK_FORM_DEFAULTS = {
   title: '',
@@ -41,17 +42,17 @@ export function taskToFormValues(task = {}) {
     type: task?.type || 'todo',
     priority: task?.priority || 'medium',
     visibility: task?.visibility || 'shared',
-    due_date: task?.due_date || '',
-    due_time: task?.due_time || '',
+    due_date: getTaskDueDate(task),
+    due_time: getTaskDueTime(task),
     period_type: getTaskPeriod(task) || '',
-    period_date: task?.period_date || '',
+    period_date: getTaskDueDate({ due_date: task?.period_date }),
     reminder_type: task?.reminder_type || 'system',
     reminder_before: String(task?.reminder_before ?? '30'),
     reminder_unit: task?.reminder_unit || 'minutes',
     taskable_type: resolveTaskableAlias(task?.taskable_type),
     taskable_id: task?.taskable_id ? String(task.taskable_id) : '',
     taskable_name: task?.taskable?.name || task?.taskable?.full_name || '',
-    users: toIdList(task?.users),
+    users: getTaskUserIds(task).map(Number).filter(Number.isFinite),
     teams: toIdList(task?.teams),
   }
 }

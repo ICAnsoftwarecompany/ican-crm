@@ -87,6 +87,7 @@ export default {
     "viewsLabel": "فترة العرض",
     "groups": {
       "overdue": "متأخر",
+      "undated": "بدون موعد",
       "timed": "بمواعيد",
       "untimed": "بدون ساعة محددة",
       "carried": "مفتوحة من مهام الأسبوع والشهر",

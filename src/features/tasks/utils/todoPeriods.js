@@ -9,7 +9,7 @@
  * adds the "still open in this period" group once the backend returns it.
  */
 import { addDays, endOfDay, endOfMonth, formatDateInput, startOfDay, startOfMonth, startOfWeek, toDate } from '../../../shared/utils/dateTime'
-import { getTaskDateTime, getTaskDeadline, getTaskDueTime, isTaskClosed, isTaskCompleted } from './taskMeta'
+import { getTaskDateTime, getTaskDeadline, getTaskDueDate, getTaskDueTime, getTaskUserIds, isTaskClosed, isTaskCompleted } from './taskMeta'
 
 export const TODO_PERIODS = ['day', 'week', 'month']
 export const TODO_VIEWS = ['today', 'week', 'month', 'overdue']
@@ -62,7 +62,7 @@ function inRange(date, range) {
 /** Due inside the range (by its deadline), or — when the backend sends it — its period starts inside it. */
 export function isTaskInRange(task, range) {
   if (inRange(getTaskDeadline(task), range)) return true
-  const periodDate = toDate(task?.period_date || task?.periodDate)
+  const periodDate = toDate(getTaskDueDate({ due_date: task?.period_date || task?.periodDate }))
   return Boolean(getTaskPeriod(task)) && inRange(periodDate, range)
 }
 
@@ -95,10 +95,11 @@ function byPositionThenPriority(left, right) {
  * - `timed`    open, due inside the view's range at a set time — by time
  * - `untimed`  open, due inside the range with no time (period To-Dos) — by position, then priority
  * - `carried`  "today" only: open week/month To-Dos of the current period not already listed
+ * - `undated`  open To-Dos with no date at all (shown in every view except "overdue")
  * - `done`     completed inside the range
  */
 export function groupTodoItems(tasks = [], view = 'today', now = new Date(), weekStartsOn = DEFAULT_WEEK_START) {
-  const empty = { overdue: [], timed: [], untimed: [], carried: [], done: [] }
+  const empty = { overdue: [], timed: [], untimed: [], carried: [], undated: [], done: [] }
   const list = Array.isArray(tasks) ? tasks.filter(Boolean) : []
 
   if (view === 'overdue') {
@@ -107,7 +108,7 @@ export function groupTodoItems(tasks = [], view = 'today', now = new Date(), wee
   }
 
   const range = getPeriodRange(VIEW_PERIOD[view] || 'day', now, weekStartsOn)
-  const groups = { overdue: [], timed: [], untimed: [], carried: [], done: [] }
+  const groups = { overdue: [], timed: [], untimed: [], carried: [], undated: [], done: [] }
   const listed = new Set()
 
   list.forEach((task) => {
@@ -116,7 +117,12 @@ export function groupTodoItems(tasks = [], view = 'today', now = new Date(), wee
       if (isTaskCompleted(task) && isTaskInRange(task, range)) groups.done.push(task)
       return
     }
-    if (view === 'today' && deadline && deadline < range.start) {
+    if (!deadline) {
+      groups.undated.push(task)
+      listed.add(task)
+      return
+    }
+    if (view === 'today' && deadline < range.start) {
       groups.overdue.push(task)
       listed.add(task)
       return
@@ -135,36 +141,24 @@ export function groupTodoItems(tasks = [], view = 'today', now = new Date(), wee
   groups.timed.sort(byDeadline)
   groups.untimed.sort(byPositionThenPriority)
   groups.carried.sort(byPositionThenPriority)
+  groups.undated.sort(byPositionThenPriority)
   return groups
 }
 
 export function countOpenTodoItems(groups) {
   if (!groups) return 0
-  return groups.overdue.length + groups.timed.length + groups.untimed.length + groups.carried.length
-}
-
-function sameId(left, right) {
-  if (left === undefined || left === null || left === '') return false
-  if (right === undefined || right === null || right === '') return false
-  return String(left) === String(right)
-}
-
-function personId(person) {
-  if (person === undefined || person === null) return null
-  if (typeof person === 'string' || typeof person === 'number') return person
-  return person.id ?? person.user_id ?? person.userId ?? null
+  return groups.overdue.length + groups.timed.length + groups.untimed.length + groups.carried.length + (groups.undated?.length || 0)
 }
 
 /**
- * A task is on my list when I am its user / one of its users, or — when it has no users at all —
- * I created it (a personal To-Do saved before assignees were set).
+ * A task is on my list when I am one of its assignees (`users[]`, `assignments[]`, `user_id`…), or —
+ * when it has no assignees at all — I created it (a personal To-Do saved before assignees were set).
  */
 export function isTaskOnMyList(task, userId) {
-  if (!task || userId === undefined || userId === null) return false
-  const direct = task.user ?? task.assigned_user ?? task.assignedTo ?? task.assigned_to ?? task.user_id
-  if (sameId(personId(direct), userId)) return true
-  const users = Array.isArray(task.users) ? task.users : []
-  if (users.some((user) => sameId(personId(user), userId))) return true
-  const creator = task.created_by ?? task.createdBy ?? task.creator
-  return !direct && users.length === 0 && sameId(personId(creator), userId)
+  if (!task || userId === undefined || userId === null || userId === '') return false
+  const me = String(userId)
+  const assignees = getTaskUserIds(task)
+  if (assignees.includes(me)) return true
+  const creator = task.created_by ?? task.createdBy ?? task.creator?.id ?? task.creator
+  return assignees.length === 0 && creator !== undefined && creator !== null && String(creator) === me
 }

@@ -42,13 +42,16 @@ export function isMyActivity(activity, userId) {
   return participants.some((participant) => sameId(personId(participant?.user ?? participant), userId))
 }
 
-/** A task is mine when I am its user/assignee or one of its users. */
+/** A task is mine when I am its user/assignee, one of its users, or one of its assignments. */
 export function isMyTask(task, userId) {
   if (!task || userId === undefined || userId === null) return false
   const direct = task.user ?? task.assigned_user ?? task.assignedTo ?? task.assigned_to ?? task.user_id
   if (sameId(personId(direct), userId)) return true
   const users = Array.isArray(task.users) ? task.users : []
-  return users.some((user) => sameId(personId(user), userId))
+  if (users.some((user) => sameId(personId(user), userId))) return true
+  // Current tasks API: assignees come as `assignments: [{ user_id, user }]`.
+  const assignments = Array.isArray(task.assignments) ? task.assignments : []
+  return assignments.some((item) => sameId(item?.user_id ?? personId(item?.user), userId))
 }
 
 export function isOpenActivity(activity) {

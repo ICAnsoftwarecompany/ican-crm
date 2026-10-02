@@ -60,7 +60,7 @@ unread = customer channels + team chat.
 |---|---|
 | **My activity** | I am `assignedUser` **or** one of `participants` (any shape: id, `{ id }`, `{ user: { id } }`). This covers internal meetings with no single assignee. |
 | **To-Dos** | `type: 'todo'` tasks are left out of every task rule here (`isTodoTask`); they only appear in the `todo` section. |
-| **My task** | I am `user` / `assigned_user` / `assignedTo` / `assigned_to` / `user_id`, or in `users[]`. |
+| **My task** | I am `user` / `assigned_user` / `assignedTo` / `assigned_to` / `user_id`, or in `users[]`, or in `assignments[]` (`user_id`, current tasks API — added 2026-10-02 03:25 (Africa/Cairo)). |
 | **Open** | status is not `completed` / `cancelled` (case-insensitive). |
 | **Today's activity** | open and `startAt` is on today's calendar date; sorted by time. |
 | **Task due** | open and due date+time ≤ end of today; sorted oldest first. **Undated tasks are left out** on purpose. |

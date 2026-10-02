@@ -8,6 +8,7 @@ import { addDays, formatDateInput, isSameDay, toDate } from '../../../shared/uti
 import { resolveTaskableAlias } from '../constants/taskableTypes'
 import { buildTaskPayload, TASK_FORM_DEFAULTS } from './taskPayload'
 import { getTaskPeriod } from './todoPeriods'
+import { getTaskDueDate, getTaskDueTime, getTaskUserIds } from './taskMeta'
 
 /** "When" choices, in the order the form shows them. */
 export const TODO_WHEN_OPTIONS = ['today', 'tomorrow', 'week', 'month', 'date']
@@ -33,7 +34,7 @@ export const TODO_FORM_DEFAULTS = {
 /** An existing To-Do (from the API) → To-Do form values. */
 export function todoToFormValues(task = {}, now = new Date()) {
   const period = getTaskPeriod(task)
-  const dueDate = task?.due_date || ''
+  const dueDate = getTaskDueDate(task)
   const due = toDate(dueDate)
   let when = 'date'
   if (period === 'week' || period === 'month') when = period
@@ -47,7 +48,7 @@ export function todoToFormValues(task = {}, now = new Date()) {
     description: task?.description || '',
     when,
     date: when === 'date' ? dueDate : '',
-    time: when === 'date' ? (task?.due_time || '') : '',
+    time: when === 'date' ? getTaskDueTime(task) : '',
     priority: task?.priority || 'medium',
     reminder_type: task?.reminder_type || 'system',
     reminder_before: task?.reminder_before === undefined || task?.reminder_before === null ? '30' : String(task.reminder_before),
@@ -55,7 +56,7 @@ export function todoToFormValues(task = {}, now = new Date()) {
     taskable_type: resolveTaskableAlias(task?.taskable_type),
     taskable_id: task?.taskable_id ? String(task.taskable_id) : '',
     taskable_name: task?.taskable?.name || '',
-    users: (Array.isArray(task?.users) ? task.users : []).map((user) => Number(user?.id ?? user)).filter(Number.isFinite),
+    users: getTaskUserIds(task).map(Number).filter(Number.isFinite),
   }
 }
 

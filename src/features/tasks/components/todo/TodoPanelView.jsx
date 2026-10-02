@@ -7,7 +7,7 @@ import { TodoItemRow } from './TodoItemRow'
 import { TodoQuickAdd } from './TodoQuickAdd'
 import { TodoViewTabs } from './TodoViewTabs'
 
-const GROUP_ORDER = ['overdue', 'timed', 'untimed', 'carried', 'done']
+const GROUP_ORDER = ['overdue', 'timed', 'untimed', 'carried', 'undated', 'done']
 
 /**
  * Presentational To-Do list. `todo` is the result of `useTodoList(view)`; the parent owns `view`.

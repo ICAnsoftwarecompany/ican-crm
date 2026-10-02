@@ -66,22 +66,55 @@ export function getTaskStatusMeta(status, t) {
   return map[String(status || '').toLowerCase()] || { label: status || t('activities.preMeetingReport.options.unspecified'), tone: 'bg-slate-100 text-slate-700' }
 }
 
+/**
+ * `due_date` as "YYYY-MM-DD". The API returns a Laravel date cast ("2026-10-02T00:00:00.000000Z"):
+ * only the date part is meant — reading it as a UTC instant would shift it to another day in some
+ * time zones, and joining it with the time gave an invalid date (tasks vanished from every list).
+ */
 export function getTaskDueDate(task) {
-  return task?.due_date || task?.dueDate || ''
+  const raw = String(task?.due_date || task?.dueDate || '').trim()
+  const match = raw.match(/^(\d{4}-\d{2}-\d{2})/)
+  return match ? match[1] : raw
 }
 
+/**
+ * `due_time` as "HH:mm", or '' when the task has no time. The backend stores "00:00:00" when no
+ * time was sent, so midnight is read as "no time" (a date-only task, due by the end of that day).
+ */
 export function getTaskDueTime(task) {
-  return task?.due_time || task?.dueTime || ''
+  const raw = String(task?.due_time || task?.dueTime || '').trim()
+  const match = raw.match(/^(\d{1,2}):(\d{2})/)
+  if (!match) return ''
+  const value = `${match[1].padStart(2, '0')}:${match[2]}`
+  return value === '00:00' ? '' : value
 }
 
 export function getTaskDateTime(task) {
   const dueDate = getTaskDueDate(task)
-  const dueTime = getTaskDueTime(task)
-  if (!dueDate && !dueTime) return null
-
-  const value = [dueDate, dueTime || '00:00'].join(' ').trim()
-  const date = new Date(value)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) return null
+  const [year, month, day] = dueDate.split('-').map(Number)
+  const [hours, minutes] = (getTaskDueTime(task) || '00:00').split(':').map(Number)
+  const date = new Date(year, month - 1, day, hours, minutes)
   return Number.isNaN(date.getTime()) ? null : date
+}
+
+/**
+ * Ids of the users a task is assigned to, whatever shape the API used: `users[]`, `assignments[]`
+ * (`{ user_id, user }` — the current tasks API), or a single `user` / `assigned_to` / `user_id`.
+ */
+export function getTaskUserIds(task) {
+  if (!task) return []
+  const ids = []
+  const push = (value) => {
+    const id = value !== null && typeof value === 'object' ? (value.id ?? value.user_id ?? value.userId) : value
+    if (id !== undefined && id !== null && id !== '') ids.push(String(id))
+  }
+  ;(Array.isArray(task.users) ? task.users : []).forEach(push)
+  ;(Array.isArray(task.assignments) ? task.assignments : []).forEach((item) => push(item?.user_id ?? item?.user))
+  ;[task.user, task.assigned_user, task.assignedTo, task.assigned_to, task.user_id].forEach((value) => {
+    if (value !== undefined && value !== null && value !== '') push(value)
+  })
+  return [...new Set(ids)]
 }
 
 /**
@@ -154,7 +187,9 @@ export function getTaskAssigneeLabel(task, t) {
   const username = user?.name || user?.username
   if (username) return username
 
-  const users = Array.isArray(task?.users) ? task.users : []
+  const users = Array.isArray(task?.users) && task.users.length
+    ? task.users
+    : (Array.isArray(task?.assignments) ? task.assignments.map((item) => item?.user || { id: item?.user_id }) : [])
   if (users.length === 1) return users[0]?.name || users[0]?.username || (t ? t('tasks.fallback.oneUser') : 'مستخدم واحد')
   if (users.length > 1) return t ? t('tasks.fallback.multipleUsers', { count: users.length }) : `${users.length} مستخدمين`
 
