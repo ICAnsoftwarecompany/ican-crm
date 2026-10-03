@@ -6,7 +6,8 @@ export default {
   "back": "All deals",
   "viewToggle": {
     "kanban": "Board",
-    "table": "Table"
+    "table": "Table",
+    "board": "Board"
   },
   "actions": {
     "workflow": "Automation",
@@ -101,5 +102,26 @@ export default {
     "dealLinkedActivities": "Team meetings linked to the deal need the backend to accept the deal as the meeting's linked record.",
     "dealAi": "The AI assistant needs the backend AI endpoints (planned). The hints above are rules computed from the deal's data.",
     "dealSettings": "Workspace settings saved for the whole team need a backend endpoint (planned)."
+  },
+  "quickInfo": {
+    "products": "Products",
+    "team": "Team",
+    "lastAction": "Last action",
+    "loading": "…",
+    "noProducts": "No products",
+    "noTeam": "No team",
+    "teamCount": "{{count}} members",
+    "noActivity": "No activity yet",
+    "noOwner": "No owner",
+    "backendBy": "{{text}} — {{by}}",
+    "limited": "Products, team and last action show for the newest {{count}} deals.",
+    "actions": {
+      "leadWon": "{{name}} won",
+      "leadLost": "{{name}} lost",
+      "leadAdded": "{{name}} added",
+      "leadActivity": "Activity on {{name}}",
+      "dealUpdated": "Deal updated",
+      "dealCreated": "Deal created"
+    }
   }
 }

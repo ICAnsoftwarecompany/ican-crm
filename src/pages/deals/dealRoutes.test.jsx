@@ -86,7 +86,29 @@ describe('deals area', () => {
     await waitFor(() => expect(get.mock.calls.some(([url]) => url === '/api/tenant/deals')).toBe(true))
   })
 
-  it.each(['contracts', 'reports', 'pipelines'])('renders the hub page /deals/%s', async (page) => {
+  it('shows each deal with quick info on the board (products, team, last action)', async () => {
+    renderAt('/deals?view=board')
+    expect(await screen.findByText('Q4 Sales Deal')).toBeTruthy()
+    // One product without stock data → "one product in units"; 2 team members; latest event = Mona won.
+    expect(await screen.findByText('dealWorkspace.productMode.deal.single_product.title')).toBeTruthy()
+    expect(await screen.findByText('dealWorkspace.quickInfo.teamCount')).toBeTruthy()
+    expect(await screen.findByText(/^dealWorkspace\.quickInfo\.actions\.leadWon/)).toBeTruthy()
+    expect(screen.getByRole('link', { name: /Q4 Sales Deal/ }).getAttribute('href')).toBe('/deals/1')
+    // The sidebar offers creation and the calendar.
+    expect(screen.getAllByText('dealWorkspace.hub.pages.new').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('dealWorkspace.hub.pages.calendar').length).toBeGreaterThan(0)
+  })
+
+  it('fetches the quick info of each deal for the table (same cache as the workspace)', async () => {
+    renderAt('/deals')
+    expect((await screen.findAllByText('dealWorkspace.quickInfo.lastAction')).length).toBeGreaterThan(0)
+    await waitFor(() => {
+      const urls = get.mock.calls.map(([url]) => url)
+      expect(urls).toEqual(expect.arrayContaining(['/api/tenant/deals/1/team', '/api/tenant/deals/1/products', '/api/tenant/deals/1/leads']))
+    })
+  })
+
+  it.each(['contracts', 'calendar', 'reports', 'pipelines'])('renders the hub page /deals/%s', async (page) => {
     renderAt(`/deals/${page}`)
     expect((await screen.findAllByText(`dealWorkspace.hub.pages.${page}`)).length).toBeGreaterThan(0)
   })

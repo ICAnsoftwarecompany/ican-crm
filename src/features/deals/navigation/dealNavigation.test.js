@@ -16,6 +16,6 @@ describe('deal navigation', () => {
 
   it('builds the hub sidebar', () => {
     const config = getDealsHubSidebarConfig(t)
-    expect(config.groups.flatMap((group) => group.items).map((item) => item.to)).toEqual(['/deals', '/deals/contracts', '/deals/reports', '/deals/pipelines'])
+    expect(config.groups.flatMap((group) => group.items).map((item) => item.to)).toEqual(['/deals', '/deals/new', '/deals/contracts', '/deals/calendar', '/deals/reports', '/deals/pipelines'])
   })
 })

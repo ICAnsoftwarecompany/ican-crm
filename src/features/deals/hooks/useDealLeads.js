@@ -5,7 +5,11 @@ import { dealKeys } from '../constants/dealQueryKeys'
 import { normalizeDealLead } from '../utils/dealLeads'
 import { unwrapList } from './dealResponse'
 
-const LIST_PARAMS = { per_page: 500 }
+/** Shared by the workspace and the hub quick info (same cache entry). */
+export const DEAL_LEADS_LIST_PARAMS = { per_page: 500 }
+const LIST_PARAMS = DEAL_LEADS_LIST_PARAMS
+
+export const normalizeDealLeadList = (data) => unwrapList(data, ['leads', 'deal_leads']).map(normalizeDealLead)
 
 /** Every lead of one deal (normalized, `id` = deal-lead id). One cached list per deal. */
 export function useDealLeads(dealId) {
@@ -14,7 +18,7 @@ export function useDealLeads(dealId) {
     queryFn: () => dealLeadsApi.getAll(dealId, LIST_PARAMS),
     enabled: Boolean(dealId),
   })
-  const leads = useMemo(() => unwrapList(query.data, ['leads', 'deal_leads']).map(normalizeDealLead), [query.data])
+  const leads = useMemo(() => normalizeDealLeadList(query.data), [query.data])
   return { ...query, leads }
 }
 

@@ -7,16 +7,26 @@ import { unwrapList } from './dealResponse'
 
 export function useDealTeam(dealId) {
   const query = useQuery({ queryKey: dealKeys.team(dealId), queryFn: () => dealResourcesApi.getTeam(dealId), enabled: Boolean(dealId) })
-  const members = useMemo(() => unwrapList(query.data, ['team', 'members']).map(normalizeTeamMember), [query.data])
+  const members = useMemo(() => normalizeDealTeam(query.data), [query.data])
   return { ...query, members }
+}
+
+/** Rows of `GET /deals/{id}/products` → products (`linkId` = the deal-product row id). */
+export function normalizeDealProducts(data) {
+  return unwrapList(data, ['products']).map((row) => {
+    const product = row.product || row
+    return { ...product, id: product.id ?? row.product_id, linkId: row.id, name: product.name || product.title || '', price: product.price ?? row.price ?? null }
+  })
+}
+
+/** Rows of `GET /deals/{id}/team` → normalized members. */
+export function normalizeDealTeam(data) {
+  return unwrapList(data, ['team', 'members']).map(normalizeTeamMember)
 }
 
 export function useDealProducts(dealId) {
   const query = useQuery({ queryKey: dealKeys.products(dealId), queryFn: () => dealResourcesApi.getProducts(dealId), enabled: Boolean(dealId) })
-  const products = useMemo(() => unwrapList(query.data, ['products']).map((row) => {
-    const product = row.product || row
-    return { ...product, id: product.id ?? row.product_id, linkId: row.id, name: product.name || product.title || '', price: product.price ?? row.price ?? null }
-  }), [query.data])
+  const products = useMemo(() => normalizeDealProducts(query.data), [query.data])
   return { ...query, products }
 }
 

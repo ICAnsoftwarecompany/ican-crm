@@ -6,7 +6,8 @@ export default {
   "back": "كل الصفقات",
   "viewToggle": {
     "kanban": "لوحة",
-    "table": "جدول"
+    "table": "جدول",
+    "board": "لوحة"
   },
   "actions": {
     "workflow": "الأتمتة",
@@ -101,5 +102,26 @@ export default {
     "dealLinkedActivities": "اجتماعات الفريق المرتبطة بالصفقة تحتاج أن يقبل الباك إند الصفقة كسجل مرتبط بالاجتماع.",
     "dealAi": "المساعد الذكي يحتاج واجهات الذكاء الاصطناعي من الباك إند (مخطط). التنبيهات بالأعلى قواعد محسوبة من بيانات الصفقة.",
     "dealSettings": "إعدادات مساحة العمل المحفوظة للفريق كله تحتاج endpoint من الباك إند (مخطط)."
+  },
+  "quickInfo": {
+    "products": "المنتجات",
+    "team": "الفريق",
+    "lastAction": "آخر إجراء",
+    "loading": "…",
+    "noProducts": "بدون منتجات",
+    "noTeam": "بدون فريق",
+    "teamCount": "{{count}} عضو",
+    "noActivity": "لا يوجد نشاط بعد",
+    "noOwner": "بدون مسؤول",
+    "backendBy": "{{text}} — {{by}}",
+    "limited": "المنتجات والفريق وآخر إجراء تظهر لأحدث {{count}} صفقة.",
+    "actions": {
+      "leadWon": "تم كسب {{name}}",
+      "leadLost": "خسارة {{name}}",
+      "leadAdded": "إضافة {{name}}",
+      "leadActivity": "نشاط على {{name}}",
+      "dealUpdated": "تعديل الصفقة",
+      "dealCreated": "إنشاء الصفقة"
+    }
   }
 }

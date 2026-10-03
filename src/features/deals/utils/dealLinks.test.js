@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildDealLinkIndex, getActivityDealLink, getTaskDealLink } from './dealLinks'
+import { buildDealLinkIndex, buildDealsLinkIndex, getActivityDealLink, getTaskDealLink } from './dealLinks'
 
 const index = buildDealLinkIndex({
   dealId: 4,
@@ -21,5 +21,18 @@ describe('deal links', () => {
     expect(getActivityDealLink({ raw: {}, relatedEntity: { type: 'lead', id: 100 } }, index)).toBe('customer')
     expect(getActivityDealLink({ raw: {}, relatedEntity: { type: 'customer', id: 900 } }, index)).toBe('customer')
     expect(getActivityDealLink({ raw: { lead_id: 7 }, relatedEntity: { type: 'lead', id: 7 } }, index)).toBeNull()
+  })
+
+  it('matches any of several deals for the hub calendar', () => {
+    const many = buildDealsLinkIndex({
+      dealIds: [1, 2],
+      leadIndexes: [{ leadIds: new Set(['10']), customerIds: new Set() }, { leadIds: new Set(['20']), customerIds: new Set(['70']) }],
+      contracts: [{ id: 5 }],
+    })
+    expect(getTaskDealLink({ taskable_type: 'Deal', taskable_id: 2 }, many)).toBe('deal')
+    expect(getTaskDealLink({ taskable_type: 'Deal', taskable_id: 3 }, many)).toBeNull()
+    expect(getTaskDealLink({ taskable_type: 'Lead', taskable_id: 20 }, many)).toBe('lead')
+    expect(getTaskDealLink({ taskable_type: 'Contract', taskable_id: 5 }, many)).toBe('contract')
+    expect(getActivityDealLink({ raw: {}, relatedEntity: { type: 'customer', id: 70 } }, many)).toBe('customer')
   })
 })

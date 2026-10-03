@@ -11,8 +11,29 @@ const morphBase = (value) => String(value ?? '').replace(/["']/g, '').split(/[\\
 export function buildDealLinkIndex({ dealId, leadIndex, contracts = [] }) {
   return {
     dealId: dealId === undefined || dealId === null ? '' : String(dealId),
+    dealIds: null,
     leadIds: leadIndex?.leadIds || new Set(),
     customerIds: leadIndex?.customerIds || new Set(),
+    contractIds: new Set(contracts.map((contract) => String(contract.id))),
+  }
+}
+
+/**
+ * Index over several deals at once (the hub calendar): any of `dealIds`, any of their leads / customers
+ * (`leadIndexes`, one per deal) and any contract.
+ */
+export function buildDealsLinkIndex({ dealIds = [], leadIndexes = [], contracts = [] }) {
+  const leadIds = new Set()
+  const customerIds = new Set()
+  leadIndexes.forEach((leadIndex) => {
+    leadIndex?.leadIds?.forEach((id) => leadIds.add(id))
+    leadIndex?.customerIds?.forEach((id) => customerIds.add(id))
+  })
+  return {
+    dealId: '',
+    dealIds: new Set(dealIds.map(String)),
+    leadIds,
+    customerIds,
     contractIds: new Set(contracts.map((contract) => String(contract.id))),
   }
 }
@@ -21,7 +42,7 @@ function linkKind(type, id, index) {
   const base = morphBase(type)
   const key = id === undefined || id === null ? '' : String(id)
   if (!base || !key) return null
-  if (base === 'deal' && key === index.dealId) return 'deal'
+  if (base === 'deal' && (index.dealIds ? index.dealIds.has(key) : key === index.dealId)) return 'deal'
   if (base === 'contract' && index.contractIds.has(key)) return 'contract'
   if (base === 'lead' && index.leadIds.has(key)) return 'lead'
   if (base === 'customer' && index.customerIds.has(key)) return 'customer'

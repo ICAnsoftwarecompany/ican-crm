@@ -47,7 +47,9 @@ export function getDealPagePath(dealId, pageId) {
 /** Pages of the deals hub (`/deals/<path>`). Labels: `dealWorkspace.hub.pages.<id>`. */
 export const DEALS_HUB_PAGES = [
   { id: 'deals', path: '', group: 'work' },
+  { id: 'new', path: 'new', group: 'work' },
   { id: 'contracts', path: 'contracts', group: 'work' },
+  { id: 'calendar', path: 'calendar', group: 'insights' },
   { id: 'reports', path: 'reports', group: 'insights' },
   { id: 'pipelines', path: 'pipelines', group: 'setup' },
 ]

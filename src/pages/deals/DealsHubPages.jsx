@@ -1,13 +1,14 @@
 import { useTranslation } from 'react-i18next'
-import { FileSignature, GitBranch } from 'lucide-react'
+import { CalendarDays, FileSignature, GitBranch } from 'lucide-react'
 import { ModulePageHeader } from '../../shared/components/module-pages'
 import { ReportsPage, useReportRange } from '../../shared/components/reports'
-import { DealContractsTable, DealCreateWizard, DealsTable, PipelineTemplatesPanel, useDealsHubReport } from '../../features/deals'
+import { DealContractsTable, DealCreateWizard, DealsHubCalendar, DealsHubList, PipelineTemplatesPanel, useDealsHubReport } from '../../features/deals'
 
-/** Thin route pages of the deals hub (`/deals`, `/deals/contracts`, `/deals/reports`, `/deals/pipelines`). */
+/** Thin route pages of the deals hub (`/deals`, `/deals/new`, `/deals/contracts`, `/deals/calendar`, `/deals/reports`, `/deals/pipelines`). */
 
+/** `/deals` — every deal as a table or a board, with quick info (products, team, last action). */
 export function DealsListPage() {
-  return <DealsTable />
+  return <DealsHubList />
 }
 
 /** `/deals/new` — guided creation (stages → first data → products → team → review). */
@@ -21,6 +22,17 @@ export function DealsContractsPage() {
     <div className="space-y-4">
       <ModulePageHeader icon={FileSignature} title={t('dealWorkspace.hub.pages.contracts')} description={t('dealWorkspace.hub.contractsDescription')} />
       <DealContractsTable />
+    </div>
+  )
+}
+
+/** `/deals/calendar` — every deal's dates, installments, tasks, calls and meetings. */
+export function DealsCalendarPage() {
+  const { t } = useTranslation()
+  return (
+    <div className="space-y-4">
+      <ModulePageHeader icon={CalendarDays} title={t('dealWorkspace.hub.pages.calendar')} description={t('dealWorkspace.hub.calendarDescription')} />
+      <DealsHubCalendar />
     </div>
   )
 }

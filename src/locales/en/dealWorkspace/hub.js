@@ -6,7 +6,9 @@ export default {
       "deals": "All deals",
       "contracts": "All contracts",
       "reports": "Reports & statistics",
-      "pipelines": "Pipelines"
+      "pipelines": "Pipelines",
+      "new": "New deal",
+      "calendar": "Calendar"
     },
     "dealsDescription": "Each deal has its own workspace with its leads, team, products and contracts. Click a deal to open it.",
     "contractsDescription": "Contracts of every deal.",
@@ -25,13 +27,30 @@ export default {
         "contractsOverTime": "Contracts per day",
         "byStatus": "Deals by status",
         "byType": "Deals by type",
-        "contractsByDeal": "Contracts per deal"
+        "contractsByDeal": "Contracts per deal",
+        "setup": "Deal setup"
       },
       "series": {
         "contracts": "Contracts",
         "deals": "Deals"
       },
-      "note": "Computed in the browser from {{count}} deals and their contracts."
+      "note": "Computed in the browser from {{count}} deals and their contracts.",
+      "setup": {
+        "ready": "Products and team",
+        "noProducts": "No products",
+        "noTeam": "No team"
+      }
+    },
+    "viewLabel": "Deals view",
+    "calendarDescription": "Every deal on one calendar: start and end dates, contract installments, and the tasks, calls and meetings of every deal.",
+    "board": {
+      "empty": "No deals",
+      "emptyDescription": "Create a deal to see it here.",
+      "groupBy": "Columns",
+      "groups": {
+        "status": "By status",
+        "type": "By type"
+      }
     }
   }
 }

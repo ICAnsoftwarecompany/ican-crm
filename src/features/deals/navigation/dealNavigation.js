@@ -1,4 +1,4 @@
-import { Handshake, LayoutList, BarChart3, FileSignature, GitBranch } from 'lucide-react'
+import { BarChart3, CalendarDays, FileSignature, GitBranch, Handshake, LayoutList, PlusCircle } from 'lucide-react'
 import { getDealStatusValue } from '../utils/dealDisplay'
 import { DEAL_WORKSPACE_GROUPS, DEAL_WORKSPACE_PAGES, DEALS_HUB_PAGES, getDealPagePath, getDealsHubPath } from '../constants/dealWorkspacePages'
 
@@ -31,7 +31,7 @@ export function getDealWorkspaceSidebarConfig({ dealId, deal, t }) {
   }
 }
 
-const HUB_ICONS = { deals: LayoutList, contracts: FileSignature, reports: BarChart3, pipelines: GitBranch }
+const HUB_ICONS = { deals: LayoutList, new: PlusCircle, contracts: FileSignature, calendar: CalendarDays, reports: BarChart3, pipelines: GitBranch }
 
 /** Sub-sidebar config of the deals hub (`/deals`, `/deals/contracts`, …). */
 export function getDealsHubSidebarConfig(t) {
