@@ -43,8 +43,7 @@ import { OutreachWorkflowPage } from '../../pages/outreach-campaigns/OutreachWor
 import { OutreachCalendarPage } from '../../pages/outreach-campaigns/OutreachCalendarPage'
 import { OutreachCreatePage } from '../../pages/outreach-campaigns/OutreachCreatePage'
 import { OpportunityCenterPage } from '../../pages/opportunities/OpportunityCenterPage'
-import { DealsHubPage } from '../../pages/deals/DealsHubPage'
-import { DealWorkspacePage } from '../../pages/deals/DealWorkspacePage'
+import { dealRoutes } from '../../pages/deals/dealRoutes'
 import { SocialMediaPage } from '../../pages/social-media/SocialMediaPage'
 import { SocialOverviewPage } from '../../pages/social-media/pages/SocialOverviewPage'
 import { SocialProfilesPage } from '../../pages/social-media/pages/SocialProfilesPage'
@@ -185,8 +184,7 @@ export const router = createBrowserRouter([
         ],
       },
       { path: 'opportunities', element: <OpportunityCenterPage /> },
-      { path: 'deals', element: <DealsHubPage /> },
-      { path: 'deals/:dealId', element: <DealWorkspacePage /> },
+      ...dealRoutes,
       {
         path: 'social-media',
         element: <SocialMediaPage />,

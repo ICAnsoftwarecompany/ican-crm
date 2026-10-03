@@ -26,7 +26,8 @@ export default {
     "opportunities": "الفرص البيعية",
     "outreachCampaigns": "حملات التواصل",
     "tasks": "المهام",
-    "notifications": "الإشعارات"
+    "notifications": "الإشعارات",
+    "deals": "الصفقات"
   },
   "dataSources": {
     "users": "المستخدمون",
@@ -162,7 +163,11 @@ export default {
     "customerEmail": "بريد العميل",
     "taskTitle": "عنوان المهمة",
     "taskStatus": "حالة المهمة",
-    "taskPriority": "أولوية المهمة"
+    "taskPriority": "أولوية المهمة",
+    "dealName": "اسم الصفقة",
+    "dealLeadName": "اسم عميل الصفقة",
+    "dealLeadStage": "مرحلة عميل الصفقة",
+    "contractNumber": "رقم العقد"
   },
   "leads": {
     "triggers": {
@@ -408,6 +413,39 @@ export default {
       "templates": "القوالب",
       "executions": "التنفيذات",
       "logs": "السجلات"
+    }
+  },
+  "deals": {
+    "triggers": {
+      "leadAdded": "إضافة عميل لصفقة",
+      "stageChanged": "تغيير مرحلة عميل في صفقة",
+      "leadWon": "كسب عميل في صفقة",
+      "leadLost": "خسارة عميل في صفقة",
+      "leadStale": "عميل في صفقة بلا نشاط لعدد أيام",
+      "contractCreated": "إنشاء عقد",
+      "installmentDue": "قسط يقترب موعده",
+      "installmentOverdue": "قسط متأخر"
+    },
+    "conditions": {
+      "estimated_value": "القيمة المتوقعة",
+      "source": "مصدر العميل",
+      "owner": "مسؤول العميل",
+      "lost_reason": "سبب الخسارة"
+    },
+    "actions": {
+      "assignOwner": "إسناد مسؤول لعميل الصفقة",
+      "changeStage": "نقل عميل الصفقة لمرحلة",
+      "createTask": "إنشاء مهمة للصفقة",
+      "scheduleCall": "جدولة مكالمة",
+      "notifyTeam": "إشعار فريق الصفقة"
+    },
+    "fields": {
+      "toStage": "المرحلة",
+      "days": "عدد الأيام",
+      "daysBefore": "أيام قبل الاستحقاق",
+      "title": "العنوان",
+      "dueInDays": "الاستحقاق بعد (أيام)",
+      "message": "الرسالة"
     }
   }
 }

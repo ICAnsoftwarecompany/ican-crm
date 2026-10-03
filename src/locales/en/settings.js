@@ -24,6 +24,12 @@ export default {
     "appearance": {
       "label": "Appearance",
       "description": "Colors, logo and interface look."
+    },
+    "deals": {
+      "pipelines": {
+        "label": "Deal pipelines",
+        "description": "Pipeline templates: the stages new deals copy when they are created."
+      }
     }
   },
   "communication": {

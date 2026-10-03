@@ -105,6 +105,7 @@ and set `colorIndex: -1` on the "Other" row so it gets the neutral color.
 | Conversations | `/conversations/reports` | `features/communication/reports/useConversationsReport` |
 | Team chat | `/team-chat/reports` | `features/communication/reports/useTeamChatReport` |
 | Products & services | `/products/reports` | `features/products/reports` (`useProductsReport`, `flattenCatalog`) |
+| Deals (hub + each deal, 2026-10-03) | `/deals/reports`, `/deals/:dealId/reports` | `features/deals/reports` (`useDealsHubReport`, `useDealReport`, `buildDealReport`) |
 | Playground | `/playground/reports` | fixture in `pages/playground/ReportsDemo.jsx` |
 
 **Not migrated yet** (they have their own analytics pages; move their charts here when they are next touched):
@@ -137,4 +138,5 @@ Social Media analytics, Campaign Center analytics. Settings has no Reports page 
 
 | When | Change |
 |---|---|
+| 2026-10-03 23:32 (Africa/Cairo) | Deals hub and deal workspace Reports pages (`features/deals/reports`); team workload and overview charts use `ReportChart`. |
 | 2026-10-01 01:49 (Africa/Cairo) | Engine created (page, charts, KPI, range, helpers, tests, playground); 8 validated chart tokens; Leads Center, Communication ×4 and Products reports pages. |

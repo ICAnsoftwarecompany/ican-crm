@@ -215,7 +215,7 @@ Generic stage board with optional swimlanes; stages come from data, never hardco
 
 - **Props:** `stages`, `items`, `itemStageKey` (default `stage_id`), `itemIdKey` (default `id`), `groupBy` (swimlanes), `renderCard`, `renderEmpty`, `onItemMove(itemId, fromStageId, toStageId)`, `onTerminalStageDrop({ itemId, fromStageId, stage, laneId })`, `isInteractive`, `dragMode` (`native` | `longPress`), `pressDelay` (ms, default 250), `columnWidth` (fixed px; default columns stretch `minmax(260px, 1fr)`), `columnBodyClassName` (e.g. max height + `overflow-y-auto` for per-column scroll).
 - **Stage shape:** `{ id, name|label, order, color, is_won_stage|is_terminal_won, is_lost_stage|is_terminal_lost }`. Dropping on a won/lost stage never calls `onItemMove`; the consumer must confirm via its own dialog and endpoint.
-- **Consumers:** `pages/deals/DealWorkspacePage.jsx` ([2-SALES.md → Deals](2-SALES.md#deals)), `features/service/cases/components/CasesBoard.jsx` (native mode), `features/customers/pipeline` Leads Center pipeline (long-press mode, fixed columns).
+- **Consumers:** `features/deals/components/pipeline/DealPipelineBoard.jsx` (long-press mode, team swimlanes; 2026-10-03 23:32 (Africa/Cairo)) ([2-SALES.md → Deals](2-SALES.md#deals)), `features/service/cases/components/CasesBoard.jsx` (native mode), `features/customers/pipeline` Leads Center pipeline (long-press mode, fixed columns).
 - **Related:** `shared/components/ui/TruncatedText` — clamps text to 1–3 lines and shows the full value in a hover tooltip only when it is actually cut.
 
 ### Sidebar and navigation
@@ -258,7 +258,7 @@ Generic stage board with optional swimlanes; stages come from data, never hardco
 - **Rule:** every area's **Reports & statistics** page is `ReportsPage` (header → range filter → KPI row → chart grid), and every chart in the app comes from this engine (`TimeSeriesChart`, `CategoryBarChart`, `ShareBar`, `StatTile`). Do not import Recharts directly in features/pages, and do not build pies/donuts or dual-axis charts. Also in `CLAUDE.md` (rule 12).
 - **Split of work:** the owning feature computes `{ kpis, charts }` from its data with the pure helpers (`filterByRange`, `filterPreviousRange`, `buildDailySeries`, `countBy`, `percentOf`, `percentChange`) in a tested model + a `use<Area>Report(range)` hook; the page only wires `useReportRange` + `ReportsPage`.
 - **Color:** 8 validated categorical tokens `--chart-1…8` (+ `--chart-other`, `--chart-grid`, `--chart-axis`) in `src/index.css`, light and dark; fixed order, never a 9th hue (tail folds into "Other"). Every chart has a legend (≥ 2 series) and a table view.
-- **Consumers:** Leads Center, Calls, Meetings, Conversations, Team chat, Products. Not migrated yet: Customer Hub reports, Outreach overview, Social analytics, Campaign analytics.
+- **Consumers:** Leads Center, Calls, Meetings, Conversations, Team chat, Products, Deals (hub + each deal; 2026-10-03 23:32 (Africa/Cairo)). Not migrated yet: Customer Hub reports, Outreach overview, Social analytics, Campaign analytics.
 
 ### Other shared UI
 

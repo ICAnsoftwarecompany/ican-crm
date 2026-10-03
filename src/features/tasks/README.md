@@ -101,6 +101,7 @@ return <TodoPanelView todo={todo} view={view} onViewChange={setView} onOpenTask=
 
 ## 5. How to extend
 
+- **Registered today (2026-10-03 23:32 (Africa/Cairo)):** `lead`, `customer`, `deal` (→ `/deals/:id/tasks`), `contract` (→ the contract in its deal; won-flow follow-ups).
 - **Link tasks to a new entity:** `registerTaskableType({ id: 'deal', model: 'App\\Models\\Deal', labelKey:
   'tasks.taskable.types.deal', getPath: (link) => `/deals/${link.id}` })` and add the label in `ar` + `en`. Form,
   chip, filter and payload pick it up; add `fromRecord` only if the type can be picked from Leads Center records.

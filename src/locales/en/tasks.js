@@ -67,7 +67,8 @@ export default {
     "types": {
       "lead": "Lead",
       "customer": "Customer",
-      "deal": "Deal"
+      "deal": "Deal",
+      "contract": "Contract"
     }
   },
   "todo": {

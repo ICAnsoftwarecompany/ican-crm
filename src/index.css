@@ -41,6 +41,7 @@
   --calendar-meetings:  #0EA5E9;
   --calendar-calls:     #F59E0B;
   --calendar-social:    #D946EF;
+  --calendar-deals:     #059669; /* deal installments (features/deals, 2026-10-03) */
 
   /* Service operations (features/service) — SLA state and case priority */
   /* Charts: 8 categorical slots in FIXED order (reference palette; validated with the dataviz
@@ -109,6 +110,7 @@
   --calendar-meetings:  #38BDF8;
   --calendar-calls:     #FBBF24;
   --calendar-social:    #E879F9;
+  --calendar-deals:     #34D399;
 
   --chart-1:            #3987e5;
   --chart-2:            #d95926;

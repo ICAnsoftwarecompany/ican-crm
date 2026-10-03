@@ -56,7 +56,7 @@ Proposal ──versions──> Version ──options──> Option ──items�
 2. **Assigned** — backend assignment rules (`/api/tenant/lead-assignment/*`), manual distribution (`leadsApi.distributeManually`) or deal bulk assign (`dealLeadsApi.bulkAssign`). Assigned user appears as `linked_by` in the drawer header.
 3. **Worked** — status changes and notes/follow-ups via `leadsApi.saveAction` (`action: 'create_activity'`, optional `new_status_id` + reason), calls/meetings (activities), tasks, conversations (WhatsApp/Messenger/Gmail), proposals.
 4. **Progressed** — status moves through tenant-defined statuses (status board, drawer, bulk action); in deals, the lead moves between pipeline stages.
-5. **Closed** — won/lost is represented by statuses (lead) or terminal stages (deal). Deal won/lost endpoints do not exist yet.
+5. **Closed** — won/lost is represented by statuses (lead); in a deal, by the deal lead `status` set through the won/lost endpoints (won creates a contract). *(2026-10-03 23:32 (Africa/Cairo))*
 6. **Deleted / restored** — `customersApi.deleteCustomers` → trash → `restoreDeletedCustomers` or `forceDeleteCustomers`.
 
 Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by the [customer activity timeline](#customer-activity-timeline).
@@ -196,14 +196,18 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 
 ## Deals
 
-**Status:** PARTIAL
+> **Documentation update:** 2026-10-03 23:32 (Africa/Cairo) — rebuilt as a hub + one workspace per deal. Full spec and backend contract (Arabic):
+> [deals/DEALS-WORKSPACE-SPEC.md](deals/DEALS-WORKSPACE-SPEC.md).
 
-- **What it does:** Deals Hub (`/deals`, `DataTable` list + create form) and Deal Workspace (`/deals/:dealId`) with sections `overview`, `board`, `team`, `products`, `contracts`, `analytics` (`?tab=`), in `kanban` or `table` view mode (stored in `deal-workspace:view-mode`). The board uses `PipelineBoard` with stages from the deal's pipeline template; toolbar opens the shared calendar, a `WorkflowLauncher` (`module: 'deals'`) and `AgentChat` in an `AppDrawer`.
-- **Key files:** `pages/deals/DealsHubPage.jsx`, `DealWorkspacePage.jsx`; `features/deals/api/` (`dealsApi`, `dealLeadsApi`, `dealResourcesApi`, `pipelineTemplatesApi`), `hooks/useDeals.js` (`useDeals`, `useDeal`, `useDealLeads`, `useDealResources`, `usePipelineTemplates`, `useDealMutations`), `utils/dealDisplay.js` (tested); locale `dealWorkspace.js`.
-- **Stages resolution:** `deal.pipeline_template.stages` → `deal.pipelineTemplate.stages` → template matching `pipeline_template_id` → `deal.stages`, sorted by `order`. `normalizeLead` unifies lead data found in `lead`, `customer` or the item itself.
-- **API:** deals `GET/POST /api/tenant/deals`, `GET/POST(update)/DELETE /api/tenant/deals/{id}`; deal leads `GET /api/tenant/deals/{dealId}/leads`, `POST .../leads/add-existing`, `POST .../leads/create`, `POST .../leads/bulk-assign`, `POST .../leads/{dealLeadId}/change-stage` (`{ stage_id }`), `POST .../leads/products/sync`, `GET .../leads/{dealLeadId}/productsc` (sic); resources `GET/POST .../{dealId}/team`, `DELETE .../team/{memberId}`, `GET/POST .../{dealId}/products`, `DELETE .../{dealId}/products/{productId}`; pipeline templates `GET/POST /api/pipeline-templates`, `GET/POST(update)/DELETE /api/pipeline-templates/{id}`. Create fields: `name, pipeline_template_id, type, status, start_date, end_date, target_revenue, target_leads`.
+**Status:** CURRENT on the backend Postman collection endpoints; planned endpoints wired but disabled (`DEAL_API_STATUS`). Not verified against a running backend.
+
+- **What it does:** Hub `/deals` (sub-sidebar: all deals, all contracts `/deals/contracts`, reports `/deals/reports`, pipeline templates `/deals/pipelines`) and one **workspace per deal** `/deals/:dealId/*` on the shared sub-sidebar with 14 pages: overview, pipeline (Kanban on `PipelineBoard` long-press **or** `DataTable`, `?view=`, filters in the URL, team swimlanes), contracts, team, meetings, calls, tasks & to-dos, products, reports, calendar, automation, assistant, AI setup, settings. Header on every page: status, dates, owner, leads/revenue progress, add leads, automation, assistant.
+- **Closing:** won (products + payment terms → one request; backend creates contract, plan, installments, follow-up tasks) and lost (reason). Drops on won/lost columns open the dialog; the card moves only after confirmation.
+- **Key files:** `features/deals/` (see [README](../src/features/deals/README.md)): `api/`, `constants/dealApiStatus.js`, `constants/dealWorkspacePages.js`, `hooks/` (`useDealWorkspace` context, `useDealLeads`, `useDealLinkedWork`…), `utils/` (tested), `reports/`, `navigation/`, `workflow/`, `components/`; routes `pages/deals/dealRoutes.jsx` (+ smoke test); locale `dealWorkspace.js` + `dealWorkspace/*.js`.
+- **API:** deals `GET/POST /api/tenant/deals`, `GET/POST(update)/DELETE /api/tenant/deals/{id}`; pipeline templates read/delete `/api/pipeline-templates[/{id}]`, create/update `/api/tenant/pipeline-templates[/{id}]` *(write path fixed 2026-10-03 23:32 (Africa/Cairo))*; team `GET .../{dealId}/team`, `POST .../team`, `DELETE .../team/{id}`; products `GET .../{dealId}/products`, `POST .../products`, `DELETE .../{dealId}/products/{productId}`; leads `GET .../{dealId}/leads`, `POST .../leads/add-existing|create|bulk-assign`, `POST .../leads/{id}/change-stage`, `POST .../leads/products/sync`, `GET .../leads/{id}/productsc` (sic); closing `POST .../leads/{id}/won`, `POST .../leads/{id}/lost`; contracts `GET /api/tenant/deals/contracts[/{id}]`; analytics `GET .../{dealId}/analytics/overview|owners`. Planned (spec §9): import, distribute, role update, installment payment, reopen/remove, funnel/sources, AI, workspace settings, activity log.
+- **Links to other modules:** tasks via the taskable registry (`deal`, `contract` added); calls/meetings via `ScheduleActivityDialog` (lead, or `App\Models\Deal` for team meetings); shared calendar events filtered by deal + installments; workflow module `deals`; settings section `deals.pipelines`.
 - **Used by:** sidebar Sales → Deals.
-- **Known issues:** no won/lost endpoints — terminal-stage drops only raise `onTerminalStageDrop`; contracts and analytics sections show "not available" (no API); `productsc` path typo kept literally until the backend fixes it; `AgentChat` has no `onAsk` backend so it never answers; calendar is not filtered by deal.
+- **Known issues:** leads fetched once (`per_page: 500`); tasks/activities = latest 200 filtered locally; reports computed in the browser; Deal (container) vs Service Spec `deals` (single sale) naming and payment-plan design are open decisions (spec §10).
 
 ## Opportunities
 

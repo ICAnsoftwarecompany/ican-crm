@@ -46,6 +46,24 @@ registerTaskableType({
   fromRecord: (record) => (record?.id === undefined || record?.id === null ? null : String(record.id)),
 })
 
+// Deals workspace (2026-10-03): tasks about a deal (internal work, to-dos of the deal team) and the won-flow
+// follow-up tasks the backend creates on a contract (`taskable_type = Contract`). See docs/deals.
+registerTaskableType({
+  id: 'deal',
+  model: 'App\\Models\\Deal',
+  labelKey: 'tasks.taskable.types.deal',
+  getPath: (link) => (link.id ? `/deals/${link.id}/tasks` : null),
+})
+registerTaskableType({
+  id: 'contract',
+  model: 'App\\Models\\Contract',
+  labelKey: 'tasks.taskable.types.contract',
+  getPath: (link, task) => {
+    const dealId = task?.taskable?.deal_id ?? task?.taskable?.deal?.id
+    return dealId ? `/deals/${dealId}/contracts?contract=${link.id}` : null
+  },
+})
+
 /** Registered types in registration order: `[{ id, model, labelKey }]`. */
 export function getTaskableTypes() {
   return [...registry.values()]

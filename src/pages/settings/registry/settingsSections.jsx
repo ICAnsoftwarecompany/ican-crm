@@ -1,4 +1,5 @@
 import { COMMUNICATION_MODULES } from '../../../features/communication'
+import { PipelineTemplatesPanel } from '../../../features/deals'
 import { DefinitionsSettingsPage } from '../pages/definitions/DefinitionsSettingsPage'
 import { UsersSettingsPage } from '../pages/users/UsersSettingsPage'
 import { IntegrationsSettingsPage } from '../pages/integrations/IntegrationsSettingsPage'
@@ -21,6 +22,8 @@ const SECTIONS = [
   { id: 'users', render: () => <UsersSettingsPage /> },
   { id: 'integrations', render: () => <IntegrationsSettingsPage /> },
   { id: 'appearance', render: () => <AppearanceSettingsPage /> },
+  // Deals (2026-10-03): pipeline templates, also shown in every deal's Settings page and on /deals/pipelines.
+  { id: 'deals.pipelines', render: () => <PipelineTemplatesPanel /> },
   ...COMMUNICATION_MODULES.map((module) => ({
     id: `communication.${module.id}`,
     render: () => <CommunicationSettingsSection moduleId={module.id} />,

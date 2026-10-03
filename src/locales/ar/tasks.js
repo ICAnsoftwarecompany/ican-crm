@@ -67,7 +67,8 @@ export default {
     "types": {
       "lead": "عميل محتمل",
       "customer": "عميل",
-      "deal": "صفقة"
+      "deal": "صفقة",
+      "contract": "عقد"
     }
   },
   "todo": {

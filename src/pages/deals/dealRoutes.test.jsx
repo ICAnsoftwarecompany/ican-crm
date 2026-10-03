@@ -1,0 +1,133 @@
+// @vitest-environment jsdom
+// Smoke test of the whole deals area (2026-10-03): every hub and workspace page renders against a fake
+// backend that answers like the Postman "Deals Workspace" collection; the won / lost dialogs open from the board.
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { createMemoryRouter, RouterProvider } from 'react-router-dom'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+
+window.matchMedia = window.matchMedia || (() => ({
+  matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {},
+}))
+window.ResizeObserver = window.ResizeObserver || class { observe() {} unobserve() {} disconnect() {} }
+window.scrollTo = window.scrollTo || (() => {})
+
+const stages = [
+  { id: 10, name: 'New', order: 1, color: '#3498db' },
+  { id: 11, name: 'Negotiation', order: 2, color: '#f39c12' },
+  { id: 12, name: 'Won', order: 3, is_won_stage: true, color: '#2ecc71' },
+  { id: 13, name: 'Lost', order: 4, is_lost_stage: true, color: '#e74c3c' },
+]
+const deal = { id: 1, name: 'Q4 Sales Deal', status: 'active', type: 'sales', start_date: '2026-10-01', end_date: '2026-12-31', target_revenue: 500000, target_leads: 100, pipeline_template_id: 5, stages }
+const leads = [
+  { id: 101, lead_id: 15, stage_id: 10, owner_id: 2, status: 'open', estimated_value: 1000, lead: { name: 'Ahmed Ali', phone: '01000000001' }, created_at: '2026-10-02' },
+  { id: 102, lead_id: 16, stage_id: 11, status: 'open', lead: { name: 'Sara Hassan', phone: '01000000002' }, created_at: '2026-10-02' },
+  { id: 103, lead_id: 17, stage_id: 12, status: 'won', won_at: '2026-10-02', estimated_value: 590, lead: { name: 'Mona Adel' } },
+]
+const contract = {
+  id: 15, contract_number: 'CT-8F3A21BC', deal_id: 1, deal_lead_id: 103, lead_id: 17, total_amount: '590.00', down_payment: '100.00', payment_type: 'installment', status: 'active', signed_at: '2026-10-02T10:00:00Z',
+  payment_plan: { id: 7, plan_type: 'installment', number_of_installments: 1, frequency: 'monthly', installments: [{ installment_number: 1, due_date: '2026-11-01', amount: '490.00', status: 'pending' }] },
+}
+
+const routes = [
+  [/\/api\/tenant\/deals\/contracts\/15$/, { data: contract }],
+  [/\/api\/tenant\/deals\/contracts$/, { data: [contract] }],
+  [/\/api\/tenant\/deals\/1\/leads$/, { data: leads }],
+  [/\/api\/tenant\/deals\/1\/team$/, { data: [{ id: 1, user_id: 2, role: 'manager', user: { id: 2, name: 'Karim' } }, { id: 2, team_id: 3, role: 'sales_rep', team: { id: 3, name: 'Team A', users: [{ id: 4, name: 'Nour' }] } }] }],
+  [/\/api\/tenant\/deals\/1\/products$/, { data: [{ id: 1, product_id: 9, product: { id: 9, name: 'Premium package', price: 150 } }] }],
+  [/\/api\/tenant\/deals\/1\/analytics\/\w+$/, { data: {} }],
+  [/\/api\/tenant\/deals\/leads\/\d+\/productsc$/, { data: [] }],
+  [/\/api\/tenant\/deals\/1$/, { data: deal }],
+  [/\/api\/tenant\/deals$/, { data: [deal] }],
+  [/\/api\/pipeline-templates$/, { data: [{ id: 5, name: 'Sales Pipeline', type: 'sales', stages }] }],
+]
+
+const get = vi.fn(async (url) => {
+  const match = routes.find(([pattern]) => pattern.test(url))
+  return { data: match ? match[1] : { data: [] } }
+})
+const post = vi.fn(async (url) => ({ data: url.endsWith('/won') ? { data: contract } : {} }))
+vi.mock('../../services/httpClient', () => ({
+  default: { get: (...args) => get(...args), post: (...args) => post(...args), put: vi.fn(async () => ({ data: {} })), patch: vi.fn(async () => ({ data: {} })), delete: vi.fn(async () => ({ data: {} })) },
+}))
+
+// Keys as text (like the other component tests), plus the i18n bits the shared UI reads.
+const i18n = { language: 'en', dir: () => 'ltr', changeLanguage: async () => {}, on() {}, off() {} }
+const t = (key) => key
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({ t, i18n }),
+  Trans: ({ children }) => children,
+  initReactI18next: { type: '3rdParty', init() {} },
+}))
+
+const { dealRoutes } = await import('./dealRoutes')
+
+function renderAt(path) {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  const router = createMemoryRouter(dealRoutes, { initialEntries: [path] })
+  render(<QueryClientProvider client={client}><RouterProvider router={router} /></QueryClientProvider>)
+  return router
+}
+
+afterEach(() => cleanup())
+
+describe('deals area', () => {
+  it('lists deals in the hub', async () => {
+    renderAt('/deals')
+    // DataTable rows are virtualized (no layout in jsdom): check the page and the request instead.
+    expect(await screen.findByText('dealWorkspace.createDeal')).toBeTruthy()
+    await waitFor(() => expect(get.mock.calls.some(([url]) => url === '/api/tenant/deals')).toBe(true))
+  })
+
+  it.each(['contracts', 'reports', 'pipelines'])('renders the hub page /deals/%s', async (page) => {
+    renderAt(`/deals/${page}`)
+    expect((await screen.findAllByText(`dealWorkspace.hub.pages.${page}`)).length).toBeGreaterThan(0)
+  })
+
+  it.each([
+    ['', 'dealWorkspace.overview.byStage'],
+    ['pipeline', 'Ahmed Ali'],
+    ['pipeline?view=table', 'dealWorkspace.viewToggle.table'],
+    ['contracts', 'dealWorkspace.pageDescriptions.contracts'],
+    ['contracts?contract=15', 'CT-8F3A21BC'],
+    ['team', 'Team A'],
+    ['meetings', 'dealWorkspace.activities.meeting.withCustomer'],
+    ['calls', 'dealWorkspace.activities.call.withCustomer'],
+    ['tasks', 'dealWorkspace.tasks.addTodo'],
+    ['products', 'Premium package'],
+    ['reports', 'dealWorkspace.reports.charts.byStage'],
+    ['calendar', 'dealWorkspace.pageDescriptions.calendar'],
+    ['assistant', 'dealWorkspace.assistant.hintsTitle'],
+    ['ai', 'dealWorkspace.pages.ai'],
+    ['settings', 'dealWorkspace.settings.sections.general'],
+  ])('renders the workspace page /deals/1/%s', async (path, text) => {
+    renderAt(`/deals/1${path ? `/${path}` : ''}`)
+    expect((await screen.findAllByText('Q4 Sales Deal')).length).toBeGreaterThan(0)
+    expect((await screen.findAllByText(text, {}, { timeout: 4000 })).length).toBeGreaterThan(0)
+  })
+
+  it('wins a lead from its drawer with the exact Postman body', async () => {
+    renderAt('/deals/1/pipeline')
+    fireEvent.click(await screen.findByText('Ahmed Ali'))
+    const wonButtons = await screen.findAllByText('dealWorkspace.leads.actions.won')
+    fireEvent.click(wonButtons[wonButtons.length - 1])
+    await waitFor(() => expect(screen.getByText('dealWorkspace.closing.won.title')).toBeTruthy())
+
+    // One product line (offered from the deal's products), cash → exactly the Postman body.
+    const productPickers = screen.getAllByLabelText('dealWorkspace.closing.lines.product')
+    fireEvent.change(productPickers[productPickers.length - 1], { target: { value: '9' } })
+    fireEvent.click(screen.getByText('dealWorkspace.closing.won.submit'))
+    await waitFor(() => expect(post.mock.calls.some(([url]) => url === '/api/tenant/deals/leads/101/won')).toBe(true))
+    const [, body] = post.mock.calls.find(([url]) => url === '/api/tenant/deals/leads/101/won')
+    expect(body).toEqual({ items: [{ product_id: 9, quantity: 1, unit_price: 150, discount: 0 }], payment_type: 'cash', down_payment: 150 })
+  })
+
+  it('closes a lead as lost with a reason', async () => {
+    renderAt('/deals/1/pipeline')
+    fireEvent.click(await screen.findByText('Sara Hassan'))
+    const lostButtons = await screen.findAllByText('dealWorkspace.leads.actions.lost')
+    fireEvent.click(lostButtons[lostButtons.length - 1])
+    fireEvent.click(await screen.findByText('dealWorkspace.closing.lost.submit'))
+    await waitFor(() => expect(post).toHaveBeenCalledWith('/api/tenant/deals/leads/102/lost', { reason: 'price' }))
+  })
+})

@@ -1,15 +1,30 @@
+import core from './dealWorkspace/core.js'
+import pipeline from './dealWorkspace/pipeline.js'
+import closing from './dealWorkspace/closing.js'
+import team from './dealWorkspace/team.js'
+import products from './dealWorkspace/products.js'
+import contracts from './dealWorkspace/contracts.js'
+import collaboration from './dealWorkspace/collaboration.js'
+import insights from './dealWorkspace/insights.js'
+import settings from './dealWorkspace/settings.js'
+import hub from './dealWorkspace/hub.js'
+import options from './dealWorkspace/options.js'
+
+/**
+ * Deals hub + Deal Workspace copy — key root `dealWorkspace.*` (rebuilt 2026-10-03).
+ * Split by concern under ./dealWorkspace/ (that folder is not a locale module; only this file is
+ * registered in index.js). Each part's top-level keys merge into `dealWorkspace`.
+ */
 export default {
-  title: 'Deals Workspace',
-  createDeal: 'Create deal',
-  empty: 'No deals yet.',
-  loading: 'Loading deal workspace...',
-  back: 'Back to deals',
-  unavailable: 'This section needs a backend API contract before it can display real data.',
-  tabs: { overview: 'Overview', board: 'Board', team: 'Team', products: 'Products', contracts: 'Contracts', analytics: 'Analytics' },
-  viewToggle: { kanban: 'Board', table: 'Table' },
-  actions: { calendar: 'Calendar', workflow: 'Workflow', ai: 'Deal assistant' },
-  fields: { name: 'Deal name', description: 'Description', pipeline: 'Pipeline', type: 'Type', status: 'Status', owner: 'Owner', team: 'Team', leads: 'Leads', revenue: 'Target revenue', startDate: 'Start date', endDate: 'End date', phone: 'Phone', stage: 'Stage', source: 'Source' },
-  statuses: { draft: 'Draft', active: 'Active', paused: 'Paused', completed: 'Completed', cancelled: 'Cancelled' },
-  form: { title: 'Create deal', save: 'Create', cancel: 'Cancel', required: 'Deal name and pipeline are required.' },
-  board: { empty: 'No leads in this stage.' },
+  ...core,
+  ...pipeline,
+  ...closing,
+  ...team,
+  ...products,
+  ...contracts,
+  ...collaboration,
+  ...insights,
+  ...settings,
+  ...hub,
+  ...options,
 }

@@ -24,6 +24,12 @@ export default {
     "appearance": {
       "label": "المظهر",
       "description": "الألوان والشعار وشكل الواجهة."
+    },
+    "deals": {
+      "pipelines": {
+        "label": "مراحل الصفقات",
+        "description": "قوالب المراحل: المراحل اللي بتتنسخ لكل صفقة جديدة وقت إنشائها."
+      }
     }
   },
   "communication": {

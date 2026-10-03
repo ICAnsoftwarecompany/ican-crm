@@ -1,3 +1,6 @@
+export { contractsApi } from './contractsApi'
+export { dealAiApi } from './dealAiApi'
+export { dealAnalyticsApi } from './dealAnalyticsApi'
 export { dealLeadsApi } from './dealLeadsApi'
 export { dealResourcesApi } from './dealResourcesApi'
 export { dealsApi } from './dealsApi'

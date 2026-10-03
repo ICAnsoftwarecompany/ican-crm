@@ -1,0 +1,78 @@
+# features/deals — Deals hub and Deal Workspace
+
+> **Documentation update:** 2026-10-03 23:32 (Africa/Cairo) — feature rebuilt: one workspace per deal (14 pages on the
+> shared sub-sidebar), won / lost / contracts, team split, calls & meetings, tasks & to-dos, calendar, reports,
+> automation, assistant, settings; API aligned with the backend Postman collection; live/planned capability registry.
+
+**Status:** CURRENT on the endpoints of the backend Postman collection "Deals Workspace"; planned endpoints are wired
+but disabled (see `constants/dealApiStatus.js`). Not verified against a running backend.
+
+**Full spec (Arabic, with the backend contract):** [docs/deals/DEALS-WORKSPACE-SPEC.md](../../../docs/deals/DEALS-WORKSPACE-SPEC.md)
+· summary in [docs/2-SALES.md → Deals](../../../docs/2-SALES.md#deals) · routes in [pages/deals](../../pages/deals/README.md).
+
+## 1. What it owns
+
+- **Deal** = a work container (sales drive, campaign, project) with stages copied from a pipeline template, a team
+  (users or whole teams with roles), products, and **deal leads** (a CRM lead placed on a stage, `status` open/won/lost).
+- **Won flow**: one request creates the contract, payment plan, installments and follow-up tasks on the backend.
+- Hub `/deals` (all deals, all contracts, reports, pipeline templates) and one workspace per deal `/deals/:dealId/*`.
+
+## 2. Folder map
+
+| Path | Owns |
+|---|---|
+| `api/` | `dealsApi`, `dealLeadsApi` (leads, stage, products, won, lost, import*, distribute*, remove*, reopen*), `dealResourcesApi` (team, products), `pipelineTemplatesApi` (reads `/api/pipeline-templates`, writes `/api/tenant/pipeline-templates`), `contractsApi`, `dealAnalyticsApi`, `dealAiApi`*. `*` = planned. |
+| `constants/dealApiStatus.js` | **`DEAL_API_STATUS`**: `live` (in the collection) or `planned` per capability; `isDealApiLive()`. Flip a value when the backend ships — nothing else changes. |
+| `constants/dealOptions.js` | Enum values (types, statuses, roles, lost reasons, payment types, frequencies…). Labels at `dealWorkspace.options.*`. |
+| `constants/dealQueryKeys.js` | `dealKeys` (root `['deals']`). |
+| `constants/dealWorkspacePages.js` | **Page registry** of the workspace (`DEAL_WORKSPACE_PAGES`: id, path, icon, group) and the hub (`DEALS_HUB_PAGES`); `getDealPagePath`, `getDealsHubPath`; `DEAL_AI_CAPABILITIES`. |
+| `hooks/useDeals.js` | `useDeals`, `useDeal`, `usePipelineTemplates`, `useDealMutations`, `usePipelineTemplateMutations`. |
+| `hooks/useDealLeads.js` | `useDealLeads(dealId)` (normalized, one cached list per deal), `useDealLeadProducts`, `useDealLeadMutations(dealId)` (optimistic `changeStage` with rollback; won invalidates contracts + tasks). |
+| `hooks/useDealResources.js` | `useDealTeam`, `useDealProducts`, `useDealResourceMutations`, legacy `useDealResources`. |
+| `hooks/useDealContracts.js` · `useDealAnalytics.js` | Contracts list/detail (normalized); live analytics only. |
+| `hooks/useDealWorkspace.jsx` | `DealWorkspaceProvider` (deal + stages + leads loaded once in the layout) and `useDealWorkspace()`. |
+| `hooks/useDealLinkedWork.js` | `useDealLinkIndex`, `useDealActivities(type)`, `useDealTasks()` — tasks/calls/meetings that belong to the deal (linked to the deal, its contracts or its leads). |
+| `hooks/useDealCalendarEvents.js` | Shared calendar events of the deal + installments + deal start/end. |
+| `utils/` (all tested) | `dealStages` (resolve/sort stages, won/lost), `dealLeads` (normalize, status, filters, stale, summary, id index), `dealMoney` (line totals, won payload + validation, installment preview, money format, progress), `dealTeam` (members, payload user XOR team, people, workload, team lanes), `dealContracts` (normalize, overdue, paid/remaining), `dealLinks` (task/activity → deal link), `dealInsights` (rule-based hints, target pace), `dealCalendar` (installment + milestone events, sources), `dealDisplay`. |
+| `reports/` | `dealReportModel` (tested), `useDealReport(range)`, `useDealsHubReport(range)` for the shared `ReportsPage`. |
+| `navigation/dealNavigation.js` | Sub-sidebar configs (workspace + hub). Tested. |
+| `workflow/dealWorkflowDefinition.js` | Workflow-engine module `deals` (8 triggers, 4 conditions, 5 actions, all `backendSupport: false`). Imported by `workflow-engine/config/registerBuiltinModules.js`. |
+| `components/` | `layout/` (hub + workspace layouts, header), `pipeline/` (view, toolbar, board, table, card, URL state, lead dialogs hook), `leads/` (add existing / new / import, bulk assign, lead drawer + products), `closing/` (won, lost, line items, installment fields), `team/`, `products/`, `contracts/`, `activities/`, `tasks/`, `calendar/`, `overview/`, `ai/`, `settings/`, `hub/` (deals table, create dialog, pipeline templates + stages editor), `common/` (badges, planned notice, progress, field, person select, `useDealPeople`, `useProductOptions`). |
+
+## 3. Public API (`index.js`)
+
+APIs, constants, hooks, utils listed above, `useDealReport`, `useDealsHubReport`, and the components route pages compose:
+`DealsHubLayout`, `DealWorkspaceLayout`, `DealOverview`, `DealPipelineView`, `DealTeamPanel`, `DealProductsPanel`,
+`DealContractsTable`, `ContractDrawer`, `DealActivitiesPanel`, `DealTasksPanel`, `DealCalendar`, `DealAssistant`,
+`DealGeneralSettings`, `DealStagesSettings`, `DealPreferencesSettings`, `DealDangerZone`, `DealsTable`, `CreateDealDialog`,
+`PipelineTemplatesPanel`, `WonDialog`, `LostDialog`, `DealStatusBadge`, `LeadStatusBadge`, `PlannedNotice`.
+
+## 4. Rules
+
+- Moving a card changes the stage only. Won / lost are separate endpoints; a drop on a won/lost column opens the dialog
+  and the card moves only after it is confirmed (`useLeadDialogs`).
+- Only `open` leads can be won/lost or moved. The status, not the stage, says whether a lead is closed.
+- The frontend never creates contracts or installments and never sends totals; previews are labelled as estimates.
+- Planned endpoints: disabled control + `PlannedNotice`; never a fake success.
+- Shared engines only: `SubSidebarLayout`, `PipelineBoard` (long-press), `DataTable`, `ReportsPage`/`ReportChart`,
+  shared `Calendar`, `WorkflowModuleWorkspace`, `AiSetupPage`, `ModuleSettingsPage`, `EntityTasksPanel`,
+  `ScheduleActivityDialog`, `ActivityPreviewDrawer`, `TaskDrawer`.
+- Lists that feed a form reset (`useDealLeadProducts().items`, `useDeals`, templates) are memoized — an unmemoized list
+  there caused an infinite render loop (caught by the smoke test).
+
+## 5. How to extend
+
+- **New workspace page:** entry in `DEAL_WORKSPACE_PAGES` + route in `pages/deals/dealRoutes.jsx` + page in
+  `DealWorkspacePages.jsx` + `dealWorkspace.pages.<id>` / `pageDescriptions.<id>` (ar + en). The sub-sidebar updates itself.
+- **Backend ships a planned endpoint:** set its key to `live` in `DEAL_API_STATUS`; check the request body in the API module
+  against the backend; remove the line from §9 of the spec.
+- **Server-side reports:** switch `useDealReport` to `useDealAnalytics` once the overview shape is confirmed.
+- **New lost reason / payment type:** add it to `dealOptions.js` + `dealWorkspace.options.*` (ar + en). Custom per-tenant
+  reasons need `dealSettings` (spec §9.8).
+
+## 6. Known gaps
+
+- Not run against a real backend or seen in a browser (no login available); see spec §12.
+- Leads fetched once with `per_page: 500`; tasks/activities = latest 200 of the tenant filtered locally.
+- Reports computed in the browser; analytics funnel/sources not in the backend collection.
+- Deal vs Service Spec `deals` naming conflict and payment-plan design are open decisions (spec §10).

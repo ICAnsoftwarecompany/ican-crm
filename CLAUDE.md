@@ -65,7 +65,7 @@ Legacy/transitional (don't copy these patterns, don't add to them):
 | Ad campaigns (Meta ads, ad sets, lead forms) | `features/campaigns`, `features/meta-integrations`, `pages/campaigns` | [Ad campaigns](docs/3-FEATURES.md#ad-campaigns-and-meta-integrations) |
 | Outreach campaigns (messages to CRM contacts) | `features/outreach-campaigns`, `pages/outreach-campaigns` | [Outreach](docs/3-FEATURES.md#outreach-campaigns) |
 | Social media | `features/social-media`, `pages/social-media` | [Social media](docs/3-FEATURES.md#social-media) |
-| Deals / opportunities | `features/deals`, `features/opportunities` | [Deals](docs/2-SALES.md#deals), [Opportunities](docs/2-SALES.md#opportunities) |
+| Deals (`/deals` hub, `/deals/:dealId/*` workspace per deal) / opportunities | `features/deals` (registry `constants/dealWorkspacePages.js`, live/planned API flags `constants/dealApiStatus.js`), `pages/deals`, `features/opportunities` | [Deals](docs/2-SALES.md#deals), [Spec + backend contract](docs/deals/DEALS-WORKSPACE-SPEC.md), [README](src/features/deals/README.md), [Opportunities](docs/2-SALES.md#opportunities) |
 | Proposals | `features/proposals`, `pages/customers/pages/proposals` | [Proposals](docs/2-SALES.md#proposals) |
 | Tasks (`/tasks`) & To-Do (`/todo`, header To-Do panel; To-Do = task `type: todo` + period, own short form) | `features/tasks`, `pages/tasks`, `pages/todo` | [Tasks](docs/3-FEATURES.md#tasks), [Spec + backend contract](docs/tasks/TASKS-TODO-SPEC.md), [README](src/features/tasks/README.md) |
 | Automation | `features/workflow-engine` + `shared/components/visual-flow` | [Workflow engine](docs/3-FEATURES.md#workflow-engine-and-automation), [Visual Flow](docs/1-ARCHITECTURE.md#visual-flow) |

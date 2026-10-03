@@ -1,6 +1,6 @@
 # ICAN CRM — Documentation index
 
-> **Documentation update:** 2026-10-02 03:00 (Africa/Cairo) — To-Do page `/todo` separated from Tasks (`pages/todo` README). 2026-10-02 02:40 (Africa/Cairo) — Tasks F2 (record tasks panel, quick actions, picker). 2026-10-02 01:35 (Africa/Cairo) — Tasks & To-Do spec (`tasks/TASKS-TODO-SPEC.md`) and `features/tasks` README. 2026-10-01 23:55 (Africa/Cairo) — login showcase slider and Arabic login guide. 2026-10-01 23:30 (Africa/Cairo) — login page and sign-in methods (`features/auth` README). 2026-10-01 02:35 (Africa/Cairo) — Meta campaign wizard READMEs added. 2026-10-01 01:49 (Africa/Cairo) — reports & charts engine added. 2026-10-01 00:55 (Africa/Cairo) — My Work added. Earlier: 2026-10-01 00:25 (Africa/Cairo) — Communication hub, sub-sidebar, module pages, AI setup, README index and change log added.
+> **Documentation update:** 2026-10-03 23:32 (Africa/Cairo) — Deals rebuilt: hub + workspace per deal, spec and backend contract (`deals/DEALS-WORKSPACE-SPEC.md`), READMEs `features/deals`, `pages/deals`. 2026-10-02 03:00 (Africa/Cairo) — To-Do page `/todo` separated from Tasks (`pages/todo` README). 2026-10-02 02:40 (Africa/Cairo) — Tasks F2 (record tasks panel, quick actions, picker). 2026-10-02 01:35 (Africa/Cairo) — Tasks & To-Do spec (`tasks/TASKS-TODO-SPEC.md`) and `features/tasks` README. 2026-10-01 23:55 (Africa/Cairo) — login showcase slider and Arabic login guide. 2026-10-01 23:30 (Africa/Cairo) — login page and sign-in methods (`features/auth` README). 2026-10-01 02:35 (Africa/Cairo) — Meta campaign wizard READMEs added. 2026-10-01 01:49 (Africa/Cairo) — reports & charts engine added. 2026-10-01 00:55 (Africa/Cairo) — My Work added. Earlier: 2026-10-01 00:25 (Africa/Cairo) — Communication hub, sub-sidebar, module pages, AI setup, README index and change log added.
 
 Start here. Every doc in this folder, what it covers, and its sections. Rules for agents and contributors are in
 [../CLAUDE.md](../CLAUDE.md). **If a doc and the code disagree, the code wins.** When you change a feature, update its
@@ -15,6 +15,7 @@ doc in the same change.
 | — | [customer-service/SERVICE-MASTER-SPEC.md](customer-service/SERVICE-MASTER-SPEC.md) | Backend contract and business rules for Customer Service (Arabic) |
 | — | [customer-service/SERVICE-BRIEF.md](customer-service/SERVICE-BRIEF.md) | The decision brief behind the spec (Arabic) |
 | — | [tasks/TASKS-TODO-SPEC.md](tasks/TASKS-TODO-SPEC.md) | Tasks and To-Do: concepts, UI, rules, frontend code and the phased backend contract (Arabic) |
+| — | [deals/DEALS-WORKSPACE-SPEC.md](deals/DEALS-WORKSPACE-SPEC.md) | Deals hub and Deal Workspace: concepts, lifecycle, every page, rules, code map, API used (Postman), backend contract for the planned endpoints, backend notes (Arabic) |
 | — | `Proposal Template Builder.pdf` | Reference design for the proposals builder |
 
 ## 1-ARCHITECTURE.md — Architecture & rules
@@ -37,7 +38,7 @@ doc in the same change.
 - [Leads page and lead assignment](2-SALES.md#leads-page-and-lead-assignment) · [Leads Center pages](2-SALES.md#leads-center-pages)
 - [Customer details drawer](2-SALES.md#customer-details-drawer) · [Bulk actions](2-SALES.md#bulk-actions) · [Customer activity timeline](2-SALES.md#customer-activity-timeline)
 - [Teams and users](2-SALES.md#teams-and-users) · [Activities, calls and meetings](2-SALES.md#activities-calls-and-meetings)
-- [Deals](2-SALES.md#deals) · [Opportunities](2-SALES.md#opportunities) · [Proposals](2-SALES.md#proposals)
+- [Deals](2-SALES.md#deals) (full spec: [deals/DEALS-WORKSPACE-SPEC.md](deals/DEALS-WORKSPACE-SPEC.md)) · [Opportunities](2-SALES.md#opportunities) · [Proposals](2-SALES.md#proposals)
 - [Sales dashboard](2-SALES.md#sales-dashboard) · [Sales domain known issues](2-SALES.md#sales-domain-known-issues)
 
 ## 3-FEATURES.md — Features
@@ -90,6 +91,7 @@ doc in the same change.
 | Tasks & To-Do — taskable registry, To-Do periods and form, payload builder, To-Do panel, header panels, how to link a new entity | [features/tasks](../src/features/tasks/README.md) · To-Do route [pages/todo](../src/pages/todo/README.md) · spec [docs/tasks/TASKS-TODO-SPEC.md](tasks/TASKS-TODO-SPEC.md) |
 | My Work (شغلي) — sections, rules, registry, how to add a section | [features/my-work](../src/features/my-work/README.md) · route [pages/my-work](../src/pages/my-work/README.md) |
 | Meta campaign wizard (create campaign: stages, drafts, geo targeting, data sources, publish) | [features/campaigns/meta-wizard](../src/features/campaigns/meta-wizard/README.md) · full Arabic guide [pages/campaigns/pages/CampaignCreatePage/README_AR.md](../src/pages/campaigns/pages/CampaignCreatePage/README_AR.md) |
+| Deals — hub, workspace per deal (pipeline, won/lost, contracts, team split, calls & meetings, tasks, calendar, reports, automation, AI, settings), live/planned API flags | [features/deals](../src/features/deals/README.md) · routes [pages/deals](../src/pages/deals/README.md) · spec [docs/deals/DEALS-WORKSPACE-SPEC.md](deals/DEALS-WORKSPACE-SPEC.md) |
 | Communication hub (conversations, calls, meetings, team chat) | [features/communication](../src/features/communication/README.md) · routes [pages/communication](../src/pages/communication/README.md) |
 | Settings sections registry | [pages/settings/registry](../src/pages/settings/registry/README.md) · [pages/settings/pages/communication](../src/pages/settings/pages/communication/README.md) |
 
@@ -108,6 +110,7 @@ Newest first. Every docs change also carries a `YYYY-MM-DD HH:mm (Africa/Cairo)`
 
 | When | What changed | Where |
 |---|---|---|
+| 2026-10-03 23:32 (Africa/Cairo) | Deals rebuilt: `/deals` hub with sub-sidebar (all deals, all contracts, reports, pipeline templates) and one workspace per deal `/deals/:dealId/*` (overview, pipeline as board or table with team swimlanes, contracts, team, meetings, calls, tasks & to-dos, products, reports, calendar, automation, assistant, AI setup, settings); won/lost dialogs and contracts on the backend Postman endpoints; pipeline-template create/update path fixed to `/api/tenant/pipeline-templates`; planned endpoints gated by `DEAL_API_STATUS`; tasks taskable types `deal` and `contract`; workflow module `deals`; settings section `deals.pipelines`; `--calendar-deals` token; smoke test for every deal page | new `deals/DEALS-WORKSPACE-SPEC.md` · 2-SALES (Deals, Lead lifecycle) · 1-ARCHITECTURE (Pipeline Board, Reports and charts) · 3-FEATURES (AI agent) · this index · `CLAUDE.md` · READMEs `features/deals` (new), `pages/deals` (new), `features/tasks`, `shared/components/reports`, `shared/components/sub-sidebar` |
 | 2026-10-02 03:35 (Africa/Cairo) | Tasks UX pass: quick-add line on `/tasks` and in the header panel, list grouped by due date with tick-to-complete and richer rows, filters on one line, duplicated summary tiles and fake board counts removed, header Tasks panel in one column, task form reordered (kind / when / priority chips, assignee search with me by default, extras folded) | `tasks/TASKS-TODO-SPEC.md` (§3) · 3-FEATURES (Tasks) · README `features/tasks` |
 | 2026-10-02 03:25 (Africa/Cairo) | Fix: To-Dos/tasks from the API did not show — `due_date` comes as an ISO date cast and was joined with `due_time` into an invalid date; now date part only, `00:00:00` = no time, assignees read from `assignments[]` (tasks + My Work); undated To-Dos get a "No date" group | `tasks/TASKS-TODO-SPEC.md` (§4) · READMEs `features/tasks`, `features/my-work` |
 | 2026-10-02 03:00 (Africa/Cairo) | To-Do separated from Tasks: new page `/todo` (Workspace → My to-do list), header To-Do button + side panel, short To-Do form (title + when; priority/notes; customer + reminder under more options), task drawer edits To-Dos with it; `/tasks`, header Tasks panel and My Work "My tasks due" exclude To-Dos; My Work gets a separate To-Do section; `/tasks?smart=todo` redirects; tasks page header no longer squeezes its title | `tasks/TASKS-TODO-SPEC.md` (§1, §3, §8) · 3-FEATURES (Tasks, My Work) · 1-ARCHITECTURE (Sidebar and navigation) · this index · `CLAUDE.md` · READMEs `features/tasks`, `features/my-work`, new `pages/todo` |

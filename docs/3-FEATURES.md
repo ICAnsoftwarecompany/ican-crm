@@ -223,7 +223,7 @@ Since 2026-10-02 02:40 (Africa/Cairo) the thread header shows a **follow-up task
 - **What it does:** assistant UI components and an AI permission model.
 - **Key files:** `features/ai-agent/components/AgentChat.jsx` (chat box; answers only through an `onAsk` prop), `AgentSuggestions.jsx`, `AIThinkingIndicator.jsx`, `AutomationLog.jsx`; `services/agentPermissions.js` (`getAiPermission`, `AI_PERMISSION_LEVELS`, tested). Styling uses `--ai-*` tokens.
 - **API:** none.
-- **Used by:** `AgentChat` in the deals workspace drawer (rendered without `onAsk`).
+- **Used by:** nothing since 2026-10-03 23:32 (Africa/Cairo) — the deals workspace now has its own `DealAssistant` (`features/deals/components/ai`, planned `POST /deals/{id}/ai/ask`).
 - **Known issues:** no AI backend contract, so the chat never answers; `AgentSuggestions` and `AutomationLog` have no consumers; hardcoded Arabic copy in `AgentChat`.
 - **AI setup pages** *(added 2026-10-01 00:25 (Africa/Cairo))*: any module's "AI setup" page uses the shared `shared/components/ai-setup` (`AiSetupPage`, presentation only, per-browser draft without `onSave`) — first used by the Communication hub (`/calls/ai`, `/meetings/ai`, `/conversations/ai`, `/team-chat/ai`). A dedicated, larger **`features/ai`** domain is planned (models/providers, prompts, knowledge, quotas, settings API, agents); it will plug into `AiSetupPage` through `initialValues`/`onSave`, and `features/ai-agent` + `features/service/ai` should align with it.
 

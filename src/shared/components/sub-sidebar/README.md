@@ -69,7 +69,8 @@ Leads Center (`pages/customers/layout/CustomersLayout.jsx`), Products (`pages/pr
 Settings (`pages/settings/layout/SettingsLayout.jsx`), Communication hub (`features/communication/components/CommunicationModuleLayout.jsx`),
 Outreach (`features/outreach-campaigns/components/OutreachSidebar.jsx`), Social Media
 (`pages/social-media/components/SocialMediaSubSidebar.jsx`), Campaign Center (`pages/campaigns/components/CampaignSubSidebar.jsx`),
-Customer Hub settings (`features/service/settings/components/SettingsWorkspace.jsx`).
+Customer Hub settings (`features/service/settings/components/SettingsWorkspace.jsx`), Deals hub + deal workspace
+(`features/deals/components/layout/`, keys `deals-hub-sidebar-collapsed`, `deal-workspace-sidebar-collapsed`; 2026-10-03 23:32 (Africa/Cairo)).
 
 Replaced and deleted: `CustomersSidebar.jsx`, `CustomersMobileSidebar.jsx`, `ProductsSidebar.jsx`,
 `ProductsMobileSidebar.jsx`, `SettingsSidebar.jsx`, `SettingsMobileSidebar.jsx`,

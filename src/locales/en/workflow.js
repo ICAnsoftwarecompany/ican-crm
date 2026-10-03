@@ -26,7 +26,8 @@ export default {
     "opportunities": "Opportunities",
     "outreachCampaigns": "Outreach Campaigns",
     "tasks": "Tasks",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "deals": "Deals"
   },
   "dataSources": {
     "users": "Users",
@@ -162,7 +163,11 @@ export default {
     "customerEmail": "Customer Email",
     "taskTitle": "Task Title",
     "taskStatus": "Task Status",
-    "taskPriority": "Task Priority"
+    "taskPriority": "Task Priority",
+    "dealName": "Deal Name",
+    "dealLeadName": "Deal Lead Name",
+    "dealLeadStage": "Deal Lead Stage",
+    "contractNumber": "Contract Number"
   },
   "leads": {
     "triggers": {
@@ -408,6 +413,39 @@ export default {
       "templates": "Templates",
       "executions": "Executions",
       "logs": "Logs"
+    }
+  },
+  "deals": {
+    "triggers": {
+      "leadAdded": "Lead added to a deal",
+      "stageChanged": "Deal lead stage changed",
+      "leadWon": "Deal lead won",
+      "leadLost": "Deal lead lost",
+      "leadStale": "Deal lead has no activity for N days",
+      "contractCreated": "Contract created",
+      "installmentDue": "Installment due soon",
+      "installmentOverdue": "Installment overdue"
+    },
+    "conditions": {
+      "estimated_value": "Estimated value",
+      "source": "Lead source",
+      "owner": "Lead owner",
+      "lost_reason": "Lost reason"
+    },
+    "actions": {
+      "assignOwner": "Assign deal lead owner",
+      "changeStage": "Move deal lead to stage",
+      "createTask": "Create deal task",
+      "scheduleCall": "Schedule a call",
+      "notifyTeam": "Notify the deal team"
+    },
+    "fields": {
+      "toStage": "Stage",
+      "days": "Days",
+      "daysBefore": "Days before due date",
+      "title": "Title",
+      "dueInDays": "Due in (days)",
+      "message": "Message"
     }
   }
 }
