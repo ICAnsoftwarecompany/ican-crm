@@ -9,6 +9,9 @@ import { extractMessage } from '../../../../shared/utils/apiResponse'
 import { useDealProducts, useDealResourceMutations } from '../../hooks/useDealResources'
 import { useDealWorkspace } from '../../hooks/useDealWorkspace'
 import { formatMoney } from '../../utils/dealMoney'
+import { DealProductModeCard } from '../common/DealProductModeCard'
+import { ProductUnitBadge } from '../common/ProductUnitBadge'
+import { useProductOptions } from '../common/useProductOptions'
 import { AttachProductsDialog } from './AttachProductsDialog'
 
 /** Products this deal sells (offered first in the won dialog and the lead products editor). */
@@ -17,6 +20,7 @@ export function DealProductsPanel() {
   const { dealId } = useDealWorkspace()
   const query = useDealProducts(dealId)
   const { removeProduct } = useDealResourceMutations(dealId)
+  const { mode, products: modeProducts } = useProductOptions(dealId)
   const [attaching, setAttaching] = useState(false)
   const [removing, setRemoving] = useState(null)
 
@@ -37,6 +41,7 @@ export function DealProductsPanel() {
         <p className="text-sm text-[var(--text-muted)]">{t('dealWorkspace.products.description')}</p>
         <Button size="sm" onClick={() => setAttaching(true)}><Plus size={15} />{t('dealWorkspace.products.attachTitle')}</Button>
       </div>
+      {!query.isLoading && <DealProductModeCard mode={mode} products={modeProducts} />}
       <ResourceState
         isLoading={query.isLoading}
         error={query.error}
@@ -54,6 +59,7 @@ export function DealProductsPanel() {
                 <div className="min-w-0">
                   <p className="truncate text-sm font-bold text-[var(--text)]">{product.name || `#${product.id}`}</p>
                   {product.price !== null && product.price !== undefined && <p className="text-xs text-[var(--text-muted)]" dir="ltr">{formatMoney(product.price, i18n.language)}</p>}
+                  <div className="mt-1"><ProductUnitBadge product={product} /></div>
                 </div>
               </div>
               <button type="button" onClick={() => setRemoving(product)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-red-600" aria-label={t('dealWorkspace.products.remove')} title={t('dealWorkspace.products.remove')}>

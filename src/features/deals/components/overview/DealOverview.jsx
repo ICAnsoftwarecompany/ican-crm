@@ -6,7 +6,9 @@ import { useDealContracts } from '../../hooks/useDealContracts'
 import { useDealWorkspace } from '../../hooks/useDealWorkspace'
 import { buildDealInsights, buildTargetPace } from '../../utils/dealInsights'
 import { formatMoney } from '../../utils/dealMoney'
+import { DealProductModeCard } from '../common/DealProductModeCard'
 import { ProgressBar } from '../common/ProgressBar'
+import { useProductOptions } from '../common/useProductOptions'
 import { DealInsightsList } from './DealInsightsList'
 import { DealUpcomingWork } from './DealUpcomingWork'
 
@@ -15,6 +17,7 @@ export function DealOverview() {
   const { t, i18n } = useTranslation()
   const { dealId, deal, leads, stages, summary } = useDealWorkspace()
   const contractsQuery = useDealContracts({ deal_id: dealId })
+  const productMode = useProductOptions(dealId)
   const insights = useMemo(() => buildDealInsights({ deal, leads, contracts: contractsQuery.contracts }), [contractsQuery.contracts, deal, leads])
   const pace = useMemo(() => buildTargetPace(deal, leads), [deal, leads])
   const revenue = contractsQuery.contracts.reduce((sum, contract) => sum + contract.total, 0)
@@ -36,6 +39,7 @@ export function DealOverview() {
   return (
     <div className="space-y-4">
       <KpiRow items={kpis} />
+      {!productMode.isLoading && <DealProductModeCard mode={productMode.mode} products={productMode.products} compact />}
       {pace && (
         <section className="space-y-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">
           <h2 className="text-sm font-bold text-[var(--text)]">{t('dealWorkspace.overview.paceTitle')}</h2>

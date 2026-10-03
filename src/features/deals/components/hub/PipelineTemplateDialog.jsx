@@ -6,7 +6,8 @@ import { extractMessage } from '../../../../shared/utils/apiResponse'
 import { DEAL_TYPES } from '../../constants/dealOptions'
 import { usePipelineTemplateMutations } from '../../hooks/useDeals'
 import { FieldLabel, dealInputClass } from '../common/FieldLabel'
-import { NEW_STAGE, StagesEditor, buildTemplatePayload } from './StagesEditor'
+import { buildTemplatePayload, validateStages } from '../../utils/pipelineTemplate'
+import { NEW_STAGE, StagesEditor } from './StagesEditor'
 
 const DEFAULT_STAGES = [
   { ...NEW_STAGE, name: '', color: '#3B82F6' },
@@ -39,7 +40,8 @@ export function PipelineTemplateDialog({ template, open, onClose }) {
   const submit = async () => {
     const payload = buildTemplatePayload({ name, type, status: true, stages })
     if (!payload.name) return setError(t('dealWorkspace.pipelines.nameRequired'))
-    if (!payload.stages.length) return setError(t('dealWorkspace.pipelines.stagesRequired'))
+    const stageErrors = validateStages(stages)
+    if (stageErrors.length) return setError(stageErrors.map((key) => t(`dealWorkspace.pipelines.errors.${key}`)).join(' '))
     try {
       if (template?.id) await update.mutateAsync({ id: template.id, payload })
       else await create.mutateAsync(payload)

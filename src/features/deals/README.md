@@ -3,6 +3,8 @@
 > **Documentation update:** 2026-10-03 23:32 (Africa/Cairo) — feature rebuilt: one workspace per deal (14 pages on the
 > shared sub-sidebar), won / lost / contracts, team split, calls & meetings, tasks & to-dos, calendar, reports,
 > automation, assistant, settings; API aligned with the backend Postman collection; live/planned capability registry.
+> **2026-10-04 00:17 (Africa/Cairo)** — creation wizard (`components/wizard/`, `useDealCreateWizard`, `utils/dealWizard`) and work template by
+> products (`utils/dealProductMode`, `DealProductModeCard`, `ProductUnitBadge`, `ProductPicker`, `LineItemsEditor` rules).
 
 **Status:** CURRENT on the endpoints of the backend Postman collection "Deals Workspace"; planned endpoints are wired
 but disabled (see `constants/dealApiStatus.js`). Not verified against a running backend.
@@ -34,17 +36,20 @@ but disabled (see `constants/dealApiStatus.js`). Not verified against a running 
 | `hooks/useDealLinkedWork.js` | `useDealLinkIndex`, `useDealActivities(type)`, `useDealTasks()` — tasks/calls/meetings that belong to the deal (linked to the deal, its contracts or its leads). |
 | `hooks/useDealCalendarEvents.js` | Shared calendar events of the deal + installments + deal start/end. |
 | `utils/` (all tested) | `dealStages` (resolve/sort stages, won/lost), `dealLeads` (normalize, status, filters, stale, summary, id index), `dealMoney` (line totals, won payload + validation, installment preview, money format, progress), `dealTeam` (members, payload user XOR team, people, workload, team lanes), `dealContracts` (normalize, overdue, paid/remaining), `dealLinks` (task/activity → deal link), `dealInsights` (rule-based hints, target pace), `dealCalendar` (installment + milestone events, sources), `dealDisplay`. |
+| `utils/dealProductMode.js` · `catalog.js` · `pipelineTemplate.js` · `dealWizard.js` *(2026-10-04 00:17 (Africa/Cairo))* | Product unit mode per product (`unique`/`units`/`service`) and per deal (`open`/`single_unit`/`single_product`/`multi_product`), `getLineRules`, `isUniqueUnitTaken`; full catalog rows; template payload + `validateStages`; wizard state, per-step validation, exact Postman request bodies (`buildWizardRequests`). All tested. |
+| `hooks/useDealCreateWizard.js` · `useCatalogProducts.js` | Wizard draft in localStorage (`deals:create-wizard:draft`, incl. created ids → resumable, no duplicate deal), ordered submit with per-phase progress; active catalog products with full data. |
+| `components/wizard/` | `DealCreateWizard` (page `/deals/new`), `WizardStepper`, `PipelineStep`, `BasicsStep`, `ProductsStep`, `TeamStep`, `ReviewStep`. |
 | `reports/` | `dealReportModel` (tested), `useDealReport(range)`, `useDealsHubReport(range)` for the shared `ReportsPage`. |
 | `navigation/dealNavigation.js` | Sub-sidebar configs (workspace + hub). Tested. |
 | `workflow/dealWorkflowDefinition.js` | Workflow-engine module `deals` (8 triggers, 4 conditions, 5 actions, all `backendSupport: false`). Imported by `workflow-engine/config/registerBuiltinModules.js`. |
-| `components/` | `layout/` (hub + workspace layouts, header), `pipeline/` (view, toolbar, board, table, card, URL state, lead dialogs hook), `leads/` (add existing / new / import, bulk assign, lead drawer + products), `closing/` (won, lost, line items, installment fields), `team/`, `products/`, `contracts/`, `activities/`, `tasks/`, `calendar/`, `overview/`, `ai/`, `settings/`, `hub/` (deals table, create dialog, pipeline templates + stages editor), `common/` (badges, planned notice, progress, field, person select, `useDealPeople`, `useProductOptions`). |
+| `components/` | `layout/` (hub + workspace layouts, header), `pipeline/` (view, toolbar, board, table, card, URL state, lead dialogs hook), `leads/` (add existing / new / import, bulk assign, lead drawer + products), `closing/` (won, lost, line items, installment fields), `team/`, `products/`, `contracts/`, `activities/`, `tasks/`, `calendar/`, `overview/`, `ai/`, `settings/`, `hub/` (deals table, pipeline templates + stages editor), `common/` (badges, planned notice, progress, field, person select, `useDealPeople`, `useProductOptions` → `{options, products, mode, rules}`, `DealProductModeCard`, `ProductUnitBadge`, `ProductPicker`). |
 
 ## 3. Public API (`index.js`)
 
 APIs, constants, hooks, utils listed above, `useDealReport`, `useDealsHubReport`, and the components route pages compose:
 `DealsHubLayout`, `DealWorkspaceLayout`, `DealOverview`, `DealPipelineView`, `DealTeamPanel`, `DealProductsPanel`,
 `DealContractsTable`, `ContractDrawer`, `DealActivitiesPanel`, `DealTasksPanel`, `DealCalendar`, `DealAssistant`,
-`DealGeneralSettings`, `DealStagesSettings`, `DealPreferencesSettings`, `DealDangerZone`, `DealsTable`, `CreateDealDialog`,
+`DealGeneralSettings`, `DealStagesSettings`, `DealPreferencesSettings`, `DealDangerZone`, `DealsTable`, `DealCreateWizard`, `DealProductModeCard`,
 `PipelineTemplatesPanel`, `WonDialog`, `LostDialog`, `DealStatusBadge`, `LeadStatusBadge`, `PlannedNotice`.
 
 ## 4. Rules
@@ -57,6 +62,8 @@ APIs, constants, hooks, utils listed above, `useDealReport`, `useDealsHubReport`
 - Shared engines only: `SubSidebarLayout`, `PipelineBoard` (long-press), `DataTable`, `ReportsPage`/`ReportChart`,
   shared `Calendar`, `WorkflowModuleWorkspace`, `AiSetupPage`, `ModuleSettingsPage`, `EntityTasksPanel`,
   `ScheduleActivityDialog`, `ActivityPreviewDrawer`, `TaskDrawer`.
+- Line items follow the deal's product mode (`getLineRules`): one product → locked; one unique piece → quantity 1 and the
+  deal is won once (`isUniqueUnitTaken`). UI guard only — the backend must enforce it (spec §9.10).
 - Lists that feed a form reset (`useDealLeadProducts().items`, `useDeals`, templates) are memoized — an unmemoized list
   there caused an infinite render loop (caught by the smoke test).
 
@@ -72,6 +79,8 @@ APIs, constants, hooks, utils listed above, `useDealReport`, `useDealsHubReport`
 
 ## 6. Known gaps
 
+- Product unit mode relies on `unit_mode` / `available_units`, not yet in the backend; until then stock fields only.
+- Deal creation is 2–N requests (no atomic endpoint); a failed step is resumed from the saved draft.
 - Not run against a real backend or seen in a browser (no login available); see spec §12.
 - Leads fetched once with `per_page: 500`; tasks/activities = latest 200 of the tenant filtered locally.
 - Reports computed in the browser; analytics funnel/sources not in the backend collection.

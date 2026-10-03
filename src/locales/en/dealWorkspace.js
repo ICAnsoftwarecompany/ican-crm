@@ -9,6 +9,7 @@ import insights from './dealWorkspace/insights.js'
 import settings from './dealWorkspace/settings.js'
 import hub from './dealWorkspace/hub.js'
 import options from './dealWorkspace/options.js'
+import wizard from './dealWorkspace/wizard.js'
 
 /**
  * Deals hub + Deal Workspace copy — key root `dealWorkspace.*` (rebuilt 2026-10-03).
@@ -27,4 +28,5 @@ export default {
   ...settings,
   ...hub,
   ...options,
+  ...wizard,
 }

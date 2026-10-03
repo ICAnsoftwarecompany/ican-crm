@@ -5,11 +5,13 @@ import { FormDialog } from '../../../../shared/components/overlays/FormDialog'
 import { ModuleNotice } from '../../../../shared/components/module-pages'
 import { extractMessage } from '../../../../shared/utils/apiResponse'
 import { PAYMENT_TYPES } from '../../constants/dealOptions'
-import { useDealLeadMutations, useDealLeadProducts } from '../../hooks/useDealLeads'
+import { useDealLeadMutations, useDealLeadProducts, useDealLeads } from '../../hooks/useDealLeads'
 import { unwrapEntity } from '../../hooks/dealResponse'
 import { normalizeContract } from '../../utils/dealContracts'
+import { isUniqueUnitTaken } from '../../utils/dealProductMode'
 import { buildWonPayload, isInstallmentPayment, itemsTotal, previewInstallments, validateWonForm } from '../../utils/dealMoney'
 import { FieldLabel, dealInputClass } from '../common/FieldLabel'
+import { DealProductModeCard } from '../common/DealProductModeCard'
 import { useProductOptions } from '../common/useProductOptions'
 import { InstallmentFields } from './InstallmentFields'
 import { LineItemsEditor, toEditorLines } from './LineItemsEditor'
@@ -36,15 +38,18 @@ export function WonDialog({ dealId, lead, open, onClose, onWon }) {
   const [errors, setErrors] = useState({})
   const [serverError, setServerError] = useState('')
   const productsQuery = useDealLeadProducts(lead?.id, { enabled: open })
-  const { options } = useProductOptions(dealId)
+  const { options, rules, mode, products } = useProductOptions(dealId)
+  const { leads } = useDealLeads(dealId)
+  // A deal that sells one physical piece (a villa, one specific car) can be won only once.
+  const taken = isUniqueUnitTaken(mode, leads)
   const { markWon } = useDealLeadMutations(dealId)
 
   useEffect(() => {
     if (!open) return
-    setForm({ ...initialForm(), items: toEditorLines(productsQuery.items) })
+    setForm({ ...initialForm(), items: toEditorLines(productsQuery.items, rules) })
     setErrors({})
     setServerError('')
-  }, [open, productsQuery.items])
+  }, [open, productsQuery.items, rules])
 
   const total = itemsTotal(form.items)
   const setField = (key, value) => setForm((current) => ({ ...current, [key]: value }))
@@ -61,7 +66,7 @@ export function WonDialog({ dealId, lead, open, onClose, onWon }) {
   const submit = async () => {
     const check = validateWonForm(form)
     setErrors(check.errors)
-    if (!check.ok || !lead) return
+    if (!check.ok || !lead || taken) return
     setServerError('')
     try {
       const response = await markWon.mutateAsync({ dealLeadId: lead.id, payload: buildWonPayload(form) })
@@ -85,15 +90,18 @@ export function WonDialog({ dealId, lead, open, onClose, onWon }) {
       onSubmit={submit}
       size="lg"
       loading={markWon.isPending}
+      submitDisabled={taken}
       title={t('dealWorkspace.closing.won.title')}
       description={lead ? t('dealWorkspace.closing.won.description', { name: lead.name || `#${lead.id}` }) : ''}
       submitText={t('dealWorkspace.closing.won.submit')}
     >
       <div className="space-y-4">
         {serverError && <ModuleNotice tone="warning">{serverError}</ModuleNotice>}
+        {taken && <ModuleNotice tone="warning">{t('dealWorkspace.productMode.uniqueTaken')}</ModuleNotice>}
+        {mode !== 'open' && <DealProductModeCard mode={mode} products={products} compact />}
         <section className="space-y-2">
           <h3 className="text-sm font-bold text-[var(--text)]">{t('dealWorkspace.closing.won.products')}</h3>
-          <LineItemsEditor items={form.items} onChange={(items) => setField('items', items)} products={options} />
+          <LineItemsEditor items={form.items} onChange={(items) => setField('items', items)} products={options} rules={rules} />
           {err('items') && <p className="text-xs text-red-600 dark:text-red-400">{err('items')}</p>}
         </section>
         <div className="grid gap-3 sm:grid-cols-2">

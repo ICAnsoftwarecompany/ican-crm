@@ -77,6 +77,13 @@ export default {
       "0": "New",
       "1": "Won",
       "2": "Lost"
+    },
+    "errors": {
+      "noStages": "Add at least one named stage.",
+      "noOpenStage": "Add at least one working stage (not won or lost).",
+      "manyWon": "Only one won stage.",
+      "manyLost": "Only one lost stage.",
+      "duplicateNames": "Two stages have the same name."
     }
   }
 }

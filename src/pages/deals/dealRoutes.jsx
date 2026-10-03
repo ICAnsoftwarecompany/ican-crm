@@ -1,5 +1,5 @@
 import { DealWorkspaceLayout, DealsHubLayout } from '../../features/deals'
-import { DealsContractsPage, DealsListPage, DealsPipelinesPage, DealsReportsPage } from './DealsHubPages'
+import { DealsContractsPage, DealsCreatePage, DealsListPage, DealsPipelinesPage, DealsReportsPage } from './DealsHubPages'
 import {
   DealAiSetupPage,
   DealAssistantPage,
@@ -19,7 +19,7 @@ import {
 
 /**
  * Route objects of the deals area (2026-10-03), spread into the MainLayout children in app/router.
- * `/deals` keeps its URL; static hub paths (`contracts`, `reports`, `pipelines`) rank above `:dealId`.
+ * `/deals` keeps its URL; static hub paths (`new`, `contracts`, `reports`, `pipelines`) rank above `:dealId`.
  * Workspace child paths must match features/deals DEAL_WORKSPACE_PAGES[].path.
  */
 export const dealRoutes = [
@@ -28,6 +28,7 @@ export const dealRoutes = [
     element: <DealsHubLayout />,
     children: [
       { index: true, element: <DealsListPage /> },
+      { path: 'new', element: <DealsCreatePage /> },
       { path: 'contracts', element: <DealsContractsPage /> },
       { path: 'reports', element: <DealsReportsPage /> },
       { path: 'pipelines', element: <DealsPipelinesPage /> },

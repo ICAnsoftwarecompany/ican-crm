@@ -46,19 +46,3 @@ export function StagesEditor({ stages, onChange }) {
   )
 }
 
-/** Request body of create / "update + sync" (Postman): stages ordered 1..n; existing stages keep their id. */
-export function buildTemplatePayload({ name, type, status, stages }) {
-  return {
-    name: String(name || '').trim(),
-    type: type || 'sales',
-    status: status !== false,
-    stages: stages.filter((stage) => String(stage.name || '').trim()).map((stage, index) => ({
-      ...(stage.id ? { id: stage.id } : {}),
-      name: String(stage.name).trim(),
-      order: index + 1,
-      is_won_stage: Boolean(stage.is_won_stage),
-      is_lost_stage: Boolean(stage.is_lost_stage),
-      color: stage.color || '#3B82F6',
-    })),
-  }
-}

@@ -12,14 +12,14 @@ import { useProductOptions } from '../common/useProductOptions'
 export function DealLeadProductsSection({ dealId, lead }) {
   const { t } = useTranslation()
   const query = useDealLeadProducts(lead.id)
-  const { options } = useProductOptions(dealId)
+  const { options, rules } = useProductOptions(dealId)
   const { syncProducts } = useDealLeadMutations(dealId)
   const [items, setItems] = useState(() => toEditorLines([]))
   const closed = lead.status !== 'open'
 
   useEffect(() => {
-    setItems(toEditorLines(query.items))
-  }, [query.items])
+    setItems(toEditorLines(query.items, rules))
+  }, [query.items, rules])
 
   const save = async () => {
     try {
@@ -39,7 +39,7 @@ export function DealLeadProductsSection({ dealId, lead }) {
       </div>
       {query.isLoading
         ? <p className="text-xs text-[var(--text-muted)]">{t('dealWorkspace.common.loading')}</p>
-        : <LineItemsEditor items={items} onChange={setItems} products={options} disabled={closed} />}
+        : <LineItemsEditor items={items} onChange={setItems} products={options} rules={rules} disabled={closed} />}
     </section>
   )
 }

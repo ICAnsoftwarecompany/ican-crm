@@ -2,12 +2,17 @@ import { useTranslation } from 'react-i18next'
 import { FileSignature, GitBranch } from 'lucide-react'
 import { ModulePageHeader } from '../../shared/components/module-pages'
 import { ReportsPage, useReportRange } from '../../shared/components/reports'
-import { DealContractsTable, DealsTable, PipelineTemplatesPanel, useDealsHubReport } from '../../features/deals'
+import { DealContractsTable, DealCreateWizard, DealsTable, PipelineTemplatesPanel, useDealsHubReport } from '../../features/deals'
 
 /** Thin route pages of the deals hub (`/deals`, `/deals/contracts`, `/deals/reports`, `/deals/pipelines`). */
 
 export function DealsListPage() {
   return <DealsTable />
+}
+
+/** `/deals/new` — guided creation (stages → first data → products → team → review). */
+export function DealsCreatePage() {
+  return <DealCreateWizard />
 }
 
 export function DealsContractsPage() {

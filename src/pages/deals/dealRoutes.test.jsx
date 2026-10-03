@@ -39,6 +39,8 @@ const routes = [
   [/\/api\/tenant\/deals\/leads\/\d+\/productsc$/, { data: [] }],
   [/\/api\/tenant\/deals\/1$/, { data: deal }],
   [/\/api\/tenant\/deals$/, { data: [deal] }],
+  [/\/api\/tenant\/product\/data$/, { data: [{ id: 30, name: 'Villas', products: [{ id: 31, name: 'Villa 12', price: 9000000, category_id: 30, unit_mode: 'unique' }, { id: 32, name: 'Sedan X', price: 800000, category_id: 30, available_units: 5 }] }] }],
+  [/\/api\/tenant\/users\/get$/, { data: [{ id: 2, name: 'Karim' }, { id: 4, name: 'Nour' }] }],
   [/\/api\/pipeline-templates$/, { data: [{ id: 5, name: 'Sales Pipeline', type: 'sales', stages }] }],
 ]
 
@@ -46,7 +48,12 @@ const get = vi.fn(async (url) => {
   const match = routes.find(([pattern]) => pattern.test(url))
   return { data: match ? match[1] : { data: [] } }
 })
-const post = vi.fn(async (url) => ({ data: url.endsWith('/won') ? { data: contract } : {} }))
+const post = vi.fn(async (url) => {
+  if (url.endsWith('/won')) return { data: { data: contract } }
+  if (url === '/api/tenant/pipeline-templates') return { data: { data: { id: 77 } } }
+  if (url === '/api/tenant/deals') return { data: { data: { id: 88 } } }
+  return { data: {} }
+})
 vi.mock('../../services/httpClient', () => ({
   default: { get: (...args) => get(...args), post: (...args) => post(...args), put: vi.fn(async () => ({ data: {} })), patch: vi.fn(async () => ({ data: {} })), delete: vi.fn(async () => ({ data: {} })) },
 }))
@@ -69,7 +76,7 @@ function renderAt(path) {
   return router
 }
 
-afterEach(() => cleanup())
+afterEach(() => { cleanup(); window.localStorage.clear(); post.mockClear() })
 
 describe('deals area', () => {
   it('lists deals in the hub', async () => {
@@ -113,9 +120,9 @@ describe('deals area', () => {
     fireEvent.click(wonButtons[wonButtons.length - 1])
     await waitFor(() => expect(screen.getByText('dealWorkspace.closing.won.title')).toBeTruthy())
 
-    // One product line (offered from the deal's products), cash → exactly the Postman body.
-    const productPickers = screen.getAllByLabelText('dealWorkspace.closing.lines.product')
-    fireEvent.change(productPickers[productPickers.length - 1], { target: { value: '9' } })
+    // The deal sells one product → the line is pre-filled and locked (no picker); cash → exactly the Postman body.
+    await waitFor(() => expect(screen.getAllByText('Premium package').length).toBeGreaterThan(0))
+    expect(screen.queryAllByRole('combobox', { name: 'dealWorkspace.closing.lines.product' })).toHaveLength(0)
     fireEvent.click(screen.getByText('dealWorkspace.closing.won.submit'))
     await waitFor(() => expect(post.mock.calls.some(([url]) => url === '/api/tenant/deals/leads/101/won')).toBe(true))
     const [, body] = post.mock.calls.find(([url]) => url === '/api/tenant/deals/leads/101/won')
@@ -129,5 +136,41 @@ describe('deals area', () => {
     fireEvent.click(lostButtons[lostButtons.length - 1])
     fireEvent.click(await screen.findByText('dealWorkspace.closing.lost.submit'))
     await waitFor(() => expect(post).toHaveBeenCalledWith('/api/tenant/deals/leads/102/lost', { reason: 'price' }))
+  })
+
+  it('creates a deal through the wizard: stages → data → products → team, in that request order', async () => {
+    const router = renderAt('/deals/new')
+    const next = () => fireEvent.click(screen.getByText('dealWorkspace.wizard.next'))
+
+    // 1. Stages: define a new pipeline (default stages pre-filled).
+    fireEvent.click(await screen.findByText('dealWorkspace.wizard.pipeline.new.title'))
+    fireEvent.change(screen.getByLabelText('dealWorkspace.pipelines.name'), { target: { value: 'Villas pipeline' } })
+    next()
+    // 2. First data: the name is required.
+    next()
+    expect(await screen.findByText('dealWorkspace.wizard.errors.nameRequired')).toBeTruthy()
+    fireEvent.change(screen.getByLabelText(/^dealWorkspace.fields.name/), { target: { value: 'Villa 12 sale' } })
+    next()
+    // 3. Products: one unique piece → the "one piece" template.
+    fireEvent.click(await screen.findByText('Villa 12'))
+    expect((await screen.findAllByText(/^dealWorkspace.productMode.deal.single_unit.title/)).length).toBeGreaterThan(0)
+    next()
+    // 4. Team: one user as sales rep.
+    await waitFor(() => expect(screen.getAllByRole('option', { name: 'Nour' }).length).toBeGreaterThan(0))
+    fireEvent.change(screen.getByLabelText('dealWorkspace.team.add.kinds.user'), { target: { value: '4' } })
+    fireEvent.click(screen.getByText('dealWorkspace.team.add.submit'))
+    next()
+    // 5. Review → create.
+    fireEvent.click(await screen.findByText('dealWorkspace.wizard.create'))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/deals/88'))
+
+    const urls = post.mock.calls.map(([url]) => url)
+    expect(urls).toEqual(['/api/tenant/pipeline-templates', '/api/tenant/deals', '/api/tenant/deals/team', '/api/tenant/deals/products'])
+    const bodies = post.mock.calls.map(([, body]) => body)
+    expect(bodies[0]).toMatchObject({ name: 'Villas pipeline', type: 'sales', status: true })
+    expect(bodies[0].stages.filter((stage) => stage.is_won_stage)).toHaveLength(1)
+    expect(bodies[1]).toMatchObject({ pipeline_template_id: 77, name: 'Villa 12 sale' })
+    expect(bodies[2]).toEqual({ deal_id: 88, user_id: 4, role: 'sales_rep' })
+    expect(bodies[3]).toEqual({ deal_id: 88, product_ids: [31] })
   })
 })

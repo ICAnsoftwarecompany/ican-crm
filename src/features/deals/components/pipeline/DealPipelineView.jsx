@@ -6,6 +6,8 @@ import { useDealWorkspace } from '../../hooks/useDealWorkspace'
 import { filterDealLeads, isDealLeadStale } from '../../utils/dealLeads'
 import { buildTeamLanes } from '../../utils/dealTeam'
 import { useDealPeople } from '../common/useDealPeople'
+import { useProductOptions } from '../common/useProductOptions'
+import { isUniqueUnitTaken } from '../../utils/dealProductMode'
 import { AddLeadsDialog } from '../leads/AddLeadsDialog'
 import { DealLeadsTable } from './DealLeadsTable'
 import { DealPipelineBoard } from './DealPipelineBoard'
@@ -20,6 +22,8 @@ export function DealPipelineView() {
   const state = useDealPipelineState()
   const { people, members } = useDealPeople(dealId)
   const { actions, dialogs } = useLeadDialogs({ dealId, leads, stages, people })
+  const productMode = useProductOptions(dealId)
+  const unitSold = isUniqueUnitTaken(productMode.mode, leads)
 
   const ownerNames = useMemo(() => new Map(people.map((person) => [String(person.id), person.name])), [people])
   const visible = useMemo(() => {
@@ -36,6 +40,7 @@ export function DealPipelineView() {
   return (
     <div className="space-y-3">
       <DealPipelineToolbar state={state} people={people} hasTeams={members.some((member) => member.kind === 'team')} onAdd={() => state.setParam('add', true)} />
+      {unitSold && <ModuleNotice tone="warning">{t('dealWorkspace.productMode.unitSoldNotice', { name: productMode.products[0]?.name || '' })}</ModuleNotice>}
       {!stages.length && !leadsQuery.isLoading && <ModuleNotice tone="warning">{t('dealWorkspace.pipeline.noStages')}</ModuleNotice>}
       {state.view === 'table' ? (
         <DealLeadsTable

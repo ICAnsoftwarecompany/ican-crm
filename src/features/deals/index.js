@@ -27,6 +27,11 @@ export { resolveDealStages, isWonStage, isLostStage, isTerminalStage } from './u
 export { buildWonPayload, validateWonForm, previewInstallments, itemsTotal, lineTotal, formatMoney, progressPercent } from './utils/dealMoney'
 export { normalizeContract, summarizeContract, isInstallmentOverdue } from './utils/dealContracts'
 export { buildDealInsights, buildTargetPace } from './utils/dealInsights'
+export { DEAL_PRODUCT_MODES, PRODUCT_UNIT_MODES, getLineRules, getProductUnitMode, getProductUnits, isUniqueUnitTaken, resolveDealProductMode } from './utils/dealProductMode'
+export { WIZARD_STEPS, buildWizardRequests, createWizardState, validateWizardStep } from './utils/dealWizard'
+export { buildTemplatePayload, validateStages } from './utils/pipelineTemplate'
+export { useCatalogProducts } from './hooks/useCatalogProducts'
+export { useDealCreateWizard } from './hooks/useDealCreateWizard'
 
 export { useDealReport, useDealsHubReport } from './reports'
 

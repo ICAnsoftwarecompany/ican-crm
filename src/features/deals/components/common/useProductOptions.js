@@ -1,34 +1,25 @@
 import { useMemo } from 'react'
-import { flattenCatalog, useProducts } from '../../../products'
+import { useCatalogProducts } from '../../hooks/useCatalogProducts'
 import { useDealProducts } from '../../hooks/useDealResources'
-
-/** id → price for every product in the catalog tree (flattenCatalog keeps names, not prices). */
-function collectPrices(nodes, map = new Map()) {
-  nodes.forEach((node) => {
-    if (node?.price !== undefined && node?.price !== null) map.set(String(node.id), node.price)
-    ;[node?.products, node?.children, node?.children_recursive].forEach((list) => Array.isArray(list) && collectPrices(list, map))
-  })
-  return map
-}
+import { getLineRules, resolveDealProductMode } from '../../utils/dealProductMode'
 
 /**
- * Products offered in the deal's pickers: the deal's own products first; when the deal has none, the whole
- * catalog (so a sale is never blocked). `{ options: [{ id, name, price }], fromDeal, isLoading }`.
+ * Products offered in the deal's line editors + how the deal sells them:
+ * `{ options, products, mode, rules, isLoading }`. With products on the deal only those are offered and the
+ * mode follows them (one piece / one product in units / several); with none, the whole catalog (`open`).
  */
 export function useProductOptions(dealId) {
   const dealProducts = useDealProducts(dealId)
-  const catalog = useProducts()
+  const catalog = useCatalogProducts()
   return useMemo(() => {
-    if (dealProducts.products.length) {
-      return { options: dealProducts.products.map((product) => ({ id: String(product.id), name: product.name, price: product.price })), fromDeal: true, isLoading: dealProducts.isLoading }
-    }
-    const tree = Array.isArray(catalog.data) ? catalog.data : []
-    const rows = flattenCatalog(tree)
-    const byId = collectPrices(tree)
+    const products = dealProducts.products.map((product) => ({ ...product, id: String(product.id) }))
+    const mode = resolveDealProductMode(products)
     return {
-      options: rows.filter((row) => row.active).map((row) => ({ id: String(row.id), name: row.name, price: byId.get(String(row.id)) ?? null })),
-      fromDeal: false,
+      options: products.length ? products : catalog.products,
+      products,
+      mode,
+      rules: getLineRules(mode, products),
       isLoading: dealProducts.isLoading || catalog.isLoading,
     }
-  }, [catalog.data, catalog.isLoading, dealProducts.isLoading, dealProducts.products])
+  }, [catalog.isLoading, catalog.products, dealProducts.isLoading, dealProducts.products])
 }

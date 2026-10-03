@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Handshake, Plus } from 'lucide-react'
@@ -10,14 +10,12 @@ import { getDealStatusValue } from '../../utils/dealDisplay'
 import { formatMoney, progressPercent } from '../../utils/dealMoney'
 import { DealStatusBadge } from '../common/DealStatusBadge'
 import { ProgressBar } from '../common/ProgressBar'
-import { CreateDealDialog } from './CreateDealDialog'
 
 /** Every deal of the tenant; each one is a workspace with its own data. Click a row to open it. */
 export function DealsTable() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const query = useDeals()
-  const [creating, setCreating] = useState(false)
 
   const rows = useMemo(() => query.deals.map((deal) => ({
     ...deal,
@@ -48,7 +46,7 @@ export function DealsTable() {
         icon={Handshake}
         title={t('dealWorkspace.hub.pages.deals')}
         description={t('dealWorkspace.hub.dealsDescription')}
-        actions={<Button onClick={() => setCreating(true)}><Plus size={16} />{t('dealWorkspace.createDeal')}</Button>}
+        actions={<Button onClick={() => navigate('/deals/new')}><Plus size={16} />{t('dealWorkspace.createDeal')}</Button>}
       />
       <DataTable
         data={rows}
@@ -68,7 +66,6 @@ export function DealsTable() {
         showToolbar
         showFooter
       />
-      <CreateDealDialog open={creating} onClose={() => setCreating(false)} />
     </div>
   )
 }
