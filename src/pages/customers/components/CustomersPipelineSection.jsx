@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { CustomersPipelineView, statusRequiresReason, useCustomerStatusMove } from '../../../features/customers/pipeline'
+import { statusLookup, useLeadCloseRequest } from '../../../features/leads'
 import { CustomersBulkActions } from './bulk-actions'
 import { StatusChangeReasonDialog } from './bulk-actions/selection-actions'
 
@@ -26,8 +27,11 @@ export function CustomersPipelineSection({ statuses = [], statusById, onDone, on
   const { t } = useTranslation()
   const [reasonMove, setReasonMove] = useState(null)
   const { moveCustomer, isMoving } = useCustomerStatusMove({ statusById })
+  // Won / lost columns (and leaving them) go through the close dialog; the card moves after it is confirmed.
+  const close = useLeadCloseRequest({ statuses, getOldStatus: statusLookup(statusById) })
 
   const handleStatusDrop = ({ customer, status }) => {
+    if (close.interceptStatusChange({ rows: [customer], status, onDone: () => onDone?.() })) return undefined
     if (statusRequiresReason(status)) {
       setReasonMove({ customer, status })
       return undefined
@@ -74,6 +78,7 @@ export function CustomersPipelineSection({ statuses = [], statusById, onDone, on
         onClose={() => setReasonMove(null)}
         onSubmit={handleSubmitReason}
       />
+      {close.dialog}
     </>
   )
 }

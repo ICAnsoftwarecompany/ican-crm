@@ -1099,5 +1099,126 @@ export default {
       "addSelected": "Add selected ({{count}})",
       "noUsersToAdd": "No users available to add."
     }
+  },
+  "leadClose": {
+    "titles": {
+      "won": "Record a sale",
+      "lost": "Close as lost",
+      "reopen": "Reopen lead",
+      "retarget": "Try again later"
+    },
+    "descriptions": {
+      "won": "{{name}} bought. Record it here, or add the lead to a deal.",
+      "lost": "Why {{name}} did not buy, and whether to try again later.",
+      "reopen": "Move {{name}} out of a closed status.",
+      "retarget": "{{name}} is not ready now. Choose when to try again."
+    },
+    "bulkDescription": "{{count}} leads will be closed with the same reason.",
+    "submit": {
+      "won": "Record sale",
+      "lost": "Close as lost",
+      "reopen": "Reopen",
+      "retarget": "Save and schedule",
+      "deal": "Add to deal"
+    },
+    "cancel": "Cancel",
+    "fields": {
+      "status": "Closing status",
+      "reason": "Reason",
+      "note": "Note",
+      "followUp": "Try again",
+      "followUpDate": "Follow-up date",
+      "interest": "What did they buy?",
+      "value": "Value",
+      "reopenNote": "Why reopen?",
+      "deal": "Deal",
+      "target": "What happens to the lead"
+    },
+    "reasons": {
+      "price": "Price",
+      "competitor": "Went to a competitor",
+      "no_response": "No response",
+      "not_interested": "Not interested",
+      "not_qualified": "Not qualified",
+      "timing": "Not the right time",
+      "other": "Other"
+    },
+    "followUps": {
+      "7": "In a week",
+      "30": "In a month",
+      "90": "In 3 months",
+      "none": "No follow-up",
+      "custom": "On a date…"
+    },
+    "followUpHint": "Creates a follow-up task on the lead, assigned to its owner.",
+    "followUpTitle": "Follow up again: {{name}}",
+    "chooseInterest": "Choose an interest",
+    "noInterests": "This lead has no interests recorded.",
+    "wonDealHint": "If the lead is in a deal, close it from the deal so the contract and payment plan are created.",
+    "reopenHint": "The lead is closed. Moving it to \"{{status}}\" reopens it and is recorded on its timeline.",
+    "backendNote": "The reason, value and follow-up are saved with the activity. Company-specific reasons and blocking moves of closed leads on the server need the backend.",
+    "useCloseDialog": "use Close",
+    "activity": {
+      "won": "Closed as won: {{status}}",
+      "lost": "Closed as lost: {{status}}",
+      "reopen": "Reopened: {{status}}",
+      "retarget": "Try again later: {{status}}"
+    },
+    "toasts": {
+      "won": "Lead closed as won",
+      "lost": "{{count}} lead(s) closed as lost",
+      "reopen": "Lead reopened",
+      "failed": "{{count}} lead(s) could not be updated",
+      "retarget": "Follow-up scheduled",
+      "deal": "{{count}} lead(s) added to the deal"
+    },
+    "errors": {
+      "statusRequired": "Choose a status.",
+      "reasonRequired": "Choose a reason.",
+      "noteRequiredForOther": "Write the reason.",
+      "dateRequired": "Choose a date.",
+      "wonSingleOnly": "Close won leads one at a time: each one has its own product and value.",
+      "negative": "Cannot be negative.",
+      "reopenNoteRequired": "Write why the lead is reopened.",
+      "followUpRequired": "Choose when to try again.",
+      "dealRequired": "Choose a deal.",
+      "inOpenDeal": "This lead is in the open deal \"{{deal}}\". Record the sale from the deal so the contract and payment plan are created."
+    },
+    "targets": {
+      "close": {
+        "title": "Record the sale here",
+        "description": "The lead moves to the sale status with what was bought and its value."
+      },
+      "deal": {
+        "title": "Add it to a deal",
+        "description": "The deal handles the win, the contract and the payment plan. The status does not change now."
+      }
+    },
+    "optional": "optional",
+    "retargetHint": "The lead stays open and a follow-up task is created for its owner on the chosen date.",
+    "openDeal": "Open the deal",
+    "dealTargetHint": "The leads are added to the deal's first open stage, with their current owners.",
+    "chooseDeal": "Choose a deal",
+    "noDeals": "No active deals.",
+    "loadingDeals": "Loading deals…"
+  },
+  "statusReasons": {
+    "title": "Reasons",
+    "hints": {
+      "won": "Why customers buy (optional when closing). Helps marketing.",
+      "lost": "Why leads are lost. One is required when closing as lost.",
+      "retarget": "Why leads are postponed (optional)."
+    },
+    "planned": "Saving reasons per status needs the backend. Until then the lost dialog uses the default reasons.",
+    "label": "Reason",
+    "active": "Active",
+    "remove": "Remove",
+    "placeholder": "New reason…",
+    "add": "Add",
+    "duplicate": "Two reasons have the same name.",
+    "missing": {
+      "won": "No sale status: set a status's kind to \"Contract / purchase status\" so leads can be closed as sold.",
+      "lost": "No lost status: set a status's kind to \"Lost status\" so leads can be closed as lost."
+    }
   }
 }

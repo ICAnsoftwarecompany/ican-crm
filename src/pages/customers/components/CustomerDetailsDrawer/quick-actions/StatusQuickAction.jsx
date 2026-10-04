@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { Check, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { useLeadCloseRequest } from '../../../../../features/leads'
 import { useLeadMutations } from '../../../../../features/leads/hooks/useLeads'
 import { useMeetingMutations } from '../../../../../features/meetings/hooks/useMeetings'
 import { extractMessage } from '../../../../../shared/utils/apiResponse'
@@ -64,6 +65,10 @@ export function StatusQuickAction({ customer, statuses = [], currentStatus, onCh
   const leadId = getLeadId(customer)
   const currentStatusId = currentStatus?.id ?? customer?.lead?.status_type_id ?? customer?.status_type_id
   const canOpen = Boolean(leadId && statuses.length)
+  const close = useLeadCloseRequest({
+    statuses,
+    getOldStatus: () => currentStatus || statuses.find((status) => String(status.id) === String(currentStatusId)) || null,
+  })
 
   useEffect(() => {
     if (!open) return undefined
@@ -123,6 +128,17 @@ export function StatusQuickAction({ customer, statuses = [], currentStatus, onCh
 
   const handleSelectStatus = async (status) => {
     if (!leadId || !status) return
+
+    // Won / lost (and reopening a closed lead) go through the close dialog.
+    const closing = close.interceptStatusChange({
+      rows: [customer],
+      status,
+      onDone: () => onChanged?.({ customer, actionType: 'status', newStatus: status, oldStatus: currentStatus }),
+    })
+    if (closing) {
+      setOpen(false)
+      return
+    }
 
     if (requiresReason(status)) {
       setReasonStatus(status)
@@ -242,6 +258,7 @@ export function StatusQuickAction({ customer, statuses = [], currentStatus, onCh
         }}
         onSubmit={handleSubmitReason}
       />
+      {close.dialog}
     </span>
   )
 }

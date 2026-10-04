@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { CalendarClock, CheckCircle2, ChevronDown, GripHorizontal, X } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { isClosingStatus } from '../../../../features/leads'
 import { useLeadMutations } from '../../../../features/leads/hooks/useLeads'
 import { useMeetingMutations } from '../../../../features/meetings/hooks/useMeetings'
 import { useProducts } from '../../../../features/products/hooks/useProducts'
@@ -663,8 +664,8 @@ export function FollowUpNoteDialog({
                         >
                           <option value="">{t('customers.followUp.chooseStatusPlaceholder')}</option>
                           {statuses.map((status) => (
-                            <option key={status.id} value={status.id}>
-                              {isStatusNoteRequired(status)
+                            <option key={status.id} value={status.id} disabled={isClosingStatus(status)}>
+                              {isClosingStatus(status) ? `${getStatusLabel(status)} — ${t('customers.leadClose.useCloseDialog')}` : isStatusNoteRequired(status)
                                 ? `${getStatusLabel(status)}${t('customers.followUp.noteRequiredSuffix')}`
                                 : getStatusLabel(status)}
                             </option>

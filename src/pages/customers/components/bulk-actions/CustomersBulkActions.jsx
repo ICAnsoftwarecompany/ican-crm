@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { definitionsApi } from '../../../../features/definitions/api/definitionsApi'
+import { useLeadCloseRequest } from '../../../../features/leads'
 import { useLeadMutations } from '../../../../features/leads/hooks/useLeads'
 import { useMeetingMutations } from '../../../../features/meetings/hooks/useMeetings'
 import { useLocalStorage } from '../../../../shared/components/data-table/hooks/useLocalStorage'
@@ -160,6 +161,7 @@ export function CustomersBulkActions({
   const statusById = useMemo(() => new Map(statuses.map((status) => [String(status.id), status])), [statuses])
   const leadIds = useMemo(() => uniqueIds(selectedRows), [selectedRows])
   const selectedStatus = statuses.find((status) => String(status.id) === String(statusId))
+  const close = useLeadCloseRequest({ statuses, getOldStatus: (row) => statusById.get(String(row?.lead?.status_type_id ?? row?.status_type_id ?? '')) || null })
   const selectedTag = tags.find((tag) => String(tag.id) === String(tagId))
   const hasSelection = leadIds.length > 0
   const isSingleLeadSelection = leadIds.length === 1 && selectedRows.length === 1
@@ -262,6 +264,18 @@ export function CustomersBulkActions({
 
   const handleChangeStatus = async () => {
     if (!hasSelection || !selectedStatus) return
+
+    // Won / lost (and reopening closed leads) go through the close dialog: lost applies one reason to all,
+    // won is per lead (the dialog says so).
+    const closing = close.interceptStatusChange({
+      rows: selectedRows,
+      status: selectedStatus,
+      onDone: ({ done }) => {
+        setStatusId('')
+        finishAction(t('customers.bulkActions.statusChangedCount', { count: done }))
+      },
+    })
+    if (closing) return
 
     if (requiresReason(selectedStatus) && !isSingleLeadSelection) {
       toast.info(t('customers.bulkActions.reasonStatusSingleOnly'))
@@ -409,6 +423,7 @@ export function CustomersBulkActions({
           }}
           onSubmit={handleSubmitReason}
         />
+        {close.dialog}
       </div>
     </>
   )

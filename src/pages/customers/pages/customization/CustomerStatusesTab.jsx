@@ -2,7 +2,9 @@ import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CheckCircle2, Edit3, Plus, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
+import { CloseKindsNotice } from '../../../../features/definitions'
 import { definitionsApi } from '../../../../features/definitions/api/definitionsApi'
+import { getMissingCloseKinds } from '../../../../features/leads'
 import { QUERY_KEYS } from '../../../../shared/constants/queryKeys'
 import { extractMessage } from '../../../../shared/utils/apiResponse'
 import { Button } from '../../../../shared/components/ui/Button'
@@ -174,6 +176,10 @@ export function CustomerStatusesTab() {
         <div className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface)] p-6 text-center text-sm text-[var(--text-muted)]">
           {t('customers.customization.noStatuses')}
         </div>
+      )}
+
+      {!statusesQuery.isLoading && !statusesQuery.isError && leadStatuses.length > 0 && (
+        <CloseKindsNotice missing={getMissingCloseKinds(leadStatuses)} />
       )}
 
       {!statusesQuery.isLoading && !statusesQuery.isError && leadStatuses.length > 0 && (

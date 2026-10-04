@@ -15,6 +15,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 - [Leads Center pages](#leads-center-pages)
 - [Customer details drawer](#customer-details-drawer)
 - [Bulk actions](#bulk-actions)
+- [Closing a lead](#closing-a-lead)
 - [Customer activity timeline](#customer-activity-timeline)
 - [Teams and users](#teams-and-users)
 - [Activities, calls and meetings](#activities-calls-and-meetings)
@@ -56,7 +57,7 @@ Proposal ──versions──> Version ──options──> Option ──items�
 2. **Assigned** — backend assignment rules (`/api/tenant/lead-assignment/*`), manual distribution (`leadsApi.distributeManually`) or deal bulk assign (`dealLeadsApi.bulkAssign`). Assigned user appears as `linked_by` in the drawer header.
 3. **Worked** — status changes and notes/follow-ups via `leadsApi.saveAction` (`action: 'create_activity'`, optional `new_status_id` + reason), calls/meetings (activities), tasks, conversations (WhatsApp/Messenger/Gmail), proposals.
 4. **Progressed** — status moves through tenant-defined statuses (status board, drawer, bulk action); in deals, the lead moves between pipeline stages.
-5. **Closed** — won/lost is represented by statuses (lead); in a deal, by the deal lead `status` set through the won/lost endpoints (won creates a contract). *(2026-10-03 23:32 (Africa/Cairo))*
+5. **Closed** — a lead is closed by moving it to a status of kind "deal" (won) or "lost", always through the close dialog ([Closing a lead](#closing-a-lead)); in a deal, by the deal lead `status` set through the won/lost endpoints (won creates a contract). *(updated 2026-10-04 14:45 (Africa/Cairo))*
 6. **Deleted / restored** — `customersApi.deleteCustomers` → trash → `restoreDeletedCustomers` or `forceDeleteCustomers`.
 
 Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by the [customer activity timeline](#customer-activity-timeline).
@@ -151,6 +152,36 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 - **Used by:** `CustomersPage.jsx` via `DataTable` `selectionContextActions`.
 - **Extend:** a new selection action = component in `selection-actions/` exported from its `index.js` and rendered by `CustomersBulkActions.jsx`.
 - **Known issues:** social messaging only builds a draft payload (`{ channel, recipients, message, source: 'customers_bulk_actions', status: 'draft' }`) — no caller passes `onSendMessage`, so it shows an "API not connected" toast. A compatibility shim remains at `components/CustomerSocialMessagingPanel.jsx`.
+
+## Closing a lead
+
+> *2026-10-04 14:45 (Africa/Cairo)* — added. *2026-10-04 20:04 (Africa/Cairo)* — reasons per status, retarget, add to a deal, open-deal block,
+> Statuses settings notice and reasons editor.
+
+- **Status kinds** (set by the tenant in Statuses settings, read from `GET /definitions/status`): `is_deal` = **sale**,
+  `is_lost` = **lost**, `is_retarget` = **try again later** (the lead stays open). Only sale and lost close a lead.
+- **What it does:** every Leads Center status change (board drop, drawer quick action, drawer status changer, bulk) goes
+  through `useLeadCloseRequest`:
+  - to a **sale** status → "Record a sale" with two targets: record it here (reason when the status has reasons, interest
+    bought, value, note) or **add the lead to a deal** (live `POST /deals/leads/add-existing`, first open stage; status unchanged —
+    the deal handles the win and contract). A lead whose row says it is in an open deal (`deals[]`) can only be sold from that deal
+    (link shown). Bulk: no sale; the dialog starts on "add to a deal".
+  - to a **lost** status → reason required (the status's own reasons, else the default list), note, optional follow-up.
+  - to a **retarget** status → follow-up date required (30 days by default), optional reason, note.
+  - out of a sale / lost status to a normal one → "Reopen", note required.
+  - Every follow-up date creates a follow-up task on the lead for its owner. The follow-up note dialog disables sale/lost statuses.
+- **Statuses settings:** a notice when the tenant has no sale or no lost status; the status dialog shows a **reasons editor**
+  for sale / lost / retarget statuses — disabled until the backend stores them (`DEFINITIONS_API_STATUS.statusReasons`).
+- **Key files:** `features/leads/close/` ([README](../src/features/leads/close/README.md)), `features/definitions/`
+  ([README](../src/features/definitions/README.md)).
+- **API:** unchanged `POST /api/tenant/leads/save/action`; close data inside the existing `data` object (`close_type`
+  won/lost/retarget/reopen, `reason_key`, `reason_id`, `lost_reason_key`, `follow_up_at`, `won_value`, `interest_id`);
+  follow-up via `POST /api/tenant/tasks`; add to deal via `POST /api/tenant/deals/leads/add-existing`.
+- **Needs the backend:** [backend/BACKEND-REQUESTS.md §A](backend/BACKEND-REQUESTS.md) — stored close fields (A2), server lock
+  (A3), reasons per status (A4), the lead's deals + no double sale (A5), status rules + default per kind (A6), deal → lead status
+  sync (A7), closing report (A8).
+- **Known issues:** the lock and the open-deal block are UI-only (the block needs `deals[]` on the lead row); reasons per status
+  are not saved yet; close fields are not reportable yet.
 
 ## Customer activity timeline
 
