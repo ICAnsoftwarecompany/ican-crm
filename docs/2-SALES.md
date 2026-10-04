@@ -155,20 +155,33 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 
 ## Closing a lead
 
-> *2026-10-04 14:45 (Africa/Cairo)* — added.
+> *2026-10-04 14:45 (Africa/Cairo)* — added. *2026-10-04 20:04 (Africa/Cairo)* — reasons per status, retarget, add to a deal, open-deal block,
+> Statuses settings notice and reasons editor.
 
+- **Status kinds** (set by the tenant in Statuses settings, read from `GET /definitions/status`): `is_deal` = **sale**,
+  `is_lost` = **lost**, `is_retarget` = **try again later** (the lead stays open). Only sale and lost close a lead.
 - **What it does:** every Leads Center status change (board drop, drawer quick action, drawer status changer, bulk) goes
-  through `useLeadCloseRequest`. Moving to a status of kind **deal** (`is_deal`) opens "Close as won" (interest bought, value,
-  note); to a status of kind **lost** (`is_lost`) opens "Close as lost" (reason from a fixed list — required, note, optional
-  follow-up in 7/30/90 days or on a date → a follow-up task on the lead for its owner); moving a closed lead to any other
-  status opens "Reopen" (note required). Bulk: lost applies one reason to all; won is one lead at a time. The follow-up note
-  dialog disables won/lost statuses.
-- **Key files:** `features/leads/close/` ([README](../src/features/leads/close/README.md)).
-- **API:** unchanged `POST /api/tenant/leads/save/action`; close data inside the existing `data` object (`close_type`,
-  `lost_reason_key`, `follow_up_at`, `won_value`, `interest_id`); follow-up via `POST /api/tenant/tasks`.
-- **Needs the backend:** [backend/BACKEND-REQUESTS.md §A](backend/BACKEND-REQUESTS.md) — status kinds in the list (A1), stored
-  close fields (A2), server-side lock of closed leads (A3), tenant lost reasons (A4), the lead's deals (A5), closing report (A6).
-- **Known issues:** the lock on closed leads is UI-only; reasons are a fixed list; close fields are not reportable yet.
+  through `useLeadCloseRequest`:
+  - to a **sale** status → "Record a sale" with two targets: record it here (reason when the status has reasons, interest
+    bought, value, note) or **add the lead to a deal** (live `POST /deals/leads/add-existing`, first open stage; status unchanged —
+    the deal handles the win and contract). A lead whose row says it is in an open deal (`deals[]`) can only be sold from that deal
+    (link shown). Bulk: no sale; the dialog starts on "add to a deal".
+  - to a **lost** status → reason required (the status's own reasons, else the default list), note, optional follow-up.
+  - to a **retarget** status → follow-up date required (30 days by default), optional reason, note.
+  - out of a sale / lost status to a normal one → "Reopen", note required.
+  - Every follow-up date creates a follow-up task on the lead for its owner. The follow-up note dialog disables sale/lost statuses.
+- **Statuses settings:** a notice when the tenant has no sale or no lost status; the status dialog shows a **reasons editor**
+  for sale / lost / retarget statuses — disabled until the backend stores them (`DEFINITIONS_API_STATUS.statusReasons`).
+- **Key files:** `features/leads/close/` ([README](../src/features/leads/close/README.md)), `features/definitions/`
+  ([README](../src/features/definitions/README.md)).
+- **API:** unchanged `POST /api/tenant/leads/save/action`; close data inside the existing `data` object (`close_type`
+  won/lost/retarget/reopen, `reason_key`, `reason_id`, `lost_reason_key`, `follow_up_at`, `won_value`, `interest_id`);
+  follow-up via `POST /api/tenant/tasks`; add to deal via `POST /api/tenant/deals/leads/add-existing`.
+- **Needs the backend:** [backend/BACKEND-REQUESTS.md §A](backend/BACKEND-REQUESTS.md) — stored close fields (A2), server lock
+  (A3), reasons per status (A4), the lead's deals + no double sale (A5), status rules + default per kind (A6), deal → lead status
+  sync (A7), closing report (A8).
+- **Known issues:** the lock and the open-deal block are UI-only (the block needs `deals[]` on the lead row); reasons per status
+  are not saved yet; close fields are not reportable yet.
 
 ## Customer activity timeline
 

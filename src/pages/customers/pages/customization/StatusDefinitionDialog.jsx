@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { StatusReasonsEditor, buildReasonsPayload, hasDuplicateReason, isDefinitionsApiLive, readStatusReasons } from '../../../../features/definitions'
 import { FormDialog } from '../../../../shared/components/overlays/FormDialog'
 import { Input } from '../../../../shared/components/ui/Input'
 import { Select } from '../../../../shared/components/ui/Select'
@@ -91,11 +92,18 @@ export function StatusDefinitionDialog({
   const { t } = useTranslation()
   const [form, setForm] = useState(DEFAULT_FORM)
   const [formError, setFormError] = useState('')
+  // Reasons of a sale / lost / retarget status (offered by the lead close dialog). Saved once the backend stores them.
+  const [reasons, setReasons] = useState([])
+  const [reasonsError, setReasonsError] = useState('')
+  const reasonsLive = isDefinitionsApiLive('statusReasons')
+  const reasonKind = { deal: 'won', lost: 'lost', retarget: 'retarget' }[form.stageKind] || null
 
   useEffect(() => {
     if (!open) return
     setForm(toFormState(selectedStatus))
     setFormError('')
+    setReasons(readStatusReasons(selectedStatus))
+    setReasonsError('')
   }, [open, selectedStatus])
 
   const reservedPriorities = useMemo(
@@ -129,6 +137,12 @@ export function StatusDefinitionDialog({
       setFormError(t('customers.customization.orderTaken', { value: payload.priority }))
       return
     }
+
+    if (reasonKind && hasDuplicateReason(reasons)) {
+      setReasonsError(t('customers.statusReasons.duplicate'))
+      return
+    }
+    if (reasonsLive && reasonKind) payload.reasons = buildReasonsPayload(reasons)
 
     onSubmit?.(payload)
   }
@@ -167,6 +181,16 @@ export function StatusDefinitionDialog({
         options={REASON_OPTIONS}
         placeholder={t('customers.customization.choose')}
       />
+
+      {reasonKind && (
+        <StatusReasonsEditor
+          kind={reasonKind}
+          rows={reasons}
+          onChange={(rows) => { setReasons(rows); setReasonsError('') }}
+          disabled={!reasonsLive}
+          error={reasonsError}
+        />
+      )}
 
       <Input
         label={t('customers.customization.orderLabel')}

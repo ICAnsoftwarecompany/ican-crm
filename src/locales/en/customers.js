@@ -1102,20 +1102,24 @@ export default {
   },
   "leadClose": {
     "titles": {
-      "won": "Close as won",
+      "won": "Record a sale",
       "lost": "Close as lost",
-      "reopen": "Reopen lead"
+      "reopen": "Reopen lead",
+      "retarget": "Try again later"
     },
     "descriptions": {
-      "won": "{{name}} bought. Record what and for how much.",
+      "won": "{{name}} bought. Record it here, or add the lead to a deal.",
       "lost": "Why {{name}} did not buy, and whether to try again later.",
-      "reopen": "Move {{name}} out of a closed status."
+      "reopen": "Move {{name}} out of a closed status.",
+      "retarget": "{{name}} is not ready now. Choose when to try again."
     },
     "bulkDescription": "{{count}} leads will be closed with the same reason.",
     "submit": {
-      "won": "Close as won",
+      "won": "Record sale",
       "lost": "Close as lost",
-      "reopen": "Reopen"
+      "reopen": "Reopen",
+      "retarget": "Save and schedule",
+      "deal": "Add to deal"
     },
     "cancel": "Cancel",
     "fields": {
@@ -1126,7 +1130,9 @@ export default {
       "followUpDate": "Follow-up date",
       "interest": "What did they buy?",
       "value": "Value",
-      "reopenNote": "Why reopen?"
+      "reopenNote": "Why reopen?",
+      "deal": "Deal",
+      "target": "What happens to the lead"
     },
     "reasons": {
       "price": "Price",
@@ -1155,13 +1161,16 @@ export default {
     "activity": {
       "won": "Closed as won: {{status}}",
       "lost": "Closed as lost: {{status}}",
-      "reopen": "Reopened: {{status}}"
+      "reopen": "Reopened: {{status}}",
+      "retarget": "Try again later: {{status}}"
     },
     "toasts": {
       "won": "Lead closed as won",
       "lost": "{{count}} lead(s) closed as lost",
       "reopen": "Lead reopened",
-      "failed": "{{count}} lead(s) could not be updated"
+      "failed": "{{count}} lead(s) could not be updated",
+      "retarget": "Follow-up scheduled",
+      "deal": "{{count}} lead(s) added to the deal"
     },
     "errors": {
       "statusRequired": "Choose a status.",
@@ -1170,7 +1179,46 @@ export default {
       "dateRequired": "Choose a date.",
       "wonSingleOnly": "Close won leads one at a time: each one has its own product and value.",
       "negative": "Cannot be negative.",
-      "reopenNoteRequired": "Write why the lead is reopened."
+      "reopenNoteRequired": "Write why the lead is reopened.",
+      "followUpRequired": "Choose when to try again.",
+      "dealRequired": "Choose a deal.",
+      "inOpenDeal": "This lead is in the open deal \"{{deal}}\". Record the sale from the deal so the contract and payment plan are created."
+    },
+    "targets": {
+      "close": {
+        "title": "Record the sale here",
+        "description": "The lead moves to the sale status with what was bought and its value."
+      },
+      "deal": {
+        "title": "Add it to a deal",
+        "description": "The deal handles the win, the contract and the payment plan. The status does not change now."
+      }
+    },
+    "optional": "optional",
+    "retargetHint": "The lead stays open and a follow-up task is created for its owner on the chosen date.",
+    "openDeal": "Open the deal",
+    "dealTargetHint": "The leads are added to the deal's first open stage, with their current owners.",
+    "chooseDeal": "Choose a deal",
+    "noDeals": "No active deals.",
+    "loadingDeals": "Loading deals…"
+  },
+  "statusReasons": {
+    "title": "Reasons",
+    "hints": {
+      "won": "Why customers buy (optional when closing). Helps marketing.",
+      "lost": "Why leads are lost. One is required when closing as lost.",
+      "retarget": "Why leads are postponed (optional)."
+    },
+    "planned": "Saving reasons per status needs the backend. Until then the lost dialog uses the default reasons.",
+    "label": "Reason",
+    "active": "Active",
+    "remove": "Remove",
+    "placeholder": "New reason…",
+    "add": "Add",
+    "duplicate": "Two reasons have the same name.",
+    "missing": {
+      "won": "No sale status: set a status's kind to \"Contract / purchase status\" so leads can be closed as sold.",
+      "lost": "No lost status: set a status's kind to \"Lost status\" so leads can be closed as lost."
     }
   }
 }
