@@ -4,8 +4,8 @@ import { getDealStatusValue, isTerminalStage, resolveDealStages, useDeal, useDea
 import { CloseField, closeInputClass } from './CloseField'
 
 /**
- * Choose an active deal to add the lead(s) to. Reports the deal's first open stage through `onStage`, so the
- * leads land on it (same as "Add existing leads" inside a deal).
+ * Choose an active deal to add the lead(s) to. Reports `{ id, loading }` of the deal's first open stage through
+ * `onStage`, so the leads land on it (same as "Add existing leads" inside a deal) and the dialog waits for it.
  */
 export function DealPicker({ value, onChange, onStage, error }) {
   const { t } = useTranslation()
@@ -19,7 +19,8 @@ export function DealPicker({ value, onChange, onStage, error }) {
     return stage ? String(stage.id) : ''
   }, [dealQuery.deal])
 
-  useEffect(() => { onStage?.(firstStageId) }, [firstStageId, onStage])
+  const loading = Boolean(value) && dealQuery.isLoading
+  useEffect(() => { onStage?.({ id: firstStageId, loading }) }, [firstStageId, loading, onStage])
 
   return (
     <CloseField label={t('customers.leadClose.fields.deal')} error={error} hint={dealsQuery.isLoading ? t('customers.leadClose.loadingDeals') : deals.length ? null : t('customers.leadClose.noDeals')}>

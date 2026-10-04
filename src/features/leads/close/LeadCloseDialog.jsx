@@ -18,7 +18,7 @@ export function LeadCloseDialog({ request, submitting, onCancel, onSubmit }) {
   const bulk = rows.length > 1
   const [form, setForm] = useState(() => createCloseForm(mode, request?.status))
   const [showErrors, setShowErrors] = useState(false)
-  const [stageId, setStageId] = useState('')
+  const [stage, setStage] = useState({ id: '', loading: false })
 
   // Reset only for a new request (`key`), not when a partial failure narrows its rows.
   const requestKey = request?.key
@@ -43,14 +43,15 @@ export function LeadCloseDialog({ request, submitting, onCancel, onSubmit }) {
   const update = useCallback((patch) => setForm((current) => ({ ...current, ...(patch.statusId ? { reason: '' } : {}), ...patch })), [])
   const name = rows[0]?.lead?.name || rows[0]?.name || rows[0]?.lead?.phone || rows[0]?.phone || ''
   const toDeal = mode === 'won' && form.target === 'deal'
-  const blocked = mode === 'won' && !toDeal && Boolean(errors.mode)
+  // Adding to a deal waits for its first open stage, so leads never land without one.
+  const blocked = (mode === 'won' && !toDeal && Boolean(errors.mode)) || (toDeal && stage.loading)
 
   const submit = () => {
     if (Object.keys(errors).length) {
       setShowErrors(true)
       return
     }
-    onSubmit({ form, status, reasons, stageId })
+    onSubmit({ form, status, reasons, stageId: stage.id })
   }
 
   return (
@@ -76,7 +77,7 @@ export function LeadCloseDialog({ request, submitting, onCancel, onSubmit }) {
           </CloseField>
         )}
         {mode === 'won' && (
-          <WonFields form={form} onChange={update} interests={interests} reasons={reasons} reasonRequired={reasonRequired} err={err} openDeal={openDeal} bulk={bulk} onStage={setStageId} />
+          <WonFields form={form} onChange={update} interests={interests} reasons={reasons} reasonRequired={reasonRequired} err={err} openDeal={openDeal} bulk={bulk} onStage={setStage} />
         )}
         {(mode === 'lost' || mode === 'retarget') && (
           <>

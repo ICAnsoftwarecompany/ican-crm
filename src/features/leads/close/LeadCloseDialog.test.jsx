@@ -110,7 +110,8 @@ describe('lead close flow', () => {
     await waitFor(() => expect(screen.getByRole('option', { name: 'Villas' })).toBeTruthy())
     fireEvent.change(picker, { target: { value: '4' } })
     await waitFor(() => expect(get).toHaveBeenCalledWith('/api/tenant/deals/4', expect.anything()))
-    await new Promise((resolve) => setTimeout(resolve, 0))
+    // The button waits for the deal's first stage.
+    await waitFor(() => expect(submitButton('customers.leadClose.submit.deal').closest('button').disabled).toBe(false))
     fireEvent.click(submitButton('customers.leadClose.submit.deal'))
     await waitFor(() => expect(post).toHaveBeenCalledTimes(1))
     expect(post.mock.calls[0]).toEqual(['/api/tenant/deals/leads/add-existing', { deal_id: 4, lead_ids: [5, 6], stage_id: 40 }])
