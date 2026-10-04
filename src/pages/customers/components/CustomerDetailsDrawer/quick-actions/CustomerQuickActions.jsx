@@ -217,7 +217,7 @@ export function CustomerQuickActions({
   }
 
   return (
-    <div className={cn('scrollbar-quick-actions -mx-1 mt-3 overflow-x-auto px-1 pb-0.5', className)}>
+    <div className={cn('-mx-1 mt-3 overflow-x-auto px-1 pb-0.5', className)}>
       <div className="flex min-w-max items-center gap-1">
         {orderedActions.map((action) => (
           <div

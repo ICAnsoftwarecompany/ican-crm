@@ -115,7 +115,7 @@ export function LeadPageSwitcher({ activeCustomerId }) {
         <div className="absolute end-0 top-12 z-[90] w-[28rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[#BEEFF2] bg-white shadow-2xl">
           <div className="border-b border-[#E5F7F8] p-3">
             <div className="mb-2 text-xs font-black text-[var(--text)]">{t('customers.leadDetails.chooseStatusFirst')}</div>
-            <div className="scrollbar-elegant flex max-h-28 flex-wrap gap-2 overflow-y-auto pe-1">
+            <div className="flex max-h-28 flex-wrap gap-2 overflow-y-auto pe-1">
               {statusesQuery.isLoading && (
                 <div className="flex items-center gap-2 rounded-xl bg-[#F8FEFF] px-3 py-2 text-xs font-bold text-[#007A80]">
                   <Loader2 size={14} className="animate-spin" />
@@ -166,7 +166,7 @@ export function LeadPageSwitcher({ activeCustomerId }) {
                 </div>
               </div>
 
-              <div className="scrollbar-elegant max-h-80 overflow-y-auto p-2">
+              <div className="max-h-80 overflow-y-auto p-2">
                 {customersQuery.isLoading && (
                   <div className="flex items-center justify-center gap-2 rounded-xl bg-[#F8FEFF] px-3 py-4 text-sm font-bold text-[#007A80]">
                     <Loader2 size={16} className="animate-spin" />

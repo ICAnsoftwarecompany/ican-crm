@@ -150,6 +150,12 @@ app / pages  ->  features  ->  shared / services
 - `tailwind.config.js` maps brand/surface/status/AI colors to these variables, so `bg-brand-primary` etc. respond to runtime changes. Hardcoded hex (`bg-[#162847]`) does not.
 - Use variables for adaptable surfaces and text. No new hex colors except intentional brand/status hues. Check hover, focus, selected, disabled, overlays, tables, charts and dialogs in both themes.
 - Tenant brand colors: see [3-FEATURES.md → Settings and appearance](3-FEATURES.md#settings-and-appearance).
+- **Scrollbars** (*2026-10-05 00:16 (Africa/Cairo)*): one design for every vertical and horizontal scroll, applied globally in `src/index.css` — no
+  class needed. Thin rounded thumb on a transparent track, darker on hover; tokens `--scrollbar-size`, `--scrollbar-thumb`,
+  `--scrollbar-thumb-hover` (the thumb follows `--text-muted`, so dark mode adapts by itself). Chromium/Safari use
+  `::-webkit-scrollbar`; Firefox gets `scrollbar-width: thin` + `scrollbar-color` (only there — Chrome 121+ ignores
+  `::-webkit-scrollbar` when those are set). Hide a scrollbar on purpose with `.scrollbar-none`. Don't add per-component
+  scrollbar styles; the old `scrollbar-thin`, `scrollbar-elegant`, `scrollbar-sidebar`, `scrollbar-quick-actions` were removed.
 
 ## Conventions
 

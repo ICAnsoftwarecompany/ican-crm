@@ -22,7 +22,7 @@ export function SubSidebarNav({ groups = [], collapsed = false, onNavigate, aria
   return (
     <nav
       aria-label={ariaLabel}
-      className={cn('min-h-0 flex-1 overflow-y-auto scrollbar-thin', collapsed ? 'space-y-3 px-2 py-4' : 'space-y-5 p-3')}
+      className={cn('min-h-0 flex-1 overflow-y-auto', collapsed ? 'space-y-3 px-2 py-4' : 'space-y-5 p-3')}
     >
       {groups.map((group) => (
         <SubSidebarGroup key={group.id} group={group} collapsed={collapsed} onNavigate={onNavigate} />

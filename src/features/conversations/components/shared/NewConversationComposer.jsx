@@ -78,7 +78,7 @@ export function NewConversationComposer({ channelLabel, recipients, onCancel, on
           <ChevronDown size={15} className={pickerOpen ? 'rotate-180 transition' : 'transition'} />
         </button>
         {pickerOpen ? (
-          <div className="mt-2 max-h-44 space-y-1 overflow-y-auto rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 scrollbar-thin">
+          <div className="mt-2 max-h-44 space-y-1 overflow-y-auto rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2">
             {recipients.map((recipient) => {
               const selected = selectedSet.has(String(recipient.id))
               return <button key={recipient.id} type="button" onClick={() => toggleRecipient(recipient.id)} className={`flex w-full items-center gap-2 rounded-md px-2 py-2 text-start text-xs font-bold transition ${selected ? 'bg-[var(--brand-accent-soft)] text-[var(--text)]' : 'text-[var(--text-muted)] hover:bg-[var(--surface-2)]'}`}>
@@ -97,7 +97,7 @@ export function NewConversationComposer({ channelLabel, recipients, onCancel, on
             <div className="flex items-center gap-2 text-xs font-black text-[var(--text)]"><LoaderCircle size={15} className={remaining ? 'animate-spin text-[var(--brand-accent)]' : 'text-emerald-600'} />{remaining ? `جارٍ الإرسال إلى ${progress.current}` : 'اكتمل الإرسال'}</div>
             <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--surface-2)]"><div className="h-full bg-[var(--brand-accent)] transition-all" style={{ width: `${((progress.completed + progress.failed) / progress.total) * 100}%` }} /></div>
             <div className="mt-2 flex flex-wrap gap-3 text-[11px] font-bold text-[var(--text-muted)]"><span>تم: {progress.completed}</span><span>متبقي: {remaining}</span>{progress.failed ? <span className="text-red-600">تعذر: {progress.failed}</span> : null}</div>
-            <div className="mt-3 max-h-32 space-y-1 overflow-y-auto border-t border-[var(--border)] pt-2 scrollbar-thin">
+            <div className="mt-3 max-h-32 space-y-1 overflow-y-auto border-t border-[var(--border)] pt-2">
               {recipients.filter((recipient) => selectedSet.has(String(recipient.id))).map((recipient) => {
                 const status = statusConfig[recipientStatuses[String(recipient.id)] || 'pending']
                 const StatusIcon = status.icon

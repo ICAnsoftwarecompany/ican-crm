@@ -42,7 +42,7 @@ export function TaskBoard({
         onAddTask={() => onCreateTask?.(boardId, 'New task')}
       />
 
-      <div className="scrollbar-elegant -mx-1 overflow-x-auto pb-2">
+      <div className="-mx-1 overflow-x-auto pb-2">
         <div className="flex min-h-[420px] items-start gap-3 px-1">
           {filteredLists.map((list) => (
             <TaskBoardList

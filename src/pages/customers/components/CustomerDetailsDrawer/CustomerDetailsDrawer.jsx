@@ -1225,7 +1225,7 @@ function DrawerTabs({
       )}
     >
       <div className={cn(
-        'scrollbar-quick-actions flex min-w-0 items-center gap-1 overflow-x-auto rounded-xl bg-white/70 p-1'
+        'flex min-w-0 items-center gap-1 overflow-x-auto rounded-xl bg-white/70 p-1'
       )}
       >
         <div className="flex min-w-max items-center gap-1">
@@ -1472,7 +1472,7 @@ export function CustomerDetailsContent({
     return (
       <div className="min-w-0 overflow-hidden xl:h-[calc(100vh-112px)]">
         <div className="grid min-w-0 gap-4 xl:h-full xl:min-h-0 xl:grid-cols-[390px_minmax(0,1fr)]">
-          <aside className="scrollbar-elegant min-w-0 space-y-3 xl:h-full xl:min-h-0 xl:overflow-y-auto xl:overscroll-contain xl:pe-1">
+          <aside className="min-w-0 space-y-3 xl:h-full xl:min-h-0 xl:overflow-y-auto xl:overscroll-contain xl:pe-1">
             <CustomerHeaderModern
               customer={detailedCustomer}
               currentStatus={currentStatus}
@@ -1514,7 +1514,7 @@ export function CustomerDetailsContent({
               className="mb-4 shrink-0"
               containerWidth={contentWidth}
             />
-            <div className="scrollbar-elegant min-w-0 xl:min-h-0 xl:flex-1 xl:overflow-y-auto xl:overscroll-contain xl:pe-1">
+            <div className="min-w-0 xl:min-h-0 xl:flex-1 xl:overflow-y-auto xl:overscroll-contain xl:pe-1">
               <ActiveTabContent
                 activeTab={pageActiveTab}
                 customer={detailedCustomer}

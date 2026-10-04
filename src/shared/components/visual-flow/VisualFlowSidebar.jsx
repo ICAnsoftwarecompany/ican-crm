@@ -40,7 +40,7 @@ function ScrollableTabs({ tabs, activeTabId, onTabChange }) {
 
   return (
     <div className="relative border-b border-[var(--border)]">
-      <div ref={containerRef} className="flex gap-1 overflow-x-auto px-2 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div ref={containerRef} className="flex gap-1 overflow-x-auto px-2 py-2 scrollbar-none">
         {tabs.map((tab) => (
           <button
             key={tab.id}

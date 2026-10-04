@@ -80,7 +80,7 @@ export function NotificationCenterPanel({ open = false }) {
         </div>
         <div className="mt-2 flex justify-end"><NotificationTypeFilter value={typeFilter} onChange={setTypeFilter} /></div>
       </header>
-      <div className="scrollbar-sidebar min-h-[280px] flex-1 overflow-y-auto">
+      <div className="min-h-[280px] flex-1 overflow-y-auto">
         <NotificationList notifications={visibleNotifications} isLoading={activeQuery.isLoading} error={activeQuery.error} onRetry={activeQuery.refetch} onOpen={handleOpen} onRead={(id) => markRead.mutate(id)} isPending={markRead.isPending} emptyTitle={t(typeFilter !== 'all' ? 'notifications.empty.filteredTitle' : tab === 'unread' ? 'notifications.empty.unreadTitle' : 'notifications.empty.historyTitle')} emptyDescription={t(typeFilter !== 'all' ? 'notifications.empty.filteredDescription' : tab === 'unread' ? 'notifications.empty.unreadDescription' : 'notifications.empty.historyDescription')} t={t} />
       </div>
     </section>,

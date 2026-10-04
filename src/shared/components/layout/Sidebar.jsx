@@ -276,7 +276,7 @@ export function Sidebar({ collapsed }) {
       </button>
 
       {/* App nav */}
-      <nav aria-label={t('nav.workspace', 'Workspace')} className="flex-1 space-y-2 overflow-y-auto px-3 py-2 scrollbar-thin">
+      <nav aria-label={t('nav.workspace', 'Workspace')} className="flex-1 space-y-2 overflow-y-auto px-3 py-2">
         {orderedSections.map((section, index) => (
           <div key={section.id} className="space-y-2">
             <SidebarSection
