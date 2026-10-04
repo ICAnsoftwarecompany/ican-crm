@@ -7,6 +7,7 @@ import { ModulePageHeader } from '../../../../shared/components/module-pages'
 import { Button } from '../../../../shared/components/ui/Button'
 import { useDeals } from '../../hooks/useDeals'
 import { QUICK_INFO_LIMIT, useDealsQuickInfo } from '../../hooks/useDealsQuickInfo'
+import { DEAL_BOARD_SORTS } from '../../utils/dealBoardStats'
 import { getDealStatusValue } from '../../utils/dealDisplay'
 import { dealInputClass } from '../common/FieldLabel'
 import { ViewToggle } from '../common/ViewToggle'
@@ -17,7 +18,7 @@ const VIEWS = ['table', 'board']
 const GROUPS = ['status', 'type']
 
 /**
- * `/deals` — every deal as a table or a board (`?view=board`, `?group=status|type`), each with its quick
+ * `/deals` — every deal as a table or a board (`?view=board`, `?group=status|type`, `?sort=`), each with its quick
  * info: products (and work template), team, last action. A deal opens its workspace.
  */
 export function DealsHubList() {
@@ -26,6 +27,7 @@ export function DealsHubList() {
   const [params, setParams] = useSearchParams()
   const view = VIEWS.includes(params.get('view')) ? params.get('view') : 'table'
   const group = GROUPS.includes(params.get('group')) ? params.get('group') : 'status'
+  const sort = DEAL_BOARD_SORTS.includes(params.get('sort')) ? params.get('sort') : 'newest'
   const query = useDeals()
 
   // Newest first, so the quick-info limit keeps the deals people work on now.
@@ -59,6 +61,14 @@ export function DealsHubList() {
             </select>
           </label>
         )}
+        {view === 'board' && (
+          <label className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+            {t('dealWorkspace.hub.board.sortBy')}
+            <select className={`${dealInputClass} h-9 w-auto`} value={sort} onChange={(event) => setParam('sort', event.target.value, 'newest')}>
+              {DEAL_BOARD_SORTS.map((value) => <option key={value} value={value}>{t(`dealWorkspace.hub.board.sorts.${value}`)}</option>)}
+            </select>
+          </label>
+        )}
         {quick.limited && <p className="ms-auto text-xs text-[var(--text-muted)]">{t('dealWorkspace.quickInfo.limited', { count: QUICK_INFO_LIMIT })}</p>}
       </div>
 
@@ -73,7 +83,7 @@ export function DealsHubList() {
           emptyTitle={t('dealWorkspace.empty')}
           emptyDescription={t('dealWorkspace.hub.board.emptyDescription')}
         >
-          <DealsBoard deals={deals} infos={quick.infos} groupBy={group} />
+          <DealsBoard deals={deals} infos={quick.infos} leadsByDeal={quick.leadsByDeal} isLoading={quick.isLoading} groupBy={group} sort={sort} />
         </ResourceState>
       )}
     </div>

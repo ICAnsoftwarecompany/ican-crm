@@ -50,6 +50,43 @@ export default {
       "groups": {
         "status": "حسب الحالة",
         "type": "حسب النوع"
+      },
+      "sortBy": "الترتيب",
+      "sorts": {
+        "newest": "الأحدث",
+        "endingSoon": "تنتهي قريبًا",
+        "revenue": "أعلى هدف إيراد",
+        "progress": "الأعلى تقدمًا"
+      },
+      "column": {
+        "target": "الهدف",
+        "won": "المحقق",
+        "attention": "{{count}} تحتاج متابعة"
+      },
+      "card": {
+        "health": {
+          "onTrack": "على المسار",
+          "behind": "متأخرة",
+          "atRisk": "في خطر"
+        },
+        "healthHint": "التقدم نحو الهدف مقارنة بالوقت المنقضي من فترة الصفقة",
+        "timing": {
+          "upcoming": "تبدأ بعد {{count}} يوم",
+          "running": "متبقي {{count}} يوم",
+          "endsToday": "تنتهي اليوم",
+          "ended": "انتهت منذ {{count}} يوم",
+          "endedToday": "انتهت اليوم",
+          "noEnd": "بدون تاريخ نهاية",
+          "noDates": "بدون تواريخ"
+        },
+        "elapsed": "مضى {{percent}}% من فترة الصفقة",
+        "wonRevenue": "الإيراد المحقق (تقديري)",
+        "noRevenueTarget": "بدون هدف إيراد",
+        "leads": "العملاء",
+        "pipeline": "قيمة الفرص المفتوحة",
+        "winRate": "نسبة الفوز",
+        "unassigned": "{{count}} بدون مسؤول",
+        "stale": "{{count}} بدون متابعة"
       }
     }
   }

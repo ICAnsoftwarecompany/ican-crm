@@ -7,6 +7,8 @@
 > products (`utils/dealProductMode`, `DealProductModeCard`, `ProductUnitBadge`, `ProductPicker`, `LineItemsEditor` rules).
 > **2026-10-04 00:41 (Africa/Cairo)** — hub: quick info per deal (`utils/dealQuickInfo`, `useDealsQuickInfo`), board view (`DealsHubList`,
 > `DealsBoard`, `DealCard`), hub calendar (`DealsHubCalendar`, `useDealsHubCalendarEvents`), shared `ViewToggle` / `DealCalendarView`.
+> **2026-10-04 01:30 (Africa/Cairo)** — richer hub board cards: health vs period, time left, won revenue vs target with an elapsed marker, leads breakdown, open
+> pipeline, win rate, unassigned / stale alerts; column totals; board sort (`utils/dealBoardStats`, `DealCardMetrics`).
 
 **Status:** CURRENT on the endpoints of the backend Postman collection "Deals Workspace"; planned endpoints are wired
 but disabled (see `constants/dealApiStatus.js`). Not verified against a running backend.
@@ -40,6 +42,7 @@ but disabled (see `constants/dealApiStatus.js`). Not verified against a running 
 | `utils/` (all tested) | `dealStages` (resolve/sort stages, won/lost), `dealLeads` (normalize, status, filters, stale, summary, id index), `dealMoney` (line totals, won payload + validation, installment preview, money format, progress), `dealTeam` (members, payload user XOR team, people, workload, team lanes), `dealContracts` (normalize, overdue, paid/remaining), `dealLinks` (task/activity → deal link), `dealInsights` (rule-based hints, target pace), `dealCalendar` (installment + milestone events, sources), `dealDisplay`. |
 | `utils/dealProductMode.js` · `catalog.js` · `pipelineTemplate.js` · `dealWizard.js` *(2026-10-04 00:17 (Africa/Cairo))* | Product unit mode per product (`unique`/`units`/`service`) and per deal (`open`/`single_unit`/`single_product`/`multi_product`), `getLineRules`, `isUniqueUnitTaken`; full catalog rows; template payload + `validateStages`; wizard state, per-step validation, exact Postman request bodies (`buildWizardRequests`). All tested. |
 | `utils/dealQuickInfo.js` *(2026-10-04 00:41 (Africa/Cairo))* | Quick info per deal: `readListSummary` (list row fields of spec §9.11), `getMissingQuickInfo`, `resolveLastAction` (latest won / lost / added / touched lead, else deal updated / created), `buildDealQuickInfo`, `summarizeDealsSetup`. Tested. |
+| `utils/dealBoardStats.js` *(2026-10-04 01:30 (Africa/Cairo))* | Hub board card numbers from the deal row + its normalized leads: `resolveDealTiming` (upcoming / running / ended, days, elapsed %), `resolveDealHealth` (on track / behind / at risk: revenue %, else won-leads %, vs elapsed %; active deals only), `buildDealCardStats` (lead counts, won revenue = won leads' estimated value, open pipeline, win rate, unassigned, stale), `summarizeDealColumn`, `sortDealsForBoard` (`?sort=` newest / endingSoon / revenue / progress). Tested. |
 | `hooks/useDealsQuickInfo.js` · `useDealsHubCalendarEvents.js` | Fetches only what the list row lacks (team, products, leads) for the newest `QUICK_INFO_LIMIT` (40) deals, on the workspace's query keys; events of every deal for the hub calendar (`buildDealsLinkIndex` in `dealLinks`). |
 | `hooks/useDealCreateWizard.js` · `useCatalogProducts.js` | Wizard draft in localStorage (`deals:create-wizard:draft`, incl. created ids → resumable, no duplicate deal), ordered submit with per-phase progress; active catalog products with full data. |
 | `components/wizard/` | `DealCreateWizard` (page `/deals/new`), `WizardStepper`, `PipelineStep`, `BasicsStep`, `ProductsStep`, `TeamStep`, `ReviewStep`. |
@@ -85,6 +88,7 @@ APIs, constants, hooks, utils listed above, `useDealReport`, `useDealsHubReport`
 
 - Product unit mode relies on `unit_mode` / `available_units`, not yet in the backend; until then stock fields only.
 - Hub quick info: without spec §9.11 it costs 3 requests per deal (newest 40 only); "last action" is derived from lead and deal dates, not a real activity log.
+- Hub board numbers (2026-10-04 01:30 (Africa/Cairo)) need the deal's leads: past the newest 40, or once the list sends spec §9.11 `last_activity` (leads then not fetched), cards show only targets and "—". Won revenue is the won leads' estimated value, not contract totals.
 - Deal creation is 2–N requests (no atomic endpoint); a failed step is resumed from the saved draft.
 - Not run against a real backend or seen in a browser (no login available); see spec §12.
 - Leads fetched once with `per_page: 500`; tasks/activities = latest 200 of the tenant filtered locally.

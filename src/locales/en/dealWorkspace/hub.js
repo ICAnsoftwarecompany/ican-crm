@@ -50,6 +50,43 @@ export default {
       "groups": {
         "status": "By status",
         "type": "By type"
+      },
+      "sortBy": "Sort",
+      "sorts": {
+        "newest": "Newest",
+        "endingSoon": "Ending soon",
+        "revenue": "Highest revenue target",
+        "progress": "Most progress"
+      },
+      "column": {
+        "target": "Target",
+        "won": "Won",
+        "attention": "{{count}} need attention"
+      },
+      "card": {
+        "health": {
+          "onTrack": "On track",
+          "behind": "Behind",
+          "atRisk": "At risk"
+        },
+        "healthHint": "Progress to target compared with the time passed in the deal's period",
+        "timing": {
+          "upcoming": "Starts in {{count}} d",
+          "running": "{{count}} d left",
+          "endsToday": "Ends today",
+          "ended": "Ended {{count}} d ago",
+          "endedToday": "Ended today",
+          "noEnd": "No end date",
+          "noDates": "No dates"
+        },
+        "elapsed": "{{percent}}% of the period has passed",
+        "wonRevenue": "Won revenue (estimated)",
+        "noRevenueTarget": "No revenue target",
+        "leads": "Leads",
+        "pipeline": "Open pipeline",
+        "winRate": "Win rate",
+        "unassigned": "{{count}} unassigned",
+        "stale": "{{count}} without follow-up"
       }
     }
   }

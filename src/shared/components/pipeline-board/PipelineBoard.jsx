@@ -17,6 +17,8 @@ function isTerminalStage(stage) {
  * dragMode: 'native' (default) drags immediately with HTML5 drag & drop;
  *           'longPress' starts dragging only after a long press (mouse + touch).
  * columnWidth: fixed column width in px. Without it columns stretch (minmax(260px, 1fr)).
+ * wrapColumns: (native mode) no horizontal scroll: columns share the width and wrap to new rows when they do
+ *   not fit (at least `minColumnWidth` px each, default 260); the page scrolls vertically.
  * columnBodyClassName: e.g. a max height + overflow-y-auto so each column scrolls on its own.
  */
 export function PipelineBoard({
@@ -32,6 +34,8 @@ export function PipelineBoard({
   isInteractive = true,
   dragMode = 'native',
   columnWidth,
+  wrapColumns = false,
+  minColumnWidth = 260,
   columnBodyClassName,
   pressDelay,
 }) {
@@ -62,9 +66,11 @@ export function PipelineBoard({
   }, [groupBy, itemStageKey, items, lanes, stages])
 
   const columnCount = Math.max(stages.length, 1)
-  const gridTemplateColumns = columnWidth
-    ? `repeat(${columnCount}, ${columnWidth}px)`
-    : `repeat(${columnCount}, minmax(260px, 1fr))`
+  const gridTemplateColumns = wrapColumns
+    ? `repeat(auto-fit, minmax(min(${minColumnWidth}px, 100%), 1fr))`
+    : columnWidth
+      ? `repeat(${columnCount}, ${columnWidth}px)`
+      : `repeat(${columnCount}, minmax(260px, 1fr))`
 
   if (dragMode === 'longPress') {
     return (
@@ -89,8 +95,8 @@ export function PipelineBoard({
   }
 
   return (
-    <div className="min-w-0 overflow-auto">
-      <div className="grid min-w-max gap-4" style={{ gridTemplateColumns }}>
+    <div className={wrapColumns ? 'min-w-0' : 'min-w-0 overflow-auto'}>
+      <div className={wrapColumns ? 'grid gap-4' : 'grid min-w-max gap-4'} style={{ gridTemplateColumns }}>
         {lanes.flatMap((lane) => stages.map((stage) => {
           const key = `${lane.id ?? 'all'}:${stage.id}`
           const stageItems = groupedItems.get(key) || []
