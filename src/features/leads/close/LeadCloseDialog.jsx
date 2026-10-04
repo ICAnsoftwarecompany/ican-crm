@@ -61,7 +61,7 @@ export function LeadCloseDialog({ request, submitting, onCancel, onSubmit }) {
       loading={submitting}
       submitDisabled={blocked}
       title={t(`customers.leadClose.titles.${mode || 'lost'}`)}
-      description={bulk ? t('customers.leadClose.bulkDescription', { count: rows.length }) : t(`customers.leadClose.descriptions.${mode || 'lost'}`, { name })}
+      description={bulk ? t(`customers.leadClose.bulkDescriptions.${mode || 'lost'}`, { count: rows.length }) : t(`customers.leadClose.descriptions.${mode || 'lost'}`, { name })}
       submitText={toDeal ? t('customers.leadClose.submit.deal') : t(`customers.leadClose.submit.${mode || 'lost'}`)}
       cancelText={t('customers.leadClose.cancel')}
       size="lg"

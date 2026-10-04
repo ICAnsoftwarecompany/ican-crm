@@ -1113,7 +1113,6 @@ export default {
       "reopen": "Move {{name}} out of a closed status.",
       "retarget": "{{name}} is not ready now. Choose when to try again."
     },
-    "bulkDescription": "{{count}} leads will be closed with the same reason.",
     "submit": {
       "won": "Record sale",
       "lost": "Close as lost",
@@ -1200,7 +1199,13 @@ export default {
     "dealTargetHint": "The leads are added to the deal's first open stage, with their current owners.",
     "chooseDeal": "Choose a deal",
     "noDeals": "No active deals.",
-    "loadingDeals": "Loading deals…"
+    "loadingDeals": "Loading deals…",
+    "bulkDescriptions": {
+      "won": "{{count}} leads selected. A sale is recorded one lead at a time, so add them to a deal.",
+      "lost": "{{count}} leads will be closed as lost with the same reason.",
+      "retarget": "{{count}} leads will be postponed with the same follow-up date.",
+      "reopen": "{{count}} leads will be reopened with the same note."
+    }
   },
   "statusReasons": {
     "title": "Reasons",
