@@ -215,6 +215,10 @@ Generic stage board with optional swimlanes; stages come from data, never hardco
 
 - **Props:** `stages`, `items`, `itemStageKey` (default `stage_id`), `itemIdKey` (default `id`), `groupBy` (swimlanes), `renderCard`, `renderEmpty`, `onItemMove(itemId, fromStageId, toStageId)`, `onTerminalStageDrop({ itemId, fromStageId, stage, laneId })`, `isInteractive`, `dragMode` (`native` | `longPress`), `pressDelay` (ms, default 250), `columnWidth` (fixed px; default columns stretch `minmax(260px, 1fr)`), `columnBodyClassName` (e.g. max height + `overflow-y-auto` for per-column scroll).
   `wrapColumns` + `minColumnWidth` (native mode, 2026-10-04 01:50 (Africa/Cairo)): no horizontal scroll — columns share the width and wrap to new rows; the page scrolls vertically (used by the deals hub board).
+- **Edge auto-scroll while dragging** (long-press mode, 2026-10-05 00:07 (Africa/Cairo)): holding a card near the board's left or right side scrolls the
+  board towards the hidden columns (`edgeScroll.js`, tested). It replaces @dnd-kit's horizontal auto-scroll, which never scrolls
+  towards the hidden columns in RTL (it treats `scrollLeft <= 0` as "at the start", and RTL scroll positions go negative).
+  Vertical auto-scroll inside columns stays with @dnd-kit. Checked in a real browser in RTL and LTR.
 - **Stage shape:** `{ id, name|label, order, color, is_won_stage|is_terminal_won, is_lost_stage|is_terminal_lost, headerSummary? }` (`headerSummary`: optional node under the column title, e.g. column totals; 2026-10-04 01:30 (Africa/Cairo)). Dropping on a won/lost stage never calls `onItemMove`; the consumer must confirm via its own dialog and endpoint.
 - **Consumers:** `features/deals/components/pipeline/DealPipelineBoard.jsx` (long-press mode, team swimlanes; 2026-10-03 23:32 (Africa/Cairo)) ([2-SALES.md → Deals](2-SALES.md#deals)), `features/service/cases/components/CasesBoard.jsx` (native mode), `features/customers/pipeline` Leads Center pipeline (long-press mode, fixed columns).
 - **Related:** `shared/components/ui/TruncatedText` — clamps text to 1–3 lines and shows the full value in a hover tooltip only when it is actually cut.

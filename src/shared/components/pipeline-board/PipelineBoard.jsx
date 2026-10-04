@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { PipelineColumn } from './PipelineColumn'
 import { PipelineDndBoard } from './PipelineDndBoard'
 import { usePipelineDragDrop } from './usePipelineDragDrop'
@@ -39,6 +39,7 @@ export function PipelineBoard({
   columnBodyClassName,
   pressDelay,
 }) {
+  const scrollRef = useRef(null)
   const lanes = useMemo(() => (groupBy?.lanes?.length ? groupBy.lanes : [{ id: null, label: null }]), [groupBy])
 
   const handleItemMove = (itemId, fromStageId, toStageId, laneId) => {
@@ -74,7 +75,7 @@ export function PipelineBoard({
 
   if (dragMode === 'longPress') {
     return (
-      <div className="min-w-0 overflow-x-auto pb-2">
+      <div ref={scrollRef} className="min-w-0 overflow-x-auto pb-2">
         <PipelineDndBoard
           stages={stages}
           lanes={lanes}
@@ -89,6 +90,7 @@ export function PipelineBoard({
           columnWidth={columnWidth}
           columnBodyClassName={columnBodyClassName}
           pressDelay={pressDelay}
+          scrollRef={scrollRef}
         />
       </div>
     )

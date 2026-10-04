@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   DndContext,
   DragOverlay,
@@ -13,6 +13,10 @@ import {
 } from '@dnd-kit/core'
 import { cn } from '../../utils/cn'
 import { PipelineColumn } from './PipelineColumn'
+import { startEdgeScroll } from './edgeScroll'
+
+// dnd-kit keeps vertical auto-scroll (inside columns); horizontal is ours (RTL-safe, see edgeScroll.js).
+const AUTO_SCROLL = { threshold: { x: 0, y: 0.2 } }
 
 const CLICK_SUPPRESS_MS = 250
 
@@ -80,8 +84,11 @@ export function PipelineDndBoard({
   columnWidth,
   columnBodyClassName,
   pressDelay = 250,
+  scrollRef,
 }) {
   const [activeItem, setActiveItem] = useState(null)
+  const dragging = Boolean(activeItem)
+  useEffect(() => (dragging ? startEdgeScroll(scrollRef?.current) : undefined), [dragging, scrollRef])
   const lastDropRef = useRef(0)
   const activation = { delay: pressDelay, tolerance: 8 }
   const sensors = useSensors(
@@ -112,6 +119,7 @@ export function PipelineDndBoard({
     <DndContext
       sensors={sensors}
       collisionDetection={collisionDetection}
+      autoScroll={AUTO_SCROLL}
       onDragStart={({ active }) => setActiveItem(findItem(active?.data?.current?.itemId))}
       onDragCancel={() => {
         setActiveItem(null)
