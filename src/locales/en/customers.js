@@ -1099,5 +1099,78 @@ export default {
       "addSelected": "Add selected ({{count}})",
       "noUsersToAdd": "No users available to add."
     }
+  },
+  "leadClose": {
+    "titles": {
+      "won": "Close as won",
+      "lost": "Close as lost",
+      "reopen": "Reopen lead"
+    },
+    "descriptions": {
+      "won": "{{name}} bought. Record what and for how much.",
+      "lost": "Why {{name}} did not buy, and whether to try again later.",
+      "reopen": "Move {{name}} out of a closed status."
+    },
+    "bulkDescription": "{{count}} leads will be closed with the same reason.",
+    "submit": {
+      "won": "Close as won",
+      "lost": "Close as lost",
+      "reopen": "Reopen"
+    },
+    "cancel": "Cancel",
+    "fields": {
+      "status": "Closing status",
+      "reason": "Reason",
+      "note": "Note",
+      "followUp": "Try again",
+      "followUpDate": "Follow-up date",
+      "interest": "What did they buy?",
+      "value": "Value",
+      "reopenNote": "Why reopen?"
+    },
+    "reasons": {
+      "price": "Price",
+      "competitor": "Went to a competitor",
+      "no_response": "No response",
+      "not_interested": "Not interested",
+      "not_qualified": "Not qualified",
+      "timing": "Not the right time",
+      "other": "Other"
+    },
+    "followUps": {
+      "7": "In a week",
+      "30": "In a month",
+      "90": "In 3 months",
+      "none": "No follow-up",
+      "custom": "On a date…"
+    },
+    "followUpHint": "Creates a follow-up task on the lead, assigned to its owner.",
+    "followUpTitle": "Follow up again: {{name}}",
+    "chooseInterest": "Choose an interest",
+    "noInterests": "This lead has no interests recorded.",
+    "wonDealHint": "If the lead is in a deal, close it from the deal so the contract and payment plan are created.",
+    "reopenHint": "The lead is closed. Moving it to \"{{status}}\" reopens it and is recorded on its timeline.",
+    "backendNote": "The reason, value and follow-up are saved with the activity. Company-specific reasons and blocking moves of closed leads on the server need the backend.",
+    "useCloseDialog": "use Close",
+    "activity": {
+      "won": "Closed as won: {{status}}",
+      "lost": "Closed as lost: {{status}}",
+      "reopen": "Reopened: {{status}}"
+    },
+    "toasts": {
+      "won": "Lead closed as won",
+      "lost": "{{count}} lead(s) closed as lost",
+      "reopen": "Lead reopened",
+      "failed": "{{count}} lead(s) could not be updated"
+    },
+    "errors": {
+      "statusRequired": "Choose a status.",
+      "reasonRequired": "Choose a reason.",
+      "noteRequiredForOther": "Write the reason.",
+      "dateRequired": "Choose a date.",
+      "wonSingleOnly": "Close won leads one at a time: each one has its own product and value.",
+      "negative": "Cannot be negative.",
+      "reopenNoteRequired": "Write why the lead is reopened."
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { RefreshCw } from 'lucide-react'
 
+import { useLeadCloseRequest } from '../../../../features/leads'
 import { useLeadMutations } from '../../../../features/leads/hooks/useLeads'
 import { Button } from '../../../../shared/components/ui/Button'
 import { cn } from '../../../../shared/utils/cn'
@@ -18,9 +19,25 @@ export function CustomerStatusChanger({ customer, statuses = [], currentStatus, 
   const leadId = getLeadId(customer)
   const selectedStatus = statuses.find((status) => String(status.id) === String(selectedStatusId))
   const canSubmit = Boolean(leadId && selectedStatusId && selectedStatus)
+  const currentStatusId = customer?.lead?.status_type_id ?? customer?.status_type_id
+  const close = useLeadCloseRequest({
+    statuses,
+    getOldStatus: () => currentStatus || statuses.find((status) => String(status.id) === String(currentStatusId)) || null,
+  })
 
   const handleChangeStatus = async () => {
     if (!canSubmit) return
+
+    // Won / lost (and reopening a closed lead) go through the close dialog.
+    const closing = close.interceptStatusChange({
+      rows: [customer],
+      status: selectedStatus,
+      onDone: () => {
+        setSelectedStatusId('')
+        onChanged?.({ customer, actionType: 'status', newStatus: selectedStatus, oldStatus: currentStatus })
+      },
+    })
+    if (closing) return
 
     await mutations.saveAction.mutateAsync({
       lead_id: leadId,
@@ -82,6 +99,7 @@ export function CustomerStatusChanger({ customer, statuses = [], currentStatus, 
         <RefreshCw size={14} />
         {t('customers.quickActions.changeStatus')}
       </Button>
+      {close.dialog}
     </div>
   )
 }
