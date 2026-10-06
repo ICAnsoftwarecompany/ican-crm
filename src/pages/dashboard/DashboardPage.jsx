@@ -1,15 +1,35 @@
 import { useTranslation } from 'react-i18next'
-import { RefreshCcw, Users, TrendingUp, MessageSquare, Megaphone, UsersRound } from 'lucide-react'
+import { RefreshCcw, Users, TrendingUp, MessageSquare, UsersRound } from 'lucide-react'
 import { Button } from '../../shared/components/ui/Button'
 import { ResourceState } from '../../shared/components/data/ResourceState'
 import { useSalesDashboard } from '../../features/analytics/hooks/useSalesDashboard'
+
+function getDisplayText(value, preferredKeys = []) {
+  if (value === null || value === undefined || value === '') return ''
+  if (typeof value === 'string' || typeof value === 'number') return String(value)
+  if (typeof value !== 'object') return ''
+
+  const keys = [...preferredKeys, 'name', 'label', 'title', 'status', 'username', 'email', 'phone']
+  for (const key of keys) {
+    const nestedValue = value[key]
+    if (nestedValue === value) continue
+    const text = getDisplayText(nestedValue)
+    if (text) return text
+  }
+
+  return ''
+}
+
+function getLeadStatusLabel(lead) {
+  return getDisplayText(lead?.status, ['status']) || getDisplayText(lead?.status_name) || 'new'
+}
 
 export function DashboardPage() {
   const { t } = useTranslation()
   const { myLeads, myTeams, isLoading, error, refetch } = useSalesDashboard()
   const leads = myLeads.data || []
   const teams = myTeams.data || []
-  const contacted = leads.filter((lead) => String(lead.status || lead.status_name || '').toLowerCase().includes('contact')).length
+  const contacted = leads.filter((lead) => getLeadStatusLabel(lead).toLowerCase().includes('contact')).length
 
   const kpis = [
     { label: t('dashboard.totalLeads'), value: leads.length, icon: Users, color: '#3B82F6' },
@@ -53,10 +73,10 @@ export function DashboardPage() {
               {leads.slice(0, 6).map((lead, index) => (
                 <div key={lead.id || index} className="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3 last:border-0">
                   <div>
-                    <p className="font-medium font-arabic text-[var(--text)]">{lead.name || lead.customer_name || `Lead #${lead.id || index + 1}`}</p>
-                    <p className="text-xs text-[var(--text-muted)]">{lead.phone || lead.source || '—'}</p>
+                    <p className="font-medium font-arabic text-[var(--text)]">{getDisplayText(lead.name) || getDisplayText(lead.customer_name) || `Lead #${lead.id || index + 1}`}</p>
+                    <p className="text-xs text-[var(--text-muted)]">{getDisplayText(lead.phone) || getDisplayText(lead.source, ['source']) || '—'}</p>
                   </div>
-                  <span className="text-xs rounded-full bg-[#E8F9FA] text-[#007A80] px-2 py-1">{lead.status || lead.status_name || 'new'}</span>
+                  <span className="text-xs rounded-full bg-[#E8F9FA] text-[#007A80] px-2 py-1">{getLeadStatusLabel(lead)}</span>
                 </div>
               ))}
               {leads.length === 0 && <p className="text-sm text-[var(--text-muted)]">لا توجد بيانات Leads متاحة من API حاليا.</p>}
@@ -67,8 +87,8 @@ export function DashboardPage() {
             <div className="grid gap-3">
               {teams.slice(0, 6).map((team, index) => (
                 <div key={team.id || index} className="rounded-lg bg-[var(--surface-2)] p-3">
-                  <p className="font-medium font-arabic text-[var(--text)]">{team.name || `Team #${team.id || index + 1}`}</p>
-                  <p className="text-xs text-[var(--text-muted)]">القائد: {team.team_leader_name || team.leader_name || '—'}</p>
+                  <p className="font-medium font-arabic text-[var(--text)]">{getDisplayText(team.name) || `Team #${team.id || index + 1}`}</p>
+                  <p className="text-xs text-[var(--text-muted)]">القائد: {getDisplayText(team.team_leader_name) || getDisplayText(team.leader_name) || getDisplayText(team.leader) || '—'}</p>
                 </div>
               ))}
               {teams.length === 0 && <p className="text-sm text-[var(--text-muted)]">لا توجد Teams متاحة من API حاليا.</p>}
