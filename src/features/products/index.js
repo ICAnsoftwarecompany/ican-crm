@@ -4,7 +4,7 @@
 // Data
 export { useProducts, useProductCategories, useProductMutations } from './hooks/useProducts'
 export { useCatalogProducts, useProductInfo, useCatalogProductMutations } from './hooks/useCatalogProducts'
-export { useItemTypes, useItemTypeMutations, useUnits, useUnitMutations } from './hooks/useCatalogSetup'
+export { useItemType, useItemTypes, useItemTypeMutations, useUnits, useUnitMutations } from './hooks/useCatalogSetup'
 export {
   useProductUnits,
   useProductUnitMutations,
@@ -32,6 +32,7 @@ export { CAPABILITY_REGISTRY, instanceModesFor } from './constants/capabilityReg
 // Screens (composed by pages/products)
 export { CatalogProductsView } from './components/products/CatalogProductsView'
 export { ProductFormDrawer } from './components/products/ProductFormDrawer'
+export { ProductCreateWizard } from './components/create/ProductCreateWizard'
 export { ProductDetailsView } from './components/details/ProductDetailsView'
 export { ItemTypesView } from './components/item-types/ItemTypesView'
 export { UnitsView } from './components/units/UnitsView'

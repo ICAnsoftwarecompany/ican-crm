@@ -6,13 +6,14 @@ import { Input } from '../../../../shared/components/ui/Input'
 import { Select } from '../../../../shared/components/ui/Select'
 import { UNIT_TYPES } from '../../constants/catalogOptions'
 import { useUnitMutations } from '../../hooks/useCatalogSetup'
+import { getCreatedId } from '../../utils/catalogPayloads'
 import { formatApiError } from '../../utils/apiErrors'
 import { CheckboxField, FormError, useOptions } from '../common/catalogUi'
 
 const EMPTY = { code: '', name: '', type: 'count', decimals: '0', status: true }
 
-/** Create / edit a unit of measure (`{ code, name, type, decimals, status }`), 2026-10-06. */
-export function UnitFormDialog({ open, unit, onClose }) {
+/** Create / edit a unit of measure (`{ code, name, type, decimals, status }`), 2026-10-06. `onSaved(id)` after saving. */
+export function UnitFormDialog({ open, unit, onClose, onSaved }) {
   const { t } = useTranslation()
   const isEdit = Boolean(unit)
   const mutations = useUnitMutations()
@@ -39,8 +40,13 @@ export function UnitFormDialog({ open, unit, onClose }) {
       status: Boolean(form.status),
     }
     try {
-      if (isEdit) await mutations.update.mutateAsync({ id: unit.id, payload: body })
-      else await mutations.create.mutateAsync({ ...body, code: form.code.trim() })
+      if (isEdit) {
+        await mutations.update.mutateAsync({ id: unit.id, payload: body })
+        onSaved?.(unit.id)
+      } else {
+        const response = await mutations.create.mutateAsync({ ...body, code: form.code.trim() })
+        onSaved?.(getCreatedId(response))
+      }
       toast.success(t(isEdit ? 'catalog.units.updated' : 'catalog.units.created'))
       onClose()
     } catch (requestError) {

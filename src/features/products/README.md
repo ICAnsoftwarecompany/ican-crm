@@ -2,6 +2,7 @@
 
 > **Documentation update:** 2026-10-06 23:35 (Africa/Cairo) — README added with the catalog rebuild on the
 > Postman collection "Products & Catalog".
+> 2026-10-07 02:30 (Africa/Cairo) — create wizard `/products/new` (the collection's full create flow), `GET item-types/{id}` used.
 
 Owns everything under `/products`: products and services, their alternative units, attached items (relations),
 instances (serials, real-estate units, batches with expiry), item types with capabilities, units of measure.
@@ -33,6 +34,17 @@ Backend contract: the Postman collection "Products & Catalog" (2026-10-06); spec
 
 Request builders: `utils/catalogPayloads.js` (multipart, booleans as 1/0, JSON fields as strings, blanks never sent)
 and `utils/catalogForms.js` (form ⇄ body, validation). Both tested.
+
+## Create wizard (`/products/new`, `?kind=service`)
+
+Added 2026-10-07. Steps: basic data & item type → stock & units → capabilities (+ additional data) → attached items
+→ pieces → review. Saving runs `POST /product/create` (with alternative units) → `POST /products/{id}/relations` per
+attached item → `POST /products/{id}/instances`. What succeeded is remembered, so a retry continues from the failed
+request and never creates the product twice. Item types (`ItemTypeFormDrawer`) and units (`UnitFormDialog`) can be
+created inside the wizard and are selected right away. The selected item type is read with `GET /item-types/{id}`
+(the list may not carry capability configs). Services send no stock; serial / unit types send no stock quantity
+(stock = available pieces, backend D3). Logic: `utils/productCreateWizard.js` (tested); UI: `components/create/`.
+Edit stays in `ProductFormDrawer`.
 
 ## Rules
 

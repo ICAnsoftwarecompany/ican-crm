@@ -22,6 +22,7 @@ const service = { id: 32, name: 'Installation', price: 0, kind: 'service', statu
 
 const routes = [
   [/\/product\/item-types$/, { data: [itemType] }],
+  [/\/product\/item-types\/4$/, { data: itemType }],
   [/\/product\/units$/, { data: [{ id: 3, code: 'box', name: 'Box', type: 'count', decimals: 0, status: true }] }],
   [/\/product\/products\/31\/units$/, { data: [{ id: 50, unit_id: 1, factor: 1, price: 15000, is_default: true, unit: { id: 1, name: 'Piece' } }] }],
   [/\/product\/products\/31\/relations$/, { data: [{ id: 60, child_product_id: 32, inclusion: 'included', quantity: 1, price_override: 0, auto_add: true, sort_order: 1 }] }],
@@ -70,6 +71,8 @@ describe('products area', () => {
     ['/products/instances', 'catalog.instances.pageTitle'],
     ['/products/item-types', 'catalog.itemTypes.pageTitle'],
     ['/products/units', 'catalog.units.pageTitle'],
+    ['/products/new', 'catalog.create.title.product'],
+    ['/products/new?kind=service', 'catalog.create.title.service'],
   ])('renders %s', async (path, text) => {
     renderAt(path)
     expect((await screen.findAllByText(text)).length).toBeGreaterThan(0)
@@ -109,19 +112,71 @@ describe('products area', () => {
     }))
   })
 
-  it('creates a product as multipart with the collection field names', async () => {
-    renderAt('/products')
+  it('creates a product through the wizard: product, attached item, serials — in order', async () => {
+    const router = renderAt('/products')
     fireEvent.click((await screen.findAllByText('catalog.list.products.create'))[0])
+    await waitFor(() => expect(router.state.location.pathname).toBe('/products/new'))
+
+    // 1. Basic data + item type (serial_tracking + warranty), loaded with GET /item-types/{id}
     fireEvent.change(await screen.findByLabelText('catalog.product.fields.name'), { target: { value: 'Fridge' } })
     fireEvent.change(screen.getByLabelText('catalog.product.fields.price'), { target: { value: '9000' } })
-    fireEvent.submit(screen.getByLabelText('catalog.product.fields.name').closest('form'))
+    fireEvent.change(await screen.findByLabelText('catalog.product.fields.itemType'), { target: { value: '4' } })
+    await waitFor(() => expect(get.mock.calls.some(([url]) => url === '/api/tenant/product/item-types/4')).toBe(true))
+    fireEvent.click(screen.getByText('actions.next'))
 
-    await waitFor(() => expect(post).toHaveBeenCalled())
-    const [url, body] = post.mock.calls[0]
-    expect(url).toBe('/api/tenant/product/create')
-    expect(Object.fromEntries(body.entries())).toMatchObject({
-      'products[0][name]': 'Fridge', 'products[0][price]': '9000', 'products[0][kind]': 'product', 'products[0][status]': '1', 'products[0][is_stock_tracked]': '0',
+    // 2. Stock comes from serials for this type
+    expect(await screen.findByText('catalog.create.stockFromInstances')).toBeTruthy()
+    fireEvent.click(screen.getByText('actions.next'))
+    // 3. Capabilities from the item type
+    expect((await screen.findAllByText('catalog.capabilities.warranty.name')).length).toBeGreaterThan(0)
+    fireEvent.click(screen.getByText('actions.next'))
+    // 4. Attach an included service
+    fireEvent.click(await screen.findByText('catalog.create.addIncluded'))
+    fireEvent.change(screen.getByLabelText('catalog.relations.fields.child'), { target: { value: '32' } })
+    fireEvent.click(screen.getByText('actions.next'))
+    // 5. Serials, checked against the type pattern
+    fireEvent.change(await screen.findByRole('textbox', { name: 'catalog.instances.fields.serialNumbers' }), { target: { value: 'AC12345678' } })
+    fireEvent.click(screen.getByText('actions.next'))
+    // 6. Review → save
+    expect(await screen.findByText('catalog.create.requestsTitle')).toBeTruthy()
+    fireEvent.click(screen.getByText('catalog.create.save'))
+
+    await waitFor(() => expect(router.state.location.pathname).toBe('/products/99'))
+    const urls = post.mock.calls.map(([url]) => url)
+    expect(urls).toEqual([
+      '/api/tenant/product/create',
+      '/api/tenant/product/products/99/relations',
+      '/api/tenant/product/products/99/instances',
+    ])
+    expect(Object.fromEntries(post.mock.calls[0][1].entries())).toMatchObject({
+      'products[0][name]': 'Fridge', 'products[0][price]': '9000', 'products[0][kind]': 'product', 'products[0][item_type_id]': '4', 'products[0][status]': '1',
     })
+    expect(post.mock.calls[0][1].has('products[0][is_stock_tracked]')).toBe(false)
+    expect(post.mock.calls[1][1]).toEqual({ child_product_id: '32', inclusion: 'included', quantity: 1, price_override: 0, auto_add: true, sort_order: 1 })
+    expect(post.mock.calls[2][1]).toEqual({ instances: [{ serial_number: 'AC12345678' }] })
+  })
+
+  it('resumes after a failed request without creating the product twice', async () => {
+    renderAt('/products/new')
+    fireEvent.change(await screen.findByLabelText('catalog.product.fields.name'), { target: { value: 'Fridge' } })
+    for (let step = 0; step < 3; step += 1) fireEvent.click(screen.getByText('actions.next'))
+    fireEvent.click(await screen.findByText('catalog.create.addOptional'))
+    fireEvent.change(screen.getByLabelText('catalog.relations.fields.child'), { target: { value: '32' } })
+    fireEvent.click(screen.getByText('actions.next'))
+    fireEvent.click(await screen.findByText('actions.next'))
+
+    post.mockImplementationOnce(async () => ({ data: { data: [{ id: 99 }] } }))
+    post.mockImplementationOnce(async () => { throw Object.assign(new Error('fail'), { response: { data: { message: 'relation failed' } } }) })
+    fireEvent.click(await screen.findByText('catalog.create.save'))
+    expect(await screen.findByText('relation failed')).toBeTruthy()
+
+    fireEvent.click(screen.getByText('catalog.create.retry'))
+    await waitFor(() => expect(post).toHaveBeenCalledTimes(3))
+    expect(post.mock.calls.map(([url]) => url)).toEqual([
+      '/api/tenant/product/create',
+      '/api/tenant/product/products/99/relations',
+      '/api/tenant/product/products/99/relations',
+    ])
   })
 
   it('creates an item type with code, kind and capabilities', async () => {

@@ -8,6 +8,7 @@ import { ProductDetailsPage } from './ProductDetailsPage'
 import { ItemTypesPage } from './ItemTypesPage'
 import { UnitsPage } from './UnitsPage'
 import { InstancesPage } from './InstancesPage'
+import { ProductCreatePage } from './ProductCreatePage'
 
 /**
  * Route objects of Products & Services (2026-10-06), spread into the MainLayout children in app/router.
@@ -19,6 +20,7 @@ export const productRoutes = [
     element: <ProductsLayout />,
     children: [
       { index: true, element: <ProductsPage /> },
+      { path: 'new', element: <ProductCreatePage /> },
       { path: 'services', element: <ServicesPage /> },
       { path: 'instances', element: <InstancesPage /> },
       { path: 'categories', element: <ProductCategoriesPage /> },

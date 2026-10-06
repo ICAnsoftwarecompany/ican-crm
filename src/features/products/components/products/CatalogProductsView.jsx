@@ -17,7 +17,7 @@ const STAT_CLASS = 'rounded-lg border border-[var(--border)] bg-[var(--surface)]
 
 /**
  * Products (`kind` product / plan / bundle) or services (`kind` service) list — 2026-10-06.
- * Clicking a row opens `/products/:id`.
+ * Clicking a row opens `/products/:id`; "new" opens the create wizard `/products/new` (2026-10-07); edit stays a drawer.
  */
 export function CatalogProductsView({ kind = 'product' }) {
   const { t, i18n } = useTranslation()
@@ -64,7 +64,7 @@ export function CatalogProductsView({ kind = 'product' }) {
           <RefreshCw size={16} className={query.isFetching ? 'animate-spin' : ''} />
           {t('catalog.common.refresh')}
         </Button>
-        <Button onClick={() => setDrawer({ mode: 'create', product: null })}>
+        <Button onClick={() => navigate(isServices ? '/products/new?kind=service' : '/products/new')}>
           <Plus size={16} />
           {t(`catalog.list.${copyKey}.create`)}
         </Button>
@@ -96,9 +96,6 @@ export function CatalogProductsView({ kind = 'product' }) {
         product={drawer?.product}
         kind={isServices ? 'service' : 'product'}
         onClose={() => setDrawer(null)}
-        onSaved={(id) => {
-          if (drawer?.mode === 'create' && id) navigate(`/products/${id}`)
-        }}
       />
     </div>
   )

@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { forwardRef, useId } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '../../utils/cn'
 import { useTranslation } from 'react-i18next'
@@ -13,21 +13,25 @@ export const Select = forwardRef(function Select(
     disabled = false,
     placeholder,
     className,
+    id,
     ...props
   },
   ref
 ) {
   const { t } = useTranslation()
+  const generatedId = useId()
+  const selectId = id || generatedId
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label className="text-sm font-medium font-arabic text-[var(--text)]">
+        <label htmlFor={selectId} className="text-sm font-medium font-arabic text-[var(--text)]">
           {label}
         </label>
       )}
       <div className="relative">
         <select
           ref={ref}
+          id={selectId}
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
