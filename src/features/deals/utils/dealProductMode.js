@@ -51,7 +51,8 @@ export function getProductUnitMode(product) {
   const data = productData(product)
   const explicit = String(product?.unit_mode ?? data.unit_mode ?? '').trim().toLowerCase()
   if (PRODUCT_UNIT_MODES.includes(explicit)) return explicit
-  if (String(product?.type ?? '').toLowerCase() === 'service') return 'service'
+  // `kind` replaced `type` in the catalog API (2026-10-06).
+  if (String(product?.kind ?? product?.type ?? '').toLowerCase() === 'service') return 'service'
   return getProductUnits(product) === 1 ? 'unique' : 'units'
 }
 

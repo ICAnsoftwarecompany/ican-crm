@@ -18,7 +18,7 @@ import {
   flattenCategoryTree,
   getCategoryChildren,
   getCategoryLabel,
-} from './categoryTree'
+} from '../../../features/products'
 
 function getCategoryStatus(category) {
   return Number(category.active ?? category.status ?? 1) === 1

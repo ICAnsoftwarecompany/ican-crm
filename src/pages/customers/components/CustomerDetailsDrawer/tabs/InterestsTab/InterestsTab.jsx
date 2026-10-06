@@ -128,7 +128,7 @@ function InterestDetailsDialog({ interest, onClose }) {
       isOpen={Boolean(interest)}
       onClose={onClose}
       title={product?.name || t('customers.interestsTab.details')}
-      description={interest?.notes || product?.desc || ''}
+      description={interest?.notes || (product?.description || product?.desc) || ''}
       size="lg"
       className="max-w-5xl"
     >
@@ -151,7 +151,7 @@ function InterestDetailsDialog({ interest, onClose }) {
                 id: product?.id,
                 code: product?.code,
                 name: product?.name,
-                description: product?.desc,
+                description: (product?.description || product?.desc),
                 price: product?.price,
                 status: product?.status,
                 category_id: product?.category_id,
@@ -259,10 +259,10 @@ export function InterestsTab({ customer, layoutMode = 'compact' }) {
                       </span>
                     </div>
 
-                    {interest?.notes || product?.desc ? (
+                    {interest?.notes || (product?.description || product?.desc) ? (
                       <div className="mt-2 flex min-w-0 items-start gap-1.5 rounded-lg bg-[#F8FEFF] px-2 py-1.5 text-xs font-semibold text-[var(--text-muted)]">
                         <StickyNote size={13} className="mt-0.5 shrink-0 text-[#007A80]" />
-                        <span className="min-w-0 break-words">{interest?.notes || product?.desc}</span>
+                        <span className="min-w-0 break-words">{interest?.notes || (product?.description || product?.desc)}</span>
                       </div>
                     ) : null}
 

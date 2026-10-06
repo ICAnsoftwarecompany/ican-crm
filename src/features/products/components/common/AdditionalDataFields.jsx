@@ -1,7 +1,7 @@
 import { Plus, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Button } from '../../../shared/components/ui/Button'
-import { Input } from '../../../shared/components/ui/Input'
+import { Button } from '../../../../shared/components/ui/Button'
+import { Input } from '../../../../shared/components/ui/Input'
 
 export function parseAdditionalData(value) {
   if (!value) return []

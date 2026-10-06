@@ -1,48 +1,29 @@
 import httpClient from '../../../services/httpClient'
-import { toFormData } from '../../../services/apiPayload'
+import { buildProductUpdateFormData, buildProductsFormData } from '../utils/catalogPayloads'
 
-function appendProductField(formData, index, key, value) {
-  if (value === undefined || value === null || value === '') return
-
-  const isFile = typeof File !== 'undefined' && value instanceof File
-  const normalizedValue = Array.isArray(value) || (typeof value === 'object' && !isFile)
-    ? JSON.stringify(value)
-    : value
-
-  formData.append(`products[${index}][${key}]`, normalizedValue)
-}
-
-function toProductsFormData(payload = {}) {
-  if (payload instanceof FormData) return payload
-
-  const formData = new FormData()
-  const products = Array.isArray(payload.products) ? payload.products : [payload]
-
-  products.forEach((product, index) => {
-    appendProductField(formData, index, 'name', product.name)
-    appendProductField(formData, index, 'price', product.price)
-    appendProductField(formData, index, 'desc', product.desc)
-    appendProductField(formData, index, 'image', product.image)
-    appendProductField(formData, index, 'data', product.data)
-    appendProductField(formData, index, 'status', product.status)
-    appendProductField(formData, index, 'category_id', product.category_id)
-    appendProductField(formData, index, 'type', product.type)
-  })
-
-  return formData
-}
-
+/**
+ * Products — Postman "Products & Catalog" §3 (updated 2026-10-06).
+ * Create accepts one product or `{ products: [...] }`; both go out as multipart so an image can be attached.
+ */
 export const productsApi = {
-  createProduct: async (payload) => {
-    const res = await httpClient.post('/api/tenant/product/create', toProductsFormData(payload))
+  createProducts: async (payload) => {
+    const body = payload instanceof FormData
+      ? payload
+      : buildProductsFormData(Array.isArray(payload?.products) ? payload.products : payload)
+    const res = await httpClient.post('/api/tenant/product/create', body)
     return res.data
   },
+
+  /** Kept for older callers: creates a single product. */
+  createProduct: async (payload) => productsApi.createProducts(payload),
 
   updateProduct: async (id, payload) => {
-    const res = await httpClient.post(`/api/tenant/product/update/${id}`, toFormData(payload))
+    const body = payload instanceof FormData ? payload : buildProductUpdateFormData(payload)
+    const res = await httpClient.post(`/api/tenant/product/update/${id}`, body)
     return res.data
   },
 
+  /** Filters: kind, item_type_id, category_id, status, search. */
   getProducts: async (params) => {
     const res = await httpClient.get('/api/tenant/product/data', { params })
     return res.data

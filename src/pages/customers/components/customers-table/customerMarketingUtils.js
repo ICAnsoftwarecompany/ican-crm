@@ -57,7 +57,7 @@ function normalizeLinkedProduct(link, sourceKind) {
     productId: link?.product_id || product?.id || '',
     name: product?.name || link?.name || '',
     code: product?.code || '',
-    description: product?.desc || link?.desc || '',
+    description: product?.description || product?.desc || link?.desc || '',
     image: product?.image || '',
     price: product?.price || '',
     raw: product || link || {},

@@ -7,7 +7,8 @@ import { countBy, filterByRange } from '../../../shared/components/reports'
 
 const childrenOf = (node) => (Array.isArray(node?.children_recursive) ? node.children_recursive : Array.isArray(node?.children) ? node.children : [])
 const isActive = (item) => Number(item?.status ?? item?.active ?? 1) === 1
-const typeOf = (item, inherited = '') => String(item?.type ?? '').trim().toLowerCase() || inherited
+// `kind` replaced `type` in the catalog API (2026-10-06); the old field stays as a fallback.
+const typeOf = (item, inherited = '') => String(item?.kind ?? item?.type ?? '').trim().toLowerCase() || inherited
 const categoryLabel = (category) => category?.name || category?.title || ''
 
 /** @returns {{ id, name, type: string, active: boolean, category: string, createdAt: string|null }[]} */
@@ -30,7 +31,7 @@ export function flattenCatalog(items = []) {
       })
     })
 
-    if (!nested.length && !children.length && parent !== undefined && (node?.price !== undefined || node?.category_id !== undefined)) {
+    if (!nested.length && !children.length && parent !== undefined && (node?.price !== undefined || node?.category_id !== undefined || node?.kind !== undefined)) {
       rows.push({
         id: node.id,
         name: node.name || node.title || '',
