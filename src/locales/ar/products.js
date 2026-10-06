@@ -154,7 +154,9 @@ export default {
     },
     "types": {
       "product": "منتجات",
-      "service": "خدمات"
+      "service": "خدمات",
+      "plan": "خطط",
+      "bundle": "باقات"
     },
     "statuses": {
       "active": "نشطة",

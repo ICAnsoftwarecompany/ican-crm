@@ -229,14 +229,17 @@ Since 2026-10-02 02:40 (Africa/Cairo) the thread header shows a **follow-up task
 
 ## Products and services
 
-**Status:** CURRENT
+> **Documentation update:** 2026-10-06 23:35 (Africa/Cairo) — rebuilt on the Postman collection "Products & Catalog".
 
-- **What it does:** products, product categories (tree), services and service categories under `/products` (own layout and sidebar: `categories`, `services`, `service-categories`). Services reuse `ProductsPage` with `productType="service"`.
-- **Key files:** `features/products/api/productsApi.js`, `categoriesApi.js`, `linkProductsApi.js`, `hooks/useProducts.js` (`useProducts`, `useProductCategories`, `useProductMutations`); `pages/products/ProductsPage/` (`ProductsPage`, `ProductFormDrawer`, `ProductCategoriesPage`, `CategoryFormDrawer`, `categoryTree.js`, `AdditionalDataFields`), `pages/products/ServicesPage/`, `layout/`; locale `products.js`.
-- **API:** `GET /api/tenant/product/data`, `GET .../info/{id}`, `POST .../create`, `POST .../update/{id}`; categories `GET /api/tenant/category/data`, `GET .../info/{id}`, `POST .../create`, `POST .../update/{id}`; link products `POST /api/tenant/link-products/save`, `POST .../update-status`.
-- **Used by:** `/products`, lead interests and follow-up dialogs, customer products dialog, proposal builder/pricing, Messenger link-customer dialog.
-- **Reports** *(added 2026-10-01 01:49 (Africa/Cairo))*: `/products/reports` (sub-sidebar group "Insights") on the shared reports engine — totals, added in period, inactive, categories in use; by category, products vs services, active vs inactive, added per day. Model: `features/products/reports/productsReportModel.js` (`flattenCatalog` flattens the catalog tree, tested) + `useProductsReport`.
-- **Known issues:** Unverified: delete endpoints for products/categories (none in the API files).
+**Status:** CURRENT (not yet tested against a real server)
+
+- **What it does:** the catalog under `/products` (sub-sidebar groups Catalog · Organize · Setup · Insights): products (`kind` product / plan / bundle) and services; product page `/products/:id` with tabs Overview (effective capabilities = item type defaults + product `capability_values`), Units (base + alternative units with factor, price, barcode), Attached items (included / optional, auto-add, price override) and Units & serials (serial numbers checked against the item type pattern, real-estate units, batches with expiry; void / restore); `/products/instances` across all products with availability and "expiring within" filters; `/products/item-types` (kind, service model, fulfillment, capabilities editor from a registry, deactivate instead of delete); `/products/units`; categories and reports unchanged.
+- **Key files:** `features/products/` — `api/productsApi.js`, `api/catalogApi.js`, `hooks/useCatalogProducts.js`, `useCatalogSetup.js`, `useProductResources.js`, `utils/catalogPayloads.js`, `catalogForms.js`, `catalogNormalize.js` (tested), `constants/capabilityRegistry.js`, `components/{products,details,instances,item-types,units,common}`; routes `pages/products/productRoutes.jsx`; locale `catalog.js` (+ `products.js` for categories/reports). Full reference: [features/products/README.md](../src/features/products/README.md).
+- **API:** see the README table (item types, units, products, product units, relations, instances); categories `GET /api/tenant/category/data`, `GET .../info/{id}`, `POST .../create`, `POST .../update/{id}`; link products `POST /api/tenant/link-products/save`, `POST .../update-status`.
+- **Request changes (2026-10-06):** product create/update now send `kind` (was `type`), `description` (was `desc`), `item_type_id`, `is_stock_tracked`, `stock_quantity`, `capability_values`, `fulfillment_config` and (create only) alternative units.
+- **Used by:** `/products`, lead interests and follow-up dialogs, customer products dialog, proposal builder/pricing, Messenger link-customer dialog, deals (products, won dialog — `dealProductMode` now reads `kind`).
+- **Reports** *(added 2026-10-01 01:49 (Africa/Cairo))*: `/products/reports` on the shared reports engine. Model: `features/products/reports/productsReportModel.js` (reads `kind`, falls back to `type`).
+- **Known issues:** no capabilities endpoint (frontend registry), no response examples, no product delete, no instance hold/reserve, no currency on prices, instances capped at 200 per request. Backend list: [backend/BACKEND-REQUESTS.md §D](backend/BACKEND-REQUESTS.md).
 
 ## Settings and appearance
 

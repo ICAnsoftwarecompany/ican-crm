@@ -154,7 +154,9 @@ export default {
     },
     "types": {
       "product": "Products",
-      "service": "Services"
+      "service": "Services",
+      "plan": "Plans",
+      "bundle": "Bundles"
     },
     "statuses": {
       "active": "Active",

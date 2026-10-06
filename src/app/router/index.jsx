@@ -44,6 +44,7 @@ import { OutreachCalendarPage } from '../../pages/outreach-campaigns/OutreachCal
 import { OutreachCreatePage } from '../../pages/outreach-campaigns/OutreachCreatePage'
 import { OpportunityCenterPage } from '../../pages/opportunities/OpportunityCenterPage'
 import { dealRoutes } from '../../pages/deals/dealRoutes'
+import { productRoutes } from '../../pages/products/productRoutes'
 import { SocialMediaPage } from '../../pages/social-media/SocialMediaPage'
 import { SocialOverviewPage } from '../../pages/social-media/pages/SocialOverviewPage'
 import { SocialProfilesPage } from '../../pages/social-media/pages/SocialProfilesPage'
@@ -60,12 +61,6 @@ import { FacebookCallbackPage } from '../../pages/integrations/FacebookCallbackP
 import { TasksPage } from '../../pages/tasks/TasksPage'
 import { TodoPage } from '../../pages/todo/TodoPage'
 import { CalendarPage } from '../../pages/calendar/CalendarPage'
-import { ProductsLayout } from '../../pages/products/layout/ProductsLayout'
-import { ProductsReportsPage } from '../../pages/products/ProductsReportsPage'
-import { ProductsPage } from '../../pages/products/ProductsPage/ProductsPage'
-import { ProductCategoriesPage } from '../../pages/products/ProductsPage/ProductCategoriesPage'
-import { ServicesPage } from '../../pages/products/ServicesPage/ServicesPage'
-import { ServiceCategoriesPage } from '../../pages/products/ServicesPage/ServiceCategoriesPage'
 import { TeamsPage } from '../../pages/teams/TeamsPage'
 import { UsersPage } from '../../pages/users/UsersPage'
 import { SettingsLayout } from '../../pages/settings/layout/SettingsLayout'
@@ -205,17 +200,7 @@ export const router = createBrowserRouter([
       { path: 'tasks', element: <TasksPage /> },
       { path: 'todo', element: <TodoPage /> },
       { path: 'calendar', element: <CalendarPage /> },
-      {
-        path: 'products',
-        element: <ProductsLayout />,
-        children: [
-          { index: true, element: <ProductsPage /> },
-          { path: 'categories', element: <ProductCategoriesPage /> },
-          { path: 'services', element: <ServicesPage /> },
-          { path: 'service-categories', element: <ServiceCategoriesPage /> },
-          { path: 'reports', element: <ProductsReportsPage /> },
-        ],
-      },
+      ...productRoutes,
       { path: 'teams', element: <TeamsPage /> },
       { path: 'users', element: <UsersPage /> },
       { path: 'templates', element: <TemplatesPage /> },

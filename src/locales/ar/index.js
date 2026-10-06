@@ -18,6 +18,7 @@ import campaigns from './campaigns.js'
 import campaignWizard from './campaignWizard.js'
 import socialMedia from './socialMedia.js'
 import products from './products.js'
+import catalog from './catalog.js'
 import tasks from './tasks.js'
 import workflow from './workflow.js'
 import visualFlow from './visualFlow.js'
@@ -57,6 +58,7 @@ export default {
   campaignWizard,
   socialMedia,
   products,
+  catalog,
   tasks,
   workflow,
   visualFlow,

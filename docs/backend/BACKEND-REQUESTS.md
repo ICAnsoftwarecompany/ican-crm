@@ -1,4 +1,4 @@
-# المطلوب من الباك إند — قفل الليد والصفقات
+# المطلوب من الباك إند — قفل الليد والصفقات والكتالوج
 
 > **Documentation update:** 2026-10-04 14:45 (Africa/Cairo) — الملف اتعمل: كل اللي الفرونت محتاجه من الباك إند في
 > جزئين: (أ) قفل الليد في مركز العملاء، (ب) الصفقات ومساحة العمل. مجمّع من
@@ -51,7 +51,17 @@
 | B15 | أحداث الأتمتة للصفقات | الصفقات | P2 |
 | B16 | `custom_staged`: تعريف مراحل الدفع | الصفقات | P2 |
 | B17 | الذكاء الاصطناعي للصفقة | الصفقات | P3 |
-| C | أسئلة وقرارات مفتوحة | الاتنين | — |
+| D1 | رد فعلي (examples) لكل طلبات الكتالوج | الكتالوج | P1 |
+| D2 | قائمة الـ Capabilities بالـ schema بتاعها | الكتالوج | P1 |
+| D3 | `item_type` بالـ capabilities و`available_units` في `/product/data` و`/info` | الكتالوج | P1 |
+| D4 | `kind`: دعم `plan`/`bundle` وحذف `type` | الكتالوج | P1 |
+| D5 | الكسب يقبل `product_unit_id` و`item_instance_ids` ويقفل القطعة | الكتالوج + الصفقات | P1 |
+| D6 | منع البيع من مركز العملاء لمنتج بقطع أو مخزون | الكتالوج + قفل الليد | P1 |
+| D7 | `data` و`description` و`category_id` في المنتج | الكتالوج | P2 |
+| D8 | حجز مؤقت للقطعة (Hold / Release) | الكتالوج + الصفقات | P2 |
+| D9 | حذف منتج، الوحدة الأساسية، العملة، الأسماء ar/en | الكتالوج | P2 |
+| D10 | pagination للقطع وتوحيد مسار JSON في الكولكشن | الكتالوج | P3 |
+| C | أسئلة وقرارات مفتوحة | الكل | — |
 
 ---
 
@@ -336,6 +346,57 @@ GET  /api/tenant/deals/{dealId}/ai/insights   → { "data": [{ "id": "stale_lead
 POST /api/tenant/deals/{dealId}/ai/ask         { "question": "...", "language": "ar" } → { "data": { "answer": "...", "sources": [] } }
 ```
 الموديل والمفاتيح على السيرفر بس.
+
+---
+
+## (د) الكتالوج: المنتجات والخدمات
+
+> *أُضيف 2026-10-06 23:35 (Africa/Cairo)*: بعد ربط `/products` بكولكشن "Products & Catalog". الفرونت شغال على المسارات
+> والـ bodies زي الكولكشن بالظبط، والبنود دي هي اللي ناقصة أو مش واضحة. التفاصيل في
+> [features/products/README.md](../../src/features/products/README.md).
+
+### D1 — أمثلة ردود (P1)
+الكولكشن مفيهاش ولا response. الفرونت بيقرا أكتر من شكل (`data` / `data.data` / شجرة الفئات القديمة). المطلوب مثال رد حقيقي
+لكل طلب، خصوصاً `/product/data` (لسه شجرة فئات ولا قائمة؟) و`/product/info/{id}` و`/product-instances` (paginated؟).
+
+### D2 — قائمة الـ Capabilities (P1)
+```http
+GET /api/tenant/product/capabilities
+→ { "data": [{ "code": "warranty", "version": 1, "applies_to": "both", "config_schema": { ... }, "instance_schema": null }] }
+```
+لحد ما يتعمل، الفرونت عنده نسخة ثابتة (`constants/capabilityRegistry.js`)، وأي كود جديد بيتعدل كـ JSON.
+
+### D3 — بيانات المنتج في القوائم (P1)
+`/product/data` و`/product/info/{id}` و`/deals/{id}/products` يرجّعوا مع كل منتج:
+`item_type: { id, name, kind, capabilities[] }`، `base_unit: { id, name, code }`، و`available_units` (عدد القطع `available`، أو
+`stock_quantity` للمنتج بالمخزون). ده بيحل محل `unit_mode` في **B1**: الفرونت هيستنتج النوع من الـ capabilities.
+
+### D4 — `kind` (P1)
+الكولكشن فيها `product` بس. المواصفة §25.3 فيها `product | service | plan | bundle`، والفرونت بيبعت الأربعة. و`type` القديم
+اختفى من الكولكشن: الفرونت بيبعت `kind` بس، ولسه بيقرا `type` لو رجع. يا ريت يتأكد إن المنتجات القديمة اتنقلت لـ `kind`.
+
+### D5 — الكسب بالوحدة والقطعة (P1)
+`POST /deals/leads/{id}/won`: كل سطر يقبل `product_unit_id` و`item_instance_ids[]`. السيرفر يعلّم القطع `sold`، ويخصم المخزون
+بالوحدة الأساسية (الكمية × `factor`)، ويرجّع `422` لو قطعة مش `available`. وإلغاء العقد أو إعادة الفتح (B9) يرجّعها `available`.
+
+### D6 — البيع من مركز العملاء (P1)
+`save/action` بحالة `is_deal` لاهتمام منتجه عليه `unique_unit` أو `serial_tracking` أو `is_stock_tracked` ← `422` (يتباع من صفقة)،
+أو يقبل `quantity` و`item_instance_id` ويخصم. محتاجين قرار.
+
+### D7 — حقول المنتج (P2)
+الفرونت بيبعت `description` (مش `desc`)، و`category_id`، و`data` (البيانات الإضافية كـ JSON string). المطلوب يتخزنوا ويرجعوا.
+
+### D8 — الحجز المؤقت (P2)
+`POST /product/product-instances/{id}/hold { "until": "2026-10-13", "deal_lead_id": 101 }` و`/release`، والسيرفر يرجّعها
+`available` بعد `until` (المواصفة §19.3، §29.8).
+
+### D9 — تكملة (P2)
+حذف منتج (أو تعطيل فقط)؛ اختيار `base_unit_id` وقت الإنشاء (الخدمات وحدتها ساعة/زيارة مش "قطعة")؛ `currency_code` مع السعر
+وأرقام decimal مش float؛ أسماء الأنواع والوحدات `{ ar, en }` (المواصفة §23).
+
+### D10 — تنظيم (P3)
+`per_page`/`page` حقيقي في `/product-instances` (الفرونت بيطلب 200). وطلب "Create Products (JSON)" في الكولكشن على
+`{{url_server}}api/...{{apiPass}}` وفي الـ body تعليقات `//` (JSON مش صالح) — يتوحد مع `{{base_url}}`.
 
 ---
 
