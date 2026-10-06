@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { itemTypesApi, unitsApi } from '../api/catalogApi'
 import { extractList } from '../../../shared/utils/apiResponse'
-import { normalizeItemType, normalizeUnit } from '../utils/catalogNormalize'
+import { extractEntity, normalizeItemType, normalizeUnit } from '../utils/catalogNormalize'
 import { catalogKeys } from './catalogQueryKeys'
 
 /** Item types (kind, status, search filters). Added 2026-10-06. */
@@ -10,6 +10,19 @@ export function useItemTypes(params = {}) {
     queryKey: catalogKeys.itemTypes(params),
     queryFn: () => itemTypesApi.list(params),
     select: (response) => extractList(response, ['item_types', 'itemTypes']).map(normalizeItemType),
+  })
+}
+
+/** One item type with its full capabilities (`GET /item-types/{id}`) — the list may return a summary. */
+export function useItemType(id) {
+  return useQuery({
+    queryKey: [...catalogKeys.itemTypes(), 'one', String(id)],
+    queryFn: () => itemTypesApi.get(id),
+    enabled: Boolean(id),
+    select: (response) => {
+      const raw = extractEntity(response)
+      return raw && raw.id !== undefined ? normalizeItemType(raw) : null
+    },
   })
 }
 

@@ -5,15 +5,21 @@ import { Input } from '../../../../shared/components/ui/Input'
 import { Select } from '../../../../shared/components/ui/Select'
 import { ModuleNotice } from '../../../../shared/components/module-pages'
 import { CheckboxField } from '../common/catalogUi'
+import { stockComesFromInstances } from '../../utils/productCreateWizard'
 import { newUnitRow } from './useProductForm'
 
 /**
- * Stock & units tab. Alternative units are sent with the product on create only (`products[i][units][j]`);
+ * Stock & units tab / step. Services have no stock. When the item type holds serials or units, stock is the count
+ * of available instances, so the manual quantity is hidden. `onCreateUnit` (wizard) adds a "new unit" button.
+ *
+ * Alternative units are sent with the product on create only (`products[i][units][j]`);
  * after that they are managed from the product page (Units tab). The base unit is created by the server.
  */
-export function ProductStockFields({ mode, state }) {
+export function ProductStockFields({ mode, state, onCreateUnit }) {
   const { t } = useTranslation()
-  const { form, errors, update, units } = state
+  const { form, errors, update, units, selectedItemType } = state
+  const isService = form.kind === 'service'
+  const fromInstances = stockComesFromInstances(selectedItemType)
   const rows = form.units || []
   const unitOptions = units.map((unit) => ({ value: String(unit.id), label: unit.code ? `${unit.name} (${unit.code})` : unit.name }))
 
@@ -21,23 +27,29 @@ export function ProductStockFields({ mode, state }) {
 
   return (
     <div className="space-y-4">
-      <CheckboxField
-        label={t('catalog.product.fields.isStockTracked')}
-        hint={t('catalog.product.stockHint')}
-        checked={form.is_stock_tracked}
-        onChange={(value) => update('is_stock_tracked', value)}
-      />
-      {form.is_stock_tracked && (
-        <Input
-          label={t('catalog.product.fields.stockQuantity')}
-          type="number"
-          min={0}
-          step="any"
-          dir="ltr"
-          value={form.stock_quantity}
-          error={errors.stock_quantity ? t(`catalog.validation.${errors.stock_quantity}`) : undefined}
-          onChange={(event) => update('stock_quantity', event.target.value)}
-        />
+      {isService && <ModuleNotice>{t('catalog.create.serviceNoStock')}</ModuleNotice>}
+      {!isService && fromInstances && <ModuleNotice>{t('catalog.create.stockFromInstances')}</ModuleNotice>}
+      {!isService && !fromInstances && (
+        <>
+          <CheckboxField
+            label={t('catalog.product.fields.isStockTracked')}
+            hint={t('catalog.product.stockHint')}
+            checked={form.is_stock_tracked}
+            onChange={(value) => update('is_stock_tracked', value)}
+          />
+          {form.is_stock_tracked && (
+            <Input
+              label={t('catalog.product.fields.stockQuantity')}
+              type="number"
+              min={0}
+              step="any"
+              dir="ltr"
+              value={form.stock_quantity}
+              error={errors.stock_quantity ? t(`catalog.validation.${errors.stock_quantity}`) : undefined}
+              onChange={(event) => update('stock_quantity', event.target.value)}
+            />
+          )}
+        </>
       )}
 
       <div className="border-t border-[var(--border)] pt-4">
@@ -49,7 +61,7 @@ export function ProductStockFields({ mode, state }) {
         <ModuleNotice>{t('catalog.product.unitsOnProductPage')}</ModuleNotice>
       ) : (
         <div className="space-y-3">
-          {!units.length && <ModuleNotice>{t('catalog.product.noUnitsDefined')}</ModuleNotice>}
+          {!units.length && !onCreateUnit && <ModuleNotice>{t('catalog.product.noUnitsDefined')}</ModuleNotice>}
           {rows.map((row, index) => (
             <div key={row.key} className="grid gap-2 rounded-lg border border-[var(--border)] p-3 sm:grid-cols-2">
               <Select label={t('catalog.productUnits.fields.unit')} value={row.unit_id} options={unitOptions} onChange={(value) => setRow(row.key, 'unit_id', value)} />
@@ -74,10 +86,13 @@ export function ProductStockFields({ mode, state }) {
               </div>
             </div>
           ))}
-          <Button variant="outline" size="sm" disabled={!units.length} onClick={() => update('units', [...rows, newUnitRow()])}>
-            <Plus size={14} />
-            {t('catalog.product.addAlternativeUnit')}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" disabled={!units.length} onClick={() => update('units', [...rows, newUnitRow()])}>
+              <Plus size={14} />
+              {t('catalog.product.addAlternativeUnit')}
+            </Button>
+            {onCreateUnit && <Button variant="ghost" size="sm" onClick={onCreateUnit}><Plus size={14} />{t('catalog.create.newUnit')}</Button>}
+          </div>
         </div>
       )}
     </div>

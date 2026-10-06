@@ -8,6 +8,7 @@ Thin route pages for `/products/*`; the screens live in `features/products` ([RE
 | Path | Page |
 |---|---|
 | `/products` | Products, plans and bundles (`CatalogProductsView kind="product"`) |
+| `/products/new` | Create wizard (`?kind=service` for a service) — 2026-10-07 02:30 (Africa/Cairo) |
 | `/products/services` | Services (`kind="service"`) |
 | `/products/instances` | All serials / units / batches |
 | `/products/categories`, `/products/service-categories` | Category trees (legacy pages in `ProductsPage/`) |

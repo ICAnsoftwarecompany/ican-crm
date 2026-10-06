@@ -8,12 +8,17 @@ import { Select } from '../../../../shared/components/ui/Select'
 import { FULFILLMENT_CREATES, PRODUCT_KINDS, SERVICE_MODELS } from '../../constants/catalogOptions'
 import { useItemTypeMutations } from '../../hooks/useCatalogSetup'
 import { buildItemTypePayload, itemTypeToForm, validateItemTypeForm } from '../../utils/catalogForms'
+import { getCreatedId } from '../../utils/catalogPayloads'
 import { formatApiError } from '../../utils/apiErrors'
 import { CheckboxField, FormError, TextAreaField, useOptions } from '../common/catalogUi'
 import { CapabilitiesEditor } from './CapabilitiesEditor'
 
-/** Create / edit an item type with its capabilities (2026-10-06). The code is fixed after creation. */
-export function ItemTypeFormDrawer({ open, itemType, onClose }) {
+/**
+ * Create / edit an item type with its capabilities (2026-10-06). The code is fixed after creation.
+ * `initialKind` presets the kind of a new type; `onSaved(id)` gets the created / edited id (used by the
+ * product wizard to select the new type).
+ */
+export function ItemTypeFormDrawer({ open, itemType, initialKind, onClose, onSaved }) {
   const { t } = useTranslation()
   const mode = itemType ? 'edit' : 'create'
   const mutations = useItemTypeMutations()
@@ -26,10 +31,10 @@ export function ItemTypeFormDrawer({ open, itemType, onClose }) {
 
   useEffect(() => {
     if (!open) return
-    setForm(itemTypeToForm(itemType))
+    setForm(itemType ? itemTypeToForm(itemType) : { ...itemTypeToForm(null), kind: initialKind || 'product' })
     setErrors({})
     setSubmitError('')
-  }, [itemType, open])
+  }, [initialKind, itemType, open])
 
   const set = (key, value) => setForm((current) => ({ ...current, [key]: value }))
   const saving = mutations.create.isPending || mutations.update.isPending
@@ -42,8 +47,13 @@ export function ItemTypeFormDrawer({ open, itemType, onClose }) {
     if (Object.keys(nextErrors).length) return
     const payload = buildItemTypePayload(form, { mode })
     try {
-      if (mode === 'create') await mutations.create.mutateAsync(payload)
-      else await mutations.update.mutateAsync({ id: itemType.id, payload })
+      if (mode === 'create') {
+        const response = await mutations.create.mutateAsync(payload)
+        onSaved?.(getCreatedId(response))
+      } else {
+        await mutations.update.mutateAsync({ id: itemType.id, payload })
+        onSaved?.(itemType.id)
+      }
       toast.success(t(mode === 'create' ? 'catalog.itemTypes.created' : 'catalog.itemTypes.updated'))
       onClose()
     } catch (error) {

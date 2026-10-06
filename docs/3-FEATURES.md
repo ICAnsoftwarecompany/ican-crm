@@ -229,10 +229,11 @@ Since 2026-10-02 02:40 (Africa/Cairo) the thread header shows a **follow-up task
 
 ## Products and services
 
-> **Documentation update:** 2026-10-06 23:35 (Africa/Cairo) — rebuilt on the Postman collection "Products & Catalog".
+> **Documentation update:** 2026-10-06 23:35 (Africa/Cairo) — rebuilt on the Postman collection "Products & Catalog". 2026-10-07 02:30 (Africa/Cairo) — create wizard `/products/new`.
 
 **Status:** CURRENT (not yet tested against a real server)
 
+- **Create** *(2026-10-07 02:30 (Africa/Cairo))*: `/products/new` in steps (basic data & item type → stock & units → capabilities → attached items → pieces → review); one save sends the product, each attached item and the pieces in order, resumable after a failure; new item types and units can be created inside the steps.
 - **What it does:** the catalog under `/products` (sub-sidebar groups Catalog · Organize · Setup · Insights): products (`kind` product / plan / bundle) and services; product page `/products/:id` with tabs Overview (effective capabilities = item type defaults + product `capability_values`), Units (base + alternative units with factor, price, barcode), Attached items (included / optional, auto-add, price override) and Units & serials (serial numbers checked against the item type pattern, real-estate units, batches with expiry; void / restore); `/products/instances` across all products with availability and "expiring within" filters; `/products/item-types` (kind, service model, fulfillment, capabilities editor from a registry, deactivate instead of delete); `/products/units`; categories and reports unchanged.
 - **Key files:** `features/products/` — `api/productsApi.js`, `api/catalogApi.js`, `hooks/useCatalogProducts.js`, `useCatalogSetup.js`, `useProductResources.js`, `utils/catalogPayloads.js`, `catalogForms.js`, `catalogNormalize.js` (tested), `constants/capabilityRegistry.js`, `components/{products,details,instances,item-types,units,common}`; routes `pages/products/productRoutes.jsx`; locale `catalog.js` (+ `products.js` for categories/reports). Full reference: [features/products/README.md](../src/features/products/README.md).
 - **API:** see the README table (item types, units, products, product units, relations, instances); categories `GET /api/tenant/category/data`, `GET .../info/{id}`, `POST .../create`, `POST .../update/{id}`; link products `POST /api/tenant/link-products/save`, `POST .../update-status`.
