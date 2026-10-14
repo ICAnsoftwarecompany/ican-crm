@@ -20,18 +20,18 @@ export function buildCatalogImageUrl(path) {
   return `${tenantBaseUrl().replace(/\/+$/, '')}/${encodeURI(value.replace(/^\/+/, ''))}`
 }
 
-/** Thumbnail that opens the full image in a modal. */
+/** Thumbnail that opens the full image in a modal. Sizes: `sm` (table), `lg`, `xl` (details page / drawer, 2026-10-15). */
 export function ProductImage({ src, name, size = 'sm' }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [failed, setFailed] = useState(false)
   const url = buildCatalogImageUrl(src)
-  const box = size === 'lg' ? 'h-24 w-24' : 'h-9 w-9'
+  const box = { sm: 'h-9 w-9', lg: 'h-24 w-24', xl: 'h-48 w-full sm:w-48' }[size] || 'h-9 w-9'
 
   if (!url || failed) {
     return (
       <span className={`inline-flex ${box} shrink-0 items-center justify-center rounded-lg bg-[var(--surface-2)] text-[var(--text-muted)]`}>
-        <Package size={size === 'lg' ? 32 : 16} aria-hidden="true" />
+        <Package size={size === 'sm' ? 16 : size === 'xl' ? 56 : 32} aria-hidden="true" />
       </span>
     )
   }

@@ -8,7 +8,7 @@ import { useUnits } from '../../hooks/useCatalogSetup'
 import { useProductUnitMutations } from '../../hooks/useProductResources'
 import { compactBody } from '../../utils/catalogPayloads'
 import { formatApiError } from '../../utils/apiErrors'
-import { CheckboxField, FormError } from '../common/catalogUi'
+import { CheckboxField, FormError } from '../../components/common/catalogUi'
 
 const EMPTY = { unit_id: '', factor: '', price: '', barcode: '', is_default: false, status: true }
 

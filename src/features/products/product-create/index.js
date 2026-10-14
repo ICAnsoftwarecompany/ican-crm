@@ -2,3 +2,7 @@
 // Full explanation: README.md in this folder.
 export { ProductCreateWizard } from './ProductCreateWizard'
 export { getCreateSteps } from './utils/createSteps'
+// Pieces reused by the "complete the data" guide (product-details/complete).
+export { CategoryDetails } from './components/CategoryDetails'
+export { QuickCategoryDialog } from './components/QuickCategoryDialog'
+export { TypeSummaryCard } from './components/TypeSummaryCard'

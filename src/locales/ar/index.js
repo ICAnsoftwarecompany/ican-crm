@@ -21,6 +21,8 @@ import products from './products.js'
 import catalog from './catalog.js'
 import catalogSetup from './catalogSetup.js'
 import productSetup from './productSetup.js'
+import productDetails from './productDetails.js'
+import productOverview from './productOverview.js'
 import tasks from './tasks.js'
 import workflow from './workflow.js'
 import visualFlow from './visualFlow.js'
@@ -63,6 +65,8 @@ export default {
   catalog,
   catalogSetup,
   productSetup,
+  productDetails,
+  productOverview,
   tasks,
   workflow,
   visualFlow,

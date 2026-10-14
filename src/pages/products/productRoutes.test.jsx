@@ -280,4 +280,33 @@ describe('products area', () => {
     fireEvent.click(screen.getByText('productSetup.quickAdd.showAll.service'))
     expect(await screen.findByText('Installation')).toBeTruthy()
   })
+
+  it('shows the overview with totals and warns about missing service types', async () => {
+    renderAt('/products/overview')
+    expect((await screen.findAllByText('productOverview.title')).length).toBeGreaterThan(0)
+    expect(await screen.findByText('productOverview.alerts.noTypes.service')).toBeTruthy()
+    expect(screen.queryByText('productOverview.alerts.noTypes.product')).toBeNull()
+    expect(screen.getByText('productOverview.section.title.product')).toBeTruthy()
+  })
+
+  it('lists every field with completeness, no stat tiles, and opens the quick drawer from the name', async () => {
+    renderAt('/products')
+    expect((await screen.findAllByText('Split AC')).length).toBeGreaterThan(0)
+    expect(screen.getAllByText('productDetails.columns.completeness').length).toBeGreaterThan(0)
+    expect(screen.queryByText('catalog.list.activeCount')).toBeNull()
+    fireEvent.click(screen.getAllByLabelText('dataTable.openDrawer')[0])
+    expect(await screen.findByText('productDetails.drawer.openPage')).toBeTruthy()
+    expect(screen.getByText('productDetails.completeness.action')).toBeTruthy()
+  })
+
+  it('completes only the missing data with a guide and saves once', async () => {
+    renderAt('/products/31/complete')
+    expect((await screen.findAllByText('productDetails.complete.steps.category.title')).length).toBeGreaterThan(0)
+    fireEvent.click(screen.getByText('productDetails.complete.later'))
+    fireEvent.change(await screen.findByLabelText('catalog.product.fields.description'), { target: { value: 'Inverter, 1.5 HP' } })
+    fireEvent.click(screen.getByText('actions.next'))
+    fireEvent.click(await screen.findByText('productDetails.complete.later'))
+    fireEvent.click(await screen.findByText('productDetails.complete.save'))
+    await waitFor(() => expect(post.mock.calls.some(([url]) => url === '/api/tenant/product/update/31')).toBe(true))
+  })
 })

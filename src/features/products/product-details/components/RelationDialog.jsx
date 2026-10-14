@@ -9,7 +9,7 @@ import { useCatalogProducts } from '../../hooks/useCatalogProducts'
 import { useProductRelationMutations } from '../../hooks/useProductResources'
 import { compactBody } from '../../utils/catalogPayloads'
 import { formatApiError } from '../../utils/apiErrors'
-import { CheckboxField, FormError, useOptionLabel, useOptions } from '../common/catalogUi'
+import { CheckboxField, FormError, useOptionLabel, useOptions } from '../../components/common/catalogUi'
 
 const EMPTY = { child_product_id: '', inclusion: 'included', quantity: '1', price_override: '', auto_add: true, sort_order: '' }
 

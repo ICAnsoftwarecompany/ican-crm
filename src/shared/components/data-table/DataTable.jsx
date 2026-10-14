@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { GitCompareArrows } from 'lucide-react'
 import { DataTableHeader } from './DataTableHeader'
 import { DataTableBody } from './DataTableBody'
+import { withDrawerTrigger } from './utils/drawerTrigger'
 import { DataTableFooter } from './DataTableFooter'
 import { DataTableToolbar } from './DataTableToolbar'
 import { DataTableFilterRow } from './DataTableFilterRow'
@@ -263,6 +264,7 @@ export function DataTable({
   selectionContextActions = null,
   rowContextActions = null,
   serialColumnRender = null,
+  onOpenRowDrawer = null, // (row) => void: icon next to the name cell opens the row's drawer (utils/drawerTrigger.jsx)
 }) {
   const { t } = useTranslation()
   const dir = useDirection()
@@ -376,8 +378,8 @@ export function DataTable({
       render: serialColumnRender || ((row) => row.__serial),
     }
 
-    return [selectColumn, serialColumn, ...columns]
-  }, [columns, data, serialColumnRender])
+    return [selectColumn, serialColumn, ...withDrawerTrigger(columns, onOpenRowDrawer)]
+  }, [columns, data, onOpenRowDrawer, serialColumnRender])
 
   const advancedFilters = useAdvancedFilters(effectiveTableId, processedColumns)
   const exportState = useExport()

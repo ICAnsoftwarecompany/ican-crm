@@ -5,10 +5,10 @@ import { Button } from '../../../../shared/components/ui/Button'
 import { Select } from '../../../../shared/components/ui/Select'
 import { AVAILABILITY_STATUSES } from '../../constants/catalogOptions'
 import { useProductInstances } from '../../hooks/useProductResources'
-import { useOptions } from '../common/catalogUi'
-import { CreateInstancesDialog } from '../instances/CreateInstancesDialog'
-import { InstancesTable } from '../instances/InstancesTable'
-import { useInstanceActions } from '../instances/useInstanceActions'
+import { useOptions } from '../../components/common/catalogUi'
+import { CreateInstancesDialog } from '../../components/instances/CreateInstancesDialog'
+import { InstancesTable } from '../../components/instances/InstancesTable'
+import { useInstanceActions } from '../../components/instances/useInstanceActions'
 
 const PER_PAGE = 200
 

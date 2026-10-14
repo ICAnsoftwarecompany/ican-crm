@@ -1,8 +1,8 @@
-import { BarChart3, Boxes, BriefcaseBusiness, FolderTree, Layers, Package, Ruler, Tags } from 'lucide-react'
+import { BarChart3, Boxes, LayoutDashboard, BriefcaseBusiness, FolderTree, Layers, Package, Ruler, Tags } from 'lucide-react'
 
 /**
- * Products & Services sub-sidebar. Rebuilt 2026-10-06 for the catalog API: catalog (products, services,
- * instances), organize (categories), setup (item types, units), insights (reports).
+ * Products & Services sub-sidebar. Rebuilt 2026-10-06 for the catalog API: catalog (overview — first, 2026-10-15 —
+ * products, services, instances), organize (categories), setup (item types, units), insights (reports).
  */
 export function getProductNavigationGroups(t) {
   return [
@@ -10,6 +10,7 @@ export function getProductNavigationGroups(t) {
       id: 'catalog',
       label: t('catalog.nav.catalog'),
       items: [
+        { to: '/products/overview', label: t('catalog.nav.overview'), icon: LayoutDashboard },
         { to: '/products', label: t('catalog.nav.products'), icon: Package, end: true },
         { to: '/products/services', label: t('catalog.nav.services'), icon: BriefcaseBusiness },
         { to: '/products/instances', label: t('catalog.nav.instances'), icon: Boxes },

@@ -11,6 +11,8 @@ import { InstancesPage } from './InstancesPage'
 import { ProductCreatePage } from './ProductCreatePage'
 import { ItemTypeCreatePage } from './ItemTypeCreatePage'
 import { ItemTypeEditPage } from './ItemTypeEditPage'
+import { ProductCompletePage } from './ProductCompletePage'
+import { ProductsOverviewPage } from './ProductsOverviewPage'
 
 /**
  * Route objects of Products & Services (2026-10-06), spread into the MainLayout children in app/router.
@@ -22,6 +24,7 @@ export const productRoutes = [
     element: <ProductsLayout />,
     children: [
       { index: true, element: <ProductsPage /> },
+      { path: 'overview', element: <ProductsOverviewPage /> },
       { path: 'new', element: <ProductCreatePage /> },
       { path: 'services', element: <ServicesPage /> },
       { path: 'instances', element: <InstancesPage /> },
@@ -33,6 +36,7 @@ export const productRoutes = [
       { path: 'units', element: <UnitsPage /> },
       { path: 'reports', element: <ProductsReportsPage /> },
       { path: ':productId', element: <ProductDetailsPage /> },
+      { path: ':productId/complete', element: <ProductCompletePage /> },
     ],
   },
 ]

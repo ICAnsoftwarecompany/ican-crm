@@ -7,9 +7,9 @@ import { Badge } from '../../../../shared/components/ui/Badge'
 import { DataTable } from '../../../../shared/components/data-table'
 import { useCatalogProducts } from '../../hooks/useCatalogProducts'
 import { useProductRelationMutations, useProductRelations } from '../../hooks/useProductResources'
-import { KindBadge, useNumberFormat, useOptionLabel } from '../common/catalogUi'
-import { ConfirmActionDialog, useConfirmAction } from '../common/ConfirmDelete'
-import { RelationDialog } from './RelationDialog'
+import { KindBadge, useNumberFormat, useOptionLabel } from '../../components/common/catalogUi'
+import { ConfirmActionDialog, useConfirmAction } from '../../components/common/ConfirmDelete'
+import { RelationDialog } from '../components/RelationDialog'
 
 /** Attached products / services: included (added automatically, usually free) or optional (offered). */
 export function ProductRelationsTab({ product }) {

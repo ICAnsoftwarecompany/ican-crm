@@ -1,6 +1,7 @@
 // شاشات الكتالوج تحت /products (Products & Catalog API، أُضيف 2026-10-06).
 export default {
   nav: {
+    overview: 'نظرة عامة',
     catalog: 'الكتالوج',
     products: 'المنتجات',
     services: 'الخدمات',

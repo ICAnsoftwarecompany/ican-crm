@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { getCapabilityDefinition, visibleCapabilities } from '../../constants/capabilityRegistry'
 import { getCategoryLabel } from '../../utils/categoryTree'
-import { parseAdditionalData } from '../common/AdditionalDataFields'
-import { ActiveBadge, KindBadge, useCapabilityName, useNumberFormat, useOptionLabel } from '../common/catalogUi'
+import { parseAdditionalData } from '../../components/common/AdditionalDataFields'
+import { ActiveBadge, KindBadge, useCapabilityName, useNumberFormat, useOptionLabel } from '../../components/common/catalogUi'
 import { formatDate } from '../../../../shared/utils/dateTime'
 
 function Detail({ label, children }) {

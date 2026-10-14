@@ -2,6 +2,7 @@
 
 > **Documentation update:** 2026-10-06 23:35 (Africa/Cairo) — README added with the catalog rebuild on the
 > Postman collection "Products & Catalog".
+> 2026-10-15 00:56 (Africa/Cairo) — overview page (`overview/`), details + quick drawer + completeness + guided completion (`product-details/`), list shows every field; both folders have Arabic READMEs.
 > 2026-10-15 00:44 (Africa/Cairo) — add product / service moved to `product-create/` (own Arabic README): steps follow the item type, guide, quick add + side list, quick type / category, drafts, category path.
 > 2026-10-07 02:30 (Africa/Cairo) — create wizard `/products/new` (the collection's full create flow), `GET item-types/{id}` used.
 > 2026-10-15 00:08 (Africa/Cairo) — everything for adding an item type moved to `item-type-wizard/` (own README in Arabic).
@@ -38,6 +39,17 @@ Backend contract: the Postman collection "Products & Catalog" (2026-10-06); spec
 
 Request builders: `utils/catalogPayloads.js` (multipart, booleans as 1/0, JSON fields as strings, blanks never sent)
 and `utils/catalogForms.js` (form ⇄ body, validation). Both tested.
+
+## Overview, details and completeness
+
+*2026-10-15 00:56 (Africa/Cairo)*:
+- [`overview/`](overview/README.md): `/products/overview` (first in the sub-sidebar). Totals and value, a block for products
+  and one for services (count, value, stock value, top categories, top item types, completeness), and an alert when
+  there is no item type. The stat tiles were removed from the lists.
+- [`product-details/`](product-details/README.md): the details page (bigger image, back to the list), the quick drawer
+  (icon next to the name, DataTable `onOpenRowDrawer`), completeness (6 checks), and the guided completion
+  `/products/:id/complete`.
+- The products and services lists show every field as a column, plus completeness and what is missing.
 
 ## Create wizard (`/products/new`, `?kind=service`)
 

@@ -5,9 +5,9 @@ import { Button } from '../../../../shared/components/ui/Button'
 import { Badge } from '../../../../shared/components/ui/Badge'
 import { DataTable } from '../../../../shared/components/data-table'
 import { useProductUnitMutations, useProductUnits } from '../../hooks/useProductResources'
-import { ActiveBadge, useNumberFormat } from '../common/catalogUi'
-import { ConfirmActionDialog, useConfirmAction } from '../common/ConfirmDelete'
-import { ProductUnitDialog } from './ProductUnitDialog'
+import { ActiveBadge, useNumberFormat } from '../../components/common/catalogUi'
+import { ConfirmActionDialog, useConfirmAction } from '../../components/common/ConfirmDelete'
+import { ProductUnitDialog } from '../components/ProductUnitDialog'
 
 /** Units tab: base unit (created by the server) + alternative units with factor, price and barcode. */
 export function ProductUnitsTab({ product }) {

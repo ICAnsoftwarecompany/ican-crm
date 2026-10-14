@@ -1,6 +1,7 @@
 // Catalog screens under /products (Products & Catalog API, added 2026-10-06).
 export default {
   nav: {
+    overview: 'Overview',
     catalog: 'Catalog',
     products: 'Products',
     services: 'Services',

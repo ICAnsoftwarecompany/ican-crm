@@ -1,4 +1,5 @@
 export default {
+  "openDrawer": "Open quick view",
   "show": "Show",
   "ofItems": "of {{total}} items",
   "pageOf": "Page {{page}} of {{total}}",

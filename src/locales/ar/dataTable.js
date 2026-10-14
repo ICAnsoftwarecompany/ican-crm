@@ -1,4 +1,5 @@
 export default {
+  "openDrawer": "فتح العرض السريع",
   "show": "إظهار",
   "ofItems": "من {{total}} عنصر",
   "pageOf": "الصفحة {{page}} من {{total}}",
