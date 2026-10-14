@@ -33,6 +33,7 @@ export default {
     saveChanges: 'Save changes',
     saveFailed: 'Could not save. Check the data and try again.',
     deleteFailed: 'Could not delete.',
+    loading: 'Loading…',
   },
   columns: {
     image: 'Image',
@@ -122,6 +123,7 @@ export default {
       review: { title: 'Review & save', hint: 'What will be sent', description: 'Check the data; the requests run in this order.' },
     },
     newItemType: 'New item type',
+    typeDefaultsApplied: 'Filled from the type "{{type}}": {{units}} unit(s) and {{relations}} attached item(s). You can change them.',
     newUnit: 'New unit of measure',
     noItemTypesForKind: 'No item type of this kind yet. Create one to get capabilities such as serials or warranty.',
     serviceNoStock: 'Services have no stock. You can still add units (hour, visit…).',
@@ -390,5 +392,7 @@ export default {
     quantityRequired: 'Quantity must be greater than 0',
     duplicateItem: 'This item is already attached',
     invalidJson: 'Invalid JSON object',
+    kindRequired: 'Choose what you sell',
+    duplicateUnit: 'This unit is already added',
   },
 }

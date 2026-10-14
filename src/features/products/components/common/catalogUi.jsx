@@ -1,7 +1,7 @@
 import { useCallback, useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '../../../../shared/components/ui/Badge'
-import { getCapabilityDefinition } from '../../constants/capabilityRegistry'
+import { getCapabilityDefinition, visibleCapabilities } from '../../constants/capabilityRegistry'
 
 /** Small building blocks shared by the catalog screens (2026-10-06). */
 
@@ -96,8 +96,9 @@ export function AvailabilityBadge({ status, voided }) {
   return <Badge variant={AVAILABILITY_VARIANTS[status] || 'default'}>{label('availability', status)}</Badge>
 }
 
-export function CapabilityChips({ capabilities = [], emptyText }) {
+export function CapabilityChips({ capabilities: all = [], emptyText }) {
   const name = useCapabilityName()
+  const capabilities = visibleCapabilities(all)
   if (!capabilities.length) return emptyText ? <span className="text-xs text-[var(--text-muted)]">{emptyText}</span> : null
   return (
     <div className="flex flex-wrap gap-1">

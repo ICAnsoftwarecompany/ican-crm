@@ -33,6 +33,7 @@ export default {
     saveChanges: 'حفظ التعديلات',
     saveFailed: 'تعذر الحفظ. راجع البيانات وحاول مرة أخرى.',
     deleteFailed: 'تعذر الحذف.',
+    loading: 'جاري التحميل…',
   },
   columns: {
     image: 'الصورة',
@@ -122,6 +123,7 @@ export default {
       review: { title: 'المراجعة والحفظ', hint: 'اللي هيتبعت', description: 'راجع البيانات؛ الطلبات هتتبعت بالترتيب ده.' },
     },
     newItemType: 'نوع منتج جديد',
+    typeDefaultsApplied: 'اتملت من النوع "{{type}}": {{units}} وحدة و{{relations}} حاجة مرفقة. تقدر تغيرهم.',
     newUnit: 'وحدة قياس جديدة',
     noItemTypesForKind: 'مفيش نوع منتج للنوع ده لسه. اعمل واحد عشان تاخد قدرات زي السيريال أو الضمان.',
     serviceNoStock: 'الخدمات مالهاش مخزون. ممكن تضيف وحدات (ساعة، زيارة…).',
@@ -390,5 +392,7 @@ export default {
     quantityRequired: 'الكمية لازم تكون أكبر من 0',
     duplicateItem: 'العنصر ده مضاف بالفعل',
     invalidJson: 'JSON غير صالح (لازم يكون object)',
+    kindRequired: 'اختار بتبيع إيه',
+    duplicateUnit: 'الوحدة دي متضافة قبل كده',
   },
 }

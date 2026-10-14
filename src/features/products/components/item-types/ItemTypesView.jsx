@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Edit3, Plus, Power, RefreshCw, Trash2 } from 'lucide-react'
@@ -9,18 +10,21 @@ import { useItemTypeMutations, useItemTypes } from '../../hooks/useCatalogSetup'
 import { formatApiError } from '../../utils/apiErrors'
 import { ActiveBadge, CapabilityChips, KindBadge, useOptionLabel } from '../common/catalogUi'
 import { ConfirmActionDialog, useConfirmAction } from '../common/ConfirmDelete'
-import { ItemTypeFormDrawer } from './ItemTypeFormDrawer'
+import { CatalogSetupGuide } from '../common/CatalogSetupGuide'
 
 /**
  * `/products/item-types` (2026-10-06). Delete is refused by the server while products use the type;
  * the failure toast says so and the row offers "deactivate" (`status: false`) instead.
+ * Since 2026-10-14 add / edit open the full-page wizard (`/products/item-types/new`, `/products/item-types/:id`),
+ * and the setup guide shows while no type exists.
  */
 export function ItemTypesView() {
   const { t } = useTranslation()
   const optionLabel = useOptionLabel()
   const query = useItemTypes()
   const mutations = useItemTypeMutations()
-  const [drawer, setDrawer] = useState(null)
+  const navigate = useNavigate()
+  const openType = (row) => navigate(`/products/item-types/${encodeURIComponent(row.id)}`)
   const removeAction = useConfirmAction({
     run: (row) => mutations.remove.mutateAsync(row.id),
     successMessage: t('catalog.itemTypes.deleted'),
@@ -55,7 +59,7 @@ export function ItemTypesView() {
       id: 'actions', header: t('catalog.columns.actions'), accessor: 'id', sortable: false,
       render: (row) => (
         <div className="flex gap-1">
-          <Button variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); setDrawer({ itemType: row }) }} aria-label={t('actions.edit')}><Edit3 size={16} /></Button>
+          <Button variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); openType(row) }} aria-label={t('actions.edit')}><Edit3 size={16} /></Button>
           <Button variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); toggleStatus(row) }} aria-label={t(row.status ? 'catalog.itemTypes.deactivate' : 'catalog.itemTypes.activate')}><Power size={16} /></Button>
           <Button variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); removeAction.ask(row) }} aria-label={t('actions.delete')}><Trash2 size={16} /></Button>
         </div>
@@ -63,7 +67,7 @@ export function ItemTypesView() {
     },
     // toggleStatus is recreated each render but only reads its argument and stable mutations.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  ], [optionLabel, removeAction.ask, t])
+  ], [navigate, optionLabel, removeAction.ask, t])
 
   return (
     <div className="space-y-4">
@@ -72,8 +76,10 @@ export function ItemTypesView() {
           <RefreshCw size={16} className={query.isFetching ? 'animate-spin' : ''} />
           {t('catalog.common.refresh')}
         </Button>
-        <Button onClick={() => setDrawer({ itemType: null })}><Plus size={16} />{t('catalog.itemTypes.addTitle')}</Button>
+        <Button onClick={() => navigate('/products/item-types/new')}><Plus size={16} />{t('catalog.itemTypes.addTitle')}</Button>
       </PageToolbar>
+
+      <CatalogSetupGuide context="itemTypes" />
 
       <DataTable
         data={rows}
@@ -82,11 +88,10 @@ export function ItemTypesView() {
         isLoading={query.isLoading}
         error={query.error}
         onRetry={() => query.refetch()}
-        onRowClick={(row) => setDrawer({ itemType: row })}
+        onRowClick={openType}
         emptyMessage={t('catalog.itemTypes.empty')}
       />
 
-      <ItemTypeFormDrawer open={Boolean(drawer)} itemType={drawer?.itemType} onClose={() => setDrawer(null)} />
       <ConfirmActionDialog
         action={removeAction}
         title={t('catalog.itemTypes.deleteTitle')}

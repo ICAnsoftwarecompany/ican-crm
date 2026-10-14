@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { getCapabilityDefinition } from '../../constants/capabilityRegistry'
+import { getCapabilityDefinition, visibleCapabilities } from '../../constants/capabilityRegistry'
 import { getCategoryLabel } from '../../utils/categoryTree'
 import { parseAdditionalData } from '../common/AdditionalDataFields'
 import { ActiveBadge, KindBadge, useCapabilityName, useNumberFormat, useOptionLabel } from '../common/catalogUi'
@@ -69,9 +69,9 @@ export function ProductOverviewTab({ product, itemType }) {
 
       <section>
         <h3 className="mb-2 text-sm font-semibold text-[var(--text)]">{t('catalog.product.tabs.capabilities')}</h3>
-        {itemType?.capabilities?.length ? (
+        {visibleCapabilities(itemType?.capabilities).length ? (
           <ul className="divide-y divide-[var(--border)] rounded-lg border border-[var(--border)]">
-            {itemType.capabilities.map((capability) => (
+            {visibleCapabilities(itemType.capabilities).map((capability) => (
               <li key={capability.code} className="flex flex-col gap-1 p-3 sm:flex-row sm:items-center sm:justify-between">
                 <span className="text-sm font-medium text-[var(--text)]">{capabilityName(capability.code)}</span>
                 <span className="text-xs text-[var(--text-muted)]">

@@ -9,6 +9,7 @@ import { formatDate } from '../../../../shared/utils/dateTime'
 import { useCatalogProducts } from '../../hooks/useCatalogProducts'
 import { useItemTypes } from '../../hooks/useCatalogSetup'
 import { getCategoryLabel } from '../../utils/categoryTree'
+import { CatalogSetupGuide } from '../common/CatalogSetupGuide'
 import { useOptionLabel } from '../common/catalogUi'
 import { ProductFormDrawer } from './ProductFormDrawer'
 import { useProductColumns } from './useProductColumns'
@@ -69,6 +70,8 @@ export function CatalogProductsView({ kind = 'product' }) {
           {t(`catalog.list.${copyKey}.create`)}
         </Button>
       </PageToolbar>
+
+      <CatalogSetupGuide kind={isServices ? 'service' : 'product'} />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {stats.map((stat) => (

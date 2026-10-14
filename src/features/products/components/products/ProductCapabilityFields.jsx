@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Select } from '../../../../shared/components/ui/Select'
 import { EmptyState } from '../../../../shared/components/feedback/EmptyState'
 import { FULFILLMENT_CREATES } from '../../constants/catalogOptions'
+import { visibleCapabilities } from '../../constants/capabilityRegistry'
 import { CapabilityConfigFields } from '../common/CapabilityConfigFields'
 import { useCapabilityName, useOptionLabel, useOptions } from '../common/catalogUi'
 
@@ -21,12 +22,13 @@ export function ProductCapabilityFields({ state }) {
   }
 
   const inheritedCreates = selectedItemType.fulfillmentConfig?.creates
+  const capabilities = visibleCapabilities(selectedItemType.capabilities)
 
   return (
     <div className="space-y-4">
       <p className="text-sm text-[var(--text-muted)]">{t('catalog.product.capabilitiesHint', { type: selectedItemType.name })}</p>
 
-      {selectedItemType.capabilities.map((capability) => (
+      {capabilities.map((capability) => (
         <section key={capability.code} className="space-y-3 rounded-lg border border-[var(--border)] p-3">
           <h3 className="text-sm font-semibold text-[var(--text)]">{capabilityName(capability.code)}</h3>
           <CapabilityConfigFields
@@ -37,7 +39,7 @@ export function ProductCapabilityFields({ state }) {
           />
         </section>
       ))}
-      {!selectedItemType.capabilities.length && <p className="text-sm text-[var(--text-muted)]">{t('catalog.itemTypes.noCapabilities')}</p>}
+      {!capabilities.length && <p className="text-sm text-[var(--text-muted)]">{t('catalog.itemTypes.noCapabilities')}</p>}
 
       <Select
         label={t('catalog.product.fields.fulfillmentCreates')}

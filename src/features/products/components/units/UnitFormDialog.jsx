@@ -12,8 +12,11 @@ import { CheckboxField, FormError, useOptions } from '../common/catalogUi'
 
 const EMPTY = { code: '', name: '', type: 'count', decimals: '0', status: true }
 
-/** Create / edit a unit of measure (`{ code, name, type, decimals, status }`), 2026-10-06. `onSaved(id)` after saving. */
-export function UnitFormDialog({ open, unit, onClose, onSaved }) {
+/**
+ * Create / edit a unit of measure (`{ code, name, type, decimals, status }`), 2026-10-06. `onSaved(id)` after saving.
+ * `initial` prefills a new unit (e.g. a unit suggested by an item type template, 2026-10-14).
+ */
+export function UnitFormDialog({ open, unit, initial, onClose, onSaved }) {
   const { t } = useTranslation()
   const isEdit = Boolean(unit)
   const mutations = useUnitMutations()
@@ -24,8 +27,8 @@ export function UnitFormDialog({ open, unit, onClose, onSaved }) {
   useEffect(() => {
     if (!open) return
     setError('')
-    setForm(unit ? { code: unit.code, name: unit.name, type: unit.type || 'count', decimals: String(unit.decimals ?? 0), status: unit.status } : EMPTY)
-  }, [open, unit])
+    setForm(unit ? { code: unit.code, name: unit.name, type: unit.type || 'count', decimals: String(unit.decimals ?? 0), status: unit.status } : { ...EMPTY, ...(initial || {}) })
+  }, [initial, open, unit])
 
   const set = (key, value) => setForm((current) => ({ ...current, [key]: value }))
 

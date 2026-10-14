@@ -35,6 +35,8 @@ export { ProductFormDrawer } from './components/products/ProductFormDrawer'
 export { ProductCreateWizard } from './components/create/ProductCreateWizard'
 export { ProductDetailsView } from './components/details/ProductDetailsView'
 export { ItemTypesView } from './components/item-types/ItemTypesView'
+export { ItemTypeWizard } from './components/item-type-wizard/ItemTypeWizard'
+export { CatalogSetupGuide } from './components/common/CatalogSetupGuide'
 export { UnitsView } from './components/units/UnitsView'
 export { InstancesView } from './components/instances/InstancesView'
 

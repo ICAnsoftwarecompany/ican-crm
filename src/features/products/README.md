@@ -3,6 +3,7 @@
 > **Documentation update:** 2026-10-06 23:35 (Africa/Cairo) — README added with the catalog rebuild on the
 > Postman collection "Products & Catalog".
 > 2026-10-07 02:30 (Africa/Cairo) — create wizard `/products/new` (the collection's full create flow), `GET item-types/{id}` used.
+> 2026-10-14 23:53 (Africa/Cairo) — item type wizard page, templates, setup guide, type default units / attached items copied into new products.
 
 Owns everything under `/products`: products and services, their alternative units, attached items (relations),
 instances (serials, real-estate units, batches with expiry), item types with capabilities, units of measure.
@@ -18,7 +19,8 @@ Backend contract: the Postman collection "Products & Catalog" (2026-10-06); spec
 | `useItemTypes`, `useItemTypeMutations`, `useUnits`, `useUnitMutations` | Item types / units of measure |
 | `useProductUnits`, `useProductRelations`, `useProductInstances` (+ `…Mutations`) | Per-product resources |
 | `useProducts`, `useProductCategories`, `useProductMutations` | **Legacy** raw hooks still used by leads, proposals, deals and categories |
-| `CatalogProductsView`, `ProductDetailsView`, `ItemTypesView`, `UnitsView`, `InstancesView`, `ProductFormDrawer` | Screens composed by `pages/products` |
+| `CatalogProductsView`, `ProductDetailsView`, `ItemTypesView`, `ItemTypeWizard`, `UnitsView`, `InstancesView`, `ProductFormDrawer` | Screens composed by `pages/products` |
+| `CatalogSetupGuide` | "Add item types first" card, shown while no active type of a kind exists |
 | `getProductKind`, `flattenCatalogResponse`, category tree helpers, `CAPABILITY_REGISTRY` | Pure helpers |
 
 ## Endpoints (exactly as the collection)
@@ -40,11 +42,44 @@ and `utils/catalogForms.js` (form ⇄ body, validation). Both tested.
 Added 2026-10-07. Steps: basic data & item type → stock & units → capabilities (+ additional data) → attached items
 → pieces → review. Saving runs `POST /product/create` (with alternative units) → `POST /products/{id}/relations` per
 attached item → `POST /products/{id}/instances`. What succeeded is remembered, so a retry continues from the failed
-request and never creates the product twice. Item types (`ItemTypeFormDrawer`) and units (`UnitFormDialog`) can be
-created inside the wizard and are selected right away. The selected item type is read with `GET /item-types/{id}`
+request and never creates the product twice. Units (`UnitFormDialog`) can be created inside the wizard; "new item
+type" opens the item type wizard page, which returns with `?item_type=<id>` (see below). The selected item type is read with `GET /item-types/{id}`
 (the list may not carry capability configs). Services send no stock; serial / unit types send no stock quantity
 (stock = available pieces, backend D3). Logic: `utils/productCreateWizard.js` (tested); UI: `components/create/`.
 Edit stays in `ProductFormDrawer`.
+
+## Item type wizard (`/products/item-types/new`, `/products/item-types/:id`)
+
+*2026-10-14 23:53 (Africa/Cairo)* — replaces `ItemTypeFormDrawer` / `CapabilitiesEditor` (removed). A full page in stages:
+what you sell (product / service; plan / bundle under "other") + **templates** → basic data → capabilities (grouped:
+tracking, after-sales, billing, delivery; conflicts such as serial + unique unit are blocked) → **units** (only when
+the type is sold in units: product / service without `unique_unit`) → **attached items** → review. Each stage is
+validated before moving forward.
+
+- **Tutorial mode** (on by default, toggle in the header, remembered per browser): side panel with what the stage is
+  for and the explanation of the field under the pointer / focus (`HelpScope` + `HelpField` in `components/common/HelpTip.jsx`).
+  Every field also has an ⓘ tip.
+- **Templates** (`constants/itemTypeTemplates.js`, 25): appliances, equipment, medicines, groceries, retail, clothing,
+  spare parts, real estate, vehicles, digital; maintenance visit, installation, cleaning, consultation, clinic, tour,
+  shipping, course, school year, software project; SaaS, maintenance contract, membership, extended warranty; bundle.
+  Picking one fills capabilities, service model, "a sale creates" and suggested units (matched by unit `code`; missing
+  ones can be created from the units stage). The gallery can be hidden (remembered). "Start manually" = blank type.
+- **Default units** are saved as capability `units` `{ alternatives: [{ unit_id, factor, is_default }] }`, **default
+  attached items** as `fulfillment_config.default_relations` (same fields as `POST /products/{id}/relations`); other
+  `fulfillment_config` keys are kept. Backend acceptance pending: `docs/backend/BACKEND-REQUESTS.md` **D11**.
+  The internal `units` capability is hidden wherever capabilities are listed (`visibleCapabilities`).
+- An attached service can be created on the spot (`QuickServiceDialog`: name + price, `POST /product/create`).
+- `?kind=` presets the kind, `?returnTo=` (in-app path only) sends the user back with `?item_type=<id>`; otherwise a
+  success panel offers "add a product of this type" (`/products/new?item_type=<id>`).
+- Logic: `utils/itemTypeWizard.js` (steps, templates, validation, `applyTypeDefaults`; tested); UI:
+  `components/item-type-wizard/`; copy: `locales/*/catalogSetup.js`.
+
+**Product wizard + type defaults:** `/products/new?item_type=<id>` starts with that type. When a type is chosen, its
+default units and attached items fill the product (`applyTypeDefaults`): only empty rows or rows still as filled from
+the previous type are replaced, edited rows never are; a notice says what was filled.
+
+**Setup guide:** `CatalogSetupGuide` on the products and services lists (dismissible), the product wizard and the item
+types page while there is no active type of that kind: types → units → products, with a button to the wizard.
 
 ## Rules
 
@@ -66,6 +101,10 @@ Edit stays in `ProductFormDrawer`.
   `pages/products/productRoutes.jsx`, item in `pages/products/constants/productNavigation.js`.
 
 ## Known gaps
+
+- Type default units / attached items rely on the backend storing capability `units` and
+  `fulfillment_config.default_relations` as sent (D11); until confirmed they may be dropped on save.
+- Templates and their labels are frontend constants; there is no template endpoint.
 
 - No backend endpoint lists capabilities with their schema; the registry is the frontend's copy.
 - Response shapes are not documented in the collection (no examples); normalizers accept several shapes.

@@ -398,6 +398,30 @@ GET /api/tenant/product/capabilities
 `per_page`/`page` حقيقي في `/product-instances` (الفرونت بيطلب 200). وطلب "Create Products (JSON)" في الكولكشن على
 `{{url_server}}api/...{{apiPass}}` وفي الـ body تعليقات `//` (JSON مش صالح) — يتوحد مع `{{base_url}}`.
 
+### D11 — افتراضيات النوع: الوحدات والحاجات المرفقة (P1)
+> *أُضيف 2026-10-14 23:53 (Africa/Cairo)*: صفحة إضافة النوع بقت بتحفظ مع النوع الوحدات والحاجات المرفقة اللي كل منتج جديد منه يبدأ بيها.
+> الـ API مفيهوش مكان ليهم، فالفرونت بيبعتهم كده في `POST /item-types` و`PUT /item-types/{id}`:
+
+```json
+{
+  "capabilities": [
+    { "code": "units", "version": 1, "config": { "alternatives": [{ "unit_id": 3, "factor": 10, "is_default": true }] } }
+  ],
+  "fulfillment_config": {
+    "creates": "asset",
+    "default_relations": [
+      { "child_product_id": 32, "inclusion": "included", "quantity": 1, "price_override": 0, "auto_add": true, "sort_order": 1 }
+    ]
+  }
+}
+```
+
+المطلوب: (1) السيرفر يقبل الكود `units` (المواصفة §25.6) ويخزن الـ config زي ما هو ويرجّعه في `GET /item-types/{id}`،
+(2) يخزن `fulfillment_config` كامل بكل مفاتيحه (مش `creates` بس) ويرجّعه، (3) اختياري: لو `POST /product/create` اتبعت من
+غير `units` والنوع عليه `units`، السيرفر ينشئ الوحدات الافتراضية لوحده. الفرونت دلوقتي بيملا الوحدات والحاجات المرفقة في
+فورم المنتج بنفسه وبيبعتها بالطلبات العادية (`products[i][units]` و`POST /products/{id}/relations`).
+لو اتفضّل شكل تاني (مثلاً `default_units` / `default_relations` كحقول مستقلة في النوع) قولولنا ونغيّر الفرونت.
+
 ---
 
 ## (ج) أسئلة وقرارات مفتوحة

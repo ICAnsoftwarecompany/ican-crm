@@ -23,6 +23,11 @@ const service = { id: 32, name: 'Installation', price: 0, kind: 'service', statu
 const routes = [
   [/\/product\/item-types$/, { data: [itemType] }],
   [/\/product\/item-types\/4$/, { data: itemType }],
+  [/\/product\/item-types\/5$/, { data: {
+    id: 5, code: 'medicine', name: 'Medicine', kind: 'product', status: true,
+    capabilities: [{ code: 'units', version: 1, config: { alternatives: [{ unit_id: 3, factor: 10, is_default: true }] } }],
+    fulfillment_config: { default_relations: [{ child_product_id: 32, inclusion: 'included', quantity: 1 }] },
+  } }],
   [/\/product\/units$/, { data: [{ id: 3, code: 'box', name: 'Box', type: 'count', decimals: 0, status: true }] }],
   [/\/product\/products\/31\/units$/, { data: [{ id: 50, unit_id: 1, factor: 1, price: 15000, is_default: true, unit: { id: 1, name: 'Piece' } }] }],
   [/\/product\/products\/31\/relations$/, { data: [{ id: 60, child_product_id: 32, inclusion: 'included', quantity: 1, price_override: 0, auto_add: true, sort_order: 1 }] }],
@@ -179,14 +184,40 @@ describe('products area', () => {
     ])
   })
 
-  it('creates an item type with code, kind and capabilities', async () => {
-    renderAt('/products/item-types')
-    fireEvent.click((await screen.findAllByText('catalog.itemTypes.addTitle'))[0])
-    fireEvent.change(await screen.findByLabelText('catalog.itemTypes.fields.name'), { target: { value: 'Medicine' } })
-    fireEvent.change(screen.getByLabelText('catalog.itemTypes.fields.code'), { target: { value: 'medicine' } })
-    fireEvent.submit(screen.getByLabelText('catalog.itemTypes.fields.name').closest('form'))
-    await waitFor(() => expect(post).toHaveBeenCalledWith('/api/tenant/product/item-types', {
-      code: 'medicine', name: 'Medicine', kind: 'product', status: true, capabilities: [],
-    }))
+  it('builds an item type from a template on its own page and returns to the product wizard', async () => {
+    const router = renderAt('/products/item-types/new?kind=product&returnTo=/products/new')
+    fireEvent.click(await screen.findByText('catalogSetup.templates.medicine.name'))
+    // The template fills the basics (name, code) and suggests "box × 10", matched to the tenant's unit "box".
+    expect(await screen.findByDisplayValue('medicine')).toBeTruthy()
+    for (let step = 0; step < 4; step += 1) fireEvent.click(screen.getByText('actions.next'))
+    fireEvent.click(await screen.findByText('catalogSetup.typeWizard.save'))
+    await waitFor(() => expect(post).toHaveBeenCalledWith('/api/tenant/product/item-types', expect.objectContaining({
+      code: 'medicine',
+      kind: 'product',
+      capabilities: expect.arrayContaining([{ code: 'units', version: 1, config: { alternatives: [{ unit_id: '3', factor: 10, is_default: false }] } }]),
+    })))
+    await waitFor(() => expect(`${router.state.location.pathname}${router.state.location.search}`).toBe('/products/new?item_type=1'))
+  })
+
+  it('validates each stage before moving on', async () => {
+    renderAt('/products/item-types/new')
+    fireEvent.click(await screen.findByText('catalogSetup.typeWizard.templates.manual'))
+    fireEvent.click(await screen.findByText('actions.next'))
+    expect(await screen.findByText('catalog.validation.nameRequired')).toBeTruthy()
+  })
+
+  it('shows the setup guide only where no item type of that kind exists', async () => {
+    renderAt('/products/services')
+    expect(await screen.findByText('catalogSetup.guide.title.service')).toBeTruthy()
+    cleanup()
+    renderAt('/products')
+    expect((await screen.findAllByText('catalog.list.products.title')).length).toBeGreaterThan(0)
+    await waitFor(() => expect(get.mock.calls.some(([url]) => url.endsWith('/product/item-types'))).toBe(true))
+    expect(screen.queryByText('catalogSetup.guide.title.product')).toBeNull()
+  })
+
+  it('fills a new product with the default units and attached items of its type', async () => {
+    renderAt('/products/new?item_type=5')
+    expect(await screen.findByText('catalog.create.typeDefaultsApplied')).toBeTruthy()
   })
 })

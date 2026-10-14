@@ -1,6 +1,7 @@
 # pages/products — Products & Services routes
 
 > **Documentation update:** 2026-10-06 23:35 (Africa/Cairo) — README added; routes moved to `productRoutes.jsx`.
+> 2026-10-14 23:53 (Africa/Cairo) — item type wizard pages, `?item_type=` on `/products/new`.
 
 Thin route pages for `/products/*`; the screens live in `features/products` ([README](../../features/products/README.md)).
 `productRoutes.jsx` is spread into the MainLayout children in `app/router` (same pattern as `pages/deals`).
@@ -8,11 +9,13 @@ Thin route pages for `/products/*`; the screens live in `features/products` ([RE
 | Path | Page |
 |---|---|
 | `/products` | Products, plans and bundles (`CatalogProductsView kind="product"`) |
-| `/products/new` | Create wizard (`?kind=service` for a service) — 2026-10-07 02:30 (Africa/Cairo) |
+| `/products/new` | Create wizard (`?kind=service` for a service, `?item_type=<id>` to start with a type) — 2026-10-07 02:30, `item_type` 2026-10-14 23:53 (Africa/Cairo) |
 | `/products/services` | Services (`kind="service"`) |
 | `/products/instances` | All serials / units / batches |
 | `/products/categories`, `/products/service-categories` | Category trees (legacy pages in `ProductsPage/`) |
-| `/products/item-types` | Item types and capabilities |
+| `/products/item-types` | Item types list (+ setup guide when empty) |
+| `/products/item-types/new` | Item type wizard (`?kind=`, `?returnTo=`) — 2026-10-14 23:53 (Africa/Cairo) |
+| `/products/item-types/:itemTypeId` | Edit an item type in the same wizard — 2026-10-14 23:53 (Africa/Cairo) |
 | `/products/units` | Units of measure |
 | `/products/reports` | Reports (shared engine) |
 | `/products/:productId` | Product details (`?tab=units|relations|instances`) |

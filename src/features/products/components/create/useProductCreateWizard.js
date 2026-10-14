@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { productsApi } from '../../api/productsApi'
 import { productInstancesApi, productRelationsApi } from '../../api/catalogApi'
@@ -14,6 +14,7 @@ import {
   remainingRequests,
   validateWizardStep,
 } from '../../utils/productCreateWizard'
+import { applyTypeDefaults } from '../../utils/itemTypeWizard'
 import { serializeAdditionalData } from '../common/AdditionalDataFields'
 import { useProductForm } from '../products/useProductForm'
 
@@ -24,7 +25,7 @@ const EMPTY_DONE = { productId: null, relations: [], instances: false }
  * in a draft). Saving runs: create product → each attached item → instances. What already succeeded is
  * remembered, so "retry" continues from the failed request and never creates the product twice.
  */
-export function useProductCreateWizard({ kind = 'product', t }) {
+export function useProductCreateWizard({ kind = 'product', initialItemTypeId = '', t }) {
   const client = useQueryClient()
   const formState = useProductForm({ open: true, product: null, kind })
   const itemType = formState.selectedItemType
@@ -36,6 +37,37 @@ export function useProductCreateWizard({ kind = 'product', t }) {
   const [progress, setProgress] = useState({})
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+
+  // `?item_type=` (back from the item type wizard, or "add a product of this type").
+  const { update: updateForm } = formState
+  useEffect(() => {
+    if (initialItemTypeId) updateForm('item_type_id', String(initialItemTypeId))
+    // Only on mount: later changes come from the select.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // A plan / bundle type opened from `?item_type=` sets the product kind to match it.
+  const formKind = formState.form.kind
+  useEffect(() => {
+    if (!itemType || String(itemType.id) !== String(initialItemTypeId)) return
+    if (['plan', 'bundle'].includes(itemType.kind) && formKind !== itemType.kind) updateForm('kind', itemType.kind)
+  }, [formKind, initialItemTypeId, itemType, updateForm])
+
+  // Defaults of the item type (2026-10-14): its alternative units and attached items fill the product, unless the
+  // user already has rows of their own (see applyTypeDefaults).
+  const latest = useRef({})
+  latest.current = { units: formState.form.units, relations }
+  const memo = useRef({})
+  const [typeDefaults, setTypeDefaults] = useState(null)
+  useEffect(() => {
+    const result = applyTypeDefaults(latest.current, itemType, memo.current)
+    memo.current = result.memo
+    if (result.units) updateForm('units', result.units)
+    if (result.relations) setRelations(result.relations)
+    if (result.applied.units || result.applied.relations) {
+      setTypeDefaults({ typeName: itemType.name, units: result.applied.units, relations: result.applied.relations })
+    }
+  }, [itemType, updateForm])
 
   const instanceModes = useMemo(() => instanceModesForItemType(itemType), [itemType])
   // Keep the instance mode in line with the item type (first allowed mode, or none).
@@ -130,6 +162,7 @@ export function useProductCreateWizard({ kind = 'product', t }) {
     instances,
     setInstances,
     instanceModes,
+    typeDefaults,
     stepErrors,
     plan,
     done,

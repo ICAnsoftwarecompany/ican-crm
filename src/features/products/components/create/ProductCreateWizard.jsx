@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, ArrowRight, Check, PackagePlus } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Info, PackagePlus } from 'lucide-react'
 import { toast } from 'sonner'
 import { ModulePageHeader } from '../../../../shared/components/module-pages'
 import { Button } from '../../../../shared/components/ui/Button'
 import { cn } from '../../../../shared/utils/cn'
 import { CREATE_STEPS } from '../../utils/productCreateWizard'
 import { AdditionalDataFields, getAdditionalFieldNames } from '../common/AdditionalDataFields'
-import { ItemTypeFormDrawer } from '../item-types/ItemTypeFormDrawer'
+import { CatalogSetupGuide } from '../common/CatalogSetupGuide'
 import { ProductBasicFields } from '../products/ProductBasicFields'
 import { ProductCapabilityFields } from '../products/ProductCapabilityFields'
 import { ProductStockFields } from '../products/ProductStockFields'
@@ -51,17 +51,23 @@ function Stepper({ step, done, onSelect }) {
 /**
  * `/products/new` (`?kind=service` for a service) — 2026-10-07. Follows the create flow of the collection:
  * basic data & item type → stock & units → capabilities → attached items → instances → review & save.
- * Item types and units can be created without leaving the wizard.
+ * Units can be created without leaving the wizard; a new item type opens the item type wizard, which comes back
+ * here with `?item_type=<id>` (2026-10-14). The chosen type's default units and attached items are filled in.
  */
-export function ProductCreateWizard({ kind = 'product' }) {
+export function ProductCreateWizard({ kind = 'product', initialItemTypeId = '' }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const wizard = useProductCreateWizard({ kind, t })
+  const wizard = useProductCreateWizard({ kind, initialItemTypeId, t })
   const { step, goTo, formState, locked } = wizard
-  const [newItemType, setNewItemType] = useState(false)
   const [newUnit, setNewUnit] = useState(false)
   const index = CREATE_STEPS.indexOf(step)
   const listPath = kind === 'service' ? '/products/services' : '/products'
+  const selfPath = kind === 'service' ? '/products/new?kind=service' : '/products/new'
+  const openItemTypeWizard = () => {
+    const params = new URLSearchParams({ kind: formState.form.kind || kind, returnTo: selfPath })
+    navigate(`/products/item-types/new?${params}`)
+  }
+  const defaults = wizard.typeDefaults
 
   const save = async () => {
     const productId = await wizard.submit()
@@ -76,6 +82,13 @@ export function ProductCreateWizard({ kind = 'product' }) {
     <div className="space-y-4">
       <ModulePageHeader icon={PackagePlus} title={t(`catalog.create.title.${kind === 'service' ? 'service' : 'product'}`)} description={t('catalog.create.description')} />
       <Stepper step={step} done={locked} onSelect={goTo} />
+      {step === 'basics' && <CatalogSetupGuide kind={kind} context="wizard" returnTo={selfPath} />}
+      {defaults && ['basics', 'stock', 'relations'].includes(step) && (
+        <p role="status" className="flex items-start gap-2 rounded-lg border border-[var(--ai-border)] bg-[var(--ai-bg)] p-3 text-sm text-[var(--text)]">
+          <Info size={16} className="mt-0.5 shrink-0 text-[var(--ai-text)]" aria-hidden="true" />
+          {t('catalog.create.typeDefaultsApplied', { type: defaults.typeName, units: defaults.units, relations: defaults.relations })}
+        </p>
+      )}
 
       <section className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">
         <header className="mb-4">
@@ -83,7 +96,7 @@ export function ProductCreateWizard({ kind = 'product' }) {
           <p className="text-sm text-[var(--text-muted)]">{t(`catalog.create.steps.${step}.description`)}</p>
         </header>
         <fieldset disabled={locked && step !== 'review'} className="min-w-0">
-          {step === 'basics' && <ProductBasicFields mode="create" state={formState} onCreateItemType={() => setNewItemType(true)} />}
+          {step === 'basics' && <ProductBasicFields mode="create" state={formState} onCreateItemType={openItemTypeWizard} />}
           {step === 'stock' && <ProductStockFields mode="create" state={formState} onCreateUnit={() => setNewUnit(true)} />}
           {step === 'capabilities' && (
             <div className="space-y-6">
@@ -128,17 +141,6 @@ export function ProductCreateWizard({ kind = 'product' }) {
         )}
       </footer>
 
-      <ItemTypeFormDrawer
-        open={newItemType}
-        itemType={null}
-        initialKind={formState.form.kind}
-        onClose={() => setNewItemType(false)}
-        onSaved={(id) => {
-          if (!id) return
-          formState.update('item_type_id', String(id))
-          formState.update('capability_values', {})
-        }}
-      />
       <UnitFormDialog
         open={newUnit}
         unit={null}

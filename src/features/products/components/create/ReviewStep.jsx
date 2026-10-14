@@ -5,6 +5,7 @@ import { Button } from '../../../../shared/components/ui/Button'
 import { ModuleNotice } from '../../../../shared/components/module-pages'
 import { useCatalogProducts } from '../../hooks/useCatalogProducts'
 import { requiresSerials } from '../../utils/productCreateWizard'
+import { visibleCapabilities } from '../../constants/capabilityRegistry'
 import { FormError, KindBadge, useCapabilityName, useNumberFormat, useOptionLabel } from '../common/catalogUi'
 
 const STATUS_ICONS = { done: CheckCircle2, running: Loader2, failed: XCircle }
@@ -68,8 +69,8 @@ export function ReviewStep({ wizard, onEdit }) {
         </Section>
 
         <Section title={t('catalog.create.steps.capabilities.title')} onEdit={edit && (() => edit('capabilities'))}>
-          {itemType?.capabilities?.length
-            ? <p>{itemType.capabilities.map((capability) => capabilityName(capability.code)).join(' · ')}</p>
+          {visibleCapabilities(itemType?.capabilities).length
+            ? <p>{visibleCapabilities(itemType.capabilities).map((capability) => capabilityName(capability.code)).join(' · ')}</p>
             : <p>{t('catalog.itemTypes.noCapabilities')}</p>}
           {plan.product.capability_values && <p>{t('catalog.create.overridesCount', { count: Object.keys(plan.product.capability_values).length })}</p>}
           {plan.product.fulfillment_config && <p>{t('catalog.product.fields.fulfillmentCreates')}: {optionLabel('creates', plan.product.fulfillment_config.creates)}</p>}

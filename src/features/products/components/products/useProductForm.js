@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useProductCategories } from '../../hooks/useProducts'
 import { useItemType, useItemTypes, useUnits } from '../../hooks/useCatalogSetup'
 import { categoryTypeForKind } from '../../constants/catalogOptions'
@@ -43,7 +43,7 @@ export function useProductForm({ open, product, kind }) {
     [categoriesQuery.data, form.kind]
   )
 
-  const update = (key, value) => setForm((current) => ({ ...current, [key]: value }))
+  const update = useCallback((key, value) => setForm((current) => ({ ...current, [key]: value })), [])
 
   const setCapabilityValue = (code, config) => setForm((current) => ({
     ...current,
