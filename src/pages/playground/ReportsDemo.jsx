@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CalendarPlus, CheckCircle2, Percent, UserRoundX } from 'lucide-react'
-import { ReportsPage, buildDailySeries, countBy, useReportRange } from '../../shared/components/reports/index'
+import { ReportsPage, buildDailySeries, countBy, useReportRange } from '../../shared/components/reports'
 
 // Deterministic fixture (no API) so the engine can be reviewed in light/dark, RTL/LTR.
 const STATUSES = ['completed', 'scheduled', 'cancelled']

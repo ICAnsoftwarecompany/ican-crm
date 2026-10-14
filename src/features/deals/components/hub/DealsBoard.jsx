@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AlertTriangle } from 'lucide-react'
-import { PipelineBoard } from '../../../../shared/components/pipeline-board/index'
+import { PipelineBoard } from '../../../../shared/components/pipeline-board'
 import { DEAL_STATUSES, DEAL_TYPES } from '../../constants/dealOptions'
 import { buildDealCardStats, sortDealsForBoard, summarizeDealColumn } from '../../utils/dealBoardStats'
 import { formatMoney } from '../../utils/dealMoney'

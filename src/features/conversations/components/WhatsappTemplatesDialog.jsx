@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Check, FileUp, RefreshCw, Send, Trash2, X } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { useWhatsappIntegrationMutations, useWhatsappTemplates } from '../../integrations/whatsapp/index'
+import { useWhatsappIntegrationMutations, useWhatsappTemplates } from '../../integrations/whatsapp'
 import { Button } from '../../../shared/components/ui/Button'
 import { Input } from '../../../shared/components/ui/Input'
 import { Select } from '../../../shared/components/ui/Select'

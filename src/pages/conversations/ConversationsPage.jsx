@@ -16,7 +16,7 @@ import { requestConversationComposerFocus } from '../../features/conversations/c
 // Customer Service: "Create case" in every thread header (docs/4-CUSTOMER-SERVICE.md, F1).
 // Lazy so the Service area stays out of the conversations chunk.
 const CreateCaseFromConversationButton = lazy(() =>
-  import('../../features/service/index').then((module) => ({ default: module.CreateCaseFromConversationButton }))
+  import('../../features/service').then((module) => ({ default: module.CreateCaseFromConversationButton }))
 )
 const renderThreadHeaderActions = (details) => (
   <Suspense fallback={null}>

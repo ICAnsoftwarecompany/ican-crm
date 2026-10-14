@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { BadgeCheck } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
 import { Select } from '../../shared/components/ui/Select'
-import { EntitlementsList } from '../../features/service/index'
+import { EntitlementsList } from '../../features/service'
 
 const STATUSES = ['active', 'exhausted', 'expired', 'suspended']
 

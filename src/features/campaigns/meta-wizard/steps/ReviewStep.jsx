@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { ClipboardCheck, ListChecks, Power, Rocket, Route } from 'lucide-react'
-import { Callout, ChoiceCard, IssueMessage, SectionCard } from '../components/fields/index'
+import { Callout, ChoiceCard, IssueMessage, SectionCard } from '../components/fields'
 import { ReviewSummary } from '../components/review/ReviewSummary'
 import { LeadRoutingFields } from '../components/review/LeadRoutingFields'
 import { PublishPlanList } from '../components/review/PublishPlanList'

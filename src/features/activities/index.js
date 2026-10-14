@@ -9,7 +9,7 @@ export {
   CallScheduleDialog,
   MeetingScheduleDialog,
   ScheduleActivityDialog,
-} from '../call-meetings/index'
+} from '../call-meetings'
 // Used by the Communication hub reports pages (/calls/reports, /meetings/reports).
 export { ActivityStats } from './components/ActivityStats/ActivityStats'
 export { useActivityStatistics } from './hooks/useActivityStatistics'

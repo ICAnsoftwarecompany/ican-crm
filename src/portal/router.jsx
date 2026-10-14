@@ -19,7 +19,7 @@ import {
   PublicHelpCenter,
   useMe,
   usePortalSession,
-} from '../features/portal/index'
+} from '../features/portal'
 
 /** Everything behind sign-in. `/me` is re-read on load so a revoked session goes back to sign-in. */
 function RequireSession() {

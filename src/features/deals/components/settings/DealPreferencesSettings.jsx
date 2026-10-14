@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { ModuleNotice } from '../../../../shared/components/module-pages/index'
+import { ModuleNotice } from '../../../../shared/components/module-pages'
 import { useLocalStorage } from '../../../../shared/components/data-table/hooks/useLocalStorage'
 import { PlannedNotice } from '../common/PlannedNotice'
 import { FieldLabel, dealInputClass } from '../common/FieldLabel'

@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
-import { CustomersPipelineView, statusRequiresReason, useCustomerStatusMove } from '../../../features/customers/pipeline/index'
-import { statusLookup, useLeadCloseRequest } from '../../../features/leads/index'
-import { CustomersBulkActions } from './bulk-actions/index'
-import { StatusChangeReasonDialog } from './bulk-actions/selection-actions/index'
+import { CustomersPipelineView, statusRequiresReason, useCustomerStatusMove } from '../../../features/customers/pipeline'
+import { statusLookup, useLeadCloseRequest } from '../../../features/leads'
+import { CustomersBulkActions } from './bulk-actions'
+import { StatusChangeReasonDialog } from './bulk-actions/selection-actions'
 
 function getReasonLeadContext(customer) {
   const lead = customer?.lead || {}

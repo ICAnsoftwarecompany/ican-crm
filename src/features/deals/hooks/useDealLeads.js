@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { dealLeadsApi } from '../api/index'
+import { dealLeadsApi } from '../api'
 import { dealKeys } from '../constants/dealQueryKeys'
 import { normalizeDealLead } from '../utils/dealLeads'
 import { unwrapList } from './dealResponse'

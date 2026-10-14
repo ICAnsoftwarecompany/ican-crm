@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { getDealStatusValue, isTerminalStage, resolveDealStages, useDeal, useDeals } from '../../deals/index'
+import { getDealStatusValue, isTerminalStage, resolveDealStages, useDeal, useDeals } from '../../deals'
 import { CloseField, closeInputClass } from './CloseField'
 
 /**

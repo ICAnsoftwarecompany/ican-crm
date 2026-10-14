@@ -4,7 +4,7 @@ import { Loader2, MinusCircle, PlusCircle, Search } from 'lucide-react'
 import { cn } from '../../../../../shared/utils/cn'
 import { useGeoLocationSearch } from '../../hooks/useWizardAssets'
 import { locationDisplayName } from '../../domain/geoTargeting'
-import { DemoDataBadge } from '../fields/index'
+import { DemoDataBadge } from '../fields'
 import { GEO_TYPE_ICONS, geoContextLabel } from './geoDisplay'
 
 /**

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Calendar, createEventSourceRegistry } from '../../../../shared/components/calendar/index'
+import { Calendar, createEventSourceRegistry } from '../../../../shared/components/calendar'
 import { truncateCaption } from '../../utils/socialFormatters'
 
 /**

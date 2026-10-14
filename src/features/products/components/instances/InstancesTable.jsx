@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Ban, Edit3, RotateCcw } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
 import { Badge } from '../../../../shared/components/ui/Badge'
-import { DataTable } from '../../../../shared/components/data-table/index'
+import { DataTable } from '../../../../shared/components/data-table'
 import { daysUntil, instanceLabel } from '../../utils/catalogNormalize'
 import { AvailabilityBadge, useOptionLabel } from '../common/catalogUi'
 

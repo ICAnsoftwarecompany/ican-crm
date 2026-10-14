@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '../../../../shared/components/ui/Button'
 import { extractMessage } from '../../../../shared/utils/apiResponse'
-import { buildTodoPayload, useCurrentUserId, useTaskMutations } from '../../../tasks/index'
+import { buildTodoPayload, useCurrentUserId, useTaskMutations } from '../../../tasks'
 import { dealInputClass } from '../common/FieldLabel'
 
 const WHEN = ['today', 'tomorrow', 'week', 'month']

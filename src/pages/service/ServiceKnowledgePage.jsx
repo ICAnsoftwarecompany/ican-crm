@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { BookOpen } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { KnowledgeWorkspace } from '../../features/service/index'
+import { KnowledgeWorkspace } from '../../features/service'
 
 /** /service/knowledge — internal knowledge base. */
 export function ServiceKnowledgePage() {

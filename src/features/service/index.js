@@ -32,60 +32,60 @@ export {
   CasePriorityBadge,
   useCaseList,
   useCaseSummary,
-} from './cases/index'
+} from './cases'
 
 // F1 — My Work & Service Center
-export { MyWorkList, ServiceCenterCounters, useMyWork } from './my-work/index'
+export { MyWorkList, ServiceCenterCounters, useMyWork } from './my-work'
 
 // F1 — Contacts & Customer 360
-export { CustomerContactsPanel, useCustomerContacts } from './contacts/index'
-export { CustomerServiceTab } from './customer-360/index'
+export { CustomerContactsPanel, useCustomerContacts } from './contacts'
+export { CustomerServiceTab } from './customer-360'
 
 // F2 — Settings (case types, queues, SLA, calendars, escalation)
-export { SettingsWorkspace, useResourceList } from './settings/index'
+export { SettingsWorkspace, useResourceList } from './settings'
 
 // F2 — SLA presentation
-export { SlaBadge, SlaPanel } from './sla/index'
+export { SlaBadge, SlaPanel } from './sla'
 
 // F2 — Saved replies, macros, knowledge base
-export { SavedReplyPicker, MacroMenu } from './replies/index'
-export { KnowledgeWorkspace, ArticleEditor, useKbArticle } from './knowledge/index'
+export { SavedReplyPicker, MacroMenu } from './replies'
+export { KnowledgeWorkspace, ArticleEditor, useKbArticle } from './knowledge'
 
 // F2 — Reports & feedback
-export { ReportsWorkspace } from './reports/index'
-export { FeedbackList, CsatScore } from './feedback/index'
+export { ReportsWorkspace } from './reports'
+export { FeedbackList, CsatScore } from './feedback'
 
 // F3 — Service records & batches
-export { RecordsWorkspace, RecordDetailView, BatchesWorkspace, BatchDetailView, useRecordsSetup, findRecordType } from './records/index'
+export { RecordsWorkspace, RecordDetailView, BatchesWorkspace, BatchDetailView, useRecordsSetup, findRecordType } from './records'
 export { ServicesHubNav } from './core/components/ServicesHubNav'
 
 // F3 — Assets, warranty, entitlements
-export { AssetsWorkspace, AssetDetailView } from './assets/index'
-export { EntitlementsList, CaseCoveragePanel } from './entitlements/index'
+export { AssetsWorkspace, AssetDetailView } from './assets'
+export { EntitlementsList, CaseCoveragePanel } from './entitlements'
 
 // F3 — Contracts & handoffs
-export { ContractsWorkspace, ContractDetailView } from './contracts/index'
-export { HandoffsWorkspace, HandoffDetailView } from './handoffs/index'
+export { ContractsWorkspace, ContractDetailView } from './contracts'
+export { HandoffsWorkspace, HandoffDetailView } from './handoffs'
 
 // F4 — Billing Lite
-export { SubscriptionsWorkspace, SubscriptionDetailView } from './subscriptions/index'
-export { SchedulingWorkspace, SlotPicker } from './scheduling/index'
-export { DeliveriesWorkspace } from './deliveries/index'
-export { WorkOrdersWorkspace, WorkOrderDetailView, WorkOrderCreateDialog } from './work-orders/index'
-export { PlanCalculator, PlanPreviewTable, BillingNav, SchedulesList, ScheduleDetailView, CollectionsWorkspace } from './billing/index'
+export { SubscriptionsWorkspace, SubscriptionDetailView } from './subscriptions'
+export { SchedulingWorkspace, SlotPicker } from './scheduling'
+export { DeliveriesWorkspace } from './deliveries'
+export { WorkOrdersWorkspace, WorkOrderDetailView, WorkOrderCreateDialog } from './work-orders'
+export { PlanCalculator, PlanPreviewTable, BillingNav, SchedulesList, ScheduleDetailView, CollectionsWorkspace } from './billing'
 
 // F5 — Follow-ups & portfolios
-export { FollowUpsWorkspace, EnrollFollowUpDialog } from './follow-ups/index'
-export { PortfoliosPanel } from './portfolios/index'
-export { ApiClientsPanel, WebhooksPanel } from './api-access/index'
+export { FollowUpsWorkspace, EnrollFollowUpDialog } from './follow-ups'
+export { PortfoliosPanel } from './portfolios'
+export { ApiClientsPanel, WebhooksPanel } from './api-access'
 
 // F6 — Search & incidents
 export { ServiceSearch } from './search/ServiceSearch'
-export { ActiveIncidentsBanner, IncidentsWorkspace, IncidentDetailView } from './incidents/index'
+export { ActiveIncidentsBanner, IncidentsWorkspace, IncidentDetailView } from './incidents'
 
 // F6 — Quality
-export { QualityWorkspace } from './quality/index'
+export { QualityWorkspace } from './quality'
 
 // F7 — AI
-export { AiCasePanel, AiSignalChips, AiSettingsPanel } from './ai/index'
-export { HealthScoreCard, AtRiskCustomers, AdvancedReport } from './health/index'
+export { AiCasePanel, AiSignalChips, AiSettingsPanel } from './ai'
+export { HealthScoreCard, AtRiskCustomers, AdvancedReport } from './health'

@@ -9,12 +9,12 @@ import { MessengerLogoIcon, MessengerNavbarButton } from '../../../features/conv
 import { GmailNavbarButton } from '../../../features/conversations/components/GmailNavbarButton'
 import { WhatsappNavbarButton } from '../../../features/conversations/components/WhatsappNavbarButton'
 import { TasksNavbarButton } from '../../../features/tasks/components/TasksNavbarButton'
-import { TodoNavbarButton } from '../../../features/tasks/index'
-import { InternalChatNavbarButton } from '../../../features/internal-chat/index'
-import { NotificationCenterButton } from '../../../features/notifications/index'
-import { LiveMeetingIndicator } from '../../../features/call-meetings/index'
+import { TodoNavbarButton } from '../../../features/tasks'
+import { InternalChatNavbarButton } from '../../../features/internal-chat'
+import { NotificationCenterButton } from '../../../features/notifications'
+import { LiveMeetingIndicator } from '../../../features/call-meetings'
 import { HeaderProfileMenu } from './HeaderProfileMenu'
-import { AlertsIndicator } from '../../../features/alerts/index'
+import { AlertsIndicator } from '../../../features/alerts'
 
 const PAGE_CHANNEL_ICONS = [
   {

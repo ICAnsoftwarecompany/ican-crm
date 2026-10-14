@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { useNotificationCenterStore } from '../../features/notifications/index'
+import { useNotificationCenterStore } from '../../features/notifications'
 import { buildGmailMessageNotification } from '../../features/notifications/utils/notificationPayloads'
 import { resolveGmailConversationId, resolveGmailMessage } from '../../features/conversations/channels/gmail/realtimeEvents'
 import { useRealtimeChannel } from './useRealtimeChannel'

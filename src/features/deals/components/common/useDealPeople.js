@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { useTeams } from '../../../teams/index'
-import { useUsers } from '../../../users/index'
+import { useTeams } from '../../../teams'
+import { useUsers } from '../../../users'
 import { useDealTeam } from '../../hooks/useDealResources'
 import { collectDealPeople } from '../../utils/dealTeam'
 

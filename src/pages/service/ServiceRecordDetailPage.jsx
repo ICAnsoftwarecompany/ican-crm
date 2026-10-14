@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Layers3 } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { RecordDetailView } from '../../features/service/index'
+import { RecordDetailView } from '../../features/service'
 
 /** /service/records/:recordType/:recordId */
 export function ServiceRecordDetailPage() {

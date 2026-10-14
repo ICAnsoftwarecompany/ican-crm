@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import { Button } from '../../../../../shared/components/ui/Button'
 import { Input } from '../../../../../shared/components/ui/Input'
 import { Select } from '../../../../../shared/components/ui/Select'
-import { useProposalMutations, useProposalOptionItems } from '../../../../../features/proposals/index'
+import { useProposalMutations, useProposalOptionItems } from '../../../../../features/proposals'
 import { useProducts } from '../../../../../features/products/hooks/useProducts'
 import { formatMoney } from '../utils/proposalPayloads'
 

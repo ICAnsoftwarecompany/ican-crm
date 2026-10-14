@@ -5,7 +5,7 @@ import { META_CONVERSION_EVENTS } from '../../config/metaConversionEvents'
 import { getInstagramAccounts, getWhatsappNumbers } from '../../data/metaAssetsSource'
 import { useApps, usePixels } from '../../hooks/useWizardAssets'
 import { normalizePhoneNumber } from '../../domain/contactFormats'
-import { Callout, ChoiceCard, DemoDataBadge, IssueMessage, SelectField, TextField } from '../fields/index'
+import { Callout, ChoiceCard, DemoDataBadge, IssueMessage, SelectField, TextField } from '../fields'
 
 /**
  * Where results happen (conversion location), what Meta optimizes for,

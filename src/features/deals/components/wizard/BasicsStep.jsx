@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { useUsers } from '../../../users/index'
+import { useUsers } from '../../../users'
 import { DEAL_STATUSES, DEAL_TYPES } from '../../constants/dealOptions'
 import { FieldLabel, dealInputClass } from '../common/FieldLabel'
 import { PersonSelect } from '../common/PersonSelect'

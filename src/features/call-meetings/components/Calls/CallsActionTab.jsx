@@ -7,8 +7,8 @@ import { Button } from '../../../../shared/components/ui/Button'
 import { fieldValue, formatDateTime12 } from '../../utils/scheduleUiUtils'
 import { CallFilters, getCallStatusLabel } from './CallFilters'
 import { CallReminderBanner } from './CallReminderBanner'
-import { ScheduleActivityDialog } from '../ScheduleActivityDialog/index'
-import { MeetingDataDrawer } from '../MeetingDataDrawer/index'
+import { ScheduleActivityDialog } from '../ScheduleActivityDialog'
+import { MeetingDataDrawer } from '../MeetingDataDrawer'
 
 const ACTIVE_CALL_STATUSES = new Set(['scheduled', 'in_progress'])
 

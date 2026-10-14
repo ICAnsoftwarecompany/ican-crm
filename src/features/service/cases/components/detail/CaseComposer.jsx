@@ -4,7 +4,7 @@ import { Lock, Send } from 'lucide-react'
 import { Button } from '../../../../../shared/components/ui/Button'
 import { cn } from '../../../../../shared/utils/cn'
 import { useCaseMutations } from '../../hooks/useCases'
-import { SavedReplyPicker } from '../../../replies/index'
+import { SavedReplyPicker } from '../../../replies'
 import { AiDraftReplyButton } from '../../../ai/components/AiDraftReplyButton'
 
 /**

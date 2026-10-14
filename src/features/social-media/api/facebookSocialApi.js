@@ -1,4 +1,4 @@
-import { facebookCampaignApi } from '../../campaigns/facebook-campaign/index'
+import { facebookCampaignApi } from '../../campaigns/facebook-campaign'
 
 /**
  * Social Media reuses the exact same organic-content endpoints Campaign

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { AppWindow, Eye, FileText, MessageCircle, MessagesSquare, MousePointerClick, Phone, PlaySquare, ShoppingCart, Smartphone, Sparkles, Target, ThumbsUp, Zap } from 'lucide-react'
 import { Badge } from '../../../../shared/components/ui/Badge'
-import { ChoiceCard, SectionCard } from '../components/fields/index'
+import { ChoiceCard, SectionCard } from '../components/fields'
 import { useMetaWizard, useWizardField } from '../context/MetaWizardContext'
 import { META_CAMPAIGN_OBJECTIVES } from '../config/metaObjectives'
 import { CAMPAIGN_PRESETS } from '../config/campaignPresets'

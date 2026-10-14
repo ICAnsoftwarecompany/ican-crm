@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Tabs } from '../../../../shared/components/ui/Tabs'
-import { EntityTasksPanel } from '../../../tasks/index'
+import { EntityTasksPanel } from '../../../tasks'
 import { useDealTasks } from '../../hooks/useDealLinkedWork'
 import { useDealWorkspace } from '../../hooks/useDealWorkspace'
 import { DealTodoQuickAdd } from './DealTodoQuickAdd'

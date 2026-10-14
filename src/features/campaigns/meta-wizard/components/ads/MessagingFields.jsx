@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Plus, X } from 'lucide-react'
-import { TextAreaField } from '../fields/index'
+import { TextAreaField } from '../fields'
 import { inputClassName } from '../fields/FieldFrame'
 
 const MAX_ICE_BREAKERS = 4

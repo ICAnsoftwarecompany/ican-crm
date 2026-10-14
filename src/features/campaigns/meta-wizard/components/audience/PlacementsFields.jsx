@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useWizardField } from '../../context/MetaWizardContext'
 import { DEVICE_PLATFORMS, PLACEMENT_PLATFORMS, getUnsupportedPlatforms } from '../../config/metaPlacements'
-import { ChoiceCard, IssueMessage, ToggleChip } from '../fields/index'
+import { ChoiceCard, IssueMessage, ToggleChip } from '../fields'
 
 /** Advantage+ placements (recommended) or a manual platform/position picker. */
 export function PlacementsFields({ adSet, onChange }) {

@@ -3,7 +3,7 @@ import { BadgeDollarSign, CalendarDays, Eye, ImageIcon, Package, Pencil, StickyN
 
 import { AppModal } from '../../../../../../shared/components/overlays/AppModal'
 import { buildCustomerAssetUrl } from '../../../customers-table/CustomerTableDetailsDialogs/CustomerTableDetailsDialogs'
-import { InterestFormDialog } from '../../quick-actions/interests/index'
+import { InterestFormDialog } from '../../quick-actions/interests'
 import { EmptyPanel } from '../../CustomerDetailsTabPrimitives'
 import { fieldValue, formatDateTime12 } from '../../customerDetailsUtils'
 import { useTranslation } from 'react-i18next'

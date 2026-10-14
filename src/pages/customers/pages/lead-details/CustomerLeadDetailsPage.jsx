@@ -1,6 +1,6 @@
 import { useParams, useSearchParams } from 'react-router-dom'
 
-import { AfterMeetingReportDrawer, PreMeetingReportDrawer } from '../../../../features/call-meetings/index'
+import { AfterMeetingReportDrawer, PreMeetingReportDrawer } from '../../../../features/call-meetings'
 import { CustomerDetailsContent } from '../../components/CustomerDetailsDrawer/CustomerDetailsDrawer'
 import { LeadDetailsBreadcrumbs } from './LeadDetailsBreadcrumbs'
 import { LeadPageSwitcher } from './LeadPageSwitcher'

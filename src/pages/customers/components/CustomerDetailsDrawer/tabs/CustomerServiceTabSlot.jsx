@@ -4,7 +4,7 @@ import { CardSkeleton } from '../../../../../shared/components/feedback/Skeleton
 // Customer Service "Service" tab (features/service, F1). Lazy so the drawer
 // does not pull the Service area into the Leads Center chunk.
 const CustomerServiceTab = lazy(() =>
-  import('../../../../../features/service/index').then((module) => ({ default: module.CustomerServiceTab }))
+  import('../../../../../features/service').then((module) => ({ default: module.CustomerServiceTab }))
 )
 
 /** Adapts the Leads Center customer row to the Service tab's customer shape. */

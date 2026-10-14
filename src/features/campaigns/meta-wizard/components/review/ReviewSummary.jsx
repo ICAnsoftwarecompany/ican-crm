@@ -6,7 +6,7 @@ import { useMetaWizard } from '../../context/MetaWizardContext'
 import { locationDisplayName } from '../../domain/geoTargeting'
 import { getEffectiveAdName, getEffectiveAdSetName, getEffectiveCampaignName } from '../../domain/naming'
 import { getEffectiveSchedule } from '../../domain/buildMetaPayloads'
-import { StatusDot } from '../fields/index'
+import { StatusDot } from '../fields'
 import { adSetStatus, adStatus } from '../../steps/stepStatus'
 
 function Row({ label, children }) {

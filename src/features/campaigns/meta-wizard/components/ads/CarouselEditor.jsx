@@ -3,7 +3,7 @@ import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
 import { useWizardField } from '../../context/MetaWizardContext'
 import { CAROUSEL_LIMITS } from '../../config/metaCallToActions'
 import { createId } from '../../state/initialWizardState'
-import { IssueMessage } from '../fields/index'
+import { IssueMessage } from '../fields'
 import { inputClassName } from '../fields/FieldFrame'
 import { MediaPicker } from './MediaPicker'
 

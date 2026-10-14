@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Loader2, Search, X } from 'lucide-react'
 import { useMetaWizard } from '../../context/MetaWizardContext'
 import { useInterestSearch } from '../../hooks/useWizardAssets'
-import { DemoDataBadge } from '../fields/index'
+import { DemoDataBadge } from '../fields'
 
 const formatSize = (value, language) => (value ? new Intl.NumberFormat(language === 'ar' ? 'ar-EG' : 'en', { notation: 'compact' }).format(value) : '')
 

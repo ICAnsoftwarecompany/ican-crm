@@ -11,4 +11,4 @@ export { getCommunicationSidebarConfig } from './navigation/communicationNavigat
 export { CommunicationModuleLayout } from './components/CommunicationModuleLayout'
 export { CommunicationCalendar } from './components/CommunicationCalendar'
 export { CommunicationAutomation } from './components/CommunicationAutomation'
-export { useActivityReport, useConversationsReport, useTeamChatReport } from './reports/index'
+export { useActivityReport, useConversationsReport, useTeamChatReport } from './reports'

@@ -1,4 +1,4 @@
-import { SocialPlatformUnavailable } from '../../../../features/social-media/index'
+import { SocialPlatformUnavailable } from '../../../../features/social-media'
 
 export function TikTokPage() {
   return <SocialPlatformUnavailable platform="tiktok" />

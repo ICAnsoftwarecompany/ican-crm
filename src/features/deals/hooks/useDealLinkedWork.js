@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { useActivities } from '../../activities/index'
-import { useTasks } from '../../tasks/index'
+import { useActivities } from '../../activities'
+import { useTasks } from '../../tasks'
 import { buildDealLinkIndex, getActivityDealLink, getTaskDealLink } from '../utils/dealLinks'
 import { useDealContracts } from './useDealContracts'
 import { useDealWorkspace } from './useDealWorkspace'

@@ -1,4 +1,4 @@
-export { messegeCampaignApi, whatsappTemplateImagesApi } from '../outreach-campaigns/index'
+export { messegeCampaignApi, whatsappTemplateImagesApi } from '../outreach-campaigns'
 export {
   useMessegeCampaigns,
   useMessegeCampaignInfo,

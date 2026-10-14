@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { MessagesSquare, Search, UsersRound } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { ConversationThread } from '../../conversations/index'
+import { ConversationThread } from '../../conversations'
 import { useChatConversationMutations, useChatConversations } from '../hooks/useChatConversations'
 import { useChatMessageMutations, useChatMessages } from '../hooks/useChatMessages'
 import { useChatRealtime } from '../hooks/useChatRealtime'

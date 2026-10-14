@@ -14,7 +14,7 @@ import {
   SocialContentFilters,
   SocialContentDrawer,
   SocialContentEmptyState,
-} from '../../../features/social-media/index'
+} from '../../../features/social-media'
 
 const VIEWS = [
   { id: 'grid', icon: LayoutGrid },

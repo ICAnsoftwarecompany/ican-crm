@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ResourceState } from '../../../../shared/components/data/ResourceState'
-import { TaskDrawer, TodoItemRow, isTaskClosed, useTaskToggle } from '../../../tasks/index'
+import { TaskDrawer, TodoItemRow, isTaskClosed, useTaskToggle } from '../../../tasks'
 
 /** Tasks linked to the deal's leads or contracts, open first, with tick-to-complete and the task drawer. */
 export function LinkedTaskList({ tasks, isLoading, error, onRetry, emptyTitle, emptyDescription }) {

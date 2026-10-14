@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { DataTable } from '../../../../shared/components/data-table/index'
+import { DataTable } from '../../../../shared/components/data-table'
 import { formatDate, formatRelativeTime } from '../../../../shared/utils/dateTime'
 import { localizeLabel } from '../../core/utils/localizeLabel'
 import { useServiceTerminology } from '../../core/capabilities/useServiceCapabilities'

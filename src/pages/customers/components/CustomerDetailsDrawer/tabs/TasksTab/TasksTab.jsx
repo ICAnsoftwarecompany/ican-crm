@@ -1,4 +1,4 @@
-import { EntityTasksPanel, taskableFromCrmRecord } from '../../../../../../features/tasks/index'
+import { EntityTasksPanel, taskableFromCrmRecord } from '../../../../../../features/tasks'
 
 /**
  * Customer drawer → Tasks tab. Thin wrapper (2026-10-02, tasks F2): the list, quick actions and form

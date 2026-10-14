@@ -1,5 +1,5 @@
 import { createCampaignProvider } from '../campaignProvider'
-import { facebookCampaignApi } from '../../facebook-campaign/index'
+import { facebookCampaignApi } from '../../facebook-campaign'
 
 export const metaCampaignProvider = createCampaignProvider({
   id: 'meta',

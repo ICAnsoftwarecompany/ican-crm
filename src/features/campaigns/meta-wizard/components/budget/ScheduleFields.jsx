@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { DateTimeField, SegmentedControl } from '../fields/index'
+import { DateTimeField, SegmentedControl } from '../fields'
 import { useMetaWizard } from '../../context/MetaWizardContext'
 import { accountLocalInput, formatAccountOffset } from '../../domain/accountTime'
 

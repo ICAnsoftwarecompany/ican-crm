@@ -1,6 +1,6 @@
 import { BarChart3 } from 'lucide-react'
 import { ResourceState } from '../../../../shared/components/data/ResourceState'
-import { getActionTypeLabel } from '../../../../features/campaigns/facebook-campaign/index'
+import { getActionTypeLabel } from '../../../../features/campaigns/facebook-campaign'
 import { formatDate, formatNumber, formatPercent, formatDecimal, formatCurrencyValue } from '../../utils/campaignFormatters'
 import { Metric } from './Metric'
 import { LatinValue } from './LatinValue'

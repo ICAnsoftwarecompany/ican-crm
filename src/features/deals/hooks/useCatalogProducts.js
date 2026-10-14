@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useProducts } from '../../products/index'
+import { useProducts } from '../../products'
 import { flattenCatalogProducts, isCatalogProductActive } from '../utils/catalog'
 
 /** Active catalog products with their full data (for pickers and the product mode). */

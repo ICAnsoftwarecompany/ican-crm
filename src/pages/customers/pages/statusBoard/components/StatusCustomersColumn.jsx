@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { Badge } from '../../../../../shared/components/ui/Badge'
-import { DataTable } from '../../../../../shared/components/data-table/index'
+import { DataTable } from '../../../../../shared/components/data-table'
 import { useTranslation } from 'react-i18next'
 
 function valueOrDash(value) {

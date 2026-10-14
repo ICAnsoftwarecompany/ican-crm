@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { MessageSquarePlus } from 'lucide-react'
 
-import { FollowUpNoteDialog } from '../../follow-up-note/index'
+import { FollowUpNoteDialog } from '../../follow-up-note'
 import { QuickActionButton } from './QuickActionButton'
 import { useTranslation } from 'react-i18next'
 

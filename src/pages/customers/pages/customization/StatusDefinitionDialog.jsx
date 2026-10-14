@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { StatusReasonsEditor, buildReasonsPayload, hasDuplicateReason, isDefinitionsApiLive, readStatusReasons } from '../../../../features/definitions/index'
+import { StatusReasonsEditor, buildReasonsPayload, hasDuplicateReason, isDefinitionsApiLive, readStatusReasons } from '../../../../features/definitions'
 import { FormDialog } from '../../../../shared/components/overlays/FormDialog'
 import { Input } from '../../../../shared/components/ui/Input'
 import { Select } from '../../../../shared/components/ui/Select'

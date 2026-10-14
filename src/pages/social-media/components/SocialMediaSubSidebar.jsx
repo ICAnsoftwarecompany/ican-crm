@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronRight, Gauge, Users, Image as ImageIcon, CalendarRange, BarChart3 } from 'lucide-react'
 import { SOCIAL_NAV_ITEMS } from '../../../features/social-media/config/socialCapabilities'
 import { getVisibleSocialPlatforms } from '../../../features/social-media/config/socialPlatformsRegistry'
-import { SubSidebar } from '../../../shared/components/sub-sidebar/index'
+import { SubSidebar } from '../../../shared/components/sub-sidebar'
 
 const NAV_ICONS = { overview: Gauge, profiles: Users, content: ImageIcon, planner: CalendarRange, analytics: BarChart3 }
 

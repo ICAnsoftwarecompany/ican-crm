@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('../../hooks/useCurrentUserId', () => ({ useCurrentUserId: () => 9 }))
-vi.mock('../../../customers/index', () => ({ useCustomers: () => ({ data: null }) }))
+vi.mock('../../../customers', () => ({ useCustomers: () => ({ data: null }) }))
 
 const { TodoForm } = await import('./TodoForm')
 

@@ -8,7 +8,7 @@ import {
   AdditionalDataFields,
   parseAdditionalData,
   serializeAdditionalData,
-} from '../../../features/products/index'
+} from '../../../features/products'
 
 const INITIAL_FORM = {
   name: '',

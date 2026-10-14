@@ -1,7 +1,7 @@
 import { Navigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ModulePageHeader } from '../../../../shared/components/module-pages/index'
-import { getCommunicationModule } from '../../../../features/communication/index'
+import { ModulePageHeader } from '../../../../shared/components/module-pages'
+import { getCommunicationModule } from '../../../../features/communication'
 import { SettingsSectionOutlet } from '../../registry/settingsSections'
 
 /** /settings/communication/:moduleId — the same section the module shows on /<module>/settings. */

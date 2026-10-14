@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { getTaskDateTime, isTaskOverdue, isTodoTask, useTasks } from '../../tasks/index'
+import { getTaskDateTime, isTaskOverdue, isTodoTask, useTasks } from '../../tasks'
 import { getDueTasks, isMyTask } from '../utils/myWorkItems'
 import { useCurrentUserId } from './useCurrentUserId'
 

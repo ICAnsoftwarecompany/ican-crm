@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DataTable } from '../../../shared/components/data-table/index'
+import { DataTable } from '../../../shared/components/data-table'
 import { Badge } from '../../../shared/components/ui/Badge'
 import { Avatar } from '../../../shared/components/ui/Avatar'
 import { useOpportunities } from '../../../features/opportunities/hooks/useOpportunities'

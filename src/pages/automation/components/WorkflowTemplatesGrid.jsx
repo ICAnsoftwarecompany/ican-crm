@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { LayoutTemplate } from 'lucide-react'
 import { Button } from '../../../shared/components/ui/Button'
 import { WORKFLOW_TEMPLATES } from '../../../features/workflow-engine/templates/workflowTemplates'
-import { getModule } from '../../../features/workflow-engine/index'
+import { getModule } from '../../../features/workflow-engine'
 
 export function WorkflowTemplatesGrid({ onUseTemplate }) {
   const { t } = useTranslation()

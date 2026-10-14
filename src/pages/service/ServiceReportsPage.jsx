@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { BarChart3 } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { ReportsWorkspace } from '../../features/service/index'
+import { ReportsWorkspace } from '../../features/service'
 
 /** /service/reports — overview dashboard and customer feedback. */
 export function ServiceReportsPage() {

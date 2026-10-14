@@ -1,7 +1,7 @@
 import { WalletCards } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { EmptyState } from '../../../shared/components/feedback/EmptyState'
-import { useCampaignCenter } from '../../../features/campaigns/index'
+import { useCampaignCenter } from '../../../features/campaigns'
 import { CampaignUnavailableState } from '../components/CampaignUnavailableState'
 import { CampaignPageHeading } from '../components/CampaignPageHeading'
 

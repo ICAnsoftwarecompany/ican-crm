@@ -7,7 +7,7 @@ import { cn } from '../../../../../shared/utils/cn'
 import { useMetaWizard, useWizardField } from '../../context/MetaWizardContext'
 import { useMediaLibrary } from '../../hooks/useWizardAssets'
 import { WIZARD_PUBLISH_CAPABILITIES } from '../../config/wizardCapabilities'
-import { DemoDataBadge, IssueMessage } from '../fields/index'
+import { DemoDataBadge, IssueMessage } from '../fields'
 import { MediaThumb } from './MediaThumb'
 
 /**

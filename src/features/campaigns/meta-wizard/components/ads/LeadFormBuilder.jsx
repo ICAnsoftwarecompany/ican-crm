@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Plus, Trash2 } from 'lucide-react'
 import { createId } from '../../state/initialWizardState'
-import { SegmentedControl, TextAreaField, TextField, ToggleChip } from '../fields/index'
+import { SegmentedControl, TextAreaField, TextField, ToggleChip } from '../fields'
 import { inputClassName } from '../fields/FieldFrame'
 
 // Technical format hints (not translatable copy).

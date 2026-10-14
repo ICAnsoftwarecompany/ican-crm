@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom'
-import { ServicesHubNav } from '../../features/service/index'
+import { ServicesHubNav } from '../../features/service'
 
 /** Shell for the Services hub: records, batches, assets, contracts, handoffs share one sidebar item. */
 export function ServicesHubLayout() {

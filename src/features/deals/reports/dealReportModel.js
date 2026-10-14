@@ -2,7 +2,7 @@
  * Pure model of one deal's Reports page (shared reports engine). Input: the deal's normalized leads
  * (features/deals/utils/dealLeads) and its normalized contracts. Created = `createdAt`, closed = `closedAt`.
  */
-import { buildDailySeries, countBy, filterByRange, filterPreviousRange, percentChange, percentOf } from '../../../shared/components/reports/index'
+import { buildDailySeries, countBy, filterByRange, filterPreviousRange, percentChange, percentOf } from '../../../shared/components/reports'
 
 const created = (lead) => lead.createdAt
 const closed = (lead) => lead.closedAt

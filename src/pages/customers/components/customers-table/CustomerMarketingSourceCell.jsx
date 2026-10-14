@@ -6,7 +6,7 @@ import {
   CustomerTableHoverCard,
   getSourceDisplayName,
   getSourceSpecificLabel,
-} from './CustomerTableHovers/index'
+} from './CustomerTableHovers'
 
 function renderValue(value) {
   if (value === null || value === undefined || value === '') return null

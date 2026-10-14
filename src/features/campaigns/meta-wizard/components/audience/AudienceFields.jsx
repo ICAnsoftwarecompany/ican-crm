@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useMetaWizard, useWizardField } from '../../context/MetaWizardContext'
 import { useCustomAudiences, useLanguages } from '../../hooks/useWizardAssets'
-import { Callout, DemoDataBadge, IssueMessage, SegmentedControl, Switch, ToggleChip } from '../fields/index'
+import { Callout, DemoDataBadge, IssueMessage, SegmentedControl, Switch, ToggleChip } from '../fields'
 import { inputClassName } from '../fields/FieldFrame'
 import { DetailedTargetingPicker } from './DetailedTargetingPicker'
 

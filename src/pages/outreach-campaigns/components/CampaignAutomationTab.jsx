@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { WorkflowBuilder, useWorkflowStore } from '../../../features/workflow-engine/index'
+import { WorkflowBuilder, useWorkflowStore } from '../../../features/workflow-engine'
 
 /**
  * Proof of module embedding (see docs section 63/"UI Reuse in Outreach

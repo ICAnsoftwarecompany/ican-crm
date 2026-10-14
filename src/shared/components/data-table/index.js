@@ -41,7 +41,7 @@ export { useLocalStorage } from './hooks/useLocalStorage'
 export { useAdvancedFilters } from './hooks/useAdvancedFilters'
 export { useExport } from './hooks/useExport'
 export { useTableFormatRules } from './hooks/useTableFormatRules'
-export { useTableFormatRulesRealtime } from '../../../realtime/index'
+export { useTableFormatRulesRealtime } from '../../../realtime'
 
 // Utilities
 export { buildFilterQuery, applyAllFilters } from './utils/buildFilterQuery'

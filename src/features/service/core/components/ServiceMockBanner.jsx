@@ -6,7 +6,7 @@ import { Select } from '../../../../shared/components/ui/Select'
 import { SERVICE_MODULES } from '../constants/serviceModules'
 import { serviceKeys } from '../constants/queryKeys'
 import { isModuleMocked } from '../api/serviceHttp'
-import { MOCK_TEMPLATE_KEYS } from '../../mocks/templates/index'
+import { MOCK_TEMPLATE_KEYS } from '../../mocks/templates'
 
 /**
  * Visible whenever at least one Service module is served by mock data.

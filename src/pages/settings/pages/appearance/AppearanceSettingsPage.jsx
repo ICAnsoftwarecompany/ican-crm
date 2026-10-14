@@ -5,7 +5,7 @@ import { PageToolbar } from '../../../../shared/components/data/PageToolbar'
 import { Button } from '../../../../shared/components/ui/Button'
 import { Input } from '../../../../shared/components/ui/Input'
 import { StatusBadge } from '../../../../shared/components/ui/StatusBadge'
-import { useAppearanceSettings } from '../../../../features/branding/index'
+import { useAppearanceSettings } from '../../../../features/branding'
 
 const HEX_PATTERN = /^#[0-9A-Fa-f]{6}$/
 

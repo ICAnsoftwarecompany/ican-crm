@@ -1,6 +1,6 @@
 import { UserRound } from 'lucide-react'
 import { getCustomerPerson } from './customerMarketingUtils'
-import { CustomerPersonHoverDetails, CustomerTableHoverCard } from './CustomerTableHovers/index'
+import { CustomerPersonHoverDetails, CustomerTableHoverCard } from './CustomerTableHovers'
 
 function normalizePerson(user) {
   if (!user || typeof user !== 'object') return null

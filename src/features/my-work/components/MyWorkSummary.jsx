@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { AlarmClock, CalendarClock, CheckSquare, MessagesSquare } from 'lucide-react'
 import { cn } from '../../../shared/utils/cn'
-import { useConversationUnreadSummary } from '../../conversations/index'
-import { useChatUnreadCount } from '../../internal-chat/index'
+import { useConversationUnreadSummary } from '../../conversations'
+import { useChatUnreadCount } from '../../internal-chat'
 import { useMyActivities } from '../hooks/useMyActivities'
 import { useMyTasks } from '../hooks/useMyTasks'
 

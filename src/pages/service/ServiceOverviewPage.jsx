@@ -7,7 +7,7 @@ import {
   ServiceMockBanner,
   ServiceRoadmap,
   useServiceCapabilities,
-} from '../../features/service/index'
+} from '../../features/service'
 
 /**
  * /service — Service Operations overview (F0).

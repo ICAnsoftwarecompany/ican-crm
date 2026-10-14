@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { CalendarClock, Layers, Scale, ShieldAlert, Wallet, Wand2 } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
-import { Callout, ChoiceCard, SectionCard, SelectField, TextField, ToggleChip } from '../components/fields/index'
+import { Callout, ChoiceCard, SectionCard, SelectField, TextField, ToggleChip } from '../components/fields'
 import { BudgetFields } from '../components/budget/BudgetFields'
 import { ScheduleFields } from '../components/budget/ScheduleFields'
 import { CountryMultiSelect } from '../components/geo/CountryMultiSelect'

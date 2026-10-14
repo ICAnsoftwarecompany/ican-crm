@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Callout, SelectField } from '../components/fields/index'
+import { Callout, SelectField } from '../components/fields'
 import { ItemTabs } from '../components/layout/ItemTabs'
 import { AdEditor } from '../components/ads/AdEditor'
 import { AdPreview } from '../components/ads/AdPreview'

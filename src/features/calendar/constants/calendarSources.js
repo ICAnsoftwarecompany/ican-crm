@@ -1,4 +1,4 @@
-import { createEventSourceRegistry } from '../../../shared/components/calendar/index'
+import { createEventSourceRegistry } from '../../../shared/components/calendar'
 
 /**
  * The only calendar sources wired up today. Opportunities/Outreach

@@ -13,7 +13,7 @@ import {
   X,
 } from 'lucide-react'
 import { AppModal } from '../../../../../shared/components/overlays/AppModal'
-import { CustomerActivityTimeline, normalizeCustomerActivities } from '../CustomerActivityTimeline/index'
+import { CustomerActivityTimeline, normalizeCustomerActivities } from '../CustomerActivityTimeline'
 import { leadsApi } from '../../../../../features/leads/api/leadsApi'
 import { resolveApiBaseURL } from '../../../../../services/apiBaseUrl'
 import {

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { CalendarClock, LayoutGrid, MapPinned, Target, UserRound } from 'lucide-react'
 import { ItemTabs } from '../components/layout/ItemTabs'
-import { SectionCard, Switch, TextField } from '../components/fields/index'
+import { SectionCard, Switch, TextField } from '../components/fields'
 import { ConversionFields } from '../components/audience/ConversionFields'
 import { AudienceFields } from '../components/audience/AudienceFields'
 import { PlacementsFields } from '../components/audience/PlacementsFields'

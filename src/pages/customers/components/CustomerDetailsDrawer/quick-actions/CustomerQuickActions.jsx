@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { cn } from '../../../../../shared/utils/cn'
-import { CallQuickAction, MeetingQuickAction } from '../../../../../features/call-meetings/index'
+import { CallQuickAction, MeetingQuickAction } from '../../../../../features/call-meetings'
 import { EmailQuickAction } from './EmailQuickAction'
 import { FollowUpQuickAction } from './FollowUpQuickAction'
-import { AddInterestQuickAction } from './interests/index'
+import { AddInterestQuickAction } from './interests'
 import { MessengerQuickAction } from './MessengerQuickAction'
 import { SmsQuickAction } from './SmsQuickAction'
 import { StatusQuickAction } from './StatusQuickAction'

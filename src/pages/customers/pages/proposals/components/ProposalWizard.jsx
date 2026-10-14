@@ -5,7 +5,7 @@ import { CheckCircle2, FileSignature, UserRound } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useCustomers } from '../../../../../features/customers/hooks/useCustomers'
-import { useProposalMutations, useProposalTemplates } from '../../../../../features/proposals/index'
+import { useProposalMutations, useProposalTemplates } from '../../../../../features/proposals'
 import { useUsers } from '../../../../../features/users/hooks/useUsers'
 import { Button } from '../../../../../shared/components/ui/Button'
 import { Input } from '../../../../../shared/components/ui/Input'

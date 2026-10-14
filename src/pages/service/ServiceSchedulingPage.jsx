@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { CalendarRange } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { SchedulingWorkspace } from '../../features/service/index'
+import { SchedulingWorkspace } from '../../features/service'
 
 /** /service/scheduling — resources × day, holds and bookings. */
 export function ServiceSchedulingPage() {

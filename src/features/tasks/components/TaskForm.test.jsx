@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 vi.mock('../hooks/useCurrentUserId', () => ({ useCurrentUserId: () => 9 }))
 vi.mock('../../users/hooks/useUsers', () => ({ useUsers: () => ({ data: [{ id: 9, name: 'Me Self' }, { id: 4, name: 'Sara Ali' }] }) }))
 vi.mock('../../teams/hooks/useTeams', () => ({ useTeams: () => ({ data: [] }) }))
-vi.mock('../../customers/index', () => ({ useCustomers: () => ({ data: null }) }))
+vi.mock('../../customers', () => ({ useCustomers: () => ({ data: null }) }))
 
 const { TaskForm } = await import('./TaskForm')
 

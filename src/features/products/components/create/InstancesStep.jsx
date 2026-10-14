@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { ModuleNotice } from '../../../../shared/components/module-pages/index'
+import { ModuleNotice } from '../../../../shared/components/module-pages'
 import { requiresSerials } from '../../utils/productCreateWizard'
 import { InstanceInputs } from '../instances/InstanceInputs'
 

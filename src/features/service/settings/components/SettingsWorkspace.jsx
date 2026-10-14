@@ -1,8 +1,8 @@
 import { Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { SubSidebarFrame, SubSidebarNav } from '../../../../shared/components/sub-sidebar/index'
+import { SubSidebarFrame, SubSidebarNav } from '../../../../shared/components/sub-sidebar'
 import { EmptyState } from '../../../../shared/components/feedback/EmptyState'
-import { SETTINGS_GROUPS, getSettingsResource, getSettingsSlug } from '../resources/index'
+import { SETTINGS_GROUPS, getSettingsResource, getSettingsSlug } from '../resources'
 import { ResourceSettingsPanel } from './ResourceSettingsPanel'
 
 /**

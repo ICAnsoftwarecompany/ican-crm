@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../../../../store/authStore'
 import { tableFormatRulesApi } from '../api/tableFormatRulesApi'
-import { useTableFormatRulesRealtime } from '../../../../realtime/index'
+import { useTableFormatRulesRealtime } from '../../../../realtime'
 import {
   buildFormatRulePayload,
   buildWholeTableFormatRulePayload,

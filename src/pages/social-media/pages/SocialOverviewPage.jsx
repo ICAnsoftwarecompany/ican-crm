@@ -15,7 +15,7 @@ import {
   SocialMetricsCards,
   calculateTotalEngagement,
   rankContentByEngagement,
-} from '../../../features/social-media/index'
+} from '../../../features/social-media'
 
 /**
  * Cross-platform dashboard — never Facebook-specific in its own copy/

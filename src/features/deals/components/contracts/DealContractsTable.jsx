@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { DataTable } from '../../../../shared/components/data-table/index'
+import { DataTable } from '../../../../shared/components/data-table'
 import { Badge } from '../../../../shared/components/ui/Badge'
 import { formatDate } from '../../../../shared/utils/dateTime'
 import { useDealContracts } from '../../hooks/useDealContracts'

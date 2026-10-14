@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { useMeetingInfo, useMeetings } from '../../../meetings/hooks/useMeetings'
 import { fieldValue, formatDateTime12 } from '../../utils/scheduleUiUtils'
 import { getMeetingInfoPayload, getParticipantUserId } from '../ScheduleDetails/scheduleDetailsUtils'
-import { MeetingDataDrawer } from '../MeetingDataDrawer/index'
+import { MeetingDataDrawer } from '../MeetingDataDrawer'
 import { useAuthStore } from '../../../../store/authStore'
 
 function isLiveMeeting(meeting) {

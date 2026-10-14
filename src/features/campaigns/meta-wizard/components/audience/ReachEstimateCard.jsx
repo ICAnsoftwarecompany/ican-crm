@@ -3,7 +3,7 @@ import { Users } from 'lucide-react'
 import { useMetaWizard } from '../../context/MetaWizardContext'
 import { useReachEstimate } from '../../hooks/useWizardAssets'
 import { buildTargeting } from '../../domain/buildMetaPayloads'
-import { DemoDataBadge } from '../fields/index'
+import { DemoDataBadge } from '../fields'
 
 const compact = (value, language) => new Intl.NumberFormat(language === 'ar' ? 'ar-EG' : 'en', { notation: 'compact', maximumFractionDigits: 1 }).format(value || 0)
 

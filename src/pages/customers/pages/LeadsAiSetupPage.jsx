@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Bot } from 'lucide-react'
-import { AiSetupPage } from '../../../shared/components/ai-setup/index'
-import { LEAD_AI_CAPABILITIES } from '../../../features/leads/index'
+import { AiSetupPage } from '../../../shared/components/ai-setup'
+import { LEAD_AI_CAPABILITIES } from '../../../features/leads'
 
 /** /LeadsCenter/ai — shared AI setup for the Leads Center (added 2026-10-01; per-browser draft until features/ai exists). */
 export function LeadsAiSetupPage() {

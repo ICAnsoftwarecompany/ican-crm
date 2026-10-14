@@ -1,5 +1,5 @@
 export { CustomerSocialMessagingPanel } from './CustomerSocialMessagingPanel'
-export { SocialMessagingBulkActions } from '../selection-actions/index'
+export { SocialMessagingBulkActions } from '../selection-actions'
 export { SocialChannelsList } from './SocialChannelsList'
 export { SocialChannelButton } from './SocialChannelButton'
 export { SocialChannelBadge } from './SocialChannelBadge'

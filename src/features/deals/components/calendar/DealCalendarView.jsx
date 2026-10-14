@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Calendar } from '../../../../shared/components/calendar/index'
-import { ActivityPreviewDrawer, calendarSourceRegistry } from '../../../calendar/index'
-import { TaskDrawer } from '../../../tasks/index'
+import { Calendar } from '../../../../shared/components/calendar'
+import { ActivityPreviewDrawer, calendarSourceRegistry } from '../../../calendar'
+import { TaskDrawer } from '../../../tasks'
 import { DEAL_CALENDAR_SOURCES } from '../../utils/dealCalendar'
 
 const SOURCES = [...calendarSourceRegistry.getAll(), ...DEAL_CALENDAR_SOURCES]

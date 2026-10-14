@@ -14,7 +14,7 @@ import {
   ServiceSearch,
   useServiceCapabilities,
   useServiceTerminology,
-} from '../../features/service/index'
+} from '../../features/service'
 
 /** /service — daily workspace: counters, my work preview, quick actions. */
 export function ServiceCenterPage() {

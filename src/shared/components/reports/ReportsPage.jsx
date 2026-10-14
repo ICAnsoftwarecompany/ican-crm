@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { BarChart3 } from 'lucide-react'
 import { ResourceState } from '../data/ResourceState'
-import { ModuleNotice, ModulePageHeader } from '../module-pages/index'
+import { ModuleNotice, ModulePageHeader } from '../module-pages'
 import { ReportChart } from './ReportChart'
 import { ReportRangeFilter } from './ReportRangeFilter'
 import { KpiRow } from './StatTile'

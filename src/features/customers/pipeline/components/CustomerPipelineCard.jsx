@@ -3,7 +3,7 @@ import { Briefcase, Clock, ExternalLink, Hash, Mail, MoreVertical, NotebookPen, 
 
 import { CustomerSourceBadge } from '../../../../shared/components/Icons/CustomerSourceBadge'
 import { DropdownMenu } from '../../../../shared/components/overlays/DropdownMenu'
-import { PipelineCard } from '../../../../shared/components/pipeline-board/index'
+import { PipelineCard } from '../../../../shared/components/pipeline-board'
 import { TruncatedText } from '../../../../shared/components/ui/TruncatedText'
 import { cn } from '../../../../shared/utils/cn'
 import { formatDate, formatTime } from '../../../../shared/utils/dateTime'

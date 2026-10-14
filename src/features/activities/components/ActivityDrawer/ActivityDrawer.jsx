@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { AppDrawer } from '../../../../shared/components/overlays/AppDrawer'
-import { MeetingDataDrawer } from '../../../call-meetings/components/MeetingDataDrawer/index'
+import { MeetingDataDrawer } from '../../../call-meetings/components/MeetingDataDrawer'
 import { ActivityLifecycleActions } from '../ActivityStatus/ActivityLifecycleActions'
 import { ActivityDrawerHeader } from './ActivityDrawerHeader'
 import { ActivityFilesTab } from './ActivityFilesTab'

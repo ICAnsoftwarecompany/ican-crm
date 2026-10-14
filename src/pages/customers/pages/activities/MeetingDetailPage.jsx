@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
-import { MeetingDataDrawer } from '../../../../features/call-meetings/components/MeetingDataDrawer/index'
+import { MeetingDataDrawer } from '../../../../features/call-meetings/components/MeetingDataDrawer'
 import { useMeetingInfo } from '../../../../features/meetings/hooks/useMeetings'
 import { useTranslation } from 'react-i18next'
 

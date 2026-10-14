@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom'
-import { ProductCreateWizard } from '../../features/products/index'
+import { ProductCreateWizard } from '../../features/products'
 
 /**
  * /products/new (`?kind=service` for a service, `?item_type=<id>` to start with an item type) — product create

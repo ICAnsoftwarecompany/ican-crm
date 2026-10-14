@@ -1,4 +1,4 @@
-import { DEFAULT_MOCK_TEMPLATE, MOCK_TEMPLATE_KEYS, buildTemplateManifest } from './templates/index'
+import { DEFAULT_MOCK_TEMPLATE, MOCK_TEMPLATE_KEYS, buildTemplateManifest } from './templates'
 
 /**
  * In-memory mock database.

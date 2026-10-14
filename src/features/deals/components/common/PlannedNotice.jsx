@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { ModuleNotice } from '../../../../shared/components/module-pages/index'
+import { ModuleNotice } from '../../../../shared/components/module-pages'
 import { isDealApiLive } from '../../constants/dealApiStatus'
 
 /**

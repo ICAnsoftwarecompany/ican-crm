@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ResourceState } from '../../../../shared/components/data/ResourceState'
-import { ModuleNotice } from '../../../../shared/components/module-pages/index'
+import { ModuleNotice } from '../../../../shared/components/module-pages'
 import { useDealWorkspace } from '../../hooks/useDealWorkspace'
 import { filterDealLeads, isDealLeadStale } from '../../utils/dealLeads'
 import { buildTeamLanes } from '../../utils/dealTeam'

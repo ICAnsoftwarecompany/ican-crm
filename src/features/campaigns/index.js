@@ -1,3 +1,3 @@
-export * from './config/index'
+export * from './config'
 export * from './context/CampaignCenterContext'
-export * from './facebook-campaign/index'
+export * from './facebook-campaign'

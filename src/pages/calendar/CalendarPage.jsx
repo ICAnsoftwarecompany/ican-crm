@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { CalendarDays } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { Calendar } from '../../shared/components/calendar/index'
+import { Calendar } from '../../shared/components/calendar'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
 import { extractMessage } from '../../shared/utils/apiResponse'
 import { formatDateInput, formatTimeInput } from '../../shared/utils/dateTime'
@@ -18,7 +18,7 @@ import { ActivityPreviewDrawer } from '../../features/calendar/components/Activi
 import { useTaskMutations } from '../../features/tasks/hooks/useTasks'
 import { TaskDrawer } from '../../features/tasks/components/TaskDrawer'
 import { TaskFormDialog } from '../../features/tasks/components/TaskFormDialog'
-import { ActivityFormDialog } from '../../features/activities/index'
+import { ActivityFormDialog } from '../../features/activities'
 
 const CALENDAR_SOURCES = calendarSourceRegistry.getAll()
 

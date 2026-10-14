@@ -3,8 +3,8 @@ import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ClipboardCheck, Plus } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { ModulePageHeader } from '../../shared/components/module-pages/index'
-import { TaskDrawer, TodoFormDialog, TodoPanelView, useTodoList } from '../../features/tasks/index'
+import { ModulePageHeader } from '../../shared/components/module-pages'
+import { TaskDrawer, TodoFormDialog, TodoPanelView, useTodoList } from '../../features/tasks'
 
 // The tab decides what "New To-Do" starts with.
 const VIEW_TO_WHEN = { today: 'today', week: 'week', month: 'month', overdue: 'today' }

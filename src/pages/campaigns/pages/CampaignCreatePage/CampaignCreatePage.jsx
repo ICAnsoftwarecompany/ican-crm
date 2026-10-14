@@ -1,5 +1,5 @@
-import { useCampaignCenter } from '../../../../features/campaigns/index'
-import { MetaCampaignWizard } from '../../../../features/campaigns/meta-wizard/index'
+import { useCampaignCenter } from '../../../../features/campaigns'
+import { MetaCampaignWizard } from '../../../../features/campaigns/meta-wizard'
 import { CampaignUnavailableState } from '../../components/CampaignUnavailableState'
 
 /**
