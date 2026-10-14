@@ -3,7 +3,7 @@
  * catalog tree (categories with `products` and `children`/`children_recursive`); this flattens it
  * into one row per product or service, mirroring the rules the products page uses.
  */
-import { countBy, filterByRange } from '../../../shared/components/reports'
+import { countBy, filterByRange } from '../../../shared/components/reports/index'
 
 const childrenOf = (node) => (Array.isArray(node?.children_recursive) ? node.children_recursive : Array.isArray(node?.children) ? node.children : [])
 const isActive = (item) => Number(item?.status ?? item?.active ?? 1) === 1

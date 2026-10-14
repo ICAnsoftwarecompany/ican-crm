@@ -3,7 +3,7 @@ import { Copy, Star, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '../../../../../shared/components/ui/Button'
-import { useProposalMutations } from '../../../../../features/proposals'
+import { useProposalMutations } from '../../../../../features/proposals/index'
 import { buildVersionPayload } from '../utils/proposalBuilderContent'
 
 export function ProposalVersionsPanel({ proposal, versions = [], currentVersion, content, onSelectVersion }) {

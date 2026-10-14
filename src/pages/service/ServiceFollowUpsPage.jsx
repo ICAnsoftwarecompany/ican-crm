@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Repeat } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { FollowUpsWorkspace } from '../../features/service'
+import { FollowUpsWorkspace } from '../../features/service/index'
 
 /** /service/follow-ups */
 export function ServiceFollowUpsPage() {

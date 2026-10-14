@@ -12,7 +12,7 @@ export { MeetingFilters, getMeetingStatusLabel } from './components/Meetings/Mee
 export { MeetingReminderBanner } from './components/Meetings/MeetingReminderBanner'
 export { MeetingQuickAction } from './components/Meetings/MeetingQuickAction'
 
-export { MeetingDataDrawer } from './components/MeetingDataDrawer'
-export { PreMeetingReportDrawer } from './components/PreMeetingReportDrawer'
-export { AfterMeetingReportDrawer } from './components/AfterMeetingReportDrawer'
-export { LiveMeetingIndicator } from './components/LiveMeetingIndicator'
+export { MeetingDataDrawer } from './components/MeetingDataDrawer/index'
+export { PreMeetingReportDrawer } from './components/PreMeetingReportDrawer/index'
+export { AfterMeetingReportDrawer } from './components/AfterMeetingReportDrawer/index'
+export { LiveMeetingIndicator } from './components/LiveMeetingIndicator/index'

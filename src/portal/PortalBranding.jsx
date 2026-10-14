@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { usePublicSettings } from '../features/portal'
+import { usePublicSettings } from '../features/portal/index'
 
 /** Applies the tenant's portal branding: accent color and page title. */
 export function PortalBranding() {

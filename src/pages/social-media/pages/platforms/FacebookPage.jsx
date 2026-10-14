@@ -5,7 +5,7 @@ import { PageToolbar } from '../../../../shared/components/data/PageToolbar'
 import { Button } from '../../../../shared/components/ui/Button'
 import { useAuthStore } from '../../../../store/authStore'
 import { resolveTenantId } from '../../../../services/tenantResolver'
-import { useSocialProfiles, SocialProfileCard, SocialContentEmptyState } from '../../../../features/social-media'
+import { useSocialProfiles, SocialProfileCard, SocialContentEmptyState } from '../../../../features/social-media/index'
 
 /** All connected Facebook Pages — the user picks one to open its full details. See docs "Facebook Platform Page". */
 export function FacebookPage() {

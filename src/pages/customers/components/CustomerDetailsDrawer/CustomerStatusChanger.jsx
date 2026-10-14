@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { RefreshCw } from 'lucide-react'
 
-import { useLeadCloseRequest } from '../../../../features/leads'
+import { useLeadCloseRequest } from '../../../../features/leads/index'
 import { useLeadMutations } from '../../../../features/leads/hooks/useLeads'
 import { Button } from '../../../../shared/components/ui/Button'
 import { cn } from '../../../../shared/utils/cn'

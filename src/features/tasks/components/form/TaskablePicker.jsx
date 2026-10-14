@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Loader2, Search, X } from 'lucide-react'
 import { useDebounce } from '../../../../shared/hooks/useDebounce'
-import { useCustomers } from '../../../customers'
+import { useCustomers } from '../../../customers/index'
 import { getTaskableType } from '../../constants/taskableTypes'
 import { fieldHintClass, fieldInputClass } from './taskFormStyles'
 

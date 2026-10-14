@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useLeadLog } from '../../../../../../features/leads/hooks/useLeads'
-import { CustomerActivityTimeline, normalizeCustomerActivities } from '../../../customers-table/CustomerActivityTimeline'
+import { CustomerActivityTimeline, normalizeCustomerActivities } from '../../../customers-table/CustomerActivityTimeline/index'
 import { useTranslation } from 'react-i18next'
 
 function getLeadId(customer) {

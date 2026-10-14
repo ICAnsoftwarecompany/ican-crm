@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { dealsApi, pipelineTemplatesApi } from '../api'
+import { dealsApi, pipelineTemplatesApi } from '../api/index'
 import { dealKeys } from '../constants/dealQueryKeys'
 import { unwrapEntity, unwrapList } from './dealResponse'
 

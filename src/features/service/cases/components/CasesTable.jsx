@@ -1,13 +1,13 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { DataTable } from '../../../../shared/components/data-table'
+import { DataTable } from '../../../../shared/components/data-table/index'
 import { formatRelativeTime } from '../../../../shared/utils/dateTime'
 import { localizeLabel } from '../../core/utils/localizeLabel'
 import { useServiceTerminology } from '../../core/capabilities/useServiceCapabilities'
 import { CasePriorityBadge, CaseStatusBadge } from './CaseBadges'
 import { CaseTypeIcon } from './CaseTypeIcon'
-import { SlaBadge } from '../../sla'
+import { SlaBadge } from '../../sla/index'
 
 /**
  * Case list on the shared DataTable. Server-side view/search; rows are

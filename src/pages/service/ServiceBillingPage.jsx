@@ -2,7 +2,7 @@ import { Navigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Wallet } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { BillingNav, CollectionsWorkspace, PlanCalculator, ScheduleDetailView, SchedulesList } from '../../features/service'
+import { BillingNav, CollectionsWorkspace, PlanCalculator, ScheduleDetailView, SchedulesList } from '../../features/service/index'
 
 const BASE = '/service/billing'
 const detailPath = (schedule) => `${BASE}/schedules/${schedule.id}`

@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DataTable } from '../../../shared/components/data-table'
+import { DataTable } from '../../../shared/components/data-table/index'
 import { Badge } from '../../../shared/components/ui/Badge'
 import { displayValue } from '../../../shared/utils/apiResponse'
-import { getCampaignResultCount } from '../../../features/campaigns/facebook-campaign'
+import { getCampaignResultCount } from '../../../features/campaigns/facebook-campaign/index'
 import { formatDate, formatNumber, formatPercent, formatCurrencyValue } from '../utils/campaignFormatters'
 
 export function CampaignListTable({ campaigns, platformId, tableId = 'campaign-center-list', onRowClick }) {

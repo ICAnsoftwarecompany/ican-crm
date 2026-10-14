@@ -15,8 +15,8 @@ export { VisualFlowErrorState } from './VisualFlowErrorState'
 export { VisualFlowErrorBoundary } from './VisualFlowErrorBoundary'
 export { VisualFlowSidebar } from './VisualFlowSidebar'
 
-export { BaseNode, StartNode, EndNode, UnknownNode, defaultNodeComponents } from './nodes'
-export { BaseEdge, defaultEdgeComponents } from './edges'
+export { BaseNode, StartNode, EndNode, UnknownNode, defaultNodeComponents } from './nodes/index'
+export { BaseEdge, defaultEdgeComponents } from './edges/index'
 
 export { NodeLibraryPanel } from './panels/NodeLibraryPanel'
 export { PropertiesPanel } from './panels/PropertiesPanel'

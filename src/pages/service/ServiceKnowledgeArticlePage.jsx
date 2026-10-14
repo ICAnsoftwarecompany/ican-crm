@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { ArrowLeft, BookOpen } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
 import { ResourceState } from '../../shared/components/data/ResourceState'
-import { ArticleEditor, useKbArticle } from '../../features/service'
+import { ArticleEditor, useKbArticle } from '../../features/service/index'
 
 const BASE = '/service/knowledge'
 

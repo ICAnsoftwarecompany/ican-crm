@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom'
-import { ItemTypeWizard } from '../../features/products'
+import { ItemTypeWizard } from '../../features/products/index'
 
 /** /products/item-types/new (`?kind=service`, `?returnTo=/products/new`) — item type wizard (2026-10-14). */
 export function ItemTypeCreatePage() {

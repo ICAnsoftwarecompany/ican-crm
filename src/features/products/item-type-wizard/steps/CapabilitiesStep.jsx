@@ -5,9 +5,9 @@ import { Button } from '../../../../shared/components/ui/Button'
 import { Input } from '../../../../shared/components/ui/Input'
 import { cn } from '../../../../shared/utils/cn'
 import { CAPABILITY_GROUPS, capabilitiesForKind, getCapabilityDefinition } from '../../constants/capabilityRegistry'
-import { CapabilityConfigFields } from '../common/CapabilityConfigFields'
-import { TextAreaField, useCapabilityName } from '../common/catalogUi'
-import { HelpField } from '../common/HelpTip'
+import { CapabilityConfigFields } from '../../components/common/CapabilityConfigFields'
+import { TextAreaField, useCapabilityName } from '../../components/common/catalogUi'
+import { HelpField } from '../components/HelpTip'
 
 function CapabilityCard({ definition, active, config, onToggle, onConfig }) {
   const { t } = useTranslation()

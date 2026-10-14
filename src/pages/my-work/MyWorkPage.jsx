@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next'
 import { ListChecks } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
 import { useAuthStore } from '../../store/authStore'
-import { ModulePageHeader } from '../../shared/components/module-pages'
-import { MyWorkBoard, MyWorkFocusTabs, MyWorkSummary, useMyWorkFocus } from '../../features/my-work'
+import { ModulePageHeader } from '../../shared/components/module-pages/index'
+import { MyWorkBoard, MyWorkFocusTabs, MyWorkSummary, useMyWorkFocus } from '../../features/my-work/index'
 
 /** /my-work — everything waiting for the signed-in user today, across Sales, Customer Hub and Communication. */
 export function MyWorkPage() {

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Calendar } from '../../../shared/components/calendar'
+import { Calendar } from '../../../shared/components/calendar/index'
 import { Button } from '../../../shared/components/ui/Button'
 import { activitiesToCalendarEvents } from '../adapters/activityEventAdapter'
 import { calendarSourceRegistry } from '../constants/calendarSources'

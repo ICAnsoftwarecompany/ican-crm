@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { ListChecks } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { MyWorkList } from '../../features/service'
+import { MyWorkList } from '../../features/service/index'
 
 /** /service/my-work — everything assigned to the signed-in user. */
 export function ServiceMyWorkPage() {

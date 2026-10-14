@@ -1,5 +1,5 @@
-import { ActivitiesPage } from '../../features/activities'
-import { CommunicationModuleLayout } from '../../features/communication'
+import { ActivitiesPage } from '../../features/activities/index'
+import { CommunicationModuleLayout } from '../../features/communication/index'
 import { ConversationsPage } from '../conversations/ConversationsPage'
 import { InternalChatPage } from '../chat/InternalChatPage'
 import {

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { PageToolbar } from '../../shared/components/data/PageToolbar'
 import { Tabs } from '../../shared/components/ui/Tabs'
-import { VisualFlow, VISUAL_FLOW_MODES } from '../../shared/components/visual-flow'
+import { VisualFlow, VISUAL_FLOW_MODES } from '../../shared/components/visual-flow/index'
 import {
   demoWorkflowNodeRegistry,
   demoEdgeRegistry,

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { serviceKeys } from '../../core/constants/queryKeys'
 import { useCaseSetup } from '../../cases/hooks/useCases'
 import { createResourceApi } from '../api/settingsApi'
-import { getSettingsResource } from '../resources'
+import { getSettingsResource } from '../resources/index'
 import { useCatalogItems } from '../../catalog/api/catalogApi'
 
 /**

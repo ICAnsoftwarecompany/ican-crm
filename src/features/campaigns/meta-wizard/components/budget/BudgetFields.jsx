@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { SegmentedControl, SelectField, TextField } from '../fields'
+import { SegmentedControl, SelectField, TextField } from '../fields/index'
 import { useMetaWizard } from '../../context/MetaWizardContext'
 import { getSuggestedDailyMinimum } from '../../utils/campaignMoney'
 

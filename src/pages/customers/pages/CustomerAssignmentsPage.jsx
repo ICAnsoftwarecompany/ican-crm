@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { UserCheck } from 'lucide-react'
-import { ModulePageHeader } from '../../../shared/components/module-pages'
-import { AssignmentRulesPanel } from '../../../features/leads'
+import { ModulePageHeader } from '../../../shared/components/module-pages/index'
+import { AssignmentRulesPanel } from '../../../features/leads/index'
 
 /** /LeadsCenter/assignments — lead assignment rules (moved here from the removed /leads page). */
 export function CustomerAssignmentsPage() {

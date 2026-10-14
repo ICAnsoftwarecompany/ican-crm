@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Edit3 } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
 import { useCatalogProducts } from '../../hooks/useCatalogProducts'
-import { buildTypeRelations, buildTypeUnits } from '../../utils/catalogForms'
-import { ActiveBadge, CapabilityChips, FormError, KindBadge, useOptionLabel } from '../common/catalogUi'
+import { buildTypeRelations, buildTypeUnits } from '../utils/itemTypeForm'
+import { ActiveBadge, CapabilityChips, FormError, KindBadge, useOptionLabel } from '../../components/common/catalogUi'
 
 function Section({ title, step, onEdit, children }) {
   const { t } = useTranslation()

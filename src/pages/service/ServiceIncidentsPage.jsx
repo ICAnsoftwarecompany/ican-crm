@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Siren } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { IncidentDetailView, IncidentsWorkspace } from '../../features/service'
+import { IncidentDetailView, IncidentsWorkspace } from '../../features/service/index'
 
 /** /service/incidents/:incidentId? — major incidents. */
 export function ServiceIncidentsPage() {

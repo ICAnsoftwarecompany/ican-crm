@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BriefcaseBusiness, Check, ChevronDown, ChevronUp, Package, Repeat, Layers } from 'lucide-react'
 import { cn } from '../../../../shared/utils/cn'
-import { HelpField } from '../common/HelpTip'
-import { TemplateGallery } from './TemplateGallery'
+import { HelpField } from '../components/HelpTip'
+import { TemplateGallery } from '../components/TemplateGallery'
 
 const MAIN_KINDS = [{ kind: 'product', icon: Package }, { kind: 'service', icon: BriefcaseBusiness }]
 const OTHER_KINDS = [{ kind: 'plan', icon: Repeat }, { kind: 'bundle', icon: Layers }]

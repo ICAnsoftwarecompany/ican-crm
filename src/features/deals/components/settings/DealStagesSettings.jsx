@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { CircleCheckBig, CircleX } from 'lucide-react'
-import { ModuleNotice } from '../../../../shared/components/module-pages'
+import { ModuleNotice } from '../../../../shared/components/module-pages/index'
 import { getDealsHubPath } from '../../constants/dealWorkspacePages'
 import { useDealWorkspace } from '../../hooks/useDealWorkspace'
 import { isLostStage, isWonStage } from '../../utils/dealStages'

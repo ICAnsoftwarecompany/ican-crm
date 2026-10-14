@@ -6,4 +6,4 @@ export {
   ChangeStatusBulkAction,
   ChangeTagBulkAction,
   SocialMessagingBulkActions,
-} from './selection-actions'
+} from './selection-actions/index'

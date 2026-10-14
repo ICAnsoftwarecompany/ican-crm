@@ -9,7 +9,7 @@ import {
   useProposalMutations,
   useProposalOptions,
   useProposalVersions,
-} from '../../../../../features/proposals'
+} from '../../../../../features/proposals/index'
 import { useProducts } from '../../../../../features/products/hooks/useProducts'
 import { Button } from '../../../../../shared/components/ui/Button'
 import { createDefaultBlock, createDefaultBuilderContent, createDefaultSection, moveItem, normalizeBuilderContent, buildVersionPayload } from '../utils/proposalBuilderContent'

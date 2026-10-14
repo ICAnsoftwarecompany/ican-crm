@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Mail, MessageCircle, MessagesSquare, Send } from 'lucide-react'
-import { useConversationUnreadSummary } from '../../conversations'
-import { useChatUnreadCount } from '../../internal-chat'
+import { useConversationUnreadSummary } from '../../conversations/index'
+import { useChatUnreadCount } from '../../internal-chat/index'
 import { MyWorkSectionCard } from '../components/MyWorkSectionCard'
 import { MyWorkItemList, MyWorkItemRow } from '../components/MyWorkItemRow'
 

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { SubSidebarLayout } from '../../../shared/components/sub-sidebar'
+import { SubSidebarLayout } from '../../../shared/components/sub-sidebar/index'
 import { getProductsSidebarConfig } from '../constants/productNavigation'
 
 export function ProductsLayout() {

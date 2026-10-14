@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { cn } from '../../../shared/utils/cn'
-import { useNotificationCenterStore } from '../../notifications'
+import { useNotificationCenterStore } from '../../notifications/index'
 
 export function WhatsappNavbarButton({ active = false, onClick }) {
   const location = useLocation()

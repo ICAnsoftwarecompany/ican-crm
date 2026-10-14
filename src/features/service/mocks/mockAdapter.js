@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios'
 import { findRoute } from './router'
 import { MockHttpError } from './errors'
-import { mockRoutes } from './handlers'
+import { mockRoutes } from './handlers/index'
 
 const DEFAULT_LATENCY_MS = 250
 

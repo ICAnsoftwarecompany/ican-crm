@@ -3,7 +3,7 @@ import { Heart, MessageCircle, Share2, FileText, Info } from 'lucide-react'
 import { PageToolbar } from '../../../shared/components/data/PageToolbar'
 import { useAuthStore } from '../../../store/authStore'
 import { resolveTenantId } from '../../../services/tenantResolver'
-import { useSocialProfiles, useSocialContent, SocialMetricsCards, SocialContentEmptyState, calculateTotalEngagement } from '../../../features/social-media'
+import { useSocialProfiles, useSocialContent, SocialMetricsCards, SocialContentEmptyState, calculateTotalEngagement } from '../../../features/social-media/index'
 
 /**
  * Only aggregates computed from the currently-loaded posts (likes/

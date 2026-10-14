@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useQueries } from '@tanstack/react-query'
-import { dealLeadsApi, dealResourcesApi } from '../api'
+import { dealLeadsApi, dealResourcesApi } from '../api/index'
 import { dealKeys } from '../constants/dealQueryKeys'
 import { buildDealQuickInfo, getMissingQuickInfo } from '../utils/dealQuickInfo'
 import { DEAL_LEADS_LIST_PARAMS, normalizeDealLeadList } from './useDealLeads'

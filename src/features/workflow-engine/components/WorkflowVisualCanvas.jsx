@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { VisualFlow, createNodeRegistry } from '../../../shared/components/visual-flow'
+import { VisualFlow, createNodeRegistry } from '../../../shared/components/visual-flow/index'
 import { resolveWorkflowIcon } from '../utils/resolveIcon'
 import { buildWorkflowVisualGraph } from '../utils/workflowVisualGraph'
 import { WorkflowAddVisualNode } from '../nodes/WorkflowAddVisualNode'

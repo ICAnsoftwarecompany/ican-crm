@@ -4,7 +4,7 @@ import { ChevronDown, ChevronLeft, Edit3, FolderTree, GitBranch, Package, Plus, 
 import { Button } from '../../../shared/components/ui/Button'
 import { Badge } from '../../../shared/components/ui/Badge'
 import { PageToolbar } from '../../../shared/components/data/PageToolbar'
-import { DataTable } from '../../../shared/components/data-table'
+import { DataTable } from '../../../shared/components/data-table/index'
 import { AppModal } from '../../../shared/components/overlays/AppModal'
 import { useProductCategories, useProductMutations } from '../../../features/products/hooks/useProducts'
 import { displayValue, extractMessage } from '../../../shared/utils/apiResponse'
@@ -18,7 +18,7 @@ import {
   flattenCategoryTree,
   getCategoryChildren,
   getCategoryLabel,
-} from '../../../features/products'
+} from '../../../features/products/index'
 
 function getCategoryStatus(category) {
   return Number(category.active ?? category.status ?? 1) === 1

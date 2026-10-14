@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { ScheduleActivityDialog } from '../../../activities'
+import { ScheduleActivityDialog } from '../../../activities/index'
 import { useDealLeadMutations } from '../../hooks/useDealLeads'
 import { WonDialog } from '../closing/WonDialog'
 import { LostDialog } from '../closing/LostDialog'

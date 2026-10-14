@@ -1,4 +1,4 @@
-import { DealWorkspaceLayout, DealsHubLayout } from '../../features/deals'
+import { DealWorkspaceLayout, DealsHubLayout } from '../../features/deals/index'
 import { DealsCalendarPage, DealsContractsPage, DealsCreatePage, DealsListPage, DealsPipelinesPage, DealsReportsPage } from './DealsHubPages'
 import {
   DealAiSetupPage,

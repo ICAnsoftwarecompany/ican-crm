@@ -1,4 +1,4 @@
-import { Calendar } from '../../../shared/components/calendar'
+import { Calendar } from '../../../shared/components/calendar/index'
 
 const SOURCES = [{ id: 'outreach-campaigns', labelKey: 'outreachCampaigns.navigation.all', colorVar: '--brand-accent' }]
 

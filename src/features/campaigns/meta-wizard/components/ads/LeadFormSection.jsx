@@ -3,7 +3,7 @@ import { useMetaWizard, useWizardField } from '../../context/MetaWizardContext'
 import { useLeadForms } from '../../hooks/useWizardAssets'
 import { WIZARD_PUBLISH_CAPABILITIES } from '../../config/wizardCapabilities'
 import { formatDate } from '../../../../../shared/utils/dateTime'
-import { Callout, ChoiceCard, DemoDataBadge, IssueMessage, SegmentedControl } from '../fields'
+import { Callout, ChoiceCard, DemoDataBadge, IssueMessage, SegmentedControl } from '../fields/index'
 import { LeadFormBuilder } from './LeadFormBuilder'
 
 /** Instant form: pick an existing Page form or build a new one. */

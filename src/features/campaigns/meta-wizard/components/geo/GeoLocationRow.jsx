@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { ExternalLink, MinusCircle, PlusCircle, X } from 'lucide-react'
 import { cn } from '../../../../../shared/utils/cn'
 import { RADIUS_LIMITS_KM, locationDisplayName } from '../../domain/geoTargeting'
-import { IssueMessage } from '../fields'
+import { IssueMessage } from '../fields/index'
 import { GEO_TYPE_ICONS, geoContextLabel, mapsUrl } from './geoDisplay'
 
 /** One selected location: include/exclude, radius, map link, remove. */

@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import { Bot, CalendarDays, Settings, Workflow } from 'lucide-react'
-import { AiSetupPage } from '../../shared/components/ai-setup'
-import { ModulePageHeader, ModuleSettingsPage } from '../../shared/components/module-pages'
-import { ReportsPage, useReportRange } from '../../shared/components/reports'
-import { WorkflowModuleWorkspace } from '../../features/workflow-engine'
+import { AiSetupPage } from '../../shared/components/ai-setup/index'
+import { ModulePageHeader, ModuleSettingsPage } from '../../shared/components/module-pages/index'
+import { ReportsPage, useReportRange } from '../../shared/components/reports/index'
+import { WorkflowModuleWorkspace } from '../../features/workflow-engine/index'
 import {
   DEAL_AI_CAPABILITIES,
   DEAL_WORKSPACE_PAGES,
@@ -22,7 +22,7 @@ import {
   DealTeamPanel,
   useDealReport,
   useDealWorkspace,
-} from '../../features/deals'
+} from '../../features/deals/index'
 import { getSettingsSections } from '../settings/registry/settingsSections'
 
 /**

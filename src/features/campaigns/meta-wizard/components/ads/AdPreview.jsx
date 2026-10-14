@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Globe, MessageCircle, MoreHorizontal, Phone, ThumbsUp } from 'lucide-react'
 import { cn } from '../../../../../shared/utils/cn'
-import { SegmentedControl } from '../fields'
+import { SegmentedControl } from '../fields/index'
 import { MediaThumb } from './MediaThumb'
 import { isMessagingLocation } from '../../config/metaAdSetCompatibility'
 

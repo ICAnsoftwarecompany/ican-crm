@@ -2,9 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PRODUCT_KINDS } from '../../constants/catalogOptions'
 import { useItemType, useItemTypeMutations, useUnits } from '../../hooks/useCatalogSetup'
-import { usePersistentFlag } from '../../hooks/usePersistentFlag'
+import { usePersistentFlag } from './usePersistentFlag'
 import { formatApiError } from '../../utils/apiErrors'
-import { buildItemTypePayload, itemTypeToForm, newTypeUnitRow } from '../../utils/catalogForms'
+import { buildItemTypePayload, itemTypeToForm, newTypeUnitRow } from '../utils/itemTypeForm'
 import { getCreatedId } from '../../utils/catalogPayloads'
 import {
   applyTemplate,
@@ -13,7 +13,7 @@ import {
   getTypeSteps,
   toggleCapability,
   validateTypeStep,
-} from '../../utils/itemTypeWizard'
+} from '../utils/itemTypeWizard'
 
 /** Only in-app paths are accepted as `returnTo` (no `//host` or absolute URLs). */
 function safeReturnTo(value) {

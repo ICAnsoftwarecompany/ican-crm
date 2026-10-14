@@ -4,7 +4,7 @@ import { Layers3 } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
 import { ResourceState } from '../../shared/components/data/ResourceState'
 import { EmptyState } from '../../shared/components/feedback/EmptyState'
-import { RecordsWorkspace, findRecordType, useRecordsSetup } from '../../features/service'
+import { RecordsWorkspace, findRecordType, useRecordsSetup } from '../../features/service/index'
 
 /** /service/records/:recordType? — records of one type (first type when omitted). */
 export function ServiceRecordsPage() {

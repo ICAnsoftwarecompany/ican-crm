@@ -16,7 +16,7 @@ import {
   Volume2,
   X,
 } from 'lucide-react'
-import { CreateTaskButton, taskableFromCrmRecord } from '../../../tasks'
+import { CreateTaskButton, taskableFromCrmRecord } from '../../../tasks/index'
 import { ConversationComposer } from './ConversationComposer'
 import { ConversationMessages } from './ConversationMessages'
 import { MediaGalleryDialog } from './MediaGalleryDialog'

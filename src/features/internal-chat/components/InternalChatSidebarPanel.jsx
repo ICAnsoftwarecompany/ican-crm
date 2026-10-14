@@ -7,7 +7,7 @@ import { useChatConversationMutations, useChatConversations } from '../hooks/use
 import { useChatMessageMutations, useChatMessages } from '../hooks/useChatMessages'
 import { useInternalChatUiStore } from '../store/internalChatUiStore'
 import { getConversationDisplayInfo, getConversationId, getLastMessagePreview } from '../utils/conversationHelpers'
-import { ConversationThread } from '../../conversations'
+import { ConversationThread } from '../../conversations/index'
 
 function HeaderActions({ onOpenPage, onClose }) {
   return (

@@ -6,7 +6,7 @@ import { PageToolbar } from '../../../shared/components/data/PageToolbar'
 import { Button } from '../../../shared/components/ui/Button'
 import { useAuthStore } from '../../../store/authStore'
 import { resolveTenantId } from '../../../services/tenantResolver'
-import { useSocialProfiles, SocialProfileCard, SocialContentEmptyState, getSocialPlatforms } from '../../../features/social-media'
+import { useSocialProfiles, SocialProfileCard, SocialContentEmptyState, getSocialPlatforms } from '../../../features/social-media/index'
 
 export function SocialProfilesPage() {
   const { t } = useTranslation()

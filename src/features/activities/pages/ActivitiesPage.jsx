@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
 import { ACTIVITY_VIEW_MODES } from '../constants/activityConstants'
-import { AfterMeetingReportDrawer, ScheduleActivityDialog } from '../../call-meetings'
+import { AfterMeetingReportDrawer, ScheduleActivityDialog } from '../../call-meetings/index'
 import { customersApi } from '../../customers/api/customersApi'
 import { definitionsApi } from '../../definitions/api/definitionsApi'
 import { useActivities } from '../hooks/useActivities'

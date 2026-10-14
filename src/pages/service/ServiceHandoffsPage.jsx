@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { FileCheck2 } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { HandoffDetailView, HandoffsWorkspace } from '../../features/service'
+import { HandoffDetailView, HandoffsWorkspace } from '../../features/service/index'
 
 /** /service/handoffs/:handoffId? */
 export function ServiceHandoffsPage() {

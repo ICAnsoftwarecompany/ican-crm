@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import { ItemTypeWizard } from '../../features/products'
+import { ItemTypeWizard } from '../../features/products/index'
 
 /** /products/item-types/:itemTypeId — edit an item type in the same wizard (2026-10-14). */
 export function ItemTypeEditPage() {

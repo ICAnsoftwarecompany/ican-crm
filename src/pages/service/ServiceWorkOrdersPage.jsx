@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Wrench } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { WorkOrderDetailView, WorkOrdersWorkspace } from '../../features/service'
+import { WorkOrderDetailView, WorkOrdersWorkspace } from '../../features/service/index'
 
 const detailPath = (workOrder) => `/service/work-orders/${workOrder.id}`
 

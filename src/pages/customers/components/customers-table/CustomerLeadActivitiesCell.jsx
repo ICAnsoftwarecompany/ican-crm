@@ -7,7 +7,7 @@ import {
   CustomerTableHoverCard,
   getCustomerActivityTooltipTitle,
   getCustomerActivityUserName,
-} from './CustomerTableHovers'
+} from './CustomerTableHovers/index'
 
 function formatActivityDate(value) {
   if (!value) return ''

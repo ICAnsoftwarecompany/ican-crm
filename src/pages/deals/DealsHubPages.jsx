@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { CalendarDays, FileSignature, GitBranch } from 'lucide-react'
-import { ModulePageHeader } from '../../shared/components/module-pages'
-import { ReportsPage, useReportRange } from '../../shared/components/reports'
-import { DealContractsTable, DealCreateWizard, DealsHubCalendar, DealsHubList, PipelineTemplatesPanel, useDealsHubReport } from '../../features/deals'
+import { ModulePageHeader } from '../../shared/components/module-pages/index'
+import { ReportsPage, useReportRange } from '../../shared/components/reports/index'
+import { DealContractsTable, DealCreateWizard, DealsHubCalendar, DealsHubList, PipelineTemplatesPanel, useDealsHubReport } from '../../features/deals/index'
 
 /** Thin route pages of the deals hub (`/deals`, `/deals/new`, `/deals/contracts`, `/deals/calendar`, `/deals/reports`, `/deals/pipelines`). */
 

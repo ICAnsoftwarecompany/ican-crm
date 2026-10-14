@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { UserCheck } from 'lucide-react'
-import { DataTable } from '../../../../shared/components/data-table'
+import { DataTable } from '../../../../shared/components/data-table/index'
 import { Button } from '../../../../shared/components/ui/Button'
 import { formatDate } from '../../../../shared/utils/dateTime'
 import { formatMoney } from '../../utils/dealMoney'

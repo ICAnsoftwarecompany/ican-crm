@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Workflow } from 'lucide-react'
-import { ModulePageHeader } from '../../../shared/components/module-pages'
-import { WorkflowModuleWorkspace } from '../../../features/workflow-engine'
+import { ModulePageHeader } from '../../../shared/components/module-pages/index'
+import { WorkflowModuleWorkspace } from '../../../features/workflow-engine/index'
 
 /** /LeadsCenter/automation — the shared automation flow in the `leads` workflow module (added 2026-10-01). */
 export function LeadsAutomationPage() {

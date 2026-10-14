@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Banknote, CircleCheckBig, Percent, UserPlus } from 'lucide-react'
-import { useUsers } from '../../users'
+import { useUsers } from '../../users/index'
 import { useDealContracts } from '../hooks/useDealContracts'
 import { useDealWorkspace } from '../hooks/useDealWorkspace'
 import { formatMoney } from '../utils/dealMoney'

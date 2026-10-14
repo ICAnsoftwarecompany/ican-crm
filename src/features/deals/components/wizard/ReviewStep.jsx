@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { CheckCircle2, Circle, Loader2, XCircle } from 'lucide-react'
-import { ModuleNotice } from '../../../../shared/components/module-pages'
+import { ModuleNotice } from '../../../../shared/components/module-pages/index'
 import { usePipelineTemplates } from '../../hooks/useDeals'
 import { buildWizardRequests, resolveTeamMembers } from '../../utils/dealWizard'
 import { formatMoney } from '../../utils/dealMoney'

@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { definitionsApi } from '../../../../features/definitions/api/definitionsApi'
-import { useLeadCloseRequest } from '../../../../features/leads'
+import { useLeadCloseRequest } from '../../../../features/leads/index'
 import { useLeadMutations } from '../../../../features/leads/hooks/useLeads'
 import { useMeetingMutations } from '../../../../features/meetings/hooks/useMeetings'
 import { useLocalStorage } from '../../../../shared/components/data-table/hooks/useLocalStorage'
@@ -15,7 +15,7 @@ import {
   CUSTOMERS_SIDEBAR_BULK_ACTIONS_SLOT_ID,
 } from '../../constants/customersLayoutConstants'
 import { extractLeadStatuses } from '../../utils/customerStatus'
-import { CustomerSocialMessagingPanel } from './social-messaging'
+import { CustomerSocialMessagingPanel } from './social-messaging/index'
 import { PinBulkActionsButton } from './PinBulkActionsButton'
 import { SelectedCountBadge } from './SelectedCountBadge'
 import {
@@ -24,7 +24,7 @@ import {
   ChangeTagBulkAction,
   SocialMessagingBulkActions,
   StatusChangeReasonDialog,
-} from './selection-actions'
+} from './selection-actions/index'
 import { useTranslation } from 'react-i18next'
 
 const PIN_MODE_STORAGE_KEY = 'customers-bulk-actions-pin-mode'

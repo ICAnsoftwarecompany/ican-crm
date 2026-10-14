@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { CircleDashed } from 'lucide-react'
-import { ModuleNotice } from '../../../../shared/components/module-pages'
+import { ModuleNotice } from '../../../../shared/components/module-pages/index'
 
 /**
  * Settings section of one Communication hub module. No settings API exists for these modules

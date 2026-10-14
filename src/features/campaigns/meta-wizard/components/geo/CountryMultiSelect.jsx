@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
 import { MOCK_GEO_LOCATIONS } from '../../data/mock/metaGeoLocations'
 import { locationDisplayName } from '../../domain/geoTargeting'
-import { SelectField } from '../fields'
+import { SelectField } from '../fields/index'
 
 // Countries are real ISO codes, so this list is valid in live mode too.
 const COUNTRIES = MOCK_GEO_LOCATIONS.filter((item) => item.type === 'country')

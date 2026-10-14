@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Inbox, MailWarning, MessageCircle } from 'lucide-react'
-import { buildDailySeries, filterByRange } from '../../../shared/components/reports'
-import { useConversationUnreadSummary } from '../../conversations'
+import { buildDailySeries, filterByRange } from '../../../shared/components/reports/index'
+import { useConversationUnreadSummary } from '../../conversations/index'
 import { getConversationActivityDate } from './reportRows'
 
 const CHANNELS = ['whatsapp', 'messenger', 'gmail']

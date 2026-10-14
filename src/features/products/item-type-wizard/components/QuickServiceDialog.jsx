@@ -6,7 +6,7 @@ import { Input } from '../../../../shared/components/ui/Input'
 import { useCatalogProductMutations } from '../../hooks/useCatalogProducts'
 import { formatApiError } from '../../utils/apiErrors'
 import { getCreatedId } from '../../utils/catalogPayloads'
-import { FormError } from '../common/catalogUi'
+import { FormError } from '../../components/common/catalogUi'
 
 /**
  * Creates a simple service (name + price, `POST /product/create` with kind `service`) without leaving the item

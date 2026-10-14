@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Mail } from 'lucide-react'
 import { cn } from '../../../shared/utils/cn'
-import { useNotificationCenterStore } from '../../notifications'
+import { useNotificationCenterStore } from '../../notifications/index'
 
 export function GmailNavbarButton({ active = false, onClick }) {
   const location = useLocation()

@@ -4,13 +4,13 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Edit3, Plus, Power, RefreshCw, Trash2 } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
-import { DataTable } from '../../../../shared/components/data-table'
+import { DataTable } from '../../../../shared/components/data-table/index'
 import { PageToolbar } from '../../../../shared/components/data/PageToolbar'
 import { useItemTypeMutations, useItemTypes } from '../../hooks/useCatalogSetup'
 import { formatApiError } from '../../utils/apiErrors'
 import { ActiveBadge, CapabilityChips, KindBadge, useOptionLabel } from '../common/catalogUi'
 import { ConfirmActionDialog, useConfirmAction } from '../common/ConfirmDelete'
-import { CatalogSetupGuide } from '../common/CatalogSetupGuide'
+import { CatalogSetupGuide } from '../../item-type-wizard'
 
 /**
  * `/products/item-types` (2026-10-06). Delete is refused by the server while products use the type;

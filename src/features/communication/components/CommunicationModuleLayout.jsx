@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { SubSidebarLayout } from '../../../shared/components/sub-sidebar'
+import { SubSidebarLayout } from '../../../shared/components/sub-sidebar/index'
 import { getCommunicationModule } from '../constants/communicationModules'
 import { getCommunicationSidebarConfig } from '../navigation/communicationNavigation'
 

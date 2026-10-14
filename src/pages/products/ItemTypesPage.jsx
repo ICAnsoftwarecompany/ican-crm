@@ -1,4 +1,4 @@
-import { ItemTypesView } from '../../features/products'
+import { ItemTypesView } from '../../features/products/index'
 
 /** /products/item-types — item types and their capabilities (2026-10-06). */
 export function ItemTypesPage() {

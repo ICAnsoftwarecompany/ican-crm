@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { CalendarClock, Pencil, User } from 'lucide-react'
 import { AppDrawer } from '../../../shared/components/overlays/AppDrawer'
 import { Button } from '../../../shared/components/ui/Button'
-import { ActivityFormDialog } from '../../activities'
+import { ActivityFormDialog } from '../../activities/index'
 import { formatDate, formatTime } from '../../../shared/utils/dateTime'
 
 /**

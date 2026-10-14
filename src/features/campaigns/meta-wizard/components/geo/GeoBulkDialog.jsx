@@ -4,7 +4,7 @@ import { AppModal } from '../../../../../shared/components/overlays/AppModal'
 import { Button } from '../../../../../shared/components/ui/Button'
 import { matchBulkLocations, locationDisplayName } from '../../domain/geoTargeting'
 import { metaAssetsSource } from '../../data/metaAssetsSource'
-import { SegmentedControl } from '../fields'
+import { SegmentedControl } from '../fields/index'
 import { inputClassName } from '../fields/FieldFrame'
 
 /** "Add locations in bulk": one location per line (or comma separated). */

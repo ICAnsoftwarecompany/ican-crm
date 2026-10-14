@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { SubSidebarLayout } from '../../../../shared/components/sub-sidebar'
+import { SubSidebarLayout } from '../../../../shared/components/sub-sidebar/index'
 import { getDealsHubSidebarConfig } from '../../navigation/dealNavigation'
 
 /** Route shell of the deals hub: every deal (workspace list), all contracts, reports and pipeline templates. */

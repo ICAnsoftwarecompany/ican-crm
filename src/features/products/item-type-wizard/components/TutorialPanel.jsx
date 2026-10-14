@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { BookOpen, MousePointerClick } from 'lucide-react'
-import { useActiveHelp } from '../common/HelpTip'
+import { useActiveHelp } from './HelpTip'
 
 /**
  * Side panel of the tutorial mode: what this step is for, what to do in it, and the explanation of the field the

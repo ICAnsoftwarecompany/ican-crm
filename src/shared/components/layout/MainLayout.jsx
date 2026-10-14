@@ -10,12 +10,12 @@ import { MessengerSidebarPanel } from '../../../features/conversations/component
 import { GmailSidebarPanel } from '../../../features/conversations/components/GmailSidebarPanel'
 import { WhatsappSidebarPanel } from '../../../features/conversations/components/WhatsappSidebarPanel'
 import { TasksSidebarPanel } from '../../../features/tasks/components/TasksSidebarPanel'
-import { TodoSidebarPanel } from '../../../features/tasks'
+import { TodoSidebarPanel } from '../../../features/tasks/index'
 import { ActiveUsersSidebarPanel } from '../../../features/users/components/ActiveUsersSidebarPanel'
-import { InternalChatSidebarPanel } from '../../../features/internal-chat'
+import { InternalChatSidebarPanel } from '../../../features/internal-chat/index'
 import { OPEN_MESSENGER_SIDEBAR_EVENT } from '../../../features/conversations/constants/messengerSidebarEvents'
 import { OPEN_WHATSAPP_SIDEBAR_EVENT } from '../../../features/conversations/constants/whatsappSidebarEvents'
-import { AlertsStack } from '../../../features/alerts'
+import { AlertsStack } from '../../../features/alerts/index'
 
 export function MainLayout() {
   const { i18n } = useTranslation()

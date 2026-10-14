@@ -1,1 +1,1 @@
-export { CustomerLeadDetailsPage } from './lead-details'
+export { CustomerLeadDetailsPage } from './lead-details/index'

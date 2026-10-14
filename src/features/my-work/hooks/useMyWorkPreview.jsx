@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { ActivityPreviewDrawer } from '../../calendar'
-import { TaskDrawer } from '../../tasks'
+import { ActivityPreviewDrawer } from '../../calendar/index'
+import { TaskDrawer } from '../../tasks/index'
 
 /**
  * Opens a call/meeting or a task in place, without leaving My Work. Reuses the calendar's

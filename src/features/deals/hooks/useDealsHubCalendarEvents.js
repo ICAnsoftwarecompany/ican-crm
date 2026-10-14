@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useCalendarEvents } from '../../calendar'
+import { useCalendarEvents } from '../../calendar/index'
 import { buildDealMilestoneEvents, buildInstallmentEvents } from '../utils/dealCalendar'
 import { buildDealsLinkIndex, getActivityDealLink, getTaskDealLink } from '../utils/dealLinks'
 import { buildDealLeadIndex } from '../utils/dealLeads'

@@ -15,13 +15,13 @@ import {
   CustomerLeadActivitiesCell,
   CustomerPersonCell,
   CustomerProductsCell,
-} from './customers-table'
+} from './customers-table/index'
 import {
   CustomerLeadNoteHoverDetails,
   CustomerNotePreviewHover,
   CustomerScheduledActivityHoverDetails,
   CustomerTableHoverCard,
-} from './customers-table/CustomerTableHovers'
+} from './customers-table/CustomerTableHovers/index'
 
 function collectObjects(value, matcher) {
   if (!value) return []

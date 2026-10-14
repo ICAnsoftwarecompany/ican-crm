@@ -35,7 +35,7 @@ import { InitialsAvatar } from './shared/InitialsAvatar'
 import { ClosedConversationPlaceholder } from './shared/ClosedConversationPlaceholder'
 import { requestConversationComposerFocus } from './shared/conversationWorkspaceEvents'
 import { NewConversationComposer } from './shared/NewConversationComposer'
-import { whatsappIntegrationApi } from '../../integrations/whatsapp'
+import { whatsappIntegrationApi } from '../../integrations/whatsapp/index'
 import { ConversationListToggle } from './shared/ConversationListToggle'
 import { useConversationListCollapsed } from './shared/useConversationListCollapsed'
 

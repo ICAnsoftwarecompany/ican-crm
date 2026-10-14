@@ -3,7 +3,7 @@ import { Navigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ListTodo, Plus } from 'lucide-react'
 import { toast } from 'sonner'
-import { WorkflowLauncher } from '../../features/workflow-engine'
+import { WorkflowLauncher } from '../../features/workflow-engine/index'
 
 import { TaskBoard } from '../../features/tasks/components/board/TaskBoard'
 import { TaskCalendarView } from '../../features/tasks/components/TaskCalendarView'

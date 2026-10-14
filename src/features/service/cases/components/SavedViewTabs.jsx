@@ -7,7 +7,7 @@ import { ConfirmDialog } from '../../../../shared/components/overlays/ConfirmDia
 import { cn } from '../../../../shared/utils/cn'
 import { useAuthStore } from '../../../../store/authStore'
 import { getServiceErrorMessage } from '../../core/utils/serviceErrors'
-import { SaveViewDialog, useSavedViewMutations, useSavedViews } from '../../saved-views'
+import { SaveViewDialog, useSavedViewMutations, useSavedViews } from '../../saved-views/index'
 
 export const CASE_VIEW_ENTITY = 'service_case'
 

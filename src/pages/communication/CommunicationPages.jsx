@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Bot, CalendarDays, Plus, SlidersHorizontal, Workflow } from 'lucide-react'
-import { ModulePageHeader, ModulePlaceholderPage, ModuleSettingsPage } from '../../shared/components/module-pages'
-import { AiSetupPage } from '../../shared/components/ai-setup'
-import { ReportsPage, useReportRange } from '../../shared/components/reports'
+import { ModulePageHeader, ModulePlaceholderPage, ModuleSettingsPage } from '../../shared/components/module-pages/index'
+import { AiSetupPage } from '../../shared/components/ai-setup/index'
+import { ReportsPage, useReportRange } from '../../shared/components/reports/index'
 import {
   CommunicationAutomation,
   useActivityReport,
@@ -11,8 +11,8 @@ import {
   useTeamChatReport,
   CommunicationCalendar,
   getCommunicationModule,
-} from '../../features/communication'
-import { ScheduleActivityDialog } from '../../features/activities'
+} from '../../features/communication/index'
+import { ScheduleActivityDialog } from '../../features/activities/index'
 import { getSettingsSections } from '../settings/registry/settingsSections'
 
 /**

@@ -5,7 +5,7 @@ import { getAdSetRequirements, isVideoGoal } from '../../config/metaAdSetCompati
 import { AD_FORMATS, AD_TEXT_LIMITS, getCallToActions } from '../../config/metaCallToActions'
 import { getInstagramAccounts } from '../../data/metaAssetsSource'
 import { usePagePosts } from '../../hooks/useWizardAssets'
-import { ChoiceCard, DemoDataBadge, SectionCard, SelectField, TextField } from '../fields'
+import { ChoiceCard, DemoDataBadge, SectionCard, SelectField, TextField } from '../fields/index'
 import { MediaPicker } from './MediaPicker'
 import { CarouselEditor } from './CarouselEditor'
 import { TextVariantsField } from './TextVariantsField'

@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Inbox } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { CaseDetailView, useServiceTerminology } from '../../features/service'
+import { CaseDetailView, useServiceTerminology } from '../../features/service/index'
 
 /** /service/cases/:caseId — one case: timeline, reply/note, status, properties. */
 export function ServiceCaseDetailPage() {

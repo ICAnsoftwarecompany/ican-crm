@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { whatsappIntegrationApi } from '../../integrations/whatsapp'
+import { whatsappIntegrationApi } from '../../integrations/whatsapp/index'
 import {
   WHATSAPP_CONVERSATIONS_QUERY_KEY,
   WHATSAPP_CONVERSATION_INFO_QUERY_KEY,

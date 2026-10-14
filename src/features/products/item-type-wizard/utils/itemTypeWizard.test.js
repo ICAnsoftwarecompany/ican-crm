@@ -1,26 +1,24 @@
 import { describe, expect, it } from 'vitest'
 import { ITEM_TYPE_TEMPLATES, getTemplate, templatesForKind } from '../constants/itemTypeTemplates'
-import { getCapabilityDefinition } from '../constants/capabilityRegistry'
-import { buildItemTypePayload, itemTypeToForm } from './catalogForms'
-import { normalizeItemType } from './catalogNormalize'
-import en from '../../../locales/en/catalogSetup'
-import ar from '../../../locales/ar/catalogSetup'
-import { CAPABILITY_GROUPS } from '../constants/capabilityRegistry'
-import { SERVICE_MODELS, FULFILLMENT_CREATES } from '../constants/catalogOptions'
+import { getCapabilityDefinition } from '../../constants/capabilityRegistry'
+import { buildItemTypePayload, itemTypeToForm } from './itemTypeForm'
+import { normalizeItemType } from '../../utils/catalogNormalize'
+import en from '../../../../locales/en/catalogSetup'
+import ar from '../../../../locales/ar/catalogSetup'
+import { CAPABILITY_GROUPS } from '../../constants/capabilityRegistry'
+import { SERVICE_MODELS, FULFILLMENT_CREATES } from '../../constants/catalogOptions'
 import {
   TYPE_STEPS,
   applyTemplate,
-  applyTypeDefaults,
   blankFormForKind,
   firstInvalidTypeStep,
   getTypeSteps,
-  productRelationsFromType,
-  productUnitsFromType,
   suggestCode,
   supportsUnits,
   toggleCapability,
   validateTypeStep,
 } from './itemTypeWizard'
+import { applyTypeDefaults, productRelationsFromType, productUnitsFromType } from './typeDefaults'
 
 const units = [{ id: 3, code: 'box', name: 'Box' }, { id: 4, code: 'hour', name: 'Hour' }]
 

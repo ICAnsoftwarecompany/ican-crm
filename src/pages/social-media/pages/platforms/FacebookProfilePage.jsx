@@ -15,7 +15,7 @@ import {
   SocialContentEmptyState,
   calculateTotalEngagement,
   rankContentByEngagement,
-} from '../../../../features/social-media'
+} from '../../../../features/social-media/index'
 
 /**
  * The real, working Facebook MVP page — see docs "Current Facebook MVP".

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { CalendarDays, ChartNoAxesCombined, List, Mail, MessageCircle, Plus, Radio, Workflow } from 'lucide-react'
-import { SubSidebar } from '../../../shared/components/sub-sidebar'
+import { SubSidebar } from '../../../shared/components/sub-sidebar/index'
 import { CAMPAIGN_CHANNEL_LIST } from '../config/campaignChannels'
 
 const BASE = '/outreach-campaigns'

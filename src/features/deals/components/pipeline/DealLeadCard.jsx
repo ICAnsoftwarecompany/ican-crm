@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { CalendarClock, CircleCheckBig, CircleX, Clock, MoreVertical, PanelRightOpen, Phone, PhoneCall, UserRound } from 'lucide-react'
 import { DropdownMenu } from '../../../../shared/components/overlays/DropdownMenu'
-import { PipelineCard } from '../../../../shared/components/pipeline-board'
+import { PipelineCard } from '../../../../shared/components/pipeline-board/index'
 import { TruncatedText } from '../../../../shared/components/ui/TruncatedText'
 import { formatRelativeTime } from '../../../../shared/utils/dateTime'
 import { isDealLeadStale } from '../../utils/dealLeads'

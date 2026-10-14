@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useTeams } from '../../../../teams/hooks/useTeams'
 import { useStatuses, useTags } from '../../../../definitions/hooks/useDefinitions'
 import { useMetaWizard } from '../../context/MetaWizardContext'
-import { SelectField, TextAreaField, ToggleChip } from '../fields'
+import { SelectField, TextAreaField, ToggleChip } from '../fields/index'
 
 const labelOf = (item) => item?.name || item?.title || item?.label || item?.status_name || item?.tag_name || String(item?.id ?? '')
 

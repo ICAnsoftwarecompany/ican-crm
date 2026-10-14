@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
 import i18n from '../i18n'
 import { syncDocumentLanguage } from '../shared/utils/documentLanguage'
-import { usePortalPreferences } from '../features/portal'
+import { usePortalPreferences } from '../features/portal/index'
 import { portalRouter } from './router'
 import { PortalBranding } from './PortalBranding'
 

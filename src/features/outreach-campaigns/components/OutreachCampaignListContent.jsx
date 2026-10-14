@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { DataTable } from '../../../shared/components/data-table'
+import { DataTable } from '../../../shared/components/data-table/index'
 
 export function OutreachCampaignListContent({ campaigns, columns, query, onView }) {
   const { t } = useTranslation()

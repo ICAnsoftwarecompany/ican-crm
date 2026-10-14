@@ -3,6 +3,7 @@
 > **Documentation update:** 2026-10-06 23:35 (Africa/Cairo) — README added with the catalog rebuild on the
 > Postman collection "Products & Catalog".
 > 2026-10-07 02:30 (Africa/Cairo) — create wizard `/products/new` (the collection's full create flow), `GET item-types/{id}` used.
+> 2026-10-15 00:08 (Africa/Cairo) — everything for adding an item type moved to `item-type-wizard/` (own README in Arabic).
 > 2026-10-14 23:53 (Africa/Cairo) — item type wizard page, templates, setup guide, type default units / attached items copied into new products.
 
 Owns everything under `/products`: products and services, their alternative units, attached items (relations),
@@ -71,8 +72,9 @@ validated before moving forward.
 - An attached service can be created on the spot (`QuickServiceDialog`: name + price, `POST /product/create`).
 - `?kind=` presets the kind, `?returnTo=` (in-app path only) sends the user back with `?item_type=<id>`; otherwise a
   success panel offers "add a product of this type" (`/products/new?item_type=<id>`).
-- Logic: `utils/itemTypeWizard.js` (steps, templates, validation, `applyTypeDefaults`; tested); UI:
-  `components/item-type-wizard/`; copy: `locales/*/catalogSetup.js`.
+- *2026-10-15 00:08 (Africa/Cairo)*: all of it lives in [`item-type-wizard/`](item-type-wizard/README.md) (page, steps, templates, tutorial,
+  setup guide, `itemTypeForm` / `itemTypeWizard` / `typeDefaults` utils, tests) with a full Arabic guide; the rest of
+  the feature imports only from `item-type-wizard/index.js`. Copy: `locales/*/catalogSetup.js`.
 
 **Product wizard + type defaults:** `/products/new?item_type=<id>` starts with that type. When a type is chosen, its
 default units and attached items fill the product (`applyTypeDefaults`): only empty rows or rows still as filled from

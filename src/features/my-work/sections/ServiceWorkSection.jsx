@@ -7,7 +7,7 @@ import { MyWorkSectionCard } from '../components/MyWorkSectionCard'
 // Lazy so the Customer Hub code stays out of the My Work chunk until this section renders
 // (same pattern as ConversationsPage's "Create case" button).
 const ServiceMyWorkList = lazy(() =>
-  import('../../service').then((module) => ({ default: module.MyWorkList }))
+  import('../../service/index').then((module) => ({ default: module.MyWorkList }))
 )
 
 const PREVIEW_LIMIT = 5

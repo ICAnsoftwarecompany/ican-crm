@@ -1,4 +1,4 @@
-import { WorkflowModuleWorkspace } from '../../workflow-engine'
+import { WorkflowModuleWorkspace } from '../../workflow-engine/index'
 import { getCommunicationModule } from '../constants/communicationModules'
 
 /**

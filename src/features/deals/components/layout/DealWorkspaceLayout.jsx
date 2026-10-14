@@ -1,7 +1,7 @@
 import { Outlet, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ResourceState } from '../../../../shared/components/data/ResourceState'
-import { SubSidebarLayout } from '../../../../shared/components/sub-sidebar'
+import { SubSidebarLayout } from '../../../../shared/components/sub-sidebar/index'
 import { DealWorkspaceProvider, useDealWorkspace } from '../../hooks/useDealWorkspace'
 import { getDealWorkspaceSidebarConfig } from '../../navigation/dealNavigation'
 import { DealWorkspaceHeader } from './DealWorkspaceHeader'

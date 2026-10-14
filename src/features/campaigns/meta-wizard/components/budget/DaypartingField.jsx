@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Switch, ToggleChip } from '../fields'
+import { Switch, ToggleChip } from '../fields/index'
 import { IssueMessage } from '../fields/FieldFrame'
 import { useWizardField } from '../../context/MetaWizardContext'
 import { inputClassName } from '../fields/FieldFrame'

@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import { ProductDetailsView } from '../../features/products'
+import { ProductDetailsView } from '../../features/products/index'
 
 /** /products/:productId — product or service details with units, relations and instances (2026-10-06). */
 export function ProductDetailsPage() {

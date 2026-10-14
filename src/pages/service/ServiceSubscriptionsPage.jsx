@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Repeat } from 'lucide-react'
 import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { SubscriptionDetailView, SubscriptionsWorkspace } from '../../features/service'
+import { SubscriptionDetailView, SubscriptionsWorkspace } from '../../features/service/index'
 
 const detailPath = (subscription) => `/service/subscriptions/${subscription.id}`
 

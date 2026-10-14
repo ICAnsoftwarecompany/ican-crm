@@ -1,4 +1,4 @@
-import { CustomersPageActions } from './page-actions'
+import { CustomersPageActions } from './page-actions/index'
 
 export function CustomersPageHeader({
   title,

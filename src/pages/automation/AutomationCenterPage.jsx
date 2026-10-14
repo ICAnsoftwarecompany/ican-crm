@@ -5,8 +5,8 @@ import { Plus, History, BarChart3, Copy, Trash2, Workflow as WorkflowIcon } from
 import { EmptyState } from '../../shared/components/feedback/EmptyState'
 import { Button } from '../../shared/components/ui/Button'
 import { ConfirmDialog } from '../../shared/components/overlays/ConfirmDialog'
-import { VisualFlowSidebar } from '../../shared/components/visual-flow'
-import { WorkflowBuilder, WorkflowLocalStorageNotice, WorkflowStatusBadge, getModule, useWorkflowStore } from '../../features/workflow-engine'
+import { VisualFlowSidebar } from '../../shared/components/visual-flow/index'
+import { WorkflowBuilder, WorkflowLocalStorageNotice, WorkflowStatusBadge, getModule, useWorkflowStore } from '../../features/workflow-engine/index'
 import { WorkflowTemplatesGrid } from './components/WorkflowTemplatesGrid'
 
 export function AutomationCenterPage() {

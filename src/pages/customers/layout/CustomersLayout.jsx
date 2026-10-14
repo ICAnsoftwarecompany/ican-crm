@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SubSidebarLayout } from '../../../shared/components/sub-sidebar'
+import { SubSidebarLayout } from '../../../shared/components/sub-sidebar/index'
 import { getCustomersSidebarConfig } from '../constants/customerNavigation'
 import {
   CUSTOMERS_BULK_ACTIONS_PIN_MODE_EVENT,

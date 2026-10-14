@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Lightbulb, Plus } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
-import { getTemplate } from '../../constants/itemTypeTemplates'
-import { newTypeRelationRow } from '../../utils/catalogForms'
-import { RelationsStep } from '../create/RelationsStep'
-import { QuickServiceDialog } from './QuickServiceDialog'
+import { getTemplate } from '../constants/itemTypeTemplates'
+import { newTypeRelationRow } from '../utils/itemTypeForm'
+import { RelationsStep } from '../../components/create/RelationsStep'
+import { QuickServiceDialog } from '../components/QuickServiceDialog'
 
 // How each suggested item is usually sold with the type.
 const HINT_INCLUSION = {

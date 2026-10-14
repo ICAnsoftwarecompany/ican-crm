@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { CheckSquare } from 'lucide-react'
 import { formatDate, formatTime } from '../../../shared/utils/dateTime'
-import { getTaskDateTime, isTaskOverdue } from '../../tasks'
+import { getTaskDateTime, isTaskOverdue } from '../../tasks/index'
 import { MyWorkSectionCard } from '../components/MyWorkSectionCard'
 import { MyWorkItemList, MyWorkItemRow } from '../components/MyWorkItemRow'
 import { useMyTasks } from '../hooks/useMyTasks'

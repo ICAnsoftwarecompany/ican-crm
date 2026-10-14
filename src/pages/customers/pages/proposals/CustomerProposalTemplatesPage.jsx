@@ -5,7 +5,7 @@ import { toast } from 'sonner'
 
 import { PageToolbar } from '../../../../shared/components/data/PageToolbar'
 import { Button } from '../../../../shared/components/ui/Button'
-import { useProposalTemplateMutations, useProposalTemplates } from '../../../../features/proposals'
+import { useProposalTemplateMutations, useProposalTemplates } from '../../../../features/proposals/index'
 
 export function CustomerProposalTemplatesPage() {
   const { t } = useTranslation()

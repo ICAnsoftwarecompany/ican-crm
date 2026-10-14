@@ -1,5 +1,5 @@
 import { Palette, Settings, Tags, UserPlus, Workflow } from 'lucide-react'
-import { COMMUNICATION_MODULES } from '../../../features/communication'
+import { COMMUNICATION_MODULES } from '../../../features/communication/index'
 
 export const SETTINGS_ROUTE = '/settings'
 

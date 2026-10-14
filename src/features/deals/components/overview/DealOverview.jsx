@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Banknote, CircleCheckBig, CircleX, Layers } from 'lucide-react'
-import { KpiRow, ReportChart } from '../../../../shared/components/reports'
+import { KpiRow, ReportChart } from '../../../../shared/components/reports/index'
 import { useDealContracts } from '../../hooks/useDealContracts'
 import { useDealWorkspace } from '../../hooks/useDealWorkspace'
 import { buildDealInsights, buildTargetPace } from '../../utils/dealInsights'

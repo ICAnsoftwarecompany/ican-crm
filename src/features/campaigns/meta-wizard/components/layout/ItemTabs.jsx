@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Copy, Plus, Trash2 } from 'lucide-react'
 import { cn } from '../../../../../shared/utils/cn'
-import { StatusDot } from '../fields'
+import { StatusDot } from '../fields/index'
 
 /** Horizontal tabs for ad sets / ads with add, duplicate and remove. */
 export function ItemTabs({ items, activeId, onSelect, onAdd, onDuplicate, onRemove, addLabel, ariaLabel, maxItems = 50 }) {

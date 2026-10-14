@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { UserPlus, X } from 'lucide-react'
-import { DataTable } from '../../../../shared/components/data-table'
+import { DataTable } from '../../../../shared/components/data-table/index'
 import { Button } from '../../../../shared/components/ui/Button'
 import { useCustomers } from '../../../../features/customers/hooks/useCustomers'
 import { extractList } from '../../../../shared/utils/apiResponse'

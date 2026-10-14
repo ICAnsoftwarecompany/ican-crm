@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { PipelineBoard } from '../../../../shared/components/pipeline-board'
+import { PipelineBoard } from '../../../../shared/components/pipeline-board/index'
 import { extractMessage } from '../../../../shared/utils/apiResponse'
 import { useDealLeadMutations } from '../../hooks/useDealLeads'
 import { isWonStage } from '../../utils/dealStages'

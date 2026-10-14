@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CalendarPlus, UserRoundX, Users } from 'lucide-react'
 import { useCustomers } from '../hooks/useCustomers'
-import { useUsers } from '../../users'
+import { useUsers } from '../../users/index'
 import { buildLeadsReport } from './leadsReportModel'
 
 // The list endpoint is cursor-paginated; the report reads up to this many pages, then says so.

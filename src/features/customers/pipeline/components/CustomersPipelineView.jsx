@@ -5,7 +5,7 @@ import { toast } from 'sonner'
 
 import { EmptyState } from '../../../../shared/components/feedback/EmptyState'
 import { Skeleton } from '../../../../shared/components/feedback/Skeleton'
-import { PipelineBoard } from '../../../../shared/components/pipeline-board'
+import { PipelineBoard } from '../../../../shared/components/pipeline-board/index'
 import { Button } from '../../../../shared/components/ui/Button'
 import { useUsers } from '../../../users/hooks/useUsers'
 import { PIPELINE_ITEM_ID_FIELD, PIPELINE_STAGE_FIELD, UNSTAGED_PIPELINE_STAGE_ID } from '../constants'

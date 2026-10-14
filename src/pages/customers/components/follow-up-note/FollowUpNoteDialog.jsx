@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { CalendarClock, CheckCircle2, ChevronDown, GripHorizontal, X } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { isClosingStatus } from '../../../../features/leads'
+import { isClosingStatus } from '../../../../features/leads/index'
 import { useLeadMutations } from '../../../../features/leads/hooks/useLeads'
 import { useMeetingMutations } from '../../../../features/meetings/hooks/useMeetings'
 import { useProducts } from '../../../../features/products/hooks/useProducts'

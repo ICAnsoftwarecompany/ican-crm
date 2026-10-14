@@ -4,10 +4,10 @@ import { Info, Plus, Trash2 } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
 import { Input } from '../../../../shared/components/ui/Input'
 import { Select } from '../../../../shared/components/ui/Select'
-import { newTypeUnitRow } from '../../utils/catalogForms'
-import { CheckboxField } from '../common/catalogUi'
-import { HelpField } from '../common/HelpTip'
-import { UnitFormDialog } from '../units/UnitFormDialog'
+import { newTypeUnitRow } from '../utils/itemTypeForm'
+import { CheckboxField } from '../../components/common/catalogUi'
+import { HelpField } from '../components/HelpTip'
+import { UnitFormDialog } from '../../components/units/UnitFormDialog'
 
 const SUGGESTED_UNIT_TYPES = { hour: 'time' }
 

@@ -14,7 +14,7 @@ import {
   remainingRequests,
   validateWizardStep,
 } from '../../utils/productCreateWizard'
-import { applyTypeDefaults } from '../../utils/itemTypeWizard'
+import { applyTypeDefaults } from '../../item-type-wizard'
 import { serializeAdditionalData } from '../common/AdditionalDataFields'
 import { useProductForm } from '../products/useProductForm'
 

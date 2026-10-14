@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ClipboardCheck } from 'lucide-react'
-import { TodoPanelView, useTodoList } from '../../tasks'
+import { TodoPanelView, useTodoList } from '../../tasks/index'
 import { MyWorkSectionCard } from '../components/MyWorkSectionCard'
 import { useMyWorkPreview } from '../hooks/useMyWorkPreview'
 

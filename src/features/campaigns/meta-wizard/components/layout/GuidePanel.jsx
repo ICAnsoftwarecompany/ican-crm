@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { ArrowUpRight, BookOpen, CheckCircle2, Lightbulb } from 'lucide-react'
-import { IssueMessage } from '../fields'
+import { IssueMessage } from '../fields/index'
 import { issuesForStage } from '../../domain/validateWizard'
 
 const SEVERITY_ORDER = { error: 0, warning: 1, info: 2 }

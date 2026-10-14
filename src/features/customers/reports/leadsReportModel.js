@@ -3,7 +3,7 @@
  * Leads Center table uses (`customer.lead.*`) and turns it into KPI numbers and chart data for the
  * shared reports engine. No React, no i18n: labels for special keys are resolved by the hook.
  */
-import { buildDailySeries, countBy, filterByRange, filterPreviousRange, percentChange } from '../../../shared/components/reports'
+import { buildDailySeries, countBy, filterByRange, filterPreviousRange, percentChange } from '../../../shared/components/reports/index'
 
 const lead = (customer) => customer?.lead || {}
 

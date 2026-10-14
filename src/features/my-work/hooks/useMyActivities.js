@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { isOverdueActivity, useActivities } from '../../activities'
+import { isOverdueActivity, useActivities } from '../../activities/index'
 import { getTodayActivities, isMyActivity } from '../utils/myWorkItems'
 import { useCurrentUserId } from './useCurrentUserId'
 

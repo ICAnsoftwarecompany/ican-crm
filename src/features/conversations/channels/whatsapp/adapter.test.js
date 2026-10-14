@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { WHATSAPP_INTEGRATION_QUERY_KEYS, whatsappIntegrationApi } from '../../../integrations/whatsapp'
+import { WHATSAPP_INTEGRATION_QUERY_KEYS, whatsappIntegrationApi } from '../../../integrations/whatsapp/index'
 import {
   WHATSAPP_CONVERSATIONS_QUERY_KEY,
   WHATSAPP_CONVERSATION_INFO_QUERY_KEY,

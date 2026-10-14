@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CircleOff, FolderTree, Package, PackagePlus } from 'lucide-react'
-import { buildDailySeries } from '../../../shared/components/reports'
+import { buildDailySeries } from '../../../shared/components/reports/index'
 import { useProducts } from '../hooks/useProducts'
 import { buildProductsReport, flattenCatalog } from './productsReportModel'
 

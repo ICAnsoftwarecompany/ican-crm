@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { AppModal } from '../../../../../shared/components/overlays/AppModal'
 import { Button } from '../../../../../shared/components/ui/Button'
 import { useMetaWizard } from '../../context/MetaWizardContext'
-import { Callout } from '../fields'
+import { Callout } from '../fields/index'
 import { PublishPlanList } from '../review/PublishPlanList'
 
 /** Live publish progress, with retry-from-failure and the next actions when done. */

@@ -7,8 +7,8 @@ import { Button } from '../../../../shared/components/ui/Button'
 import { fieldValue, formatDateTime12 } from '../../utils/scheduleUiUtils'
 import { MeetingFilters, getMeetingStatusLabel } from './MeetingFilters'
 import { MeetingReminderBanner } from './MeetingReminderBanner'
-import { ScheduleActivityDialog } from '../ScheduleActivityDialog'
-import { MeetingDataDrawer } from '../MeetingDataDrawer'
+import { ScheduleActivityDialog } from '../ScheduleActivityDialog/index'
+import { MeetingDataDrawer } from '../MeetingDataDrawer/index'
 
 const ACTIVE_MEETING_STATUSES = new Set(['scheduled', 'in_progress'])
 

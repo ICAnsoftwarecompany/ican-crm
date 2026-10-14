@@ -32,8 +32,8 @@ import {
   getScheduleStatusLabel,
   getScheduleTypeLabel,
 } from '../ScheduleDetails/scheduleDetailsUtils'
-import { PreMeetingReportDrawer } from '../PreMeetingReportDrawer'
-import { AfterMeetingReportDrawer } from '../AfterMeetingReportDrawer'
+import { PreMeetingReportDrawer } from '../PreMeetingReportDrawer/index'
+import { AfterMeetingReportDrawer } from '../AfterMeetingReportDrawer/index'
 
 const MAIN_DRAWER_WIDTH = 980
 const SIDE_DRAWER_OFFSET_VAR = '--meeting-data-drawer-offset'

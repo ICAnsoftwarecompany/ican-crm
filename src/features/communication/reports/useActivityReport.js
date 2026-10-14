@@ -8,8 +8,8 @@ import {
   filterPreviousRange,
   percentChange,
   percentOf,
-} from '../../../shared/components/reports'
-import { isOverdueActivity, useActivities } from '../../activities'
+} from '../../../shared/components/reports/index'
+import { isOverdueActivity, useActivities } from '../../activities/index'
 import { toChartRows } from './reportRows'
 
 const LIST_PARAMS = { call: { type: 'call', per_page: 200 }, meeting: { type: 'meeting', per_page: 200 } }

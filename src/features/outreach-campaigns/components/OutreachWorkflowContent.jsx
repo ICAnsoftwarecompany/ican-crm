@@ -1,4 +1,4 @@
-import { WorkflowBuilder, WorkflowLocalStorageNotice } from '../../workflow-engine'
+import { WorkflowBuilder, WorkflowLocalStorageNotice } from '../../workflow-engine/index'
 
 export function OutreachWorkflowContent() {
   return (

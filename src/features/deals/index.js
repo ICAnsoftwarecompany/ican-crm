@@ -1,5 +1,5 @@
 // Public API of the deals feature (Deals hub + Deal Workspace). See ./README.md.
-export * from './api'
+export * from './api/index'
 export { DEAL_API_STATUS, isDealApiLive, getPlannedDealCapabilities } from './constants/dealApiStatus'
 export * from './constants/dealOptions'
 export { dealKeys } from './constants/dealQueryKeys'
@@ -37,7 +37,7 @@ export { buildTemplatePayload, validateStages } from './utils/pipelineTemplate'
 export { useCatalogProducts } from './hooks/useCatalogProducts'
 export { useDealCreateWizard } from './hooks/useDealCreateWizard'
 
-export { useDealReport, useDealsHubReport } from './reports'
+export { useDealReport, useDealsHubReport } from './reports/index'
 
 // Components (route pages in pages/deals compose these).
-export * from './components'
+export * from './components/index'

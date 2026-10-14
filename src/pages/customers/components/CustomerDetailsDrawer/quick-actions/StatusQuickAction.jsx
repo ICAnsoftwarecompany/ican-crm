@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { Check, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { useLeadCloseRequest } from '../../../../../features/leads'
+import { useLeadCloseRequest } from '../../../../../features/leads/index'
 import { useLeadMutations } from '../../../../../features/leads/hooks/useLeads'
 import { useMeetingMutations } from '../../../../../features/meetings/hooks/useMeetings'
 import { extractMessage } from '../../../../../shared/utils/apiResponse'

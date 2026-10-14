@@ -1,5 +1,5 @@
-import { COMMUNICATION_MODULES } from '../../../features/communication'
-import { PipelineTemplatesPanel } from '../../../features/deals'
+import { COMMUNICATION_MODULES } from '../../../features/communication/index'
+import { PipelineTemplatesPanel } from '../../../features/deals/index'
 import { DefinitionsSettingsPage } from '../pages/definitions/DefinitionsSettingsPage'
 import { UsersSettingsPage } from '../pages/users/UsersSettingsPage'
 import { IntegrationsSettingsPage } from '../pages/integrations/IntegrationsSettingsPage'

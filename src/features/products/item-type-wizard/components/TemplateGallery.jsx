@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next'
 import { Check, ChevronDown, ChevronUp, PencilLine } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
 import { cn } from '../../../../shared/utils/cn'
-import { templatesForKind } from '../../constants/itemTypeTemplates'
-import { useCapabilityName } from '../common/catalogUi'
+import { templatesForKind } from '../constants/itemTypeTemplates'
+import { useCapabilityName } from '../../components/common/catalogUi'
 
 const MAX_CHIPS = 3
 

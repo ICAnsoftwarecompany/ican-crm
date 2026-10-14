@@ -1,7 +1,7 @@
 import { serviceEndpoints } from '../../core/api/endpoints'
 import { getMockManifest, setActiveMockTemplate } from '../db'
 import { MockHttpError } from '../errors'
-import { MOCK_TEMPLATE_DEFINITIONS, MOCK_TEMPLATE_KEYS, buildTemplateManifest } from '../templates'
+import { MOCK_TEMPLATE_DEFINITIONS, MOCK_TEMPLATE_KEYS, buildTemplateManifest } from '../templates/index'
 import { featuresForModels } from '../templates/modelFeatures'
 import { buildCaseSetup } from '../seeds/caseSetupSeed'
 import { buildItemTypes, buildRecordTypes } from '../seeds/catalogSeed'

@@ -19,7 +19,7 @@ vi.mock('../../hooks/useTasks', () => ({
 }))
 vi.mock('../../../teams/hooks/useTeams', () => ({ useTeams: () => ({ data: [] }) }))
 vi.mock('../../../users/hooks/useUsers', () => ({ useUsers: () => ({ data: [] }) }))
-vi.mock('../../../customers', () => ({ useCustomers: () => ({ data: null }) }))
+vi.mock('../../../customers/index', () => ({ useCustomers: () => ({ data: null }) }))
 
 const { EntityTasksPanel } = await import('./EntityTasksPanel')
 

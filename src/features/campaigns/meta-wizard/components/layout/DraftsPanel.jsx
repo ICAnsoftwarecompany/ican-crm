@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Copy, FilePlus2, FileStack, MoreHorizontal, Search, Trash2 } from 'lucide-react'
-import { SubSidebarFrame, SubSidebarHeader } from '../../../../../shared/components/sub-sidebar'
+import { SubSidebarFrame, SubSidebarHeader } from '../../../../../shared/components/sub-sidebar/index'
 import { DropdownMenu } from '../../../../../shared/components/overlays/DropdownMenu'
 import { ConfirmDialog } from '../../../../../shared/components/overlays/ConfirmDialog'
 import { Button } from '../../../../../shared/components/ui/Button'

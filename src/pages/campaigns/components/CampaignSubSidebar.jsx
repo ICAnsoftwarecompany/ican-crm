@@ -11,14 +11,14 @@ import {
   WalletCards,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { CAMPAIGN_NAV_ITEMS, platformHasCapability, userHasCampaignPermission } from '../../../features/campaigns'
+import { CAMPAIGN_NAV_ITEMS, platformHasCapability, userHasCampaignPermission } from '../../../features/campaigns/index'
 import {
   SubSidebarFooter,
   SubSidebarFrame,
   SubSidebarHeader,
   SubSidebarNav,
   SubSidebarNavItem,
-} from '../../../shared/components/sub-sidebar'
+} from '../../../shared/components/sub-sidebar/index'
 import { cn } from '../../../shared/utils/cn'
 
 const NAV_ICONS = {

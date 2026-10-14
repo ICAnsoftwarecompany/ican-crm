@@ -1,5 +1,5 @@
-import { ActivitiesPage } from '../../../../features/activities'
-import { ActivitiesCalendarView } from '../../../../features/calendar'
+import { ActivitiesPage } from '../../../../features/activities/index'
+import { ActivitiesCalendarView } from '../../../../features/calendar/index'
 
 /**
  * /LeadsCenter/activities — calls and meetings of the Leads Center. Since 2026-10-01 the calendar

@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MailWarning, MessagesSquare, UsersRound } from 'lucide-react'
-import { buildDailySeries, countBy, filterByRange } from '../../../shared/components/reports'
-import { useChatConversations } from '../../internal-chat'
+import { buildDailySeries, countBy, filterByRange } from '../../../shared/components/reports/index'
+import { useChatConversations } from '../../internal-chat/index'
 import { getConversationActivityDate, toChartRows } from './reportRows'
 
 const isGroup = (conversation) => conversation?.type === 'group' || Number(conversation?.users_count || 0) > 2

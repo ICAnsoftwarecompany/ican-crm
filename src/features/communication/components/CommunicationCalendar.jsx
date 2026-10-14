@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Calendar } from '../../../shared/components/calendar'
-import { ModuleNotice } from '../../../shared/components/module-pages'
+import { Calendar } from '../../../shared/components/calendar/index'
+import { ModuleNotice } from '../../../shared/components/module-pages/index'
 import { Button } from '../../../shared/components/ui/Button'
-import { ActivityFormDialog } from '../../activities'
-import { ActivityPreviewDrawer, calendarSourceRegistry, useCalendarEvents } from '../../calendar'
+import { ActivityFormDialog } from '../../activities/index'
+import { ActivityPreviewDrawer, calendarSourceRegistry, useCalendarEvents } from '../../calendar/index'
 import { getCommunicationModule } from '../constants/communicationModules'
 
 const ACTIVITY_TYPE_BY_SOURCE = { calls: 'call', meetings: 'meeting' }

@@ -1,1 +1,1 @@
-export { CustomersBulkActions } from './bulk-actions'
+export { CustomersBulkActions } from './bulk-actions/index'

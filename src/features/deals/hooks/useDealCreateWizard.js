@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useLocalStorage } from '../../../shared/components/data-table/hooks/useLocalStorage'
 import { extractMessage } from '../../../shared/utils/apiResponse'
-import { dealResourcesApi, dealsApi, pipelineTemplatesApi } from '../api'
+import { dealResourcesApi, dealsApi, pipelineTemplatesApi } from '../api/index'
 import { dealKeys } from '../constants/dealQueryKeys'
 import { WIZARD_STEPS, buildWizardRequests, createWizardState, extractCreatedId, firstInvalidStepBefore } from '../utils/dealWizard'
 
