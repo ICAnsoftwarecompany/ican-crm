@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Compass, Layers, PackagePlus, Ruler, X } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
 import { useItemTypes } from '../../hooks/useCatalogSetup'
-import { usePersistentFlag } from '../hooks/usePersistentFlag'
+import { usePersistentFlag } from '../../hooks/usePersistentFlag'
 
 /**
  * Setup guide (2026-10-14): shown on the products / services lists, the product wizard and the item types page

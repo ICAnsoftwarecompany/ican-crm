@@ -9,17 +9,23 @@ import { parseAdditionalData } from '../common/AdditionalDataFields'
 let unitRowId = 0
 export const newUnitRow = () => ({ key: `unit-${(unitRowId += 1)}`, unit_id: '', factor: '', price: '', barcode: '', is_default: false })
 
-/** State + lookups of the product form (drawer and create wizard), 2026-10-06. */
-export function useProductForm({ open, product, kind }) {
-  const [form, setForm] = useState(() => productToForm(product, kind))
-  const [additionalRows, setAdditionalRows] = useState([])
+/**
+ * State + lookups of the product form (drawer and create wizard), 2026-10-06.
+ * `initial` (create wizard, 2026-10-15) = `{ form, additionalRows }` restored from a draft; read once on open.
+ */
+export function useProductForm({ open, product, kind, initial }) {
+  const startForm = () => (initial?.form ? { ...productToForm(null, kind), ...initial.form, image: null } : productToForm(product, kind))
+  const [form, setForm] = useState(startForm)
+  const [additionalRows, setAdditionalRows] = useState(() => initial?.additionalRows || [])
   const [errors, setErrors] = useState({})
 
   useEffect(() => {
     if (!open) return
-    setForm(productToForm(product, kind))
-    setAdditionalRows(parseAdditionalData(product?.data))
+    setForm(startForm())
+    setAdditionalRows(initial?.additionalRows || parseAdditionalData(product?.data))
     setErrors({})
+    // `initial` is read once (it is a draft snapshot), so it is not a dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, product, kind])
 
   const itemTypesQuery = useItemTypes()

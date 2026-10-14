@@ -1,0 +1,146 @@
+// Adding a product or service under /products/new: guide, quick add, quick dialogs, drafts (added 2026-10-15).
+export default {
+  help: {
+    name: { title: 'Name', text: 'The name your team and customers see in deals, proposals and messages.' },
+    kind: { title: 'Kind', text: 'Product, service, plan (renews) or bundle. It cannot change after saving.' },
+    itemType: { title: 'Item type', text: 'Optional. A type fills the next steps for you: its capabilities add fields, its units and attached items are copied, and it decides which pieces (serials, units, batches) the item holds. Without a type you fill every step by hand.' },
+    price: { title: 'Price', text: 'The price of one base unit (one piece, one hour or one visit). Bigger units get their own price in the next step.' },
+    category: { title: 'Category', text: 'Where the item is listed. Its path (parent, grandparent…) and their details show below, and their additional fields are suggested later.' },
+    description: { title: 'Description', text: 'Optional details shown on the item page and in proposals.' },
+    image: { title: 'Image', text: 'Optional picture. It is not kept in drafts; choose it again when you continue a draft.' },
+    status: { title: 'Active', text: 'Only active items can be added to deals and proposals.' },
+  },
+  instanceModes: { serial: 'serial numbers', unit: 'unique units', batch: 'batches with expiry' },
+  type: {
+    manual: 'No item type: you will go through every step and fill the units, details and attached items yourself. Pieces (serials, units, batches) need a type.',
+    summaryLabel: 'What the item type brings',
+    brings: '"{{name}}" fills in for you:',
+    units: 'Default units: {{count}}',
+    relations: 'Attached items: {{count}}',
+    pieces: 'Pieces: {{modes}}',
+    noPieces: 'No pieces to register (stock is a number).',
+    creates: 'A sale creates: {{value}}',
+  },
+  quickType: { open: 'Quick item type' },
+  quickCategory: {
+    open: 'Quick category',
+    title: 'New category',
+    description: 'Add a category without leaving. Images and additional fields can be added later from the categories page.',
+    name: 'Category name',
+    parent: 'Parent category',
+    noParent: 'No parent (main category)',
+    desc: 'Description',
+    created: 'Category "{{name}}" added',
+  },
+  category: {
+    detailsLabel: 'Category path and details',
+    level: { selected: 'Chosen', parent: 'Parent', ancestor: 'Above' },
+    children: 'Sub-categories: {{count}}',
+    fields: 'Additional fields: {{fields}}',
+    inheritedHint: '{{count}} additional field(s) from this path are suggested in the details step.',
+  },
+  details: {
+    additionalHint: 'Free fields such as brand or size. The fields of the chosen category and its parents are suggested.',
+  },
+  drafts: {
+    save: 'Save as draft',
+    saved: 'Draft saved. Continue it from this page any time.',
+    title: 'Drafts ({{count}})',
+    untitled: 'Untitled',
+    meta: 'Stopped at: {{step}} · {{date}}',
+    continue: 'Continue',
+    remove: 'Delete draft',
+    restored: 'Draft restored. Changes are saved to it automatically until you save the item.',
+    restoredNoImage: 'Draft restored. The image is not kept in drafts, choose it again before saving.',
+  },
+  quickAdd: {
+    toggle: 'Quick add',
+    headerDescription: 'Quick add: write a name, category and price and press Enter. Turn it off for the full guided steps.',
+    title: { product: 'Quick add products', service: 'Quick add services' },
+    description: 'Each Enter saves one item and clears the name and price for the next. The category and item type stay.',
+    itemType: 'Item type (optional, stays for the next items)',
+    save: 'Save (Enter)',
+    keyboardHint: 'Tip: Tab moves between fields, Enter saves.',
+    sidebarLabel: 'Added items',
+    sidebarTitle: { product: 'Products', service: 'Services' },
+    thisSession: 'Added now ({{count}})',
+    showAll: { product: 'All products', service: 'All services' },
+    noneYet: 'Nothing added yet. Saved items show here.',
+    noneAll: { product: 'No products yet.', service: 'No services yet.' },
+    loadFailed: 'Could not load the list.',
+  },
+  steps: {
+    basics: {
+      manual: 'No item type chosen: every step will show and you fill it by hand.',
+      withType: 'Type "{{type}}" decides the next steps and fills them for you.',
+      guide: {
+        title: 'Who is it?',
+        text: 'Start with the name and price. Choosing an item type is the fastest way: the next steps fill themselves from it.',
+        points: {
+          a: 'Write the name and the price of one base unit.',
+          b: 'Choose an item type, or create one quickly from here.',
+          c: 'Choose a category (or add one quickly) and check its path below.',
+        },
+      },
+    },
+    stock: {
+      manual: 'No type: add the units you sell in yourself (box, carton, hour…).',
+      withType: 'Type "{{type}}" filled {{units}} unit(s); you only set their prices.',
+      guide: {
+        title: 'Stock and units',
+        text: 'Track stock for physical goods, and add bigger units it is sold in with how many base pieces they hold.',
+        points: {
+          a: 'Turn stock tracking on only if you count quantities.',
+          b: 'Each unit needs a factor (1 box = 10 pieces → 10).',
+          c: 'Missing a unit? Create it from here.',
+        },
+      },
+    },
+    capabilities: {
+      manual: 'No type: there are no capabilities; you can still set what a sale creates and add free fields.',
+      withType: 'Fields from "{{type}}": {{capabilities}}. Leave a field empty to keep the type default.',
+      guide: {
+        title: 'Details',
+        text: 'Capability fields come from the item type (warranty months, booking duration…). Here you change them for this item only, and add free fields.',
+        points: {
+          a: 'Empty field = the item type default.',
+          b: 'Additional fields of the category are suggested.',
+        },
+      },
+    },
+    relations: {
+      manual: 'No type: add what is sold with this item yourself.',
+      withType: 'Type "{{type}}" attached {{relations}} item(s); change or remove them as you like.',
+      guide: {
+        title: 'Sold with it',
+        text: 'Attach services or products sold with this item: included ones go into the deal automatically, optional ones are offered.',
+        points: {
+          a: 'Included + price 0 = free (e.g. installation).',
+          b: 'Optional = offered to the customer (e.g. maintenance contract).',
+        },
+      },
+    },
+    instances: {
+      manual: 'Pieces need an item type with serials, unique units or batches.',
+      withType: 'Type "{{type}}" holds pieces: register them now or later from the item page.',
+      guide: {
+        title: 'Pieces',
+        text: 'Register the actual pieces: serial numbers, real-estate units or batches with expiry. Stock is counted from them.',
+        points: {
+          a: 'One serial per line.',
+          b: 'You can skip this and add pieces later.',
+        },
+      },
+    },
+    review: {
+      guide: {
+        title: 'Review and save',
+        text: 'Check each section. Saving creates the item, then its attached items and pieces, in order; a failure can be retried without duplicates.',
+        points: {
+          a: 'Use "Edit" to go back to a step.',
+          b: 'A draft is deleted once the item is saved.',
+        },
+      },
+    },
+  },
+}

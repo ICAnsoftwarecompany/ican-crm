@@ -4,7 +4,7 @@ import { Lightbulb, Plus } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
 import { getTemplate } from '../constants/itemTypeTemplates'
 import { newTypeRelationRow } from '../utils/itemTypeForm'
-import { RelationsStep } from '../../components/create/RelationsStep'
+import { RelationRowsEditor } from '../../components/common/RelationRowsEditor'
 import { QuickServiceDialog } from '../components/QuickServiceDialog'
 
 // How each suggested item is usually sold with the type.
@@ -60,7 +60,7 @@ export function TypeRelationsStep({ wizard }) {
         </div>
       )}
 
-      <RelationsStep rows={form.relations} errors={errors} onChange={(relations) => update({ relations })} />
+      <RelationRowsEditor rows={form.relations} errors={errors} onChange={(relations) => update({ relations })} />
 
       <Button variant="ghost" size="sm" onClick={() => setQuick({ name: '', inclusion: 'included' })}>
         <Plus size={14} />

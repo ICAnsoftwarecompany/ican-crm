@@ -6,7 +6,7 @@ import { Input } from '../../../../shared/components/ui/Input'
 import { Select } from '../../../../shared/components/ui/Select'
 import { newTypeUnitRow } from '../utils/itemTypeForm'
 import { CheckboxField } from '../../components/common/catalogUi'
-import { HelpField } from '../components/HelpTip'
+import { HelpField } from '../../components/common/HelpTip'
 import { UnitFormDialog } from '../../components/units/UnitFormDialog'
 
 const SUGGESTED_UNIT_TYPES = { hour: 'time' }

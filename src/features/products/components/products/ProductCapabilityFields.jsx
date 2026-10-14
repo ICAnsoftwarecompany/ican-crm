@@ -17,12 +17,29 @@ export function ProductCapabilityFields({ state }) {
   const createsOptions = useOptions('creates', FULFILLMENT_CREATES)
   const { form, update, selectedItemType, setCapabilityValue } = state
 
-  if (!selectedItemType) {
-    return <EmptyState title={t('catalog.product.capabilitiesNeedType')} description={t('catalog.product.capabilitiesNeedTypeHint')} />
-  }
+  const inheritedCreates = selectedItemType?.fulfillmentConfig?.creates
+  const capabilities = visibleCapabilities(selectedItemType?.capabilities)
+  const createsSelect = (
+    <Select
+      label={t('catalog.product.fields.fulfillmentCreates')}
+      value={form.fulfillment_creates}
+      placeholder={inheritedCreates
+        ? t('catalog.capabilities.defaultValue', { value: optionLabel('creates', inheritedCreates) })
+        : t('common.choose')}
+      options={createsOptions}
+      onChange={(value) => update('fulfillment_creates', value)}
+    />
+  )
 
-  const inheritedCreates = selectedItemType.fulfillmentConfig?.creates
-  const capabilities = visibleCapabilities(selectedItemType.capabilities)
+  // Without an item type there are no capabilities, but "a sale creates" can still be set (manual product, 2026-10-15).
+  if (!selectedItemType) {
+    return (
+      <div className="space-y-4">
+        <EmptyState title={t('catalog.product.capabilitiesNeedType')} description={t('catalog.product.capabilitiesNeedTypeHint')} />
+        {createsSelect}
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-4">
@@ -41,15 +58,7 @@ export function ProductCapabilityFields({ state }) {
       ))}
       {!capabilities.length && <p className="text-sm text-[var(--text-muted)]">{t('catalog.itemTypes.noCapabilities')}</p>}
 
-      <Select
-        label={t('catalog.product.fields.fulfillmentCreates')}
-        value={form.fulfillment_creates}
-        placeholder={inheritedCreates
-          ? t('catalog.capabilities.defaultValue', { value: optionLabel('creates', inheritedCreates) })
-          : t('common.choose')}
-        options={createsOptions}
-        onChange={(value) => update('fulfillment_creates', value)}
-      />
+      {createsSelect}
     </div>
   )
 }

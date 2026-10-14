@@ -7,10 +7,10 @@ import { Select } from '../../../../shared/components/ui/Select'
 import { RELATION_INCLUSIONS } from '../../constants/catalogOptions'
 import { useCatalogProducts } from '../../hooks/useCatalogProducts'
 import { newRelationRow } from '../../utils/productCreateWizard'
-import { CheckboxField, useOptionLabel, useOptions } from '../common/catalogUi'
+import { CheckboxField, useOptionLabel, useOptions } from './catalogUi'
 
-/** Wizard step: items sold with the new product (e.g. free installation, optional maintenance contract). */
-export function RelationsStep({ rows, errors = {}, onChange }) {
+/** Rows of attached items (product wizard step and item type defaults) (e.g. free installation, optional maintenance contract). */
+export function RelationRowsEditor({ rows, errors = {}, onChange }) {
   const { t } = useTranslation()
   const catalogQuery = useCatalogProducts()
   const optionLabel = useOptionLabel()

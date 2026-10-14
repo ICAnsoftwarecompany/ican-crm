@@ -4,6 +4,16 @@ export default {
     explain: 'What is "{{title}}"?',
     more: 'More info',
   },
+  quickType: {
+    title: { product: 'Quick item type', service: 'Quick service type' },
+    description: 'A name is enough. Pick a ready template to fill its capabilities and units; refine it later on the item types page.',
+    codeHint: 'Optional. Made from the name when empty (lowercase latin letters, digits, _).',
+    template: 'Ready template',
+    save: 'Add type',
+    created: 'Item type "{{name}}" added and selected',
+    fullHint: 'Need units, attached items or capability settings? Your item is kept as a draft.',
+    openFull: 'Open the full item type page',
+  },
   guide: {
     dismiss: 'Hide this guide',
     viewTypes: 'View item types',

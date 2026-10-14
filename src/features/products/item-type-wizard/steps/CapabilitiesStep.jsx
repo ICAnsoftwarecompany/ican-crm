@@ -7,7 +7,7 @@ import { cn } from '../../../../shared/utils/cn'
 import { CAPABILITY_GROUPS, capabilitiesForKind, getCapabilityDefinition } from '../../constants/capabilityRegistry'
 import { CapabilityConfigFields } from '../../components/common/CapabilityConfigFields'
 import { TextAreaField, useCapabilityName } from '../../components/common/catalogUi'
-import { HelpField } from '../components/HelpTip'
+import { HelpField } from '../../components/common/HelpTip'
 
 function CapabilityCard({ definition, active, config, onToggle, onConfig }) {
   const { t } = useTranslation()

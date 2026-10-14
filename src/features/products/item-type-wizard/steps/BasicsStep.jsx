@@ -6,7 +6,7 @@ import { Select } from '../../../../shared/components/ui/Select'
 import { FULFILLMENT_CREATES, SERVICE_MODELS } from '../../constants/catalogOptions'
 import { suggestCode } from '../utils/itemTypeWizard'
 import { CheckboxField, KindBadge, TextAreaField, useOptions } from '../../components/common/catalogUi'
-import { HelpField } from '../components/HelpTip'
+import { HelpField } from '../../components/common/HelpTip'
 
 /** Step 2: name, code, description, service model, what a sale creates, status. */
 export function BasicsStep({ wizard }) {

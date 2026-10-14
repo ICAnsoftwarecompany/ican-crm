@@ -20,6 +20,7 @@ import socialMedia from './socialMedia.js'
 import products from './products.js'
 import catalog from './catalog.js'
 import catalogSetup from './catalogSetup.js'
+import productSetup from './productSetup.js'
 import tasks from './tasks.js'
 import workflow from './workflow.js'
 import visualFlow from './visualFlow.js'
@@ -61,6 +62,7 @@ export default {
   products,
   catalog,
   catalogSetup,
+  productSetup,
   tasks,
   workflow,
   visualFlow,

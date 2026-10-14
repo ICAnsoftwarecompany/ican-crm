@@ -6,7 +6,7 @@ import { ModuleNotice } from '../../../../shared/components/module-pages'
 import { useCatalogProducts } from '../../hooks/useCatalogProducts'
 import { requiresSerials } from '../../utils/productCreateWizard'
 import { visibleCapabilities } from '../../constants/capabilityRegistry'
-import { FormError, KindBadge, useCapabilityName, useNumberFormat, useOptionLabel } from '../common/catalogUi'
+import { FormError, KindBadge, useCapabilityName, useNumberFormat, useOptionLabel } from '../../components/common/catalogUi'
 
 const STATUS_ICONS = { done: CheckCircle2, running: Loader2, failed: XCircle }
 
@@ -46,6 +46,7 @@ export function ReviewStep({ wizard, onEdit }) {
   const names = useMemo(() => new Map((catalogQuery.data || []).map((item) => [String(item.id), item.name])), [catalogQuery.data])
   const unitNames = new Map(formState.units.map((unit) => [String(unit.id), unit.name]))
   const edit = locked ? undefined : onEdit
+  const editStep = (id) => (edit && wizard.steps.includes(id) ? () => edit(id) : undefined)
   const missingSerials = requiresSerials(itemType) && !plan.instances.instances.length
 
   return (
@@ -54,21 +55,21 @@ export function ReviewStep({ wizard, onEdit }) {
       {locked && <ModuleNotice>{t('catalog.create.createdNote', { id: done.productId })}</ModuleNotice>}
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Section title={t('catalog.create.steps.basics.title')} onEdit={edit && (() => edit('basics'))}>
+        <Section title={t('catalog.create.steps.basics.title')} onEdit={editStep('basics')}>
           <p className="flex flex-wrap items-center gap-2"><span className="font-semibold text-[var(--text)]">{plan.product.name}</span><KindBadge kind={form.kind} /></p>
           <p>{t('catalog.product.fields.price')}: <span dir="ltr">{formatNumber(plan.product.price)}</span></p>
           <p>{t('catalog.product.fields.itemType')}: {itemType?.name || t('catalog.product.noItemType')}</p>
           {form.image && <p>{t('catalog.product.fields.image')}: {form.image.name}</p>}
         </Section>
 
-        <Section title={t('catalog.create.steps.stock.title')} onEdit={edit && (() => edit('stock'))}>
+        <Section title={t('catalog.create.steps.stock.title')} onEdit={editStep('stock')}>
           <p>{plan.product.is_stock_tracked ? `${t('catalog.product.fields.stockQuantity')}: ${formatNumber(plan.product.stock_quantity)}` : t('catalog.product.notTracked')}</p>
           {(plan.product.units || []).map((unit) => (
             <p key={`${unit.unit_id}-${unit.factor}`}>{unitNames.get(String(unit.unit_id)) || `#${unit.unit_id}`} × <span dir="ltr">{unit.factor}</span></p>
           ))}
         </Section>
 
-        <Section title={t('catalog.create.steps.capabilities.title')} onEdit={edit && (() => edit('capabilities'))}>
+        <Section title={t('catalog.create.steps.capabilities.title')} onEdit={editStep('capabilities')}>
           {visibleCapabilities(itemType?.capabilities).length
             ? <p>{visibleCapabilities(itemType.capabilities).map((capability) => capabilityName(capability.code)).join(' · ')}</p>
             : <p>{t('catalog.itemTypes.noCapabilities')}</p>}
@@ -76,7 +77,7 @@ export function ReviewStep({ wizard, onEdit }) {
           {plan.product.fulfillment_config && <p>{t('catalog.product.fields.fulfillmentCreates')}: {optionLabel('creates', plan.product.fulfillment_config.creates)}</p>}
         </Section>
 
-        <Section title={t('catalog.create.steps.relations.title')} onEdit={edit && (() => edit('relations'))}>
+        <Section title={t('catalog.create.steps.relations.title')} onEdit={editStep('relations')}>
           {plan.relations.length
             ? plan.relations.map(({ key, body }) => <p key={key}>{names.get(String(body.child_product_id)) || `#${body.child_product_id}`} — {optionLabel('inclusion', body.inclusion)}</p>)
             : <p>{t('catalog.create.relationsEmpty')}</p>}

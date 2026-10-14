@@ -2,6 +2,7 @@
 
 > **Documentation update:** 2026-10-06 23:35 (Africa/Cairo) — README added with the catalog rebuild on the
 > Postman collection "Products & Catalog".
+> 2026-10-15 00:44 (Africa/Cairo) — add product / service moved to `product-create/` (own Arabic README): steps follow the item type, guide, quick add + side list, quick type / category, drafts, category path.
 > 2026-10-07 02:30 (Africa/Cairo) — create wizard `/products/new` (the collection's full create flow), `GET item-types/{id}` used.
 > 2026-10-15 00:08 (Africa/Cairo) — everything for adding an item type moved to `item-type-wizard/` (own README in Arabic).
 > 2026-10-14 23:53 (Africa/Cairo) — item type wizard page, templates, setup guide, type default units / attached items copied into new products.
@@ -39,6 +40,10 @@ Request builders: `utils/catalogPayloads.js` (multipart, booleans as 1/0, JSON f
 and `utils/catalogForms.js` (form ⇄ body, validation). Both tested.
 
 ## Create wizard (`/products/new`, `?kind=service`)
+
+*2026-10-15 00:44 (Africa/Cairo)*: everything now lives in [`product-create/`](product-create/README.md) (full guide in Arabic): steps follow
+the item type (all steps without one), tutorial panel, quick add mode with a side list, quick item type / category
+dialogs, drafts (`?draft=`), category path details. The paragraph below is the original 2026-10-07 description.
 
 Added 2026-10-07. Steps: basic data & item type → stock & units → capabilities (+ additional data) → attached items
 → pieces → review. Saving runs `POST /product/create` (with alternative units) → `POST /products/{id}/relations` per

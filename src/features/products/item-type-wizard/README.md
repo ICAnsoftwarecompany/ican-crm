@@ -1,6 +1,7 @@
 # features/products/item-type-wizard — إضافة نوع منتج أو خدمة
 
-> **Documentation update:** 2026-10-15 00:08 (Africa/Cairo) — الفولدر اتعمل وكل مكونات إضافة النوع اتنقلت فيه، والملف ده اتكتب.
+> **Documentation update:** 2026-10-15 00:43 (Africa/Cairo) — `QuickItemTypeDialog` اتضاف (نوع سريع من إضافة المنتج)، و`HelpTip` / `TutorialPanel` / `usePersistentFlag` اتنقلوا لـ `components/common` و`hooks` لأن إضافة المنتج بتستخدمهم كمان.
+> 2026-10-15 00:08 (Africa/Cairo) — الفولدر اتعمل وكل مكونات إضافة النوع اتنقلت فيه، والملف ده اتكتب.
 
 الفولدر ده فيه **كل حاجة تخص إضافة وتعديل نوع صنف** (Item Type) في الكتالوج: الصفحة، المراحل، القوالب الجاهزة،
 الوضع التعليمي، دليل البداية، ومنطق نقل افتراضيات النوع للمنتج الجديد.
@@ -38,8 +39,7 @@ item-type-wizard/
 ├── README.md                     الملف ده
 ├── ItemTypeWizard.jsx            الصفحة: الهيدر، شريط المراحل، المرحلة الحالية، لوحة الشرح، أزرار التنقل، شاشة النجاح
 ├── hooks/
-│   ├── useItemTypeWizard.js      كل الـ state: الفورم، المرحلة، الأخطاء، القالب، الحفظ، الرجوع لـ returnTo
-│   └── usePersistentFlag.js      تفضيل true/false محفوظ في المتصفح (الشرح، إخفاء القوالب، إخفاء الدليل)
+│   └── useItemTypeWizard.js      كل الـ state: الفورم، المرحلة، الأخطاء، القالب، الحفظ، الرجوع لـ returnTo
 ├── steps/                        مرحلة = ملف
 │   ├── KindStep.jsx              1. بتبيع إيه؟ (منتج / خدمة / خطة / باقة) + معرض القوالب
 │   ├── BasicsStep.jsx            2. الاسم، الكود، الوصف، نموذج الخدمة، البيع بينشئ، الحالة
@@ -49,8 +49,7 @@ item-type-wizard/
 │   └── TypeReviewStep.jsx        6. المراجعة والحفظ
 ├── components/
 │   ├── TemplateGallery.jsx       كروت القوالب + "ابدأ يدوي" + إخفاء/إظهار
-│   ├── TutorialPanel.jsx         لوحة الوضع التعليمي الجانبية
-│   ├── HelpTip.jsx               HelpScope / HelpField / HelpTip: شرح الحقل عند الوقوف عليه
+│   ├── QuickItemTypeDialog.jsx   نوع سريع (اسم + قالب اختياري) من إضافة المنتج، وزرار "فتح الصفحة الكاملة"
 │   ├── QuickServiceDialog.jsx    عمل خدمة بسيطة (اسم + سعر) من غير ما تخرج
 │   └── CatalogSetupGuide.jsx     كارت "ضيف الأنواع الأول" في القوائم وإضافة المنتج وصفحة الأنواع
 ├── constants/
@@ -65,7 +64,8 @@ item-type-wizard/
 
 **اتجاه الاعتماد:** الفولدر بيستخدم من باقي `features/products`: الـ hooks (`useCatalogSetup`, `useCatalogProducts`)،
 `constants/capabilityRegistry.js` و`catalogOptions.js`، `components/common/catalogUi` و`CapabilityConfigFields`،
-`components/units/UnitFormDialog`، و`components/create/RelationsStep`. وباقي الـ feature بيستخدم منه
+`components/units/UnitFormDialog`، و`components/common/RelationRowsEditor`، والأدوات المشتركة للشرح
+`components/common/{HelpTip,TutorialPanel}.jsx` و`hooks/usePersistentFlag.js` (مستخدمين كمان في `product-create`). وباقي الـ feature بيستخدم منه
 `CatalogSetupGuide` و`applyTypeDefaults` عن طريق `index.js` بس.
 
 ---
@@ -109,7 +109,7 @@ item-type-wizard/
 - الأسعار والباركود **مش هنا** — دول بيتحطوا لكل منتج.
 
 ### المرحلة 5 — الحاجات المرفقة (`steps/TypeRelationsStep.jsx`)
-- بيعيد استخدام `components/create/RelationsStep` (نفس اللي في إضافة المنتج): الصنف، ضمن السعر / اختياري،
+- بيعيد استخدام `components/common/RelationRowsEditor` (نفس اللي في إضافة المنتج): الصنف، ضمن السعر / اختياري،
   الكمية، سعر خاص، إضافة تلقائية.
 - لو جاي من قالب بتظهر **اقتراحات** (تركيب، عقد صيانة، تأمين سفر، توصيل مطار، باص مدرسة، خطة دعم، تهيئة…)؛ الضغط
   على اقتراح بيفتح `QuickServiceDialog` باسمه، وبعد الحفظ الخدمة بتترفق.
@@ -135,7 +135,7 @@ item-type-wizard/
 - لما يكون مفعّل، الصفحة بتبقى عمودين: المرحلة + **`TutorialPanel`** على الجنب، وفيها:
   1. كارت المرحلة: عنوان + شرح + نقاط "هتعمل إيه" (`catalogSetup.typeWizard.steps.<step>.guide.*`).
   2. كارت الحقل: شرح الحقل اللي العميل واقف عليه بالماوس أو داخل عليه بالكيبورد.
-- إزاي بيشتغل (`components/HelpTip.jsx`):
+- إزاي بيشتغل (`../components/common/HelpTip.jsx`، و`TutorialPanel` بياخد `guideKey` = بادئة الترجمة):
   - `HelpScope` بيلف الصفحة وبيحتفظ بـ "الشرح النشط".
   - `HelpField title text` بيلف أي حقل؛ عند `mouseenter` أو `focus` بيبقى هو النشط، وبيحط ⓘ في ركنه.
   - `HelpTip` هو الـ ⓘ نفسه: tooltip بيظهر بالـ hover والـ focus (شغال حتى لو الشرح مقفول).
@@ -244,6 +244,14 @@ item-type-wizard/
 
 ---
 
+## 7.1 النوع السريع (`components/QuickItemTypeDialog.jsx`)
+
+- بيتفتح من إضافة المنتج/الخدمة (زرار "نوع سريع" جنب اختيار النوع، وفي كارت النوع، وفي خطوة القطع).
+- حقوله: الاسم، الكود (اختياري: بيتعمل من الاسم، ولو الاسم عربي بيتعمل كود فريد)، وقالب جاهز اختياري من قوالب الـ kind ده
+  (بيملا القدرات والوحدات بـ `applyTemplate`). الحفظ `POST /item-types` والنوع بيتختار في المنتج على طول.
+- زرار **"فتح صفحة النوع الكاملة"** (`onOpenFull`): إضافة المنتج بتحفظ اللي اتكتب كمسودة وتفتح الصفحة دي بـ
+  `returnTo=/products/new?draft=<id>`، وبعد الحفظ بترجع بـ `&item_type=<id>` والمسودة بترجع زي ما كانت.
+
 ## 8. دليل البداية (`components/CatalogSetupGuide.jsx`)
 
 - Props: `kind` (`product` | `service` | null) · `context` (`list` | `wizard` | `itemTypes`) · `returnTo`.
@@ -253,7 +261,7 @@ item-type-wizard/
 
 ---
 
-## 9. التفضيلات المحفوظة في المتصفح (`hooks/usePersistentFlag.js`)
+## 9. التفضيلات المحفوظة في المتصفح (`../hooks/usePersistentFlag.js`)
 
 | المفتاح (`ican:catalog:` + …) | المعنى | الافتراضي |
 |---|---|---|

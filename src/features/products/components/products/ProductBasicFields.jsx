@@ -6,15 +6,19 @@ import { Select } from '../../../../shared/components/ui/Select'
 import { PRODUCT_KINDS } from '../../constants/catalogOptions'
 import { getCategoryLabel } from '../../utils/categoryTree'
 import { CheckboxField, TextAreaField, catalogInputClass, useOptions } from '../common/catalogUi'
+import { HelpField } from '../common/HelpTip'
 
 /**
  * Basic tab / step of the product form: name, kind, item type, category, price, description, image, status.
- * `onCreateItemType` (create wizard) adds a "new item type" button next to the select.
+ * Create wizard extras (2026-10-15): `onCreateItemType` / `onCreateCategory` add quick-add buttons, `itemTypeExtra` /
+ * `categoryExtra` render under the item type and category (what the type brings, the category path). Every field has
+ * an explanation (`HelpField`, `productSetup.help.*`) shown as a tip and in the wizard's tutorial panel.
  */
-export function ProductBasicFields({ mode, state, onCreateItemType }) {
+export function ProductBasicFields({ mode, state, onCreateItemType, onCreateCategory, itemTypeExtra, categoryExtra }) {
   const { t } = useTranslation()
   const { form, errors, update, itemTypes, categories } = state
   const kindOptions = useOptions('kinds', PRODUCT_KINDS)
+  const help = (key) => ({ title: t(`productSetup.help.${key}.title`), text: t(`productSetup.help.${key}.text`) })
 
   const changeKind = (kind) => {
     update('kind', kind)
@@ -25,23 +29,27 @@ export function ProductBasicFields({ mode, state, onCreateItemType }) {
 
   return (
     <div className="space-y-4">
-      <Input
-        label={t('catalog.product.fields.name')}
-        value={form.name}
-        error={errors.name ? t(`catalog.validation.${errors.name}`) : undefined}
-        onChange={(event) => update('name', event.target.value)}
-        autoFocus
-      />
+      <HelpField {...help('name')}>
+        <Input
+          label={t('catalog.product.fields.name')}
+          value={form.name}
+          error={errors.name ? t(`catalog.validation.${errors.name}`) : undefined}
+          onChange={(event) => update('name', event.target.value)}
+          autoFocus
+        />
+      </HelpField>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Select
-          label={t('catalog.product.fields.kind')}
-          value={form.kind}
-          options={kindOptions}
-          disabled={mode === 'edit'}
-          onChange={(value) => changeKind(value || 'product')}
-        />
-        <div className="space-y-1">
+        <HelpField {...help('kind')}>
+          <Select
+            label={t('catalog.product.fields.kind')}
+            value={form.kind}
+            options={kindOptions}
+            disabled={mode === 'edit'}
+            onChange={(value) => changeKind(value || 'product')}
+          />
+        </HelpField>
+        <HelpField {...help('itemType')} className="space-y-1">
           <Select
             label={t('catalog.product.fields.itemType')}
             value={form.item_type_id}
@@ -53,53 +61,68 @@ export function ProductBasicFields({ mode, state, onCreateItemType }) {
             }}
           />
           {onCreateItemType && (
-            <Button variant="ghost" size="sm" onClick={onCreateItemType}><Plus size={14} />{t('catalog.create.newItemType')}</Button>
+            <Button variant="ghost" size="sm" onClick={onCreateItemType}><Plus size={14} />{t('productSetup.quickType.open')}</Button>
           )}
-        </div>
+        </HelpField>
       </div>
       {onCreateItemType && !state.isLoadingLookups && !itemTypes.length && (
         <p className="-mt-2 text-xs text-[var(--text-muted)]">{t('catalog.create.noItemTypesForKind')}</p>
       )}
       {mode === 'edit' && <p className="-mt-2 text-xs text-[var(--text-muted)]">{t('catalog.product.kindLocked')}</p>}
+      {itemTypeExtra}
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Input
-          label={t('catalog.product.fields.price')}
-          type="number"
-          min={0}
-          step="any"
-          dir="ltr"
-          value={form.price}
-          error={errors.price ? t(`catalog.validation.${errors.price}`) : undefined}
-          onChange={(event) => update('price', event.target.value)}
-        />
-        <Select
-          label={t('catalog.product.fields.category')}
-          value={form.category_id}
-          placeholder={t('catalog.product.noCategory')}
-          options={categories.map((category) => ({ value: String(category.id), label: category._pathLabel || getCategoryLabel(category) }))}
-          onChange={(value) => update('category_id', value)}
-        />
+        <HelpField {...help('price')}>
+          <Input
+            label={t('catalog.product.fields.price')}
+            type="number"
+            min={0}
+            step="any"
+            dir="ltr"
+            value={form.price}
+            error={errors.price ? t(`catalog.validation.${errors.price}`) : undefined}
+            onChange={(event) => update('price', event.target.value)}
+          />
+        </HelpField>
+        <HelpField {...help('category')} className="space-y-1">
+          <Select
+            label={t('catalog.product.fields.category')}
+            value={form.category_id}
+            placeholder={t('catalog.product.noCategory')}
+            options={categories.map((category) => ({ value: String(category.id), label: category._pathLabel || getCategoryLabel(category) }))}
+            onChange={(value) => update('category_id', value)}
+          />
+          {onCreateCategory && (
+            <Button variant="ghost" size="sm" onClick={onCreateCategory}><Plus size={14} />{t('productSetup.quickCategory.open')}</Button>
+          )}
+        </HelpField>
       </div>
+      {categoryExtra}
 
-      <TextAreaField
-        label={t('catalog.product.fields.description')}
-        value={form.description}
-        onChange={(value) => update('description', value)}
-      />
-
-      <label className="flex flex-col gap-1.5 text-sm font-medium text-[var(--text)]">
-        {t('catalog.product.fields.image')}
-        <input
-          type="file"
-          accept="image/*"
-          className={catalogInputClass}
-          onChange={(event) => update('image', event.target.files?.[0] || null)}
+      <HelpField {...help('description')}>
+        <TextAreaField
+          label={t('catalog.product.fields.description')}
+          value={form.description}
+          onChange={(value) => update('description', value)}
         />
-        {mode === 'edit' && <span className="text-xs font-normal text-[var(--text-muted)]">{t('catalog.product.imageKeep')}</span>}
-      </label>
+      </HelpField>
 
-      <CheckboxField label={t('catalog.product.fields.active')} checked={form.status} onChange={(value) => update('status', value)} />
+      <HelpField {...help('image')}>
+        <label className="flex flex-col gap-1.5 text-sm font-medium text-[var(--text)]">
+          {t('catalog.product.fields.image')}
+          <input
+            type="file"
+            accept="image/*"
+            className={catalogInputClass}
+            onChange={(event) => update('image', event.target.files?.[0] || null)}
+          />
+          {mode === 'edit' && <span className="text-xs font-normal text-[var(--text-muted)]">{t('catalog.product.imageKeep')}</span>}
+        </label>
+      </HelpField>
+
+      <HelpField {...help('status')}>
+        <CheckboxField label={t('catalog.product.fields.active')} checked={form.status} onChange={(value) => update('status', value)} />
+      </HelpField>
     </div>
   )
 }

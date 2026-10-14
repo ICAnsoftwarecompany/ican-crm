@@ -6,11 +6,11 @@ import { EmptyState } from '../../../shared/components/feedback/EmptyState'
 import { Skeleton } from '../../../shared/components/feedback/Skeleton'
 import { Button } from '../../../shared/components/ui/Button'
 import { cn } from '../../../shared/utils/cn'
-import { HelpScope } from './components/HelpTip'
+import { HelpScope } from '../components/common/HelpTip'
 import { BasicsStep } from './steps/BasicsStep'
 import { CapabilitiesStep } from './steps/CapabilitiesStep'
 import { KindStep } from './steps/KindStep'
-import { TutorialPanel } from './components/TutorialPanel'
+import { TutorialPanel } from '../components/common/TutorialPanel'
 import { TypeRelationsStep } from './steps/TypeRelationsStep'
 import { TypeReviewStep } from './steps/TypeReviewStep'
 import { UnitsStep } from './steps/UnitsStep'
@@ -131,7 +131,7 @@ export function ItemTypeWizard({ mode = 'create', itemTypeId, initialKind, retur
             </header>
             <StepComponent wizard={wizard} />
           </section>
-          {tutorial && <TutorialPanel step={step} />}
+          {tutorial && <TutorialPanel guideKey={`catalogSetup.typeWizard.steps.${step}.guide`} />}
         </div>
 
         <footer className="flex flex-wrap items-center justify-between gap-2">

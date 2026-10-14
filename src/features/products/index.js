@@ -32,7 +32,7 @@ export { CAPABILITY_REGISTRY, instanceModesFor } from './constants/capabilityReg
 // Screens (composed by pages/products)
 export { CatalogProductsView } from './components/products/CatalogProductsView'
 export { ProductFormDrawer } from './components/products/ProductFormDrawer'
-export { ProductCreateWizard } from './components/create/ProductCreateWizard'
+export { ProductCreateWizard } from './product-create'
 export { ProductDetailsView } from './components/details/ProductDetailsView'
 export { ItemTypesView } from './components/item-types/ItemTypesView'
 export { ItemTypeWizard, CatalogSetupGuide } from './item-type-wizard'

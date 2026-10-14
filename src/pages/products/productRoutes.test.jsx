@@ -34,7 +34,7 @@ const routes = [
   [/\/product\/product-instances$/, { data: { data: [{ id: 70, product_id: 31, serial_number: 'AC12345678', availability_status: 'available', status: true }] } }],
   [/\/product\/info\/31$/, { data: product }],
   [/\/product\/data$/, { data: [product, service] }],
-  [/\/category\/data$/, { data: [] }],
+  [/\/category\/data$/, { data: [{ id: 1, name: 'Electronics', type: 'product', status: 1, children_recursive: [{ id: 2, name: 'Cooling', type: 'product', desc: 'ACs and fans', status: 1, data: JSON.stringify([{ brand: '' }]), children_recursive: [] }] }] }],
 ]
 
 const get = vi.fn(async (url) => {
@@ -219,5 +219,65 @@ describe('products area', () => {
   it('fills a new product with the default units and attached items of its type', async () => {
     renderAt('/products/new?item_type=5')
     expect(await screen.findByText('catalog.create.typeDefaultsApplied')).toBeTruthy()
+  })
+
+  it('shows every step without an item type and only what applies with one', async () => {
+    renderAt('/products/new')
+    expect((await screen.findAllByText('catalog.create.steps.instances.title')).length).toBeGreaterThan(0)
+    cleanup()
+    renderAt('/products/new?item_type=5')
+    expect(await screen.findByText('catalog.create.typeDefaultsApplied')).toBeTruthy()
+    expect(screen.queryByText('catalog.create.steps.instances.title')).toBeNull()
+  })
+
+  it('shows the category path with the details of each level', async () => {
+    renderAt('/products/new')
+    const select = await screen.findByLabelText('catalog.product.fields.category')
+    await waitFor(() => expect(select.querySelectorAll('option').length).toBeGreaterThan(2))
+    fireEvent.change(select, { target: { value: '2' } })
+    expect(await screen.findByText('ACs and fans')).toBeTruthy()
+    expect(screen.getByText('productSetup.category.level.parent')).toBeTruthy()
+    expect(screen.getByText('productSetup.category.level.selected')).toBeTruthy()
+  })
+
+  it('adds a category and an item type quickly from the wizard', async () => {
+    renderAt('/products/new')
+    fireEvent.click((await screen.findAllByText('productSetup.quickCategory.open'))[0])
+    fireEvent.change(await screen.findByLabelText('productSetup.quickCategory.name'), { target: { value: 'Fans' } })
+    fireEvent.submit(screen.getByLabelText('productSetup.quickCategory.name').closest('form'))
+    await waitFor(() => expect(post.mock.calls.some(([url]) => url === '/api/tenant/category/create')).toBe(true))
+
+    fireEvent.click((await screen.findAllByText('productSetup.quickType.open'))[0])
+    fireEvent.change(await screen.findByLabelText('catalog.itemTypes.fields.name'), { target: { value: 'Fans' } })
+    fireEvent.submit(screen.getByLabelText('catalog.itemTypes.fields.name').closest('form'))
+    await waitFor(() => expect(post).toHaveBeenCalledWith('/api/tenant/product/item-types', expect.objectContaining({ code: 'fans', name: 'Fans', kind: 'product' })))
+  })
+
+  it('keeps the product as a draft when opening the full item type page, and restores it', async () => {
+    const router = renderAt('/products/new')
+    fireEvent.change(await screen.findByLabelText('catalog.product.fields.name'), { target: { value: 'Window AC' } })
+    fireEvent.click((await screen.findAllByText('productSetup.quickType.open'))[0])
+    fireEvent.click(await screen.findByText('catalogSetup.quickType.openFull'))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/products/item-types/new'))
+    const returnTo = new URLSearchParams(router.state.location.search).get('returnTo')
+    expect(returnTo).toMatch(/^\/products\/new\?draft=/)
+    cleanup()
+    renderAt(`${returnTo}&item_type=4`)
+    expect(await screen.findByDisplayValue('Window AC')).toBeTruthy()
+    expect(await screen.findByText('productSetup.drafts.restored')).toBeTruthy()
+  })
+
+  it('quick adds items with Enter and lists them in the side panel', async () => {
+    renderAt('/products/new?kind=service')
+    fireEvent.click(await screen.findByLabelText('productSetup.quickAdd.toggle'))
+    const name = await screen.findByLabelText('catalog.product.fields.name')
+    fireEvent.change(name, { target: { value: 'Deep cleaning' } })
+    fireEvent.change(screen.getByLabelText('catalog.product.fields.price'), { target: { value: '300' } })
+    fireEvent.submit(name.closest('form'))
+    await waitFor(() => expect(post.mock.calls.some(([url]) => url === '/api/tenant/product/create')).toBe(true))
+    expect(await screen.findByText('Deep cleaning')).toBeTruthy()
+    expect(name.value).toBe('')
+    fireEvent.click(screen.getByText('productSetup.quickAdd.showAll.service'))
+    expect(await screen.findByText('Installation')).toBeTruthy()
   })
 })

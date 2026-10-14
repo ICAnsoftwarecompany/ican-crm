@@ -4,6 +4,7 @@
 // Screens
 export { ItemTypeWizard } from './ItemTypeWizard'
 export { CatalogSetupGuide } from './components/CatalogSetupGuide'
+export { QuickItemTypeDialog } from './components/QuickItemTypeDialog'
 
 // Item type → new product defaults (used by the product create wizard)
 export { applyTypeDefaults, productRelationsFromType, productUnitsFromType } from './utils/typeDefaults'

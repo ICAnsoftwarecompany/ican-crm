@@ -3,13 +3,14 @@ import { BookOpen, MousePointerClick } from 'lucide-react'
 import { useActiveHelp } from './HelpTip'
 
 /**
- * Side panel of the tutorial mode: what this step is for, what to do in it, and the explanation of the field the
- * user is pointing at (from HelpField). Copy: `catalogSetup.typeWizard.steps.<step>.guide.*`.
+ * Side panel of the tutorial mode (item type wizard, product wizard): what this step is for, what to do in it, and the
+ * explanation of the field the user is pointing at (from HelpField). `guideKey` is the i18n prefix holding
+ * `title`, `text` and `points` (an object of strings); `extra` is shown under the guide (e.g. what the item type adds).
  */
-export function TutorialPanel({ step }) {
+export function TutorialPanel({ guideKey, extra }) {
   const { t } = useTranslation()
   const active = useActiveHelp()
-  const rawPoints = t(`catalogSetup.typeWizard.steps.${step}.guide.points`, { returnObjects: true })
+  const rawPoints = t(`${guideKey}.points`, { returnObjects: true })
   const points = rawPoints && typeof rawPoints === 'object' ? Object.values(rawPoints) : []
 
   return (
@@ -17,14 +18,15 @@ export function TutorialPanel({ step }) {
       <section className="rounded-lg border border-[var(--ai-border)] bg-[var(--ai-bg)] p-4">
         <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--ai-text)]">
           <BookOpen size={16} aria-hidden="true" />
-          {t(`catalogSetup.typeWizard.steps.${step}.guide.title`)}
+          {t(`${guideKey}.title`)}
         </h3>
-        <p className="text-sm leading-6 text-[var(--text)]">{t(`catalogSetup.typeWizard.steps.${step}.guide.text`)}</p>
+        <p className="text-sm leading-6 text-[var(--text)]">{t(`${guideKey}.text`)}</p>
         {points.length > 0 && (
           <ol className="mt-3 list-decimal space-y-1 ps-5 text-sm leading-6 text-[var(--text)]">
             {points.map((point) => <li key={point}>{point}</li>)}
           </ol>
         )}
+        {extra && <div className="mt-3 border-t border-[var(--ai-border)] pt-3">{extra}</div>}
       </section>
 
       <section className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4" aria-live="polite">
