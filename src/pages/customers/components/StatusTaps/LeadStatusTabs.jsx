@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { CalendarDays, PhoneCall } from 'lucide-react'
 import { definitionsApi } from '../../../../features/definitions/api/definitionsApi'
 import { countCustomersByStatus, extractLeadStatuses } from '../../utils/customerStatus'
 import { useTranslation } from 'react-i18next'
@@ -17,16 +16,12 @@ function CountBadge({ count, active }) {
   )
 }
 
+/** Lead status tabs. The multi-status, meetings and calls buttons moved to the header (CustomersHeaderTools, 2026-10-15). */
 export function LeadStatusTabs({
   selectedStatusId = null,
   onStatusChange,
   customers = [],
-  onOpenMultiView,
   onStatusesChange,
-  activeActivityDrawerType = null,
-  onToggleActivityDrawer,
-  meetingsTodayCount = 0,
-  callsTodayCount = 0,
 }) {
   const { t } = useTranslation()
   const statusesQuery = useQuery({
@@ -119,49 +114,6 @@ export function LeadStatusTabs({
             </button>
           )
         })}
-        <button
-          type="button"
-          onClick={() => onOpenMultiView?.()}
-          className="ms-2 min-h-11 shrink-0 rounded-lg border border-[#00C2CB] bg-white px-4 py-2 text-sm font-bold text-[#007A80] transition-colors hover:bg-[#E8F9FA]"
-        >
-          {t('customers.productsDialog.dualView')}
-        </button>
-
-        <div className="ms-2 flex shrink-0 items-center gap-2">
-          <button
-            type="button"
-            onClick={() => onToggleActivityDrawer?.('meeting')}
-            className={`relative inline-flex h-11 w-11 items-center justify-center rounded-lg border transition-colors ${
-              activeActivityDrawerType === 'meeting'
-                ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]'
-                : 'border-[#D1E8EA] bg-white text-[#0F766E] hover:bg-[#ECFEFF]'
-            }`}
-            title={t('customers.page.meetingsToday')}
-            aria-label={t('customers.page.meetingsToday')}
-          >
-            <CalendarDays size={17} />
-            <span className="absolute -top-1 -end-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#0F766E] px-1 text-[10px] font-black leading-none text-white">
-              {meetingsTodayCount > 99 ? '99+' : meetingsTodayCount}
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onToggleActivityDrawer?.('call')}
-            className={`relative inline-flex h-11 w-11 items-center justify-center rounded-lg border transition-colors ${
-              activeActivityDrawerType === 'call'
-                ? 'border-[#EF4444] bg-[#FFF1F2] text-[#B91C1C]'
-                : 'border-[#F9D7D7] bg-white text-[#B91C1C] hover:bg-[#FFF5F5]'
-            }`}
-            title={t('customers.page.callsToday')}
-            aria-label={t('customers.page.callsToday')}
-          >
-            <PhoneCall size={17} />
-            <span className="absolute -top-1 -end-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#B91C1C] px-1 text-[10px] font-black leading-none text-white">
-              {callsTodayCount > 99 ? '99+' : callsTodayCount}
-            </span>
-          </button>
-        </div>
       </div>
     </div>
   )

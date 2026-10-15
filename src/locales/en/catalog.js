@@ -1,5 +1,26 @@
 // Catalog screens under /products (Products & Catalog API, added 2026-10-06).
 export default {
+  // Catalog browser side panel (Leads Center header), 2026-10-15
+  browser: {
+    button: 'Products & services',
+    title: 'Products & services',
+    description: 'Browse the catalog and see any item in full',
+    kindLabel: 'Item kind',
+    kinds: { all: 'All', product: 'Products', service: 'Services', plan: 'Plans & subscriptions', bundle: 'Bundles' },
+    search: 'Search by name, code, type or category',
+    itemType: 'Item type',
+    allTypes: 'All types',
+    noType: 'No type',
+    category: 'Category',
+    allCategories: 'All categories',
+    showInactive: 'Show inactive',
+    count: '{{shown}} of {{total}}',
+    noResults: 'No items match these filters',
+    empty: 'No products or services yet',
+    loadFailed: 'Could not load products and services',
+    retry: 'Retry',
+    back: 'Back to the list',
+  },
   nav: {
     plans: 'Plans & subscriptions',
     bundles: 'Bundles',

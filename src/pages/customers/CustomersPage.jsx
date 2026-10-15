@@ -12,6 +12,7 @@ import { useCustomerMutations, useCustomers, useDeletedCustomers } from '../../f
 import { CustomersPageHeader } from './components/CustomersPageHeader'
 import { CustomerDetailsDrawer } from './components/CustomerDetailsDrawer/CustomerDetailsDrawer'
 import { LeadStatusTabs } from './components/StatusTaps/LeadStatusTabs'
+import { CustomersHeaderTools } from './components/CustomersHeaderTools'
 import { TableSettingsDrawer } from './components/TableSettingsDrawer'
 import { useCustomersTableColumns } from './components/CustomersTableColumns'
 import { CustomersBulkActions } from './components/CustomersBulkActions'
@@ -1249,7 +1250,13 @@ export function CustomersPage({ defaultShowTrash = false }) {
         onTrash={() => navigate(showTrash ? '/LeadsCenter' : '/LeadsCenter/trash')}
         trashActive={showTrash}
         onTableSettings={!isPipelineView ? () => setIsTableSettingsOpen(true) : undefined}
-        viewToggle={!showTrash ? <CustomersViewModeToggle value={viewMode} onChange={setViewMode} /> : null}
+        viewToggle={!showTrash ? (
+          <>
+            <CustomersViewModeToggle value={viewMode} onChange={setViewMode} />
+            <CustomersHeaderTools multiViewStatusId={selectedLeadStatusId} showActivities={!isPipelineView} activeActivityDrawerType={activeActivityDrawerType}
+              onToggleActivityDrawer={handleToggleActivityDrawer} meetingsTodayCount={todayMeetings.length} callsTodayCount={todayCalls.length} />
+          </>
+        ) : null}
       />
 
       {!showTrash && !isPipelineView && (
@@ -1262,14 +1269,6 @@ export function CustomersPage({ defaultShowTrash = false }) {
           freshLeadActive={freshLeadActive}
           freshLeadHasAlert={freshLeadHasAlert}
           onFreshLeadClick={handleFreshLeadTabClick}
-          activeActivityDrawerType={activeActivityDrawerType}
-          onToggleActivityDrawer={handleToggleActivityDrawer}
-          meetingsTodayCount={todayMeetings.length}
-          callsTodayCount={todayCalls.length}
-          onOpenMultiView={() => {
-            const query = selectedLeadStatusId ? `?statuses=${selectedLeadStatusId}` : ''
-            navigate(`/LeadsCenter/status-board${query}`)
-          }}
         />
       )}
 

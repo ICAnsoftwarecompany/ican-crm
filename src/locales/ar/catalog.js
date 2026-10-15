@@ -1,5 +1,26 @@
 // شاشات الكتالوج تحت /products (Products & Catalog API، أُضيف 2026-10-06).
 export default {
+  // Catalog browser side panel (Leads Center header), 2026-10-15
+  browser: {
+    button: 'المنتجات والخدمات',
+    title: 'المنتجات والخدمات',
+    description: 'تصفح الكتالوج واعرض بيانات أي صنف كاملة',
+    kindLabel: 'نوع الصنف',
+    kinds: { all: 'الكل', product: 'منتجات', service: 'خدمات', plan: 'خطط واشتراكات', bundle: 'باقات' },
+    search: 'ابحث بالاسم أو الكود أو النوع أو الفئة',
+    itemType: 'نوع الصنف',
+    allTypes: 'كل الأنواع',
+    noType: 'من غير نوع',
+    category: 'التصنيف',
+    allCategories: 'كل التصنيفات',
+    showInactive: 'إظهار الموقوف',
+    count: '{{shown}} من {{total}}',
+    noResults: 'مفيش أصناف بالفلاتر دي',
+    empty: 'مفيش منتجات أو خدمات لسه',
+    loadFailed: 'تعذر تحميل المنتجات والخدمات',
+    retry: 'إعادة المحاولة',
+    back: 'رجوع للقائمة',
+  },
   nav: {
     plans: 'الخطط والاشتراكات',
     bundles: 'الباقات',
