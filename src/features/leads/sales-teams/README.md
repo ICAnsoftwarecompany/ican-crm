@@ -1,17 +1,26 @@
 # features/leads/sales-teams — فرق السيلز وتوزيع الليدز
 
-> **Documentation update:** 2026-10-15 23:40 (Africa/Cairo) — الفولدر اتعمل، وبقى صفحة `/LeadsCenter/teams` و`/LeadsCenter/assignments`.
+> **Documentation update:** 2026-10-16 00:10 (Africa/Cairo) — بقى قسم لوحده بسايد بار خاص (الفرق، قواعد التوزيع، قاعدة جديدة، التقارير)، وإضافة القاعدة بقت صفحة خطوات في [`rule-builder/`](rule-builder/README.md).
+> 2026-10-15 23:40 (Africa/Cairo) — الفولدر اتعمل.
 
-الصفحة اللي بيتعرف فيها **مين في فريق السيلز** و**الليد الجديد يروح لمين**. فيها تابين:
-**الفرق** و**قواعد التوزيع**، وفوقهم 4 أرقام (الفرق، القواعد، المستخدمين، المستخدمين اللي ملهمش فريق).
+القسم اللي بيتعرف فيه **مين في فريق السيلز** و**الليد الجديد يروح لمين**. له **سايد بار خاص** (مش سايد بار مركز العملاء):
+
+| عنصر السايد بار | المسار | الصفحة |
+|---|---|---|
+| الفرق | `/LeadsCenter/teams` | `TeamsView`: 3 أرقام، فلاتر، كروت الفرق، إنشاء / تعديل فريق (نافذة) |
+| قواعد التوزيع | `/LeadsCenter/teams/rules` | `RulesView`: شرح التوزيع، فلاتر، القواعد بالأولوية، تفعيل / إيقاف، تعديل ← صفحة الخطوات |
+| ↳ قاعدة توزيع جديدة | `/LeadsCenter/teams/rules/new` | `RuleBuilder` — صفحة خطوات بشرح كل خطوة ([README](rule-builder/README.md)) |
+| التقارير والإحصائيات | `/LeadsCenter/teams/reports` | `SalesTeamsReportView` على `ReportsPage` |
+| (الفوتر) مركز العملاء المحتملين | `/LeadsCenter` | رجوع |
+
+تعديل قاعدة: `/LeadsCenter/teams/rules/{id}/edit`. `/LeadsCenter/assignments` بيحوّل على `/LeadsCenter/teams/rules`، وعنصر "توزيع العملاء المحتملين" في سايد بار مركز العملاء بيفتح نفس الصفحة.
 
 | | |
 |---|---|
-| **المسارات** | `/LeadsCenter/teams` (تاب الفرق) و`/LeadsCenter/assignments` (نفس الصفحة على تاب القواعد). التاب في `?tab=teams\|rules`. |
-| **الصفحات** | `pages/customers/pages/CustomerTeamsPage.jsx` و`CustomerAssignmentsPage.jsx` — سطر واحد كل واحدة. |
-| **الواجهة العامة** | `index.js`: `SalesTeamsWorkspace` (ومن `features/leads`)، `ASSIGN_TYPES`، `RULE_SOURCES`، `TEAM_TYPES`، `buildRulePayload`، `normalizeRule` |
+| **صفحات الراوت** | `pages/sales-teams/` (`SalesTeamsLayout` + `salesTeamsNavigation.js` + `SalesTeamsPages.jsx`) — [README](../../../pages/sales-teams/README.md) |
+| **الواجهة العامة** | `index.js`: `TeamsView`، `RulesView`، `RuleBuilder`، `SalesTeamsReportView`، `SALES_TEAMS_ROUTES`، `newRuleForTeam`، `ASSIGN_TYPES`، `RULE_SOURCES`، `TEAM_TYPES`، `buildRulePayload`، `normalizeRule` (وكلهم من `features/leads`) |
 | **الترجمة** | موديول `salesTeams` في `locales/{ar,en}/salesTeams.js` |
-| **الاختبارات** | `utils/salesTeamsModel.test.js` (الـ payloads، فرق الأعضاء، الفلاتر، التحذيرات) |
+| **الاختبارات** | `utils/salesTeamsModel.test.js`، `rule-builder/utils/ruleBuilder.test.js`، `reports/salesTeamsReportModel.test.js` |
 
 ## الدوال المستخدمة
 
@@ -42,7 +51,7 @@
 
 ## الفرق
 - كارت لكل فريق: النوع، نشط / غير نشط، القائد، صور الأعضاء، وعدد قواعد التوزيع النشطة اللي بتوجّه ليه.
-- زرار "قاعدة توزيع" في الكارت بيفتح قاعدة جديدة والفريق متختار.
+- زرار "قاعدة توزيع" في الكارت بيفتح صفحة القاعدة الجديدة والفريق متختار (`?team=`).
 - فلاتر: بحث (اسم الفريق / القائد / عضو)، النوع، الحالة.
 - **الإنشاء**: طلب واحد فيه النوع والأعضاء.
 - **التعديل**: `update` (الاسم، القائد، نشط)، وبعده `attach-members` / `detach-members` **بالفرق بس** بين الأعضاء القدام والجداد.
@@ -50,7 +59,8 @@
 - **النوع بيتحدد عند الإنشاء بس**، لأن `update` مفيهوش `type` (سؤال للباك E3).
 
 ## قواعد التوزيع
-كل قاعدة بتتعرض كده: **الأولوية · الاسم** ثم **الشروط ← طريقة التوزيع ← المستلم**، ومفتاح نشط / غير نشط وزرار تعديل.
+كل قاعدة بتتعرض كده: **الأولوية · الاسم** ثم **الشروط ← طريقة التوزيع ← المستلم**، ومفتاح نشط / غير نشط وزرار تعديل (بيفتح صفحة الخطوات).
+الإنشاء والتعديل نفسهم في [`rule-builder/`](rule-builder/README.md).
 
 **الشروط** (أي شرط فاضي = أي قيمة، ولو كلهم فاضيين القاعدة بتمسك كل الليدز):
 - `source`: فيسبوك، ماسنجر، واتساب، نموذج ليد، الموقع، جوجل، ترشيح، يدوي، أخرى (`RULE_SOURCES`). لو القاعدة المتخزنة فيها قيمة تانية بتفضل ظاهرة.
@@ -80,28 +90,34 @@
 ```
 sales-teams/
 ├── index.js
+├── constants/salesTeamsRoutes.js  مسارات القسم
 ├── components/
-│   ├── SalesTeamsWorkspace.jsx   الهيدر + الأرقام + التابات + الحوارات
-│   ├── TeamsSection.jsx · TeamCard.jsx
-│   ├── TeamDialog.jsx · TeamMembersPicker.jsx
-│   ├── RulesSection.jsx · RuleCard.jsx · RulesGuide.jsx
-│   ├── RuleDialog.jsx · RuleConditionFields.jsx · AssignTypePicker.jsx
+│   ├── TeamsView.jsx · TeamsSection.jsx · TeamCard.jsx · TeamDialog.jsx · TeamMembersPicker.jsx
+│   ├── RulesView.jsx · RulesSection.jsx · RuleCard.jsx · RulesGuide.jsx
+│   └── AssignTypePicker.jsx       كروت طرق التوزيع (بيستخدمها rule-builder) + ASSIGN_TYPE_ICONS
 ├── hooks/
 │   ├── useSalesTeamsData.js      الفرق + المستخدمين + القواعد → نماذج عرض وأرقام
 │   ├── useTeamEditor.js          إنشاء / تعديل فريق (create أو update + attach/detach)
-│   ├── useRuleEditor.js          إنشاء / تعديل قاعدة + التفعيل من الكارت
+│   ├── useRuleToggle.js          تفعيل / إيقاف قاعدة من الكارت
 │   └── useRuleConditionOptions.js  خيارات الحملات / الإعلانات / النماذج + أسماءهم
+├── rule-builder/                 صفحة إنشاء / تعديل قاعدة خطوة بخطوة (README خاص)
+├── reports/                      salesTeamsReportModel.js (+ test) · useSalesTeamsReport.js · SalesTeamsReportView.jsx
 └── utils/
     ├── teamModel.js              قراءة الفريق بأي شكل، payloads، فرق الأعضاء، الفلاتر
     ├── ruleModel.js              قراءة القاعدة، payload، التحقق، الترتيب، التحذيرات
     └── salesTeamsModel.test.js
 ```
 
+## التقارير (`reports/`)
+أرقام: فرق نشطة (ومتوسط حجم الفريق)، قواعد نشطة (ومنها لكل الليدز)، مستخدمين بدون فريق، "محتاج مراجعة" (قواعد بتحذير + فرق نشطة بدون قاعدة).
+رسوم: حجم الفرق (أعضاء + قائد)، القواعد النشطة حسب طريقة التوزيع / المصدر / الفريق، الفرق حسب النوع. التوزيع الفعلي للليدز على الموظفين في تقارير مركز العملاء.
+
 ## إزاي تزوّد
 - **مصدر ليد جديد**: ضيفه في `RULE_SOURCES` وترجمته في `salesTeams.sources.*` (ar + en).
 - **نوع فريق جديد**: `TEAM_TYPES` + `salesTeams.teamTypes.<type>.label|hint`.
-- **طريقة توزيع جديدة**: `ASSIGN_TYPES` + `ASSIGN_TYPE_TARGET` + أيقونة في `ASSIGN_TYPE_ICONS` + `salesTeams.assignTypes.<type>`.
-- **شرط جديد** (منطقة، اهتمام...): `CONDITION_KEYS` و`EMPTY_RULE_FORM` و`buildRulePayload`، وحقل في `RuleConditionFields` — بعد ما الباك يدعمه.
+- **طريقة توزيع جديدة**: `ASSIGN_TYPES` + `ASSIGN_TYPE_TARGET` + أيقونة في `ASSIGN_TYPE_ICONS` + `salesTeams.assignTypes.<type>` + `salesTeams.builder.method.when.<type>`.
+- **صفحة جديدة في القسم**: راوت تحت `LeadsCenter/teams` في `app/router/index.jsx`، مسار في `constants/salesTeamsRoutes.js`، وعنصر في `pages/sales-teams/salesTeamsNavigation.js`.
+- **شرط جديد** (منطقة، اهتمام...): `CONDITION_KEYS` و`EMPTY_RULE_FORM` و`buildRulePayload`، وحقل في `rule-builder/components/steps/ConditionsStep.jsx` — بعد ما الباك يدعمه.
 
 ## ثغرات معروفة
 - مفيش حذف قاعدة ولا حذف فريق (مفيش endpoints).

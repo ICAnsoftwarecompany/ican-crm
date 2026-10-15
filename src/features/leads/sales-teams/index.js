@@ -1,4 +1,8 @@
-// Public surface of the Leads Center sales teams + lead distribution page (2026-10-15). See README.md.
-export { SalesTeamsWorkspace } from './components/SalesTeamsWorkspace'
+// Public surface of the Leads Center sales teams + lead distribution page (2026-10-15; own sub-sidebar and rule builder page 2026-10-16). See README.md.
+export { TeamsView } from './components/TeamsView'
+export { RulesView } from './components/RulesView'
+export { RuleBuilder } from './rule-builder'
+export { SalesTeamsReportView } from './reports/SalesTeamsReportView'
+export { SALES_TEAMS_BASE, SALES_TEAMS_ROUTES, newRuleForTeam } from './constants/salesTeamsRoutes'
 export { ASSIGN_TYPES, RULE_SOURCES, buildRulePayload, normalizeRule } from './utils/ruleModel'
 export { TEAM_TYPES } from './utils/teamModel'

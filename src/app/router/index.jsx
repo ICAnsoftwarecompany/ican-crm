@@ -11,8 +11,8 @@ import { NewCustomersPage } from '../../pages/customers/pages/NewCustomersPage'
 import { FollowUpCustomersPage } from '../../pages/customers/pages/FollowUpCustomersPage'
 import { InactiveCustomersPage } from '../../pages/customers/pages/InactiveCustomersPage'
 import { CustomerSegmentsPage } from '../../pages/customers/pages/CustomerSegmentsPage'
-import { CustomerAssignmentsPage } from '../../pages/customers/pages/CustomerAssignmentsPage'
-import { CustomerTeamsPage } from '../../pages/customers/pages/CustomerTeamsPage'
+import { SalesTeamsLayout } from '../../pages/sales-teams/SalesTeamsLayout'
+import { SalesTeamsPage, SalesTeamsReportsPage, SalesTeamsRuleBuilderPage, SalesTeamsRulesPage } from '../../pages/sales-teams/SalesTeamsPages'
 import { DuplicateCustomersPage } from '../../pages/customers/pages/DuplicateCustomersPage'
 import { CustomerCustomizationPage } from '../../pages/customers/pages/customization/CustomerCustomizationPage'
 import { CustomerImportExportPage } from '../../pages/customers/pages/CustomerImportExportPage'
@@ -113,6 +113,18 @@ export const router = createBrowserRouter([
       // The old /leads page (raw lead logs + assignment-rule form) was removed 2026-10-01; rules now live at
       // /LeadsCenter/assignments. /leads/:customerId (lead details) is unaffected.
       { path: 'leads', element: <Navigate to="/LeadsCenter" replace /> },
+      // Sales teams + lead distribution: own area with its own sub-sidebar (2026-10-16), same base URL as before.
+      {
+        path: 'LeadsCenter/teams',
+        element: <SalesTeamsLayout />,
+        children: [
+          { index: true, element: <SalesTeamsPage /> },
+          { path: 'rules', element: <SalesTeamsRulesPage /> },
+          { path: 'rules/new', element: <SalesTeamsRuleBuilderPage /> },
+          { path: 'rules/:ruleId/edit', element: <SalesTeamsRuleBuilderPage /> },
+          { path: 'reports', element: <SalesTeamsReportsPage /> },
+        ],
+      },
       {
         path: 'LeadsCenter',
         element: <CustomersLayout />,
@@ -122,8 +134,8 @@ export const router = createBrowserRouter([
           { path: 'follow-up', element: <FollowUpCustomersPage /> },
           { path: 'inactive', element: <InactiveCustomersPage /> },
           { path: 'segments', element: <CustomerSegmentsPage /> },
-          { path: 'assignments', element: <CustomerAssignmentsPage /> },
-          { path: 'teams', element: <CustomerTeamsPage /> },
+          // Lead distribution rules moved into the sales teams area (2026-10-16); the old URL still works.
+          { path: 'assignments', element: <Navigate to="/LeadsCenter/teams/rules" replace /> },
           { path: 'duplicates', element: <DuplicateCustomersPage /> },
           { path: 'customization', element: <CustomerCustomizationPage /> },
           { path: 'import-export', element: <CustomerImportExportPage /> },

@@ -13,8 +13,8 @@ import { useConditionLabels } from '../hooks/useRuleConditionOptions'
 
 const EMPTY_FILTERS = { search: '', status: '', assignType: '' }
 
-/** Rules tab: how distribution works, filters and the rules in priority order. `editor` = useRuleEditor(). */
-export function RulesSection({ data, editor }) {
+/** Rules list: how distribution works, filters and the rules in priority order. */
+export function RulesSection({ data, togglingId, onToggle, onEdit, onCreate }) {
   const { t } = useTranslation()
   const [filters, setFilters] = useState(EMPTY_FILTERS)
   const conditionLabels = useConditionLabels()
@@ -73,14 +73,19 @@ export function RulesSection({ data, editor }) {
                 teamById={data.teamById}
                 userById={data.userById}
                 conditionLabels={conditionLabels}
-                toggling={editor.togglingId === rule.id}
-                onToggle={() => editor.toggleActive(rule)}
-                onEdit={() => editor.open(rule)}
+                toggling={togglingId === rule.id}
+                onToggle={() => onToggle(rule)}
+                onEdit={() => onEdit(rule)}
               />
             ))}
           </div>
         )}
       </ResourceState>
+      {data.rules.length === 0 && !data.rulesQuery.isLoading && !data.rulesQuery.error && (
+        <div className="flex justify-center">
+          <Button variant="accent" onClick={onCreate}>{t('salesTeams.rules.new')}</Button>
+        </div>
+      )}
     </section>
   )
 }

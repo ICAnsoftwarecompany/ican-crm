@@ -27,6 +27,7 @@ export const LEADS_CENTER_ROUTE = '/LeadsCenter'
  *   the status board opens from the multi-view button in the main table's status tabs, proposals from the main sidebar).
  * - Footer: Automation, AI setup, Settings.
  * - Tools: Reports & statistics (shared reports engine) added first.
+ * - 2026-10-16: "Lead distribution" opens the rules page of the sales teams area (/LeadsCenter/teams/rules).
  */
 export function getCustomerNavigationGroups(t) {
   return [
@@ -46,7 +47,7 @@ export function getCustomerNavigationGroups(t) {
       label: t('customers.nav.organization'),
       items: [
         { to: `${LEADS_CENTER_ROUTE}/segments`, label: t('customers.nav.segmentsAndTags'), icon: Tags },
-        { to: `${LEADS_CENTER_ROUTE}/assignments`, label: t('customers.nav.leadDistribution'), icon: UserCheck },
+        { to: `${LEADS_CENTER_ROUTE}/teams/rules`, label: t('customers.nav.leadDistribution'), icon: UserCheck },
         { to: `${LEADS_CENTER_ROUTE}/duplicates`, label: t('customers.nav.duplicateRecords'), icon: Copy },
         { to: `${LEADS_CENTER_ROUTE}/customization`, label: t('customers.nav.setupCustomization'), icon: SlidersHorizontal },
       ],
