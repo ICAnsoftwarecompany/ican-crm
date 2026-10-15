@@ -1,6 +1,6 @@
 # المطلوب من الباك إند — قفل الليد والصفقات والكتالوج
 
-> **Documentation update:** 2026-10-15 23:40 (Africa/Cairo) — E3: فرق السيلز وقواعد التوزيع. 2026-10-15 17:40 (Africa/Cairo) — E2: الكسب والخسارة المباشرين وأسباب الخسارة. 2026-10-15 15:30 (Africa/Cairo) — قسم (هـ) E1: تفاصيل الاهتمام.
+> **Documentation update:** 2026-10-16 00:45 (Africa/Cairo) — E3: أسئلة ids حملات وإعلانات ميتا في قواعد التوزيع ونماذج الليد. 2026-10-15 23:40 (Africa/Cairo) — E3: فرق السيلز وقواعد التوزيع. 2026-10-15 17:40 (Africa/Cairo) — E2: الكسب والخسارة المباشرين وأسباب الخسارة. 2026-10-15 15:30 (Africa/Cairo) — قسم (هـ) E1: تفاصيل الاهتمام.
 > **Previous:** 2026-10-04 14:45 (Africa/Cairo) — الملف اتعمل: كل اللي الفرونت محتاجه من الباك إند في
 > جزئين: (أ) قفل الليد في مركز العملاء، (ب) الصفقات ومساحة العمل. مجمّع من
 > [deals/DEALS-WORKSPACE-SPEC.md §9–§10](../deals/DEALS-WORKSPACE-SPEC.md) ومن شغل قفل الليد
@@ -498,6 +498,9 @@ GET /api/tenant/product/capabilities
 8. **الحذف:** مفيش `delete` للقواعد ولا للفرق. محتاجين `POST lead-assignment/delete/rule/{id}` و`teams/delete/{id}` (أو إيقاف بس).
 9. **رد `rules`:** يا ريت يرجّع أسماء `team`, `user`, `campaign`, `ad`, `form` مع الـ ids (الواجهة دلوقتي بتجيبهم من قوايم تانية).
 10. **رد `teams/get`:** يا ريت يبقى `members: [{ id, name, email }]` و`leader: { id, name }` و`type` ثابتين.
+11. **ids ميتا في القاعدة:** الواجهة بتعرض حملات `facebook/campaigns/get` وإعلانات `facebook/campaigns/adsets/{id}/ads` وبتبعت `id` الصف في `campaign_id` / `ad_id`. ده الـ id اللي الليد بيتربط بيه (جدول الحملات المحلي) ولا id ميتا (`campaign_id` / `ad_id` الطويل)؟
+12. **نماذج الليد من ميتا:** محتاجين `GET /api/tenant/facebook/lead-forms?page_id=` (أو نماذج متزامنة في `ads-forms`) عشان `form_id` يتختار من نماذج ميتا. دلوقتي بنعرض `ads-forms/active` بس.
+13. **رد `teams/create`:** يا ريت يرجّع الفريق الجديد (`data.id`)؛ الواجهة دلوقتي بتدور عليه بالاسم بعد ما تحدّث القايمة.
 
 ---
 
