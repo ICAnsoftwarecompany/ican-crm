@@ -1,6 +1,7 @@
 # pages/products — Products & Services routes
 
 > **Documentation update:** 2026-10-06 23:35 (Africa/Cairo) — README added; routes moved to `productRoutes.jsx`.
+> 2026-10-15 14:51 (Africa/Cairo) — "Organize" and "Setup" merged into one group "Organize & setup" (categories, item types, units, pieces & serials).
 > 2026-10-15 14:08 (Africa/Cairo) — sidebar groups: Catalog (overview, products + type pages, services + plans / bundles / type pages) · Organize (categories) · Setup (item types, units, pieces & serials) · Insights; long lists scroll.
 > 2026-10-15 13:43 (Africa/Cairo) — sidebar sub-pages: one per active item type (`/products/types/:id`), plans and bundles under Services.
 > 2026-10-15 00:56 (Africa/Cairo) — `/products/overview` (first in the sidebar) and `/products/:productId/complete`.

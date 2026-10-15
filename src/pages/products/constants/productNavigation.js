@@ -2,7 +2,8 @@ import { BarChart3, Boxes, CircleDot, LayoutDashboard, Layers3, Repeat, Briefcas
 
 /**
  * Products & Services sub-sidebar. Rebuilt 2026-10-06 for the catalog API: catalog (overview — first, 2026-10-15 —
- * products, services, instances), organize (categories), setup (item types, units), insights (reports).
+ * products, services), organize & setup (categories, item types, units, pieces & serials — one group since 2026-10-15),
+ * insights (reports).
  */
 /** Active item types → sub-pages `/products/types/:id` (product types under Products; the rest under Services). */
 function typeItems(itemTypes = [], kinds) {
@@ -38,17 +39,12 @@ export function getProductNavigationGroups(t, { itemTypes = [] } = {}) {
       ],
     },
     {
+      // One group since 2026-10-15: categories, item types, units, pieces & serials.
       id: 'organize',
-      label: t('catalog.nav.organize'),
+      label: t('catalog.nav.organizeSetup'),
       items: [
         { to: '/products/categories', label: t('products.nav.productCategories'), icon: Tags },
         { to: '/products/service-categories', label: t('products.serviceCategories.pageTitle'), icon: FolderTree },
-      ],
-    },
-    {
-      id: 'setup',
-      label: t('catalog.nav.setup'),
-      items: [
         { to: '/products/item-types', label: t('catalog.nav.itemTypes'), icon: Layers },
         { to: '/products/units', label: t('catalog.nav.units'), icon: Ruler },
         // Pieces & serials sit with the setup pages since 2026-10-15 (records behind the products, not a catalog list).
