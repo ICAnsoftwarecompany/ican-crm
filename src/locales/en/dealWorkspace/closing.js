@@ -49,17 +49,19 @@ export default {
       "submit": "Confirm lost",
       "success": "Lead marked as lost.",
       "failed": "Could not close the lead as lost.",
-      "reasonRequired": "Choose a lost reason."
+      "reasonRequired": "Choose a lost reason.",
+      "scopeNote": "Only this lead is closed as lost; the deal stays open and its other leads are not affected."
     }
   },
   "lostReasons": {
-    "title": "Lost reasons",
-    "sectionHint": "Reasons picked when a lead is lost",
+    "title": "Lead lost reasons",
+    "sectionHint": "Why a single lead in the deal was lost",
     "description": "Define why leads are lost (e.g. price too high, went to a competitor). They are offered by \"Mark as lost\", the chosen one is sent, and they feed the lost reasons report. Changes save at once.",
     "sharedNote": "Reasons are company-wide: the same list in every deal and in the Leads Center. Turning a reason off hides it from picking without deleting its history.",
     "manage": "Manage reasons",
     "manageHint": "Missing a reason?",
     "noneDefined": "No lost reasons defined yet, so the basic list is shown.",
-    "loadFailed": "Could not load the lost reasons; pick from the basic list."
+    "loadFailed": "Could not load the lost reasons; pick from the basic list.",
+    "scopeNote": "These reasons are for losing a single lead inside the deal (\"Mark as lost\" on the lead), not for closing or losing the whole deal. The deal stays open and the other leads carry on."
   }
 }

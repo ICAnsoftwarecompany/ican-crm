@@ -1197,8 +1197,8 @@ export default {
     "wonSingleOnly": "Win one customer at a time (each sale has its own products and payment)"
   },
   "lostReasons": {
-    "title": "Lost reasons",
-    "hint": "Reasons offered when a customer is closed as lost. Changes save at once.",
+    "title": "Lead lost reasons",
+    "hint": "Reasons offered when a single lead is closed as lost. Changes save at once.",
     "empty": "No reasons yet. Add the first one below.",
     "loadFailed": "Could not load lost reasons",
     "retry": "Retry",

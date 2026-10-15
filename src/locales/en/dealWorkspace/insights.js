@@ -49,7 +49,7 @@ export default {
       "byStatus": "Leads by status",
       "bySource": "New leads by source",
       "byOwner": "Open leads by owner",
-      "lostReasons": "Lost reasons"
+      "lostReasons": "Lead lost reasons"
     },
     "series": {
       "created": "Added",

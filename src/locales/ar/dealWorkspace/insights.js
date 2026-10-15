@@ -49,7 +49,7 @@ export default {
       "byStatus": "العملاء حسب الحالة",
       "bySource": "العملاء الجدد حسب المصدر",
       "byOwner": "العملاء المفتوحون حسب المسؤول",
-      "lostReasons": "أسباب الخسارة"
+      "lostReasons": "أسباب خسارة الليدز"
     },
     "series": {
       "created": "مضاف",

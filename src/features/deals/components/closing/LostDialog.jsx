@@ -70,6 +70,7 @@ export function LostDialog({ dealId, lead, open, onClose, onLost }) {
     >
       <div className="space-y-3">
         {serverError && <ModuleNotice tone="warning">{serverError}</ModuleNotice>}
+        <p className="rounded-md bg-[var(--surface-2)] px-3 py-2 text-xs leading-5 text-[var(--text-muted)]">{t('dealWorkspace.closing.lost.scopeNote')}</p>
         {reasonsQuery.isLoading && <Skeleton className="h-20 w-full" />}
 
         {!reasonsQuery.isLoading && defined && (
