@@ -117,5 +117,27 @@ export default {
       "addOns": "إضافات: {{count}}",
       "value": "القيمة: {{value}}"
     }
+  },
+  "interestView": {
+    "itemsCount": "{{count}} صنف",
+    "levels": {
+      "high": "اهتمام عالي",
+      "medium": "اهتمام متوسط",
+      "low": "اهتمام ضعيف"
+    },
+    "perPerson": "للفرد",
+    "productNumber": "صنف #{{id}}",
+    "main": "رئيسي",
+    "deal": "صفقة",
+    "lost": "خسارة",
+    "noType": "من غير نوع صنف",
+    "notInCatalog": "مش موجود في الكتالوج دلوقتي",
+    "noItems": "مفيش أصناف",
+    "sources": {
+      "manual": "يدوي",
+      "form": "فورم",
+      "ad": "إعلان",
+      "campaign": "حملة"
+    }
   }
 }

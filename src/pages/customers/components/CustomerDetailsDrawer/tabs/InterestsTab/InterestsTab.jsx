@@ -1,31 +1,11 @@
 import { useMemo, useState } from 'react'
-import { BadgeDollarSign, CalendarDays, Eye, ImageIcon, Package, Pencil, StickyNote } from 'lucide-react'
+import { Eye, ImageIcon, Pencil } from 'lucide-react'
 
 import { AppModal } from '../../../../../../shared/components/overlays/AppModal'
 import { buildCustomerAssetUrl } from '../../../customers-table/CustomerTableDetailsDialogs/CustomerTableDetailsDialogs'
-import { InterestFactsChips, LeadInterestDialog } from '../../../../../../features/leads'
+import { InterestCard, LeadInterestDialog, toInterestView, useInterestCatalogIndex } from '../../../../../../features/leads'
 import { EmptyPanel } from '../../CustomerDetailsTabPrimitives'
-import { fieldValue, formatDateTime12 } from '../../customerDetailsUtils'
 import { useTranslation } from 'react-i18next'
-import i18n from 'i18next'
-
-const INTEREST_LEVEL_META = {
-  high: { label: 'H', textKey: 'activities.priority.high', className: 'border-[#FCA5A5] bg-[#FEF2F2] text-[#B91C1C]' },
-  hight: { label: 'H', textKey: 'activities.priority.high', className: 'border-[#FCA5A5] bg-[#FEF2F2] text-[#B91C1C]' },
-  medium: { label: 'M', textKey: 'activities.priority.medium', className: 'border-[#FDE68A] bg-[#FFFBEB] text-[#92400E]' },
-  low: { label: 'L', textKey: 'activities.priority.low', className: 'border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]' },
-}
-
-function getInterestMeta(value = '') {
-  const key = String(value || '').trim().toLowerCase()
-  const meta = INTEREST_LEVEL_META[key]
-  if (meta) return { ...meta, text: i18n.t(meta.textKey) }
-  return {
-    label: key ? key.slice(0, 1).toUpperCase() : '-',
-    text: value || i18n.t('customers.activityTimeline.levels.unspecified'),
-    className: 'border-[#E2E8F0] bg-white text-[#475569]',
-  }
-}
 
 function getLead(customer) {
   return customer?.lead || {}
@@ -192,6 +172,7 @@ export function InterestsTab({ customer, layoutMode = 'compact' }) {
   const [selectedInterest, setSelectedInterest] = useState(null)
   const [editingInterest, setEditingInterest] = useState(null)
   const interesteds = useMemo(() => getInteresteds(customer), [customer])
+  const { index: catalogIndex } = useInterestCatalogIndex()
   const isWide = layoutMode === 'wide'
 
   if (!interesteds.length) {
@@ -209,93 +190,21 @@ export function InterestsTab({ customer, layoutMode = 'compact' }) {
         <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
           <h3 className="text-base font-black text-[var(--text)]">{t('customers.interestsTab.title')}</h3>
           <span className="rounded-full border border-[#BEEFF2] bg-[#E8F9FA] px-2.5 py-1 text-xs font-black text-[#007A80]">
-            {t('customers.interestsTab.productsCount', { count: interesteds.length })}
+            {t('leads.interestView.itemsCount', { count: interesteds.length })}
           </span>
         </div>
 
         <div className={isWide ? 'grid min-w-0 grid-cols-2 gap-3' : 'space-y-3'}>
-          {interesteds.map((interest) => {
-            const product = interest?.product || interest?.products || {}
-            const imageUrl = buildCustomerAssetUrl(product?.image)
-            const levelMeta = getInterestMeta(interest?.interest_level)
-            const productDataItems = parseProductData(product?.data)
-            const title = [
-              product?.name,
-              product?.price ? `price: ${product.price}` : '',
-              interest?.notes,
-              interest?.interest_level,
-            ].filter(Boolean).join(' | ')
-
-            return (
-              <article
-                key={interest?.id || `${interest?.lead_id}-${interest?.product_id}`}
-                className="min-w-0 rounded-xl border border-[#D7EEF0] bg-white p-3 shadow-sm"
-                title={title}
-              >
-                <div className="flex min-w-0 gap-3">
-                  <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-[#E5F7F8] bg-[#F8FEFF]">
-                    {imageUrl ? (
-                      <img src={imageUrl} alt={product?.name || 'Product'} className="h-full w-full object-cover" loading="lazy" />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-[#007A80]">
-                        <Package size={24} />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-                      <span className="min-w-0 flex-1 break-words text-sm font-black text-[var(--text)]">
-                        {fieldValue(product?.name, `Product ${interest?.product_id || ''}`)}
-                      </span>
-                      {product?.price ? (
-                        <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-2 py-0.5 text-[10px] font-black text-[#166534]">
-                          <BadgeDollarSign size={12} />
-                          {product.price}
-                        </span>
-                      ) : null}
-                      <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-black ${levelMeta.className}`} title={levelMeta.text}>
-                        {levelMeta.label}
-                      </span>
-                    </div>
-
-                    {interest?.notes || (product?.description || product?.desc) ? (
-                      <div className="mt-2 flex min-w-0 items-start gap-1.5 rounded-lg bg-[#F8FEFF] px-2 py-1.5 text-xs font-semibold text-[var(--text-muted)]">
-                        <StickyNote size={13} className="mt-0.5 shrink-0 text-[#007A80]" />
-                        <span className="min-w-0 break-words">{interest?.notes || (product?.description || product?.desc)}</span>
-                      </div>
-                    ) : null}
-
-                    <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[10px] font-bold text-[var(--text-muted)]">
-                      {interest?.created_at ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-[#F8FEFF] px-2 py-1">
-                          <CalendarDays size={12} />
-                          {formatDateTime12(interest.created_at)}
-                        </span>
-                      ) : null}
-                      {interest?.is_deal ? (
-                        <span className="rounded-full bg-[#DCFCE7] px-2 py-1 text-[#166534]">{t('customers.interestsTab.deal')}</span>
-                      ) : null}
-                      {interest?.is_lost ? (
-                        <span className="rounded-full bg-[#FEE2E2] px-2 py-1 text-[#B91C1C]">{t('customers.interestsTab.lost')}</span>
-                      ) : null}
-                    </div>
-
-                    <InterestFactsChips interest={interest} />
-
-                    {productDataItems.length ? (
-                      <div className="mt-2">
-                        <ProductDataChips items={productDataItems.slice(0, 1)} />
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-
-                <div className="mt-3 flex justify-end gap-1.5">
+          {interesteds.map((interest) => (
+            <InterestCard
+              key={interest?.id || `${interest?.lead_id}-${interest?.product_id}`}
+              view={toInterestView(interest, catalogIndex)}
+              actions={(
+                <>
                   <button
                     type="button"
                     onClick={() => setEditingInterest(interest)}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[#BEEFF2] bg-white px-2.5 text-xs font-black text-[#007A80] transition-colors hover:bg-[#E8F9FA]"
+                    className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2.5 text-xs font-bold text-[#007A80] transition-colors hover:bg-[var(--surface-2)]"
                   >
                     <Pencil size={14} />
                     {t('customers.interestsTab.edit')}
@@ -303,15 +212,15 @@ export function InterestsTab({ customer, layoutMode = 'compact' }) {
                   <button
                     type="button"
                     onClick={() => setSelectedInterest(interest)}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] px-2.5 text-xs font-black text-[#007A80] transition-colors hover:bg-[#E8F9FA]"
+                    className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2.5 text-xs font-bold text-[#007A80] transition-colors hover:bg-[var(--surface-2)]"
                   >
                     <Eye size={14} />
                     {t('customers.interestsTab.view')}
                   </button>
-                </div>
-              </article>
-            )
-          })}
+                </>
+              )}
+            />
+          ))}
         </div>
       </div>
 

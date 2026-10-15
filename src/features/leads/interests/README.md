@@ -1,16 +1,17 @@
 # features/leads/interests — اهتمامات العميل على الكتالوج الجديد
 
-> **Documentation update:** 2026-10-15 15:30 (Africa/Cairo) — الفولدر اتعمل: نافذة إضافة/تعديل الاهتمام اتبنت من جديد على
+> **Documentation update:** 2026-10-15 16:10 (Africa/Cairo) — عرض الاهتمام الموحد (§2.1) في التبويب والخط الزمني وعمود الجدول ونافذة المقارنة.
+> 2026-10-15 15:30 (Africa/Cairo) — الفولدر اتعمل: نافذة إضافة/تعديل الاهتمام اتبنت من جديد على
 > هيكل المنتجات والخدمات الجديد (النوع، نوع الصنف، القدرات، الوحدات، الحاجات المرفقة، القطع)، وبدّلت `InterestFormDialog` القديمة.
 
 | | |
 |---|---|
 | **بيتفتح من** | درج العميل في مركز العملاء: زرار "إضافة اهتمام" (`quick-actions/interests/AddInterestQuickAction.jsx`) و"تعديل" في تبويب الاهتمامات (`tabs/InterestsTab`) |
-| **الواجهة العامة** | `index.js` (ومنه `features/leads/index.js`): `LeadInterestDialog`, `InterestFactsChips`, والدوال الصافية |
+| **الواجهة العامة** | `index.js` (ومنه `features/leads/index.js`): `LeadInterestDialog`, `InterestCard`, `InterestLevelBadge`, `useInterestCatalogIndex`, `toInterestView`، والدوال الصافية |
 | **الـ API** | نفس الطلبات القديمة: `POST /api/tenant/interesteds/save` و`/edite` (`interestedsApi`) — **مفيش endpoint جديد** |
 | **الكتالوج** | من `features/products` (الواجهة العامة بس): `useCatalogProducts`, `useItemTypes`, `useProductUnits`, `useProductRelations`, `useProductInstances` |
 | **الترجمة** | `leads.interestDialog.*` في `src/locales/{ar,en}/leads.js` |
-| **الاختبارات** | `utils/interests.test.js` (المنطق) + `LeadInterestDialog.test.jsx` (النافذة على كتالوج وهمي) |
+| **الاختبارات** | `utils/interests.test.js` و`utils/interestView.test.js` (المنطق) + `LeadInterestDialog.test.jsx` (النافذة على كتالوج وهمي) |
 
 ---
 
@@ -69,7 +70,25 @@
 ```
 التعديل: نفس الشكل + `id` فوق وجوه العنصر (زي القديم).
 **لحد ما السيرفر يخزن الحقول دي** ([BACKEND-REQUESTS §E1](../../../../docs/backend/BACKEND-REQUESTS.md)) اللي بيتحفظ هو
-الصنف والدرجة والملاحظة بس. `InterestFactsChips` في تبويب الاهتمامات بيعرضها أول ما ترجع، ومش بيعرض حاجة قبل كده.
+الصنف والدرجة والملاحظة بس. كارت الاهتمام (§2.1) بيعرضها أول ما ترجع، ومش بيعرض حاجة قبل كده.
+
+### 2.1 عرض الاهتمام في كل مكان (2026-10-15 16:10 (Africa/Cairo))
+
+نموذج عرض واحد (`utils/interestView.js` → `toInterestView(source, index)`) وكارت واحد (`components/InterestCard.jsx`) في:
+
+| المكان | الملف | الشكل |
+|---|---|---|
+| تبويب الاهتمامات في الدرج | `pages/customers/.../tabs/InterestsTab/InterestsTab.jsx` | `full` + أزرار تعديل / عرض |
+| الخط الزمني ("المنتجات المهتم بها") | `.../CustomerActivityTimeline/renderers/InterestedProductsActivity.jsx` | `compact` لكل صنف |
+| عمود "المنتجات والاهتمامات" في الجدول | `.../customers-table/CustomerProductsCell.jsx` | `compact` لآخر اهتمام + "+N" + عرض |
+| نافذة "المنتجات والاهتمامات" | `.../CustomerProductsDialog/` (`InterestedProductsPanel`, `AvailableProductsPanel`, `productsDialogItems.js`, `KindCounts`) | `full`؛ التبويبات بقت بالـ `kind` (منتجات/خدمات/خطط/باقات) بدل نوع الفئة |
+
+- `toInterestView` بيقرا كل أشكال الاهتمام (صف `lead.interesteds`، الـ "linked product" بتاع الجدول، عنصر السجل) وبيكمّل
+  الصنف من الكتالوج (`useInterestCatalogIndex`: طلب واحد مشترك): الاسم، النوع، نوع الصنف · الفئة، الصورة، السعر
+  (`/ شهر` للخطط، `للفرد` للخدمات بالأفراد)، والقدرات. فعنصر السجل اللي فيه `product_id` بس بقى بيظهر باسمه بدل "منتج #1".
+- الكارت بيعرض: النوع، الدرجة بكلمة ("اهتمام عالي" مش "H")، صفقة / خسارة، المصدر (يدوي/فورم/إعلان/حملة)، التاريخ،
+  الملاحظة، تفاصيل الاهتمام (كمية، وحدات، تاريخ، أفراد، إضافات، قيمة)، والقدرات. اتشالت منه بيانات `data` الخام.
+- "التفاصيل" في النافذة لسه بتفتح `ProductInfoDialog` القديم (بيانات المنتج الكاملة والعملاء المهتمين).
 
 ---
 
@@ -80,17 +99,20 @@ interests/
 ├── index.js · README.md
 ├── LeadInterestDialog.jsx         النافذة: الخطوتين، الدرجة، الملاحظة، القيمة، الحفظ
 ├── hooks/useLeadInterestForm.js   الكتالوج، الصنف ونوعه وملفه، الوحدات/المرفقات/القطع، القيمة، الحفظ
+├── hooks/useInterestCatalogIndex.js  فهرس الكتالوج المشترك للعرض
 ├── components/
+│   ├── InterestCard.jsx           كارت العرض الموحد (full / compact) + InterestLevelBadge
 │   ├── InterestProductPicker.jsx  الخطوة 1
 │   ├── SelectedProductCard.jsx    كارت الصنف المختار
 │   ├── InterestDetailsFields.jsx  الوحدة/الكمية/الأفراد/التاريخ (+ القطع)
 │   ├── InterestUnitsPicker.jsx    الوحدات الفريدة بحالتها
 │   ├── InterestRelationsField.jsx المرفقات والإضافات
 │   ├── InterestEstimate.jsx       القيمة المتوقعة
-│   └── InterestFactsChips.jsx     تفاصيل الاهتمام المحفوظ في التبويب
 └── utils/
     ├── interestProfile.js         القدرات ← الحقول (صافي)
     ├── interestForm.js            الفورم ⇄ الطلب، التحقق، القيمة (صافي)
+    ├── interestView.js            أي شكل اهتمام + الكتالوج ← نموذج العرض (صافي)
+    ├── interestView.test.js
     └── interests.test.js
 ```
 
@@ -102,5 +124,5 @@ interests/
 ## 5. حاجات ناقصة
 - الحقول الجديدة مش بتتخزن لحد §E1. حجز الوحدة فعلياً (Hold) مستني D8؛ هنا الاختيار "مهتم بيها" بس.
 - السيريال مش بيتختار في الاهتمام (مكانه البيع/التسليم).
-- باقي أماكن مركز العملاء اللي بتختار منتج (ملاحظة المتابعة، نافذة منتجات العميل، عروض الأسعار) لسه على `useProducts` القديم.
+- ملاحظة المتابعة وعروض الأسعار لسه بيختاروا المنتج من `useProducts` القديم، و`ProductInfoDialog` لسه بالشكل القديم.
 - اتجربت بالعين على كتالوج وهمي (عربي/إنجليزي، فاتح/غامق)، مش على سيرفر حقيقي.

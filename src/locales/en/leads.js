@@ -117,5 +117,27 @@ export default {
       "addOns": "Add-ons: {{count}}",
       "value": "Value: {{value}}"
     }
+  },
+  "interestView": {
+    "itemsCount": "{{count}} items",
+    "levels": {
+      "high": "High interest",
+      "medium": "Medium interest",
+      "low": "Low interest"
+    },
+    "perPerson": "per person",
+    "productNumber": "Item #{{id}}",
+    "main": "Main",
+    "deal": "Deal",
+    "lost": "Lost",
+    "noType": "No item type",
+    "notInCatalog": "Not in the catalog now",
+    "noItems": "No items",
+    "sources": {
+      "manual": "Manual",
+      "form": "Form",
+      "ad": "Ad",
+      "campaign": "Campaign"
+    }
   }
 }

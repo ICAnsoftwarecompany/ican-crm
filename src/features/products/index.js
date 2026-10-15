@@ -20,6 +20,7 @@ export { flattenCatalog } from './reports/productsReportModel'
 export { getProductKind, normalizeCatalogProduct, normalizeItemType, flattenCatalogResponse, instanceLabel } from './utils/catalogNormalize'
 // Small catalog UI reused by the Leads Center interest dialog (2026-10-15).
 export { AvailabilityBadge, CapabilityChips, KindBadge, useNumberFormat } from './components/common/catalogUi'
+export { ProductImage } from './components/common/ProductImage'
 export {
   countActiveCategoriesTree,
   countCategoriesTree,

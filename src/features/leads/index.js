@@ -21,5 +21,5 @@ export {
   resolveCloseMode,
   validateCloseForm,
 } from './close/leadClose'
-// Interests on the new catalog (2026-10-15): add / edit dialog and saved-interest chips.
-export { LeadInterestDialog, InterestFactsChips } from './interests'
+// Interests on the new catalog (2026-10-15): add / edit dialog and the shared interest card.
+export { InterestCard, InterestLevelBadge, LeadInterestDialog, toInterestView, useInterestCatalogIndex } from './interests'

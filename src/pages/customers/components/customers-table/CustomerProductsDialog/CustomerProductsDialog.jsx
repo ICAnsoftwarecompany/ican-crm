@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { AppModal } from '../../../../../shared/components/overlays/AppModal'
-import { useProducts } from '../../../../../features/products/hooks/useProducts'
+import { toInterestView, useInterestCatalogIndex } from '../../../../../features/leads'
 import { AvailableProductsPanel } from './AvailableProductsPanel'
 import { InterestedProductsPanel } from './InterestedProductsPanel'
 import { LeadSummaryRow } from './LeadSummaryRow'
@@ -12,12 +12,13 @@ export function CustomerProductsDialog({ row, products = [], customerRows = [], 
   const { t } = useTranslation()
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [dualViewEnabled, setDualViewEnabled] = useState(false)
-  const productsQuery = useProducts()
-  const allProducts = Array.isArray(productsQuery.data) ? productsQuery.data : []
-  const { interested, available } = useMemo(
-    () => splitProductsByInterest(allProducts, products),
-    [allProducts, products]
-  )
+  // Catalog-aware since 2026-10-15: items carry the legacy product (for ProductInfoDialog) and the display view.
+  const catalog = useInterestCatalogIndex()
+  const { interested, available } = useMemo(() => {
+    const split = splitProductsByInterest(catalog.products.map((product) => product.raw), products)
+    const toItem = (product) => ({ product, view: toInterestView(product, catalog.index) })
+    return { interested: split.interested.map(toItem), available: split.available.map(toItem) }
+  }, [catalog.index, catalog.products, products])
 
   return (
     <AppModal
@@ -45,12 +46,12 @@ export function CustomerProductsDialog({ row, products = [], customerRows = [], 
           <div className={`grid min-h-0 min-w-0 gap-3 ${
             dualViewEnabled && selectedProduct ? 'lg:grid-cols-1' : 'contents'
           }`}>
-            <InterestedProductsPanel products={interested} onOpenProductInfo={setSelectedProduct} />
+            <InterestedProductsPanel items={interested} onOpenProductInfo={setSelectedProduct} />
             <AvailableProductsPanel
-              products={available}
-              isLoading={productsQuery.isLoading}
-              isError={productsQuery.isError}
-              onRetry={() => productsQuery.refetch?.()}
+              items={available}
+              isLoading={catalog.isLoading}
+              isError={Boolean(catalog.error)}
+              onRetry={() => catalog.refetch?.()}
               onOpenProductInfo={setSelectedProduct}
             />
           </div>
