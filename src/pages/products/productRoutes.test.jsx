@@ -286,6 +286,9 @@ describe('products area', () => {
     expect((await screen.findAllByText('productOverview.title')).length).toBeGreaterThan(0)
     expect(await screen.findByText('productOverview.alerts.noTypes.service')).toBeTruthy()
     expect(screen.queryByText('productOverview.alerts.noTypes.product')).toBeNull()
+    // The fake category tree has product categories only.
+    expect(screen.getByText('productOverview.alerts.noCategories.service')).toBeTruthy()
+    expect(screen.queryByText('productOverview.alerts.noCategories.product')).toBeNull()
     expect(screen.getByText('productOverview.section.title.product')).toBeTruthy()
   })
 
@@ -348,5 +351,15 @@ describe('products area', () => {
     expect((await screen.findAllByText('catalog.create.title.plan')).length).toBeGreaterThan(0)
     expect(screen.queryByText('catalog.create.steps.stock.title')).toBeNull()
     expect(screen.queryByText('catalog.create.steps.instances.title')).toBeNull()
+  })
+
+  it('explains on the services list that there are no service categories yet', async () => {
+    renderAt('/products/services')
+    expect(await screen.findByText('catalog.categoryNotice.title.service')).toBeTruthy()
+    cleanup()
+    renderAt('/products')
+    expect((await screen.findAllByText('catalog.list.products.title')).length).toBeGreaterThan(0)
+    await waitFor(() => expect(get.mock.calls.some(([url]) => url.endsWith('/category/data'))).toBe(true))
+    expect(screen.queryByText('catalog.categoryNotice.title.product')).toBeNull()
   })
 })

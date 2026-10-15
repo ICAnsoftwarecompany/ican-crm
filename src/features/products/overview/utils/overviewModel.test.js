@@ -8,7 +8,7 @@ const products = [
   { id: 4, name: 'Install', kind: 'service', price: 30, status: true, categoryId: 9, itemTypeId: null },
 ]
 const itemTypes = [{ id: 4, name: 'Appliances', kind: 'product', status: true }]
-const categories = [{ id: 2, _pathLabel: 'Electronics / Cooling' }, { id: 9, _pathLabel: 'Services' }]
+const categories = [{ id: 2, type: 'product', _pathLabel: 'Electronics / Cooling' }, { id: 9, type: 'product', _pathLabel: 'Services' }]
 
 describe('buildProductsOverview', () => {
   const overview = buildProductsOverview({ products, itemTypes, categories })
@@ -26,7 +26,7 @@ describe('buildProductsOverview', () => {
   })
 
   it('flags missing item types and counts incomplete items', () => {
-    expect(overview.alerts).toEqual({ noProductTypes: false, noServiceTypes: true })
+    expect(overview.alerts).toEqual({ noProductTypes: false, noServiceTypes: true, noProductCategories: false, noServiceCategories: true })
     expect(overview.product.incomplete).toBe(1)
     expect(overview.product.completenessLevels.find((row) => row.key === 'complete').value).toBe(1)
   })

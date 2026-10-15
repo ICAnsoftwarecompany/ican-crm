@@ -1,6 +1,7 @@
 # features/products/overview — نظرة عامة على المنتجات والخدمات
 
-> **Documentation update:** 2026-10-15 13:43 (Africa/Cairo) — قسم المنتجات بقى `product` بس، وقسم الخدمات بقى فيه الخدمات والخطط والباقات (زي القائمة الجانبية).
+> **Documentation update:** 2026-10-15 15:00 (Africa/Cairo) — تنبيه "مفيش تصنيفات" للمنتجات والخدمات، زي تنبيه الأنواع.
+> 2026-10-15 13:43 (Africa/Cairo) — قسم المنتجات بقى `product` بس، وقسم الخدمات بقى فيه الخدمات والخطط والباقات (زي القائمة الجانبية).
 > 2026-10-15 00:56 (Africa/Cairo) — الفولدر اتعمل مع صفحة النظرة العامة، والملف ده اتكتب.
 
 | | |
@@ -94,7 +95,7 @@ overview/
   product: { count, active, listValue, stockValue, averagePrice, averageCompleteness, incomplete,
              withoutType, withoutCategory, itemTypes, topCategories, topItemTypes, completenessLevels },
   service: { ...نفس الحقول },
-  alerts:  { noProductTypes, noServiceTypes },
+  alerts:  { noProductTypes, noServiceTypes, noProductCategories, noServiceCategories },
 }
 ```
 

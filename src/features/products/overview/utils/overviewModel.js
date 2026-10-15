@@ -6,6 +6,7 @@
  */
 import { countBy } from '../../../../shared/components/reports'
 import { productCompleteness } from '../../product-details/utils/productCompleteness'
+import { countCategoriesByType } from '../../utils/categoryCounts'
 
 const toNumber = (value) => (Number.isFinite(Number(value)) ? Number(value) : 0)
 
@@ -41,6 +42,7 @@ export function buildProductsOverview({ products = [], itemTypes = [], categorie
   const goods = products.filter((item) => item.kind === 'product')
   const product = summarize(goods, { categoryNames, itemTypeNames })
   const service = summarize(services, { categoryNames, itemTypeNames })
+  const categoryCounts = countCategoriesByType(categories)
   const activeTypes = (kind) => itemTypes.filter((itemType) => itemType.status && (kind === 'product' ? itemType.kind === 'product' : itemType.kind !== 'product')).length
   return {
     total: { count: products.length, listValue: product.listValue + service.listValue, stockValue: product.stockValue },
@@ -49,6 +51,9 @@ export function buildProductsOverview({ products = [], itemTypes = [], categorie
     alerts: {
       noProductTypes: activeTypes('product') === 0,
       noServiceTypes: activeTypes('service') === 0,
+      // 2026-10-15: same warning when there is no category yet (categories are flattened, typed product / service).
+      noProductCategories: categoryCounts.product === 0,
+      noServiceCategories: categoryCounts.service === 0,
     },
   }
 }

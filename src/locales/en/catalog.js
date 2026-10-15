@@ -18,6 +18,15 @@ export default {
     plan: 'plan',
     bundle: 'bundle',
   },
+  categoryNotice: {
+    title: { product: 'No product categories yet', service: 'No service categories yet' },
+    text: {
+      product: 'Categories group your products (e.g. Electronics › Air conditioners) in lists, filters, proposals and reports. Add them before or while registering products.',
+      service: 'Categories group your services (e.g. Maintenance › Air conditioners) in lists, filters, proposals and reports. Add them before or while registering services.',
+    },
+    action: { product: 'Go to product categories', service: 'Go to service categories' },
+    dismiss: 'Hide this notice',
+  },
   common: {
     active: 'Active',
     inactive: 'Inactive',

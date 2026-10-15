@@ -14,6 +14,7 @@ import { flattenCategoryTree, getCategoryLabel } from '../../utils/categoryTree'
 import { CatalogSetupGuide } from '../../item-type-wizard'
 import { ProductQuickDrawer } from '../../product-details/ProductQuickDrawer'
 import { productCompleteness } from '../../product-details/utils/productCompleteness'
+import { CategorySetupNotice } from '../common/CategorySetupNotice'
 import { useCapabilityName, useOptionLabel } from '../common/catalogUi'
 import { ProductFormDrawer } from './ProductFormDrawer'
 import { useProductColumns } from './useProductColumns'
@@ -114,6 +115,7 @@ export function CatalogProductsView({ kind: kindProp = 'product', itemTypeId = '
       </PageToolbar>
 
       {!itemTypeId && ['product', 'service'].includes(kind) && <CatalogSetupGuide kind={kind} />}
+      {!itemTypeId && ['product', 'service'].includes(kind) && <CategorySetupNotice kind={kind} />}
       {itemTypeId && !itemTypesQuery.isLoading && !scopeType && <p role="status" className="rounded-lg bg-[var(--surface-2)] p-3 text-sm text-[var(--text)]">{t('catalog.list.byType.notFound')}</p>}
 
       <DataTable

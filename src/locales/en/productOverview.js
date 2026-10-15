@@ -10,6 +10,11 @@ export default {
       product: 'There are no product item types yet, so products are added without capabilities, units or pieces.',
       service: 'There are no service types yet, so services are added without booking, visits or participants.',
     },
+    noCategories: {
+      product: 'There are no product categories yet, so products cannot be grouped or filtered by category.',
+      service: 'There are no service categories yet, so services cannot be grouped or filtered by category.',
+    },
+    addCategory: { product: 'Add a product category', service: 'Add a service category' },
     addType: { product: 'Add a product type', service: 'Add a service type' },
   },
   total: {
