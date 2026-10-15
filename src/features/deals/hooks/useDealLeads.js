@@ -88,7 +88,8 @@ export function useDealLeadMutations(dealId) {
         client.invalidateQueries({ queryKey: ['tasks'] })
       },
     }),
-    markLost: useMutation({ mutationFn: ({ dealLeadId, reason }) => dealLeadsApi.markLost(dealLeadId, { reason }), onSuccess: invalidate }),
+    // Body `{ reason, lost_reason_id? }` (utils/dealLostReason).
+    markLost: useMutation({ mutationFn: ({ dealLeadId, ...body }) => dealLeadsApi.markLost(dealLeadId, body), onSuccess: invalidate }),
     remove: useMutation({ mutationFn: (dealLeadId) => dealLeadsApi.remove(dealLeadId), onSuccess: invalidate }),
     reopen: useMutation({ mutationFn: (dealLeadId) => dealLeadsApi.reopen(dealLeadId), onSuccess: invalidate }),
   }

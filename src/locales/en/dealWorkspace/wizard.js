@@ -219,6 +219,10 @@ export default {
           "later": {
             "title": "Can I change them later?",
             "text": "Yes, from the deal settings, but changing stages that already hold leads needs care, so it is best to set them right now."
+          },
+          "lostReasons": {
+            "title": "Lost reasons",
+            "text": "Define the reasons your team picks when a lead is lost. They are company-wide and save at once; edit them later in the deal settings → Lost reasons."
           }
         },
         "example": "A villas deal: New lead → Site visit → Negotiation → Reservation → Won / Lost."

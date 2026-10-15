@@ -2,12 +2,13 @@
  * Pure model of one deal's Reports page (shared reports engine). Input: the deal's normalized leads
  * (features/deals/utils/dealLeads) and its normalized contracts. Created = `createdAt`, closed = `closedAt`.
  */
+import { lostReasonLabelKey } from '../utils/dealLostReason'
 import { buildDailySeries, countBy, filterByRange, filterPreviousRange, percentChange, percentOf } from '../../../shared/components/reports'
 
 const created = (lead) => lead.createdAt
 const closed = (lead) => lead.closedAt
 
-export function buildDealReport({ leads = [], contracts = [], stages = [], range, now = new Date() }) {
+export function buildDealReport({ leads = [], contracts = [], stages = [], range, now = new Date(), reasonNames = new Map() }) {
   const createdNow = filterByRange(leads, created, range, now)
   const createdBefore = filterPreviousRange(leads, created, range, now)
   const closedNow = filterByRange(leads.filter((lead) => lead.status !== 'open'), closed, range, now)
@@ -38,7 +39,7 @@ export function buildDealReport({ leads = [], contracts = [], stages = [], range
     stageIndex,
     bySource: countBy(createdNow, (lead) => lead.source),
     byOwner: countBy(leads.filter((lead) => lead.status === 'open'), (lead) => lead.ownerId),
-    lostReasons: countBy(lostNow, (lead) => lead.lostReason),
+    lostReasons: countBy(lostNow, (lead) => lostReasonLabelKey(lead, reasonNames)),
     byStatus: ['open', 'won', 'lost'].map((status) => ({ key: status, value: leads.filter((lead) => lead.status === status).length })),
   }
 }

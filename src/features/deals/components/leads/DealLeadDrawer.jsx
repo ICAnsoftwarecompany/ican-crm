@@ -59,7 +59,7 @@ export function DealLeadDrawer({ dealId, lead, stages, people, open, onClose, ac
           <InfoLine icon={Phone} ltr>{lead.phone}</InfoLine>
           <InfoLine icon={Mail} ltr>{lead.email}</InfoLine>
           {lead.estimatedValue > 0 && <p className="text-xs text-[var(--text-muted)]">{t('dealWorkspace.fields.estimatedValue')}: <strong dir="ltr" className="text-[var(--text)]">{formatMoney(lead.estimatedValue, i18n.language)}</strong></p>}
-          {lead.status === 'lost' && lead.lostReason && <p className="text-xs text-[var(--text-muted)]">{t('dealWorkspace.closing.lost.reason')}: {t(`dealWorkspace.options.lostReason.${lead.lostReason}`, lead.lostReason)}</p>}
+          {lead.status === 'lost' && lead.lostReason && <p className="text-xs text-[var(--text-muted)]">{t('dealWorkspace.closing.lost.reason')}: {lead.lostReasonName || t(`dealWorkspace.options.lostReason.${lead.lostReason}`, lead.lostReason)}</p>}
         </section>
 
         <div className="grid gap-3 sm:grid-cols-2">

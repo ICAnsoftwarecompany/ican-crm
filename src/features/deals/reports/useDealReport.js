@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Banknote, CircleCheckBig, Percent, UserPlus } from 'lucide-react'
+import { useLostReasons } from '../../definitions'
 import { useUsers } from '../../users'
 import { useDealAnalytics } from '../hooks/useDealAnalytics'
 import { useDealAnalyticsView } from '../hooks/useDealAnalyticsView'
@@ -19,11 +20,13 @@ export function useDealReport(range) {
   const { dealId, leads, leadsQuery, stages, stageMap } = useDealWorkspace()
   const contractsQuery = useDealContracts({ deal_id: dealId })
   const usersQuery = useUsers()
+  const lostReasonsQuery = useLostReasons()
   const analytics = useDealAnalytics(dealId)
   const analyticsView = useDealAnalyticsView(analytics)
 
   return useMemo(() => {
-    const report = buildDealReport({ leads, contracts: contractsQuery.contracts, stages, range })
+    const reasonNames = new Map((lostReasonsQuery.data || []).map((reason) => [String(reason.id), reason.name]))
+    const report = buildDealReport({ leads, contracts: contractsQuery.contracts, stages, range, reasonNames })
     const users = new Map((usersQuery.data || []).map((user) => [String(user.id), user.name || user.email || '']))
     const optionLabel = (group) => (key) => t(`dealWorkspace.options.${group}.${key}`, key)
 
@@ -71,5 +74,5 @@ export function useDealReport(range) {
         analytics.refetch()
       },
     }
-  }, [analytics, analyticsView, contractsQuery, i18n.language, leads, leadsQuery, range, stageMap, stages, t, usersQuery.data])
+  }, [analytics, analyticsView, lostReasonsQuery.data, contractsQuery, i18n.language, leads, leadsQuery, range, stageMap, stages, t, usersQuery.data])
 }

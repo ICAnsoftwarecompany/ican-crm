@@ -20,7 +20,8 @@ export const dealLeadsApi = {
   getProducts: async (dealLeadId, params) => (await httpClient.get(`${BASE_PATH}/leads/${dealLeadId}/productsc`, { params })).data,
   /** Won flow: items + payment terms → the created contract (one backend transaction). */
   markWon: async (dealLeadId, payload) => (await httpClient.post(`${BASE_PATH}/leads/${dealLeadId}/won`, payload)).data,
-  /** `{ reason }` — price | competitor | no_budget | no_response | not_interested | timing | other */
+  /** `{ reason, lost_reason_id? }` — reason: price | competitor | no_budget | no_response | not_interested | timing | other;
+   *  lost_reason_id: a company-defined reason (`/definitions/lost-reasons`). */
   markLost: async (dealLeadId, payload) => (await httpClient.post(`${BASE_PATH}/leads/${dealLeadId}/lost`, payload)).data,
 
   // Planned (docs/deals/DEALS-WORKSPACE-SPEC.md §9) — gated by DEAL_API_STATUS.

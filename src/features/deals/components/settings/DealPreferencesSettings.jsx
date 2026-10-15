@@ -4,7 +4,7 @@ import { useLocalStorage } from '../../../../shared/components/data-table/hooks/
 import { PlannedNotice } from '../common/PlannedNotice'
 import { FieldLabel, dealInputClass } from '../common/FieldLabel'
 
-const PLANNED = ['lostReasons', 'paymentDefaults', 'cardFields', 'notifications', 'stageRules']
+const PLANNED = ['paymentDefaults', 'cardFields', 'notifications', 'stageRules']
 
 /** Per-browser preferences (default pipeline view) + the workspace settings that need the backend. */
 export function DealPreferencesSettings() {

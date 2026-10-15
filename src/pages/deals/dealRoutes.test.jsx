@@ -47,6 +47,7 @@ const routes = [
   [/\/api\/tenant\/campaigns\/active$/, { data: [{ id: 1, name: 'Ramadan' }] }],
   [/\/api\/tenant\/campaigns\/inactive$/, { data: [{ id: 2, name: 'Old offer' }] }],
   [/\/api\/tenant\/customers\/data$/, { data: [{ id: 70, name: 'Mona', phone: '01200000001', lead: { id: 15, name: 'Mona', phone: '01200000001' } }] }],
+  [/\/api\/tenant\/definitions\/lost-reasons$/, { data: [] }],
   [/\/api\/tenant\/users\/get$/, { data: [{ id: 2, name: 'Karim' }, { id: 4, name: 'Nour' }] }],
   [/\/api\/pipeline-templates$/, { data: [{ id: 5, name: 'Sales Pipeline', type: 'sales', stages }] }],
 ]
@@ -168,7 +169,9 @@ describe('deals area', () => {
     fireEvent.click(await screen.findByText('Sara Hassan'))
     const lostButtons = await screen.findAllByText('dealWorkspace.leads.actions.lost')
     fireEvent.click(lostButtons[lostButtons.length - 1])
-    fireEvent.click(await screen.findByText('dealWorkspace.closing.lost.submit'))
+    // No company reasons defined → the fixed list (submit waits until the reasons answered).
+    expect(await screen.findByText('dealWorkspace.lostReasons.noneDefined')).toBeTruthy()
+    fireEvent.click(screen.getByText('dealWorkspace.closing.lost.submit'))
     await waitFor(() => expect(post).toHaveBeenCalledWith('/api/tenant/deals/leads/102/lost', { reason: 'price' }))
   })
 
@@ -331,5 +334,31 @@ describe('deals area', () => {
     expect(await screen.findByText('dealWorkspace.analytics.kpis.total')).toBeTruthy()
     fireEvent.click(screen.getByText('dealWorkspace.drawer.openPage'))
     await waitFor(() => expect(router.state.location.pathname).toBe('/deals/1'))
+  })
+  it('lost with a company-defined reason: required, sent as lost_reason_id + its fixed key', async () => {
+    const route = routes.find(([pattern]) => pattern.test('/api/tenant/definitions/lost-reasons'))
+    route[1] = { data: [{ id: 1, name: 'high cost', code: 'ADFCDD3', is_active: 1, sort_order: 1 }, { id: 2, name: 'Competitor', code: 'COMPETITOR', is_active: 1, sort_order: 2 }, { id: 3, name: 'Old', code: 'OLD', is_active: 0 }] }
+    try {
+      renderAt('/deals/1/pipeline')
+      fireEvent.click(await screen.findByText('Sara Hassan'))
+      const lostButtons = await screen.findAllByText('dealWorkspace.leads.actions.lost')
+      fireEvent.click(lostButtons[lostButtons.length - 1])
+      expect(await screen.findByRole('radio', { name: 'high cost' })).toBeTruthy()
+      expect(screen.queryByRole('radio', { name: 'Old' })).toBeNull()
+      fireEvent.click(screen.getByText('dealWorkspace.closing.lost.submit'))
+      expect(await screen.findByText('dealWorkspace.closing.lost.reasonRequired')).toBeTruthy()
+      expect(post.mock.calls.some(([url]) => url.endsWith('/lost'))).toBe(false)
+      fireEvent.click(screen.getByRole('radio', { name: 'Competitor' }))
+      fireEvent.click(screen.getByText('dealWorkspace.closing.lost.submit'))
+      await waitFor(() => expect(post).toHaveBeenCalledWith('/api/tenant/deals/leads/102/lost', { reason: 'competitor', lost_reason_id: 2 }))
+    } finally {
+      route[1] = { data: [] }
+    }
+  })
+
+  it('deal settings has a lost reasons section (company definitions)', async () => {
+    renderAt('/deals/1/settings?section=lostReasons')
+    expect((await screen.findAllByText('dealWorkspace.lostReasons.title')).length).toBeGreaterThan(0)
+    expect(await screen.findByText('dealWorkspace.lostReasons.sharedNote')).toBeTruthy()
   })
 })

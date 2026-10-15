@@ -6,7 +6,7 @@ import { Lightbulb } from 'lucide-react'
  * practical example. Keys: `dealWorkspace.wizard.guide.<step>.{title, points.<id>, example}` (ids in WIZARD_GUIDE).
  */
 export const WIZARD_GUIDE = {
-  pipeline: ['what', 'existing', 'new', 'wonLost', 'later'],
+  pipeline: ['what', 'existing', 'new', 'wonLost', 'lostReasons', 'later'],
   basics: ['what', 'type', 'period', 'targets', 'owner'],
   products: ['what', 'single', 'units', 'multi', 'later'],
   team: ['what', 'teams', 'users', 'roles', 'notify'],

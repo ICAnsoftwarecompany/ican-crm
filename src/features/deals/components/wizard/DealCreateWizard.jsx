@@ -9,6 +9,7 @@ import { useDealCreateWizard } from '../../hooks/useDealCreateWizard'
 import { WIZARD_STEPS, validateWizardStep } from '../../utils/dealWizard'
 import { BasicsStep } from './BasicsStep'
 import { LeadSourceStep } from './LeadSourceStep'
+import { DealLostReasonsSettings } from '../settings/DealLostReasonsSettings'
 import { PipelineStep } from './PipelineStep'
 import { ProductsStep } from './ProductsStep'
 import { ReviewStep } from './ReviewStep'
@@ -68,6 +69,8 @@ export function DealCreateWizard() {
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_19rem]">
         <fieldset disabled={locked && step !== 'review'} className="min-w-0">
           {step === 'pipeline' && <PipelineStep value={state.pipeline} onChange={(patch) => update('pipeline', patch)} errors={errors} />}
+          {/* Lost reasons are company definitions saved at once (not part of the deal requests). */}
+          {step === 'pipeline' && <div className="mt-4"><DealLostReasonsSettings compact /></div>}
           {step === 'basics' && <BasicsStep value={state.basics} onChange={(patch) => update('basics', patch)} errors={errors} />}
           {step === 'products' && <ProductsStep value={state.products} onChange={(patch) => update('products', patch)} />}
           {step === 'team' && <TeamStep value={state.team} ownerId={state.basics.owner_id} onChange={(patch) => update('team', patch)} errors={errors} />}

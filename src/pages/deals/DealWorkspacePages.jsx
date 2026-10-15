@@ -13,6 +13,7 @@ import {
   DealContractsTable,
   DealDangerZone,
   DealGeneralSettings,
+  DealLostReasonsSettings,
   DealOverview,
   DealPipelineView,
   DealPreferencesSettings,
@@ -128,6 +129,7 @@ export function DealSettingsPage() {
   const sections = [
     { id: 'general', label: t('dealWorkspace.settings.sections.general'), description: t('dealWorkspace.settings.sections.generalHint'), element: <DealGeneralSettings /> },
     { id: 'stages', label: t('dealWorkspace.settings.sections.stages'), description: t('dealWorkspace.settings.sections.stagesHint'), element: <DealStagesSettings /> },
+    { id: 'lostReasons', label: t('dealWorkspace.lostReasons.title'), description: t('dealWorkspace.lostReasons.sectionHint'), element: <DealLostReasonsSettings /> },
     { id: 'preferences', label: t('dealWorkspace.settings.sections.preferences'), description: t('dealWorkspace.settings.sections.preferencesHint'), element: <DealPreferencesSettings /> },
     // App-wide sections from the settings registry (identical to /settings).
     ...getSettingsSections(['deals.pipelines'], t),

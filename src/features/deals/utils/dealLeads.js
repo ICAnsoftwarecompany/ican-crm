@@ -28,7 +28,9 @@ export function normalizeDealLead(item = {}) {
     estimatedValue: Number(first(item.estimated_value, item.value, 0)) || 0,
     lastActivityAt: first(item.last_activity_at, item.updated_at, item.created_at, null),
     createdAt: first(item.created_at, null),
-    lostReason: first(item.lost_reason, ''),
+    lostReason: first(item.lost_reason, item.reason, ''),
+    lostReasonId: first(item.lost_reason_id, item.lostReason?.id, item.lost_reason_definition?.id, null),
+    lostReasonName: first(item.lost_reason_definition?.name, item.lostReason?.name, item.lost_reason_relation?.name, ''),
     closedAt: first(item.won_at, item.lost_at, item.closed_at, null),
   }
 }
