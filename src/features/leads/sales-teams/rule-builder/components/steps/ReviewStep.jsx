@@ -9,7 +9,7 @@ import { RuleSentence } from '../RuleSentence'
 export function ReviewStep({ builder, context }) {
   const { t } = useTranslation()
   const { form, goTo } = builder
-  const labels = useConditionLabels()
+  const labels = useConditionLabels(form)
   const any = t('salesTeams.rules.anyValue')
   const isUser = targetOf(form.assign_type) === 'user'
   const team = context.teamById.get(form.team_id)

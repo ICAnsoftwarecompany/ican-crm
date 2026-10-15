@@ -1,6 +1,7 @@
 # features/leads/sales-teams — فرق السيلز وتوزيع الليدز
 
-> **Documentation update:** 2026-10-16 00:10 (Africa/Cairo) — بقى قسم لوحده بسايد بار خاص (الفرق، قواعد التوزيع، قاعدة جديدة، التقارير)، وإضافة القاعدة بقت صفحة خطوات في [`rule-builder/`](rule-builder/README.md).
+> **Documentation update:** 2026-10-16 00:45 (Africa/Cairo) — شروط القاعدة من حملات / إعلانات / نماذج ميتا والـ CRM (`utils/ruleSources.js`)، وفريق سريع واختيار موظف في صفحة القاعدة.
+> 2026-10-16 00:10 (Africa/Cairo) — بقى قسم لوحده بسايد بار خاص (الفرق، قواعد التوزيع، قاعدة جديدة، التقارير)، وإضافة القاعدة بقت صفحة خطوات في [`rule-builder/`](rule-builder/README.md).
 > 2026-10-15 23:40 (Africa/Cairo) — الفولدر اتعمل.
 
 القسم اللي بيتعرف فيه **مين في فريق السيلز** و**الليد الجديد يروح لمين**. له **سايد بار خاص** (مش سايد بار مركز العملاء):
@@ -20,7 +21,7 @@
 | **صفحات الراوت** | `pages/sales-teams/` (`SalesTeamsLayout` + `salesTeamsNavigation.js` + `SalesTeamsPages.jsx`) — [README](../../../pages/sales-teams/README.md) |
 | **الواجهة العامة** | `index.js`: `TeamsView`، `RulesView`، `RuleBuilder`، `SalesTeamsReportView`، `SALES_TEAMS_ROUTES`، `newRuleForTeam`، `ASSIGN_TYPES`، `RULE_SOURCES`، `TEAM_TYPES`، `buildRulePayload`، `normalizeRule` (وكلهم من `features/leads`) |
 | **الترجمة** | موديول `salesTeams` في `locales/{ar,en}/salesTeams.js` |
-| **الاختبارات** | `utils/salesTeamsModel.test.js`، `rule-builder/utils/ruleBuilder.test.js`، `reports/salesTeamsReportModel.test.js` |
+| **الاختبارات** | `utils/salesTeamsModel.test.js`، `utils/ruleSources.test.js`، `rule-builder/utils/ruleBuilder.test.js`، `reports/salesTeamsReportModel.test.js` |
 
 ## الدوال المستخدمة
 
@@ -64,8 +65,8 @@
 
 **الشروط** (أي شرط فاضي = أي قيمة، ولو كلهم فاضيين القاعدة بتمسك كل الليدز):
 - `source`: فيسبوك، ماسنجر، واتساب، نموذج ليد، الموقع، جوجل، ترشيح، يدوي، أخرى (`RULE_SOURCES`). لو القاعدة المتخزنة فيها قيمة تانية بتفضل ظاهرة.
-- `campaign_id`, `ad_id`, `form_id`: من حملات وإعلانات ونماذج الـ CRM (`features/campaigns` → `useCampaignLists`، `useAdsLists`).
-  الإعلانات بتتفلتر على الحملة المختارة لو الإعلان فيه `campaign_id`، وتغيير الحملة بيفضّي الإعلان.
+- `campaign_id`, `ad_id`, `form_id`: من حملات ميتا (مركز الحملات) والـ CRM، وإعلانات الحملة المختارة من مجموعاتها الإعلانية، ونماذج الليد — التفاصيل في [rule-builder/README](rule-builder/README.md#مصادر-الحملات-والإعلانات-والنماذج-hooksuseruleconditionoptionsjs--utilsrulesourcesjs).
+  تغيير الحملة بيفضّي الإعلان.
   الكروت بتعرض الأسماء من نفس القوايم بدل `#id`.
 
 **طرق التوزيع (`assign_type`)**:
@@ -105,6 +106,7 @@ sales-teams/
 └── utils/
     ├── teamModel.js              قراءة الفريق بأي شكل، payloads، فرق الأعضاء، الفلاتر
     ├── ruleModel.js              قراءة القاعدة، payload، التحقق، الترتيب، التحذيرات
+    ├── ruleSources.js            دمج حملات / إعلانات / نماذج ميتا والـ CRM لخيارات الشروط (+ test)
     └── salesTeamsModel.test.js
 ```
 

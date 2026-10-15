@@ -138,3 +138,12 @@ export function filterTeamRows(rows = [], { search = '', type = 'all', status = 
     return [row.name, userLabel(row.leader), ...row.members.map(userLabel)].join(' ').toLowerCase().includes(query)
   })
 }
+
+/** Id of the team the create call returned, or the newest team with that name in the refreshed list. */
+export function findCreatedTeamId(response, teams = [], name = '') {
+  const direct = normalizeId(response?.data?.id ?? response?.data?.team?.id ?? response?.team?.id ?? response?.id)
+  if (direct) return direct
+  const matches = teams.filter((team) => String(team?.name || '').trim() === name.trim())
+  if (!matches.length) return ''
+  return normalizeId(matches.reduce((latest, team) => (Number(team.id) > Number(latest.id) ? team : latest)).id)
+}

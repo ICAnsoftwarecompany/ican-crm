@@ -8,7 +8,7 @@ import { ASSIGN_TYPE_ICONS } from '../../components/AssignTypePicker'
 /** The rule in words: "Leads from [source] [campaign] → [assign type] → [team / user]". */
 export function RuleSentence({ form, context }) {
   const { t } = useTranslation()
-  const labels = useConditionLabels()
+  const labels = useConditionLabels(form)
   const conditions = formConditions(form)
   const preview = targetPreview(form, context)
   const Icon = ASSIGN_TYPE_ICONS[form.assign_type]

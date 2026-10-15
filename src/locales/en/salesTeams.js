@@ -221,11 +221,11 @@ export default {
         "short": "Target leads",
         "title": "Which leads does the rule apply to?",
         "intro": "Set the conditions a lead must meet for the rule to catch it. Every condition narrows the leads further.",
-        "help": "An empty condition means \"any value\". With every condition empty the rule catches every new lead, which is useful as a low-priority catch-all.",
+        "help": "Campaigns, ads and lead forms come from Meta (Campaign Center) and the CRM. An empty condition means \"any value\"; with all of them empty the rule catches every new lead.",
         "tips": {
-          "tip1": "Source: the channel the lead came from (Facebook, WhatsApp...).",
-          "tip2": "Campaign, ad and form: only the leads of a specific ad or form.",
-          "tip3": "Picking a campaign narrows the ads to that campaign."
+          "tip1": "Pick the campaign first, then its ads appear from its ad sets.",
+          "tip2": "Each option shows its platform (Meta / CRM) and status (active / paused).",
+          "tip3": "If a campaign is missing, sync campaigns from the Campaign Center."
         },
         "example": "Source = Facebook and campaign = Ramadan → only Ramadan campaign leads from Facebook."
       },
@@ -245,10 +245,10 @@ export default {
         "short": "Receiver",
         "title": "Who receives the leads?",
         "intro": "Choose the team (or the user when the type is \"To a specific user\"). Below you see exactly who gets them.",
-        "help": "The team must be active and have members (or a leader for \"To the team leader\"), otherwise leads reach nobody. Warnings show up here.",
+        "help": "Pick an existing team, make a \"quick team\" from the users without leaving the page, or pick one user from all users.",
         "tips": {
-          "tip1": "If the team does not exist, create it on the Teams page first.",
-          "tip2": "Team members are edited on the Teams page, not here.",
+          "tip1": "The quick team uses the same create-team call and is selected for the rule at once.",
+          "tip2": "The team must be active with members (or a leader for \"To the team leader\").",
           "tip3": "The preview is illustrative; the actual distribution runs on the server."
         }
       },
@@ -289,7 +289,7 @@ export default {
     "conditions": {
       "hints": {
         "source": "The channel the lead came from.",
-        "campaign_id": "A specific CRM ad campaign.",
+        "campaign_id": "A specific campaign from Meta (Campaign Center) or the CRM, with its page and status.",
         "ad_id": "A specific ad (narrowed to the chosen campaign).",
         "form_id": "A specific lead form."
       },
@@ -309,10 +309,23 @@ export default {
       "nextUser": "Next step: choose the user."
     },
     "target": {
-      "noTeams": "No teams yet. Create a team on the Teams page first.",
       "nextLeads": "Preview: the next leads go to",
+      "allLeadsTo": "Every lead goes to",
       "leadNumber": "Lead {{number}}",
-      "sharedNote": "The lead becomes available to every team member; whoever picks it up follows it."
+      "sharedNote": "The lead becomes available to every team member; whoever picks it up follows it.",
+      "modeLabel": "Receiver is a team or a user",
+      "modes": {
+        "team": {
+          "label": "A team",
+          "hint": "Leads go to a team (round robin, whole team, or the leader). You can make a quick team from the users."
+        },
+        "user": {
+          "label": "One user",
+          "hint": "All these leads go straight to one user you pick from all users."
+        }
+      },
+      "methodNow": "Assign type: {{type}}.",
+      "changeMethod": "Change"
     },
     "priority": {
       "useSuggested": "Use suggested priority ({{value}})",
@@ -357,5 +370,40 @@ export default {
       "rules": "Rules",
       "teams": "Teams"
     }
+  },
+  "picker": {
+    "search": "Search by name or page",
+    "selected": "Selected: {{name}}",
+    "anyHint": "No restriction",
+    "notListed": "Not in the list",
+    "loadFailed": "Could not load the list",
+    "noCampaigns": "No campaigns. Connect a Meta account and sync campaigns from the Campaign Center.",
+    "noAds": "No ads. Choose a campaign to see its Meta ads.",
+    "noAdsForCampaign": "No ads for this campaign.",
+    "noForms": "No lead forms.",
+    "adsOfCampaign": "Ads of the chosen campaign from {{count}} ad sets, plus the CRM ads linked to it.",
+    "metaUnavailable": "Meta campaigns are not available right now (no connected account or an error), so only CRM campaigns are listed.",
+    "platform": {
+      "meta": "Meta",
+      "crm": "CRM"
+    },
+    "status": {
+      "active": "Active",
+      "paused": "Paused",
+      "archived": "Archived",
+      "other": "Other status"
+    }
+  },
+  "quickTeam": {
+    "open": "Quick team",
+    "title": "New quick team",
+    "description": "Pick the users who will receive these leads and make them a team right here. Once created, the team is selected for the rule.",
+    "defaultName": "{{rule}} team",
+    "create": "Create and select team",
+    "cancel": "Cancel",
+    "noTeams": "No teams yet. Make a quick team from the users."
+  },
+  "userChooser": {
+    "noTeam": "No team"
   }
 }

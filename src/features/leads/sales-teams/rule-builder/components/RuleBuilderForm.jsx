@@ -20,7 +20,7 @@ export function RuleBuilderForm({ data, rule, initialForm, onDone }) {
   const { t } = useTranslation()
   const builder = useRuleBuilder({ initialForm, ruleId: rule?.id, onSaved: onDone })
   const Step = STEP_COMPONENTS[builder.step]
-  const context = { teams: data.teams, users: data.users, teamById: data.teamById, userById: data.userById, rules: data.rules, editingId: rule?.id || '' }
+  const context = { teams: data.teams, users: data.users, usersLoading: data.usersQuery.isLoading, teamById: data.teamById, userById: data.userById, rules: data.rules, editingId: rule?.id || '' }
 
   return (
     <div className="space-y-4">
