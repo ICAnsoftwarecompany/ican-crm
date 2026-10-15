@@ -105,5 +105,24 @@ export function suggestPriority(rules = [], form, editingId = '') {
   return Number.isFinite(current) && String(form.priority).trim() !== '' && current > highest ? null : highest + 1
 }
 
+/**
+ * Every existing rule (active and inactive) by priority, higher first, with this rule inserted where its priority
+ * puts it (after existing rules of the same priority). Used by the priority step to show the previous rules and
+ * their priorities so the user can pick where the new rule goes.
+ */
+export function priorityLadder(rules = [], form, editingId = '') {
+  const others = sortRules(rules.filter((rule) => rule.id !== editingId))
+  const draft = { ...normalizeRule({ ...form, id: DRAFT_ID }), isDraft: true }
+  const valid = String(form.priority).trim() !== '' && Number.isInteger(Number(form.priority))
+  if (!valid) return { rows: others, position: -1 }
+  const index = others.findIndex((rule) => rule.priority < draft.priority)
+  const position = index === -1 ? others.length : index
+  return { rows: [...others.slice(0, position), draft, ...others.slice(position)], position }
+}
+
+/** Priority that puts this rule right above / below `rule` (never below 0). */
+export const priorityAbove = (rule) => rule.priority + 1
+export const priorityBelow = (rule) => Math.max(0, rule.priority - 1)
+
 /** Conditions of the form in display order (same shape as `ruleConditions`). */
 export const formConditions = (form) => ruleConditions(form)

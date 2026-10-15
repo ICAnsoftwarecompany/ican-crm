@@ -2,14 +2,13 @@ import { useTranslation } from 'react-i18next'
 import { AlertTriangle, Wand2 } from 'lucide-react'
 import { Input } from '../../../../../../shared/components/ui/Input'
 import { Button } from '../../../../../../shared/components/ui/Button'
-import { cn } from '../../../../../../shared/utils/cn'
 import { placeRule, suggestPriority } from '../../utils/ruleBuilder'
-
-const VISIBLE_AROUND = 3
+import { PriorityLadder } from '../PriorityLadder'
 
 /**
- * Step 5: priority and activation. Shows where the rule lands among the active rules and warns when a rule above
- * already catches the same leads (first match wins — to confirm with the backend), or has the same conditions.
+ * Step 5: priority and activation. Lists every existing rule with its priority (PriorityLadder) with this rule placed
+ * live, lets the user put it right above / below any of them, and warns when an active rule above already catches
+ * the same leads (first match wins — to confirm with the backend), has the same conditions, or the same priority.
  */
 export function PriorityStep({ builder, context }) {
   const { t } = useTranslation()
@@ -17,8 +16,6 @@ export function PriorityStep({ builder, context }) {
   const validPriority = !errors.priority && String(form.priority).trim() !== '' && Number.isInteger(Number(form.priority))
   const placement = validPriority ? placeRule(context.rules, form, context.editingId) : null
   const suggested = suggestPriority(context.rules, form, context.editingId)
-  const start = placement ? Math.max(0, placement.position - VISIBLE_AROUND) : 0
-  const shown = placement ? placement.ordered.slice(start, placement.position + VISIBLE_AROUND + 1) : []
 
   return (
     <div className="grid gap-4">
@@ -48,31 +45,8 @@ export function PriorityStep({ builder, context }) {
         <span className="text-xs text-[var(--text-muted)]">— {t('salesTeams.builder.priority.activeHint')}</span>
       </label>
 
-      {placement && (
-        <div className="grid gap-2">
-          <p className="text-sm font-semibold text-[var(--text)]">
-            {t('salesTeams.builder.priority.position', { position: placement.position + 1, total: placement.ordered.length })}
-          </p>
-          <ol className="grid gap-1 rounded-lg border border-[var(--border)] p-2">
-            {start > 0 && <li className="px-2 text-xs text-[var(--text-light)]">{t('salesTeams.builder.priority.moreAbove', { count: start })}</li>}
-            {shown.map((rule, index) => (
-              <li
-                key={rule.id}
-                className={cn('flex items-center gap-2 rounded-md px-2 py-1.5 text-sm', rule.isDraft ? 'bg-[var(--brand-accent-soft)] font-semibold text-[var(--text)]' : 'text-[var(--text-muted)]')}
-              >
-                <span className="w-6 text-xs text-[var(--text-light)]">{start + index + 1}</span>
-                <span className="inline-flex h-6 min-w-6 items-center justify-center rounded bg-[var(--surface-2)] px-1 text-xs font-bold">{rule.priority}</span>
-                <span className="min-w-0 truncate">{rule.isDraft ? (form.name.trim() || t('salesTeams.builder.unnamed')) : rule.name}</span>
-                {rule.isDraft && <span className="ms-auto text-xs text-[var(--brand-accent)]">{t('salesTeams.builder.priority.thisRule')}</span>}
-              </li>
-            ))}
-            {placement.ordered.length > start + shown.length && (
-              <li className="px-2 text-xs text-[var(--text-light)]">{t('salesTeams.builder.priority.moreBelow', { count: placement.ordered.length - start - shown.length })}</li>
-            )}
-          </ol>
-          {!form.active && <p className="text-xs text-[var(--text-muted)]">{t('salesTeams.builder.priority.inactiveNote')}</p>}
-        </div>
-      )}
+      <PriorityLadder form={form} context={context} onPick={(value) => setField('priority', String(value))} />
+      {!form.active && <p className="text-xs text-[var(--text-muted)]">{t('salesTeams.builder.priority.inactiveNote')}</p>}
 
       {placement && (placement.shadowedBy.length > 0 || placement.sameAs.length > 0 || placement.tiesWith.length > 0) && (
         <ul className="grid gap-1.5">

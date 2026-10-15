@@ -255,12 +255,12 @@ export default {
       "priority": {
         "short": "Priority",
         "title": "Priority and activation",
-        "intro": "When a lead matches several rules, priority orders them. You see where your rule sits among the active rules.",
-        "help": "Rules are listed highest priority first. Give precise rules (a campaign or form) a higher priority than general ones (a source only, or all leads).",
+        "intro": "Priority decides whether this rule comes before or after the existing ones. Below are all previous rules with their priorities; put yours above or below any of them.",
+        "help": "Higher priority is checked first. Put precise rules (a specific campaign, ad or form) above general ones (a source only, or all leads).",
         "tips": {
-          "tip1": "If a rule above catches the same leads, yours may never apply; you will be warned.",
-          "tip2": "\"Use suggested priority\" puts it above the broader rules.",
-          "tip3": "You can save the rule inactive and activate it later from the list."
+          "tip1": "\"Above\" gives your rule that rule's priority + 1, \"Below\" its priority − 1.",
+          "tip2": "If a rule above catches the same leads, yours may never apply; you will be warned.",
+          "tip3": "Inactive rules are shown for reference and do not take part in distribution."
         },
         "example": "Ramadan campaign = 20, all Facebook = 10, all leads = 0."
       },
@@ -330,9 +330,6 @@ export default {
     "priority": {
       "useSuggested": "Use suggested priority ({{value}})",
       "activeHint": "while inactive it distributes nothing",
-      "position": "Position among active rules: {{position}} of {{total}}",
-      "moreAbove": "and {{count}} rules above",
-      "moreBelow": "and {{count}} rules below",
       "thisRule": "This rule",
       "inactiveNote": "The rule is inactive, so it is not part of this order until activated.",
       "shadowed": "Rules above catch the same leads or more: {{names}}. If the first matching rule wins, this rule will get no leads. Raise its priority.",
@@ -343,6 +340,17 @@ export default {
       "edit": "Edit",
       "editField": "Edit {{field}}",
       "note": "Saving sends the rule to the server; the distribution itself runs there on new leads."
+    },
+    "ladder": {
+      "title": "Existing rules and their priorities ({{count}})",
+      "position": "This rule will be number {{position}} of {{total}}",
+      "hint": "Rules are ordered from the highest priority down, with the new rule marked in its place. Click \"Above\" or \"Below\" next to any rule to put yours right before or after it, or type the number yourself.",
+      "empty": "No existing rules, so any priority works. This rule will be the first.",
+      "inactive": "Inactive",
+      "above": "Above",
+      "below": "Below",
+      "aboveLabel": "Put the rule above \"{{name}}\" (priority {{value}})",
+      "belowLabel": "Put the rule below \"{{name}}\" (priority {{value}})"
     }
   },
   "reports": {
