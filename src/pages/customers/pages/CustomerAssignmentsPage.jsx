@@ -1,15 +1,9 @@
-import { useTranslation } from 'react-i18next'
-import { UserCheck } from 'lucide-react'
-import { ModulePageHeader } from '../../../shared/components/module-pages'
-import { AssignmentRulesPanel } from '../../../features/leads'
+import { SalesTeamsWorkspace } from '../../../features/leads'
 
-/** /LeadsCenter/assignments — lead assignment rules (moved here from the removed /leads page). */
+/**
+ * /LeadsCenter/assignments — the same workspace as /LeadsCenter/teams, opened on the distribution rules tab
+ * (route kept; the old name + active form was replaced 2026-10-15).
+ */
 export function CustomerAssignmentsPage() {
-  const { t } = useTranslation()
-  return (
-    <div className="space-y-4">
-      <ModulePageHeader icon={UserCheck} title={t('customers.nav.leadDistribution')} description={t('customers.assignments.description')} />
-      <AssignmentRulesPanel />
-    </div>
-  )
+  return <SalesTeamsWorkspace initialTab="rules" />
 }

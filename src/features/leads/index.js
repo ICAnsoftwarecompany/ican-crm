@@ -1,5 +1,4 @@
 // Public surface of the leads feature (added 2026-10-01). Older consumers still import internal paths.
-export { AssignmentRulesPanel } from './components/AssignmentRulesPanel'
 export { useAssignmentRules, useLeadLogs, useLeadLog, useLeadMutations } from './hooks/useLeads'
 export { LEAD_AI_CAPABILITIES } from './constants/leadAiCapabilities'
 
@@ -25,3 +24,5 @@ export {
 export { InterestCard, InterestLevelBadge, LeadInterestDialog, LeadInterestFields, toInterestView, useInterestCatalogIndex, useLeadInterestForm } from './interests'
 // Won / lost outside a deal board (2026-10-15): dialogs, API and the row-action launcher.
 export { LeadLostDialog, LeadWonDialog, useLeadActionDialogs, useLeadOutcome } from './outcome'
+// Sales teams + lead distribution rules (2026-10-15): /LeadsCenter/teams and /LeadsCenter/assignments.
+export { SalesTeamsWorkspace } from './sales-teams'

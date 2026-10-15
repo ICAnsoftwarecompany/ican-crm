@@ -75,15 +75,15 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 
 ## Leads page and lead assignment
 
-> **Documentation update:** 2026-10-01 01:20 (Africa/Cairo) — the `/leads` page was removed; assignment rules moved to the Leads Center.
+> **Documentation update:** 2026-10-15 23:40 (Africa/Cairo) — rules UI rebuilt in `features/leads/sales-teams` (full rule body, edit, toggle). 2026-10-01 01:20 (Africa/Cairo) — the `/leads` page was removed; assignment rules moved to the Leads Center.
 
 **Status:** PARTIAL
 
-- **What it does:** lead actions API (used by the Leads Center, drawer and bulk actions) and lead-assignment rules. The old `/leads` page (raw lead-log list, a developer-style "save action" form, and the rule form) was **removed**; `/leads` now redirects to `/LeadsCenter` (`/leads/:customerId` lead details is unaffected). The rules UI moved to **`/LeadsCenter/assignments`** as `AssignmentRulesPanel` (list + create, same endpoints and `{ name, active }` payload). The page's automation button is replaced by `/LeadsCenter/automation`.
-- **Key files:** `features/leads/components/AssignmentRulesPanel.jsx`, `features/leads/index.js` (public API, added 2026-10-01 01:20 (Africa/Cairo)), `constants/leadAiCapabilities.js`; `features/leads/api/leadsApi.js`, `leadAssignmentApi.js`, `hooks/useLeads.js` (`useLeadLogs`, `useAssignmentRules`, `useLeadMutations`); `features/leads/workflow/leadWorkflowDefinition.js` (automation triggers/actions).
+- **What it does:** lead actions API (used by the Leads Center, drawer and bulk actions) and lead-assignment rules. The old `/leads` page (raw lead-log list, a developer-style "save action" form, and the rule form) was **removed**; `/leads` now redirects to `/LeadsCenter` (`/leads/:customerId` lead details is unaffected). The rules UI lives in **`features/leads/sales-teams`** (2026-10-15 23:40 (Africa/Cairo); replaced `AssignmentRulesPanel`): create / edit with the full body `{ name, source, campaign_id, ad_id, form_id, assign_type: round_robin|team|team_leader|user, team_id, user_id, priority, active }`, active toggle from the card (full rule resent), conditions resolved to campaign / ad / form names, warnings for unreachable targets. Shown at `/LeadsCenter/teams` (rules tab) and `/LeadsCenter/assignments`. The page's automation button is replaced by `/LeadsCenter/automation`.
+- **Key files:** `features/leads/sales-teams/` ([README](../src/features/leads/sales-teams/README.md)), `features/leads/index.js` (public API, added 2026-10-01 01:20 (Africa/Cairo)), `constants/leadAiCapabilities.js`; `features/leads/api/leadsApi.js`, `leadAssignmentApi.js`, `hooks/useLeads.js` (`useLeadLogs`, `useAssignmentRules`, `useLeadMutations`); `features/leads/workflow/leadWorkflowDefinition.js` (automation triggers/actions).
 - **API:** `POST /api/tenant/leads/save/action`, `POST /api/tenant/leads/update-tag`, `GET /api/tenant/leads/logs`, `GET /api/tenant/leads/lead/log/{leadId}`, `POST /api/tenant/leads/manual/lead/distribution`; `POST /api/tenant/lead-assignment/create/rule`, `POST /api/tenant/lead-assignment/update/rule/{id}`, `GET /api/tenant/lead-assignment/rules`.
-- **Used by:** `/LeadsCenter/assignments`; `saveAction`/`updateTag` across the Leads Center, drawer and bulk actions.
-- **Known issues:** rules can be created and listed but not edited or toggled in the UI (`updateRule` exists; its payload is unconfirmed); no UI for manual distribution outside the API hook; the global lead-log list (`GET /leads/logs`) has no UI now — per-lead history stays in the activity timeline.
+- **Used by:** `/LeadsCenter/teams`, `/LeadsCenter/assignments`; `saveAction`/`updateTag` across the Leads Center, drawer and bulk actions.
+- **Known issues:** no delete endpoint for rules; priority direction and first-match semantics unconfirmed (`backend/BACKEND-REQUESTS.md` E3); no UI for manual distribution outside the API hook; the global lead-log list (`GET /leads/logs`) has no UI now — per-lead history stays in the activity timeline.
 
 ## Leads Center pages
 
@@ -103,10 +103,10 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 | `/LeadsCenter` | All customers — **Table** (`DataTable`) or **Pipeline** (Kanban by lead status) view, stats, status tabs, bulk actions, drawer | CURRENT |
 | `/LeadsCenter/status-board` | Columns per lead status | CURRENT |
 | `/LeadsCenter/customization` | Statuses + tags tabs | CURRENT |
-| `/LeadsCenter/teams` | Sales teams (`pages/SalesTeams/CustomerTeamsPage.jsx`, team + members drawers) — linked from the main sidebar | CURRENT |
+| `/LeadsCenter/teams` | Sales teams + lead distribution rules (`features/leads/sales-teams`, `?tab=teams\|rules`): team cards (type, leader, members, rules per team), create (JSON with type + members) / edit (update + attach / detach diff), rules tab — linked from the main sidebar (2026-10-15 23:40 (Africa/Cairo)) | CURRENT |
 | `/LeadsCenter/trash` | Deleted customers, restore / force delete | CURRENT |
 | `/LeadsCenter/activities`, `/activities/meeting/:meetingId` | Activities (calendar-first, see above) / meeting detail | CURRENT |
-| `/LeadsCenter/assignments` | Lead assignment rules (`AssignmentRulesPanel`) | CURRENT |
+| `/LeadsCenter/assignments` | Same workspace opened on the distribution rules tab (2026-10-15 23:40 (Africa/Cairo)) | CURRENT |
 | `/LeadsCenter/reports` | Reports & statistics on the shared reports engine: new leads (delta vs previous period), unassigned, per-day trend, by status / source / assignee (`features/customers/reports`, up to 5 list pages) — added 2026-10-01 01:49 (Africa/Cairo) | CURRENT |
 | `/LeadsCenter/automation` | Shared automation flow in the `leads` workflow module (`WorkflowModuleWorkspace`) | CURRENT |
 | `/LeadsCenter/ai` | Shared `AiSetupPage` with `LEAD_AI_CAPABILITIES` (per-browser draft) | PARTIAL |
@@ -200,10 +200,12 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 
 ## Teams and users
 
+> **Documentation update:** 2026-10-15 23:40 (Africa/Cairo) — Leads Center teams page moved to `features/leads/sales-teams` (team type on create, member diff on edit).
+
 **Status:** CURRENT
 
 - **What it does:** sales teams and members; tenant users; online users and user activity panels.
-- **Key files:** `features/teams/api/teamsApi.js`, `hooks/useTeams.js`; `features/users/api/usersApi.js`, `hooks/useUsers.js`, `components/ActiveUsersSidebarPanel.jsx`, `UserActivitySidebarPanel.jsx`; pages `pages/teams/`, `pages/users/`, `pages/customers/pages/SalesTeams/`, `/settings/users`.
+- **Key files:** `features/teams/api/teamsApi.js`, `hooks/useTeams.js`; `features/users/api/usersApi.js`, `hooks/useUsers.js`, `components/ActiveUsersSidebarPanel.jsx`, `UserActivitySidebarPanel.jsx`; pages `pages/teams/`, `pages/users/`, `features/leads/sales-teams` (Leads Center teams page, replaced `pages/customers/pages/SalesTeams/` 2026-10-15 23:40 (Africa/Cairo)), `/settings/users`.
 - **API:** teams `POST /api/tenant/teams/create`, `POST .../update/{teamId}` (FormData), `GET .../get`, `POST .../attach-members/{teamId}`, `POST .../detach-members/{teamId}`; users `POST /api/tenant/users/create/`, `POST .../update/{id}/`, `GET .../get`, `GET /api/online/users`, `GET /api/user/history/{userId}`.
 - **Used by:** `/teams`, `/users`, `/LeadsCenter/teams`, `/settings/users`, assignee selectors (activities, tasks, deals, workflow data sources).
 - **Known issues:** Unverified: role/permission management UI — the backend does not yet expose `user.permissions`, so frontend permission checks are inert.

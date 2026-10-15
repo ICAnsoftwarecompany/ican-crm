@@ -12,7 +12,7 @@ import { FollowUpCustomersPage } from '../../pages/customers/pages/FollowUpCusto
 import { InactiveCustomersPage } from '../../pages/customers/pages/InactiveCustomersPage'
 import { CustomerSegmentsPage } from '../../pages/customers/pages/CustomerSegmentsPage'
 import { CustomerAssignmentsPage } from '../../pages/customers/pages/CustomerAssignmentsPage'
-import { CustomerTeamsPage } from '../../pages/customers/pages/SalesTeams/CustomerTeamsPage'
+import { CustomerTeamsPage } from '../../pages/customers/pages/CustomerTeamsPage'
 import { DuplicateCustomersPage } from '../../pages/customers/pages/DuplicateCustomersPage'
 import { CustomerCustomizationPage } from '../../pages/customers/pages/customization/CustomerCustomizationPage'
 import { CustomerImportExportPage } from '../../pages/customers/pages/CustomerImportExportPage'

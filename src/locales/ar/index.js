@@ -40,6 +40,7 @@ import modulePages from './modulePages.js'
 import aiSetup from './aiSetup.js'
 import myWork from './myWork.js'
 import reports from './reports.js'
+import salesTeams from './salesTeams.js'
 
 export default {
   app,
@@ -50,6 +51,7 @@ export default {
   common,
   dataTable,
   leads,
+  salesTeams,
   customers,
   proposals,
   activities,

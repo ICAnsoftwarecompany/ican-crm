@@ -11,18 +11,6 @@ export default {
   "tableView": "عرض جدول",
   "kanbanView": "عرض كانبان",
   "created": "تم إنشاء العميل المحتمل بنجاح",
-  "page": {
-    "newRuleTitle": "قاعدة توزيع جديدة",
-    "ruleNameLabel": "اسم القاعدة",
-    "activeLabel": "نشطة",
-    "inactiveLabel": "غير نشطة",
-    "createRule": "إنشاء القاعدة",
-    "distributionRulesTitle": "قواعد التوزيع",
-    "noRulesFound": "لا توجد قواعد توزيع",
-    "ruleFallback": "قاعدة #{{id}}",
-    "ruleCreated": "تم إنشاء قاعدة التوزيع",
-    "ruleCreateFailed": "فشل إنشاء قاعدة التوزيع"
-  },
   "interestDialog": {
     "bulkDescription": "إضافة نفس الاهتمام لـ {{count}} عميل محدد",
     "followUpHint": "اربط المتابعة بمنتج أو خدمة أو خطة أو باقة من الكتالوج",
