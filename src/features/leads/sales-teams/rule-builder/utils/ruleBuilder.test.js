@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { normalizeRule, toRuleForm } from '../../utils/ruleModel'
-import { firstInvalidStep, isBroaderOrEqual, nextLeadsPreview, placeRule, reachableSteps, stepErrors, suggestPriority, targetPreview } from './ruleBuilder'
+import { priorityAbove, priorityBelow, priorityLadder, firstInvalidStep, isBroaderOrEqual, nextLeadsPreview, placeRule, reachableSteps, stepErrors, suggestPriority, targetPreview } from './ruleBuilder'
 
 const form = (patch = {}) => ({ ...toRuleForm(null), ...patch })
 
@@ -78,5 +78,32 @@ describe('priority placement', () => {
     expect(suggestPriority(rules, form({ source: 'facebook', campaign_id: '1' }))).toBe(21)
     expect(suggestPriority(rules, form({ source: 'facebook', campaign_id: '1', priority: '25' }))).toBeNull()
     expect(suggestPriority([], form())).toBeNull()
+  })
+})
+
+describe('priority ladder', () => {
+  const rules = [
+    normalizeRule({ id: 1, name: 'All', priority: 20, active: 1 }),
+    normalizeRule({ id: 2, name: 'Facebook', priority: 10, active: 1 }),
+    normalizeRule({ id: 3, name: 'Off', priority: 15, active: 0 }),
+  ]
+
+  it('lists every rule (inactive too) with the draft in place', () => {
+    const ladder = priorityLadder(rules, form({ priority: '12' }))
+    expect(ladder.rows.map((r) => r.id)).toEqual(['1', '3', '__draft__', '2'])
+    expect(ladder.position).toBe(2)
+    expect(priorityLadder(rules, form({ priority: '10' })).rows.map((r) => r.id)).toEqual(['1', '3', '2', '__draft__'])
+  })
+
+  it('leaves the draft out for an invalid priority and skips the rule being edited', () => {
+    expect(priorityLadder(rules, form({ priority: '' }))).toMatchObject({ position: -1 })
+    expect(priorityLadder(rules, form({ priority: '5' }), '2').rows.map((r) => r.id)).toEqual(['1', '3', '__draft__'])
+    expect(priorityLadder([], form()).rows.map((r) => r.id)).toEqual(['__draft__'])
+  })
+
+  it('computes priorities right above / below a rule', () => {
+    expect(priorityAbove(rules[1])).toBe(11)
+    expect(priorityBelow(rules[1])).toBe(9)
+    expect(priorityBelow(normalizeRule({ priority: 0 }))).toBe(0)
   })
 })

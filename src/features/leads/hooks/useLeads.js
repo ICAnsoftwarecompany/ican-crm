@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { leadsApi } from '../api/leadsApi'
 import { leadAssignmentApi } from '../api/leadAssignmentApi'
+import { extractRows } from '../sales-teams/utils/ruleSources'
 import { interestedsApi } from '../api/interestedsApi'
 import { QUERY_KEYS } from '../../../shared/constants/queryKeys'
 import { extractList } from '../../../shared/utils/apiResponse'
@@ -30,7 +31,8 @@ export function useAssignmentRules() {
   return useQuery({
     queryKey: QUERY_KEYS.assignmentRules.list,
     queryFn: () => leadAssignmentApi.getRules(),
-    select: (data) => extractList(data, ['rules']),
+    // Deep fallback (2026-10-16): the rules response shape varies; take the first list of rows found.
+    select: (data) => extractRows(data, ['rules', 'lead_assignment_rules', 'assignment_rules']),
   })
 }
 
