@@ -35,7 +35,6 @@ export function getProductNavigationGroups(t, { itemTypes = [] } = {}) {
             ...typeItems(itemTypes, ['service', 'plan', 'bundle']),
           ],
         },
-        { to: '/products/instances', label: t('catalog.nav.instances'), icon: Boxes },
       ],
     },
     {
@@ -52,6 +51,8 @@ export function getProductNavigationGroups(t, { itemTypes = [] } = {}) {
       items: [
         { to: '/products/item-types', label: t('catalog.nav.itemTypes'), icon: Layers },
         { to: '/products/units', label: t('catalog.nav.units'), icon: Ruler },
+        // Pieces & serials sit with the setup pages since 2026-10-15 (records behind the products, not a catalog list).
+        { to: '/products/instances', label: t('catalog.nav.instances'), icon: Boxes },
       ],
     },
     {

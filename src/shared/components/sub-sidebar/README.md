@@ -40,7 +40,8 @@ column), `plain` (inside the mobile drawer).
 
 - Labels are passed **translated** (`t('...')`) — the component never guesses i18n keys.
 - `children` *(2026-10-15 13:43 (Africa/Cairo))*: sub-pages of the item, same shape, shown indented under it (one
-  level only; hidden in the collapsed rail; hidden children are dropped too). Give the parent `end: true` when its
+  level only; hidden in the collapsed rail; hidden children are dropped too). More than 6 children scroll inside their
+  own box (max 15rem) and the whole nav scrolls with a reserved scrollbar gutter *(2026-10-15 14:08 (Africa/Cairo))*. Give the parent `end: true` when its
   children live under its path. Example: one page per product type under "Products" (`pages/products/constants/productNavigation.js`).
 - `hidden: true` drops an item (plan/permission gating decided by the caller). `disabled: true` shows it greyed out
   (e.g. "coming soon"). Remember: hiding a link is UX only, never authorization.
