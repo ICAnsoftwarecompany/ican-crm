@@ -43,12 +43,13 @@ describe('templates', () => {
 })
 
 describe('steps', () => {
-  it('skips units for unique units, plans and bundles, and kind on edit', () => {
+  it('skips units for unique units, services, plans and bundles, and kind on edit', () => {
     const appliance = applyTemplate(getTemplate('appliance'), { units }).form
     expect(getTypeSteps(appliance)).toEqual(['kind', 'basics', 'capabilities', 'units', 'relations', 'review'])
     expect(getTypeSteps(applyTemplate(getTemplate('realEstate')).form)).not.toContain('units')
     expect(supportsUnits(blankFormForKind('plan'))).toBe(false)
-    expect(supportsUnits(blankFormForKind('service'))).toBe(true)
+    expect(supportsUnits(blankFormForKind('service'))).toBe(false)
+    expect(templatesForKind('service').every((template) => !template.units)).toBe(true)
     expect(getTypeSteps(appliance, { mode: 'edit' })[0]).toBe('basics')
   })
 

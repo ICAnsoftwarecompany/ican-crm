@@ -47,12 +47,13 @@ function pickRows(current = [], previous, defaults, filled) {
  * Fills a new product with its item type's default units and attached items (2026-10-14). `memo` is what the last
  * fill wrote (`{ typeId, signature, units, relations }`); rows the user edited are never replaced, rows still as
  * filled are replaced when the type changes, and the same defaults are not applied twice (so deleting them sticks).
- * Returns `{ units?, relations?, memo, applied: { units, relations } }`.
+ * Returns `{ units?, relations?, memo, applied: { units, relations } }`. `withUnits: false` (services, 2026-10-15)
+ * copies the attached items only.
  */
-export function applyTypeDefaults({ units = [], relations = [] }, itemType, memo = {}) {
+export function applyTypeDefaults({ units = [], relations = [] }, itemType, memo = {}, { withUnits = true } = {}) {
   const none = { memo, applied: { units: 0, relations: 0 } }
   if (!itemType) return none
-  const typeUnits = productUnitsFromType(itemType)
+  const typeUnits = withUnits ? productUnitsFromType(itemType) : []
   const typeRelations = productRelationsFromType(itemType)
   const signature = JSON.stringify([String(itemType.id), typeUnits.map((row) => [row.unit_id, row.factor]), typeRelations.map((row) => row.child_product_id)])
   if (memo.signature === signature) return none

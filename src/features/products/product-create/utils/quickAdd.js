@@ -23,7 +23,8 @@ export function buildQuickProduct(row, { kind = 'product', itemType = null } = {
     category_id: row.category_id,
     item_type_id: row.item_type_id,
     status: true,
-    units: itemType && String(itemType.id) === String(row.item_type_id) ? productUnitsFromType(itemType) : [],
+    // Services have no units (2026-10-15); products get the type's default units.
+    units: kind !== 'service' && itemType && String(itemType.id) === String(row.item_type_id) ? productUnitsFromType(itemType) : [],
   }
   return buildProductPayload(form, { mode: 'create' })
 }

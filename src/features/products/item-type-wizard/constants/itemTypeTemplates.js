@@ -96,7 +96,6 @@ export const ITEM_TYPE_TEMPLATES = [
       { code: 'scheduling', config: { duration_minutes: 60 } },
       { code: 'warranty', config: { months: 3, starts_from: 'sale' } },
     ],
-    units: [{ code: 'visit', factor: 1 }],
   },
   {
     id: 'installation', kind: 'service', icon: Hammer, code: 'installation', serviceModel: 'H', creates: 'work_order',
@@ -105,12 +104,10 @@ export const ITEM_TYPE_TEMPLATES = [
   {
     id: 'cleaning', kind: 'service', icon: SprayCan, code: 'cleaning', serviceModel: 'H', creates: 'work_order',
     capabilities: [{ code: 'onsite', config: { expected_minutes: 120 } }, { code: 'scheduling', config: { duration_minutes: 120 } }],
-    units: [{ code: 'hour', factor: 1 }],
   },
   {
     id: 'consultation', kind: 'service', icon: MessagesSquare, code: 'consultation', serviceModel: 'E', creates: 'booking',
     capabilities: [{ code: 'scheduling', config: { duration_minutes: 60 } }],
-    units: [{ code: 'hour', factor: 1 }],
   },
   {
     id: 'clinic', kind: 'service', icon: Stethoscope, code: 'clinic_appointment', serviceModel: 'E', creates: 'booking',

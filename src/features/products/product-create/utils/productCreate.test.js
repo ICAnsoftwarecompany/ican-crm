@@ -12,6 +12,10 @@ describe('getCreateSteps', () => {
   it('shows every step without an item type', () => {
     expect(getCreateSteps(null)).toEqual(['basics', 'stock', 'capabilities', 'relations', 'instances', 'review'])
   })
+  it('shows a service only its own steps, with or without a type', () => {
+    expect(getCreateSteps(null, { kind: 'service' })).toEqual(['basics', 'capabilities', 'relations', 'review'])
+    expect(getCreateSteps(serialType, { kind: 'service' })).toEqual(['basics', 'capabilities', 'relations', 'review'])
+  })
   it('follows the item type', () => {
     expect(getCreateSteps(serialType)).toContain('instances')
     expect(getCreateSteps(plainType)).not.toContain('instances')
@@ -58,6 +62,7 @@ describe('quick add', () => {
     expect(body).toMatchObject({ name: 'Box AC', price: 100, kind: 'product', category_id: '2', item_type_id: '6', status: true })
     expect(body.units).toEqual([{ unit_id: '3', factor: 10, is_default: false }])
     expect(nextQuickRow(row)).toEqual({ name: '', price: '', category_id: '2', item_type_id: '6' })
+    expect(buildQuickProduct(row, { kind: 'service', itemType: plainType }).units ?? []).toEqual([])
   })
 })
 
@@ -73,6 +78,10 @@ describe('translations', async () => {
     ...['serial', 'unit', 'batch'].map((mode) => `instanceModes.${mode}`),
     ...['selected', 'parent', 'ancestor'].map((level) => `category.level.${level}`),
   ]
+  const serviceKeys = ['basics', 'capabilities', 'relations', 'review'].flatMap((step) => ['title', 'hint', 'description', 'guide.title', 'guide.text'].map((part) => `service.steps.${step}.${part}`))
+    .concat(['basics', 'capabilities', 'relations'].flatMap((step) => [`service.steps.${step}.manual`, `service.steps.${step}.withType`]))
+    .concat(['name', 'kind', 'itemType', 'price', 'category', 'description', 'image', 'status'].flatMap((key) => [`service.help.${key}.title`, `service.help.${key}.text`]))
+  keys.push(...serviceKeys)
   it('exist in Arabic and English', () => {
     keys.forEach((key) => {
       expect(typeof get(en, key), `en:${key}`).toBe('string')

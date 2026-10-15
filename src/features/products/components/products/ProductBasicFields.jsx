@@ -12,13 +12,17 @@ import { HelpField } from '../common/HelpTip'
  * Basic tab / step of the product form: name, kind, item type, category, price, description, image, status.
  * Create wizard extras (2026-10-15): `onCreateItemType` / `onCreateCategory` add quick-add buttons, `itemTypeExtra` /
  * `categoryExtra` render under the item type and category (what the type brings, the category path). Every field has
- * an explanation (`HelpField`, `productSetup.help.*`) shown as a tip and in the wizard's tutorial panel.
+ * an explanation (`HelpField`, `productSetup.help.*`; services `productSetup.service.help.*`) shown as a tip and in the
+ * wizard's tutorial panel. `allowedKinds` limits the kind select (the service wizard passes only `service`, which hides it).
  */
-export function ProductBasicFields({ mode, state, onCreateItemType, onCreateCategory, itemTypeExtra, categoryExtra }) {
+export function ProductBasicFields({ mode, state, onCreateItemType, onCreateCategory, itemTypeExtra, categoryExtra, allowedKinds }) {
   const { t } = useTranslation()
   const { form, errors, update, itemTypes, categories } = state
-  const kindOptions = useOptions('kinds', PRODUCT_KINDS)
-  const help = (key) => ({ title: t(`productSetup.help.${key}.title`), text: t(`productSetup.help.${key}.text`) })
+  const kinds = allowedKinds || PRODUCT_KINDS
+  const kindOptions = useOptions('kinds', kinds)
+  const showKind = mode === 'edit' || kinds.length > 1
+  const helpPrefix = form.kind === 'service' ? 'productSetup.service.help' : 'productSetup.help'
+  const help = (key) => ({ title: t(`${helpPrefix}.${key}.title`), text: t(`${helpPrefix}.${key}.text`) })
 
   const changeKind = (kind) => {
     update('kind', kind)
@@ -39,16 +43,18 @@ export function ProductBasicFields({ mode, state, onCreateItemType, onCreateCate
         />
       </HelpField>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <HelpField {...help('kind')}>
-          <Select
-            label={t('catalog.product.fields.kind')}
-            value={form.kind}
-            options={kindOptions}
-            disabled={mode === 'edit'}
-            onChange={(value) => changeKind(value || 'product')}
-          />
-        </HelpField>
+      <div className={showKind ? 'grid gap-4 sm:grid-cols-2' : 'grid gap-4'}>
+        {showKind && (
+          <HelpField {...help('kind')}>
+            <Select
+              label={t('catalog.product.fields.kind')}
+              value={form.kind}
+              options={kindOptions}
+              disabled={mode === 'edit'}
+              onChange={(value) => changeKind(value || 'product')}
+            />
+          </HelpField>
+        )}
         <HelpField {...help('itemType')} className="space-y-1">
           <Select
             label={t('catalog.product.fields.itemType')}

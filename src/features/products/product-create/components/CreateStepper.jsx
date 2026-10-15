@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next'
 import { Check } from 'lucide-react'
 import { cn } from '../../../../shared/utils/cn'
+import { stepKey } from '../utils/stepCopy'
 
 /** Steps of the product wizard (they follow the item type, see utils/createSteps.js). */
-export function CreateStepper({ steps, step, done, onSelect }) {
+export function CreateStepper({ steps, step, done, onSelect, kind = 'product' }) {
   const { t } = useTranslation()
   const current = steps.indexOf(step)
   return (
@@ -23,8 +24,8 @@ export function CreateStepper({ steps, step, done, onSelect }) {
               {index < current || done ? <Check size={14} /> : index + 1}
             </span>
             <span className="min-w-0">
-              <span className="block truncate text-sm font-semibold text-[var(--text)]">{t(`catalog.create.steps.${id}.title`)}</span>
-              <span className="block truncate text-xs text-[var(--text-muted)]">{t(`catalog.create.steps.${id}.hint`)}</span>
+              <span className="block truncate text-sm font-semibold text-[var(--text)]">{t(stepKey(kind, id, 'title'))}</span>
+              <span className="block truncate text-xs text-[var(--text-muted)]">{t(stepKey(kind, id, 'hint'))}</span>
             </span>
           </button>
         </li>

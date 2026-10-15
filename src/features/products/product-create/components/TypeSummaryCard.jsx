@@ -10,7 +10,7 @@ import { instanceModesForItemType } from '../../utils/productCreateWizard'
  * default units, attached items, the pieces it holds and what a sale creates — or, with no type, that every step is
  * filled by hand. `onQuickType` offers the quick item type dialog.
  */
-export function TypeSummaryCard({ itemType, loading, onQuickType }) {
+export function TypeSummaryCard({ itemType, loading, onQuickType, kind = 'product' }) {
   const { t } = useTranslation()
   const optionLabel = useOptionLabel()
 
@@ -19,7 +19,7 @@ export function TypeSummaryCard({ itemType, loading, onQuickType }) {
       <div className="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-dashed border-[var(--border)] p-3">
         <p className="flex min-w-0 items-start gap-2 text-sm text-[var(--text-muted)]">
           <PencilLine size={16} className="mt-0.5 shrink-0" aria-hidden="true" />
-          <span>{t(loading ? 'catalog.common.loading' : 'productSetup.type.manual')}</span>
+          <span>{t(loading ? 'catalog.common.loading' : kind === 'service' ? 'productSetup.service.type.manual' : 'productSetup.type.manual')}</span>
         </p>
         {onQuickType && !loading && <Button size="sm" variant="outline" onClick={onQuickType}>{t('productSetup.quickType.open')}</Button>}
       </div>
@@ -39,9 +39,10 @@ export function TypeSummaryCard({ itemType, loading, onQuickType }) {
       </h3>
       <CapabilityChips capabilities={itemType.capabilities} emptyText={t('catalog.itemTypes.noCapabilities')} />
       <ul className="mt-2 space-y-0.5 text-xs text-[var(--text)]">
-        <li>{t('productSetup.type.units', { count: units.length })}</li>
-        <li>{t('productSetup.type.relations', { count: relations.length })}</li>
-        <li>{modes.length ? t('productSetup.type.pieces', { modes: modes.map((mode) => t(`productSetup.instanceModes.${mode}`)).join(' / ') }) : t('productSetup.type.noPieces')}</li>
+        {/* Services: no units and no pieces (2026-10-15). */}
+        {kind !== 'service' && <li>{t('productSetup.type.units', { count: units.length })}</li>}
+        <li>{t(kind === 'service' ? 'productSetup.service.type.relations' : 'productSetup.type.relations', { count: relations.length })}</li>
+        {kind !== 'service' && <li>{modes.length ? t('productSetup.type.pieces', { modes: modes.map((mode) => t(`productSetup.instanceModes.${mode}`)).join(' / ') }) : t('productSetup.type.noPieces')}</li>}
         {creates && <li>{t('productSetup.type.creates', { value: optionLabel('creates', creates) })}</li>}
       </ul>
     </section>

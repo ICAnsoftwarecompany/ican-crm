@@ -12,11 +12,11 @@ export const TYPE_STEPS = ['kind', 'basics', 'capabilities', 'units', 'relations
 const codesOf = (form) => form.capabilities.map((capability) => capability.code)
 
 /**
- * A type is sold in units (box, carton, hour…) unless each piece is unique (real estate, a specific car) or it is a
- * bundle / plan (priced as one thing). Services can have units too (hour, visit).
+ * A product type is sold in units (box, carton…) unless each piece is unique (real estate, a specific car). Plans and
+ * bundles are priced as one thing, and services have no units (2026-10-15: the service flow is about the service only).
  */
 export function supportsUnits(form) {
-  if (!['product', 'service'].includes(form.kind)) return false
+  if (form.kind !== 'product') return false
   return !codesOf(form).includes('unique_unit')
 }
 

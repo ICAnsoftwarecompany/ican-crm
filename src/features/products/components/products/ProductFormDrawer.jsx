@@ -62,7 +62,8 @@ export function ProductFormDrawer({ open, mode = 'create', product = null, kind 
 
   const tabs = [
     { id: 'basic', label: t('catalog.product.tabs.basic'), content: <ProductBasicFields mode={mode} state={state} /> },
-    { id: 'stock', label: t('catalog.product.tabs.stock'), content: <ProductStockFields mode={mode} state={state} /> },
+    // Services have no stock and no units (2026-10-15).
+    ...(state.form.kind === 'service' ? [] : [{ id: 'stock', label: t('catalog.product.tabs.stock'), content: <ProductStockFields mode={mode} state={state} /> }]),
     { id: 'capabilities', label: t('catalog.product.tabs.capabilities'), content: <ProductCapabilityFields state={state} /> },
     {
       id: 'additional',

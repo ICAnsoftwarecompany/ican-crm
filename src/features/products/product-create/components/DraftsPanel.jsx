@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { FileClock, Trash2 } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
 import { formatDate } from '../../../../shared/utils/dateTime'
+import { stepKey } from '../utils/stepCopy'
 
 /** Saved drafts of this wizard (2026-10-15), each with "continue" and "delete". Hidden when there are none. */
 export function DraftsPanel({ drafts = [], onOpen, onRemove }) {
@@ -19,7 +20,7 @@ export function DraftsPanel({ drafts = [], onOpen, onRemove }) {
             <span className="min-w-0 text-sm">
               <span className="block truncate font-medium text-[var(--text)]">{draft.form?.name || t('productSetup.drafts.untitled')}</span>
               <span className="block text-xs text-[var(--text-muted)]">
-                {t('productSetup.drafts.meta', { step: t(`catalog.create.steps.${draft.step}.title`), date: formatDate(draft.updatedAt) })}
+                {t('productSetup.drafts.meta', { step: t(stepKey(draft.kind, draft.step, 'title')), date: formatDate(draft.updatedAt) })}
               </span>
             </span>
             <span className="flex gap-1">

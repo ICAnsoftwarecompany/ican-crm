@@ -9,15 +9,19 @@ import { useCatalogProducts } from '../../hooks/useCatalogProducts'
 import { newRelationRow } from '../../utils/productCreateWizard'
 import { CheckboxField, useOptionLabel, useOptions } from './catalogUi'
 
-/** Rows of attached items (product wizard step and item type defaults) (e.g. free installation, optional maintenance contract). */
-export function RelationRowsEditor({ rows, errors = {}, onChange }) {
+/**
+ * Rows of attached items (product wizard step and item type defaults). `onlyKind: 'service'` (service flow, 2026-10-15)
+ * offers services only and words the buttons for services.
+ */
+export function RelationRowsEditor({ rows, errors = {}, onChange, onlyKind = null }) {
   const { t } = useTranslation()
   const catalogQuery = useCatalogProducts()
   const optionLabel = useOptionLabel()
   const inclusionOptions = useOptions('inclusion', RELATION_INCLUSIONS)
   const itemOptions = useMemo(() => (catalogQuery.data || [])
-    .filter((item) => item.status)
-    .map((item) => ({ value: String(item.id), label: `${item.name} — ${optionLabel('kinds', item.kind)}` })), [catalogQuery.data, optionLabel])
+    .filter((item) => item.status && (!onlyKind || item.kind === onlyKind || rows.some((row) => row.child_product_id === String(item.id))))
+    .map((item) => ({ value: String(item.id), label: `${item.name} — ${optionLabel('kinds', item.kind)}` })), [catalogQuery.data, onlyKind, optionLabel, rows])
+  const services = onlyKind === 'service'
 
   const set = (key, patch) => onChange(rows.map((row) => (row.key === key ? { ...row, ...patch } : row)))
   const changeInclusion = (row, inclusion) => set(row.key, {
@@ -28,11 +32,11 @@ export function RelationRowsEditor({ rows, errors = {}, onChange }) {
 
   return (
     <div className="space-y-3">
-      {!rows.length && <p className="text-sm text-[var(--text-muted)]">{t('catalog.create.relationsEmpty')}</p>}
+      {!rows.length && <p className="text-sm text-[var(--text-muted)]">{t(services ? 'productSetup.service.relations.empty' : 'catalog.create.relationsEmpty')}</p>}
       {rows.map((row) => (
         <div key={row.key} className="space-y-3 rounded-lg border border-[var(--border)] p-3">
           <div className="grid gap-3 sm:grid-cols-[2fr_1fr_auto]">
-            <Select label={t('catalog.relations.fields.child')} value={row.child_product_id} options={itemOptions} onChange={(value) => set(row.key, { child_product_id: value })} />
+            <Select label={t(services ? 'productSetup.service.relations.child' : 'catalog.relations.fields.child')} value={row.child_product_id} options={itemOptions} onChange={(value) => set(row.key, { child_product_id: value })} />
             <Select label={t('catalog.relations.fields.inclusion')} value={row.inclusion} options={inclusionOptions} onChange={(value) => changeInclusion(row, value || 'included')} />
             <Button className="self-end" variant="ghost" size="icon" onClick={() => onChange(rows.filter((item) => item.key !== row.key))} aria-label={t('catalog.common.remove')}><Trash2 size={16} /></Button>
           </div>
@@ -47,8 +51,8 @@ export function RelationRowsEditor({ rows, errors = {}, onChange }) {
         </div>
       ))}
       <div className="flex flex-wrap gap-2">
-        <Button variant="outline" size="sm" onClick={() => onChange([...rows, newRelationRow('included')])}><Plus size={14} />{t('catalog.create.addIncluded')}</Button>
-        <Button variant="outline" size="sm" onClick={() => onChange([...rows, newRelationRow('optional')])}><Plus size={14} />{t('catalog.create.addOptional')}</Button>
+        <Button variant="outline" size="sm" onClick={() => onChange([...rows, newRelationRow('included')])}><Plus size={14} />{t(services ? 'productSetup.service.relations.addIncluded' : 'catalog.create.addIncluded')}</Button>
+        <Button variant="outline" size="sm" onClick={() => onChange([...rows, newRelationRow('optional')])}><Plus size={14} />{t(services ? 'productSetup.service.relations.addOptional' : 'catalog.create.addOptional')}</Button>
       </div>
     </div>
   )

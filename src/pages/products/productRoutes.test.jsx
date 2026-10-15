@@ -309,4 +309,22 @@ describe('products area', () => {
     fireEvent.click(await screen.findByText('productDetails.complete.save'))
     await waitFor(() => expect(post.mock.calls.some(([url]) => url === '/api/tenant/product/update/31')).toBe(true))
   })
+
+  it('adds a service with service steps only: no kind select, stock, units or pieces', async () => {
+    renderAt('/products/new?kind=service')
+    expect((await screen.findAllByText('productSetup.service.steps.capabilities.title')).length).toBeGreaterThan(0)
+    expect(screen.getAllByText('productSetup.service.steps.relations.title').length).toBeGreaterThan(0)
+    expect(screen.queryByText('catalog.create.steps.stock.title')).toBeNull()
+    expect(screen.queryByText('catalog.create.steps.instances.title')).toBeNull()
+    expect(screen.queryByLabelText('catalog.product.fields.kind')).toBeNull()
+    fireEvent.change(screen.getByLabelText('catalog.product.fields.name'), { target: { value: 'AC check' } })
+    fireEvent.change(screen.getByLabelText('catalog.product.fields.price'), { target: { value: '200' } })
+    fireEvent.click(screen.getByText('actions.next'))
+    fireEvent.click(await screen.findByText('actions.next'))
+    // Attached items offer services only (Installation is a service, Split AC is a product).
+    fireEvent.click(await screen.findByText('productSetup.service.relations.addIncluded'))
+    const select = await screen.findByLabelText('productSetup.service.relations.child')
+    await waitFor(() => expect([...select.options].some((option) => option.textContent.startsWith('Installation'))).toBe(true))
+    expect([...select.options].some((option) => option.textContent.startsWith('Split AC'))).toBe(false)
+  })
 })

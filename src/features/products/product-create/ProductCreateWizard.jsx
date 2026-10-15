@@ -18,6 +18,7 @@ import { QuickCategoryDialog } from './components/QuickCategoryDialog'
 import { StepTypeNote } from './components/StepTypeNote'
 import { QuickAddMode } from './QuickAddMode'
 import { useProductCreateWizard } from './hooks/useProductCreateWizard'
+import { stepKey } from './utils/stepCopy'
 import { BasicsStep } from './steps/BasicsStep'
 import { DetailsStep } from './steps/DetailsStep'
 import { InstancesStep } from './steps/InstancesStep'
@@ -67,7 +68,7 @@ export function ProductCreateWizard({ kind = 'product', initialItemTypeId = '', 
     <ModulePageHeader
       icon={PackagePlus}
       title={t(`catalog.create.title.${entity}`)}
-      description={t(quickMode ? 'productSetup.quickAdd.headerDescription' : 'catalog.create.description')}
+      description={t(quickMode ? 'productSetup.quickAdd.headerDescription' : kind === 'service' ? 'productSetup.service.description' : 'catalog.create.description')}
       actions={(
         <>
           <div className="flex items-center rounded-lg border border-[var(--border)] px-3">
@@ -111,25 +112,25 @@ export function ProductCreateWizard({ kind = 'product', initialItemTypeId = '', 
             {t(wizard.restoredDraft.hadImage ? 'productSetup.drafts.restoredNoImage' : 'productSetup.drafts.restored')}
           </p>
         )}
-        <CreateStepper steps={steps} step={step} done={locked} onSelect={goTo} />
+        <CreateStepper steps={steps} step={step} done={locked} onSelect={goTo} kind={kind} />
         {wizard.typeDefaults && ['basics', 'stock', 'relations'].includes(step) && (
           <p role="status" className="flex items-start gap-2 rounded-lg border border-[var(--ai-border)] bg-[var(--ai-bg)] p-3 text-sm text-[var(--text)]">
             <Info size={16} className="mt-0.5 shrink-0 text-[var(--ai-text)]" aria-hidden="true" />
-            {t('catalog.create.typeDefaultsApplied', { type: wizard.typeDefaults.typeName, units: wizard.typeDefaults.units, relations: wizard.typeDefaults.relations })}
+            {t(kind === 'service' ? 'productSetup.service.typeDefaultsApplied' : 'catalog.create.typeDefaultsApplied', { type: wizard.typeDefaults.typeName, units: wizard.typeDefaults.units, relations: wizard.typeDefaults.relations })}
           </p>
         )}
 
         <div className={cn('grid gap-4', tutorial && 'lg:grid-cols-[minmax(0,1fr)_320px]')}>
           <section className="min-w-0 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">
             <header className="mb-4">
-              <h2 className="text-base font-bold text-[var(--text)]">{t(`catalog.create.steps.${step}.title`)}</h2>
-              <p className="text-sm text-[var(--text-muted)]">{t(`catalog.create.steps.${step}.description`)}</p>
+              <h2 className="text-base font-bold text-[var(--text)]">{t(stepKey(kind, step, 'title'))}</h2>
+              <p className="text-sm text-[var(--text-muted)]">{t(stepKey(kind, step, 'description'))}</p>
             </header>
             <fieldset disabled={locked && step !== 'review'} className="min-w-0">
-              {step === 'basics' && <BasicsStep wizard={wizard} onQuickType={() => setDialog('type')} onQuickCategory={() => setDialog('category')} />}
+              {step === 'basics' && <BasicsStep wizard={wizard} kind={kind} onQuickType={() => setDialog('type')} onQuickCategory={() => setDialog('category')} />}
               {step === 'stock' && <StockStep wizard={wizard} onCreateUnit={() => setDialog('unit')} />}
               {step === 'capabilities' && <DetailsStep wizard={wizard} />}
-              {step === 'relations' && <RelationsStep wizard={wizard} />}
+              {step === 'relations' && <RelationsStep wizard={wizard} kind={kind} />}
               {step === 'instances' && (
                 <InstancesStep
                   itemType={wizard.itemType}
@@ -147,8 +148,8 @@ export function ProductCreateWizard({ kind = 'product', initialItemTypeId = '', 
           </section>
           {tutorial && (
             <TutorialPanel
-              guideKey={`productSetup.steps.${step}.guide`}
-              extra={<StepTypeNote step={step} itemType={wizard.itemType} typeDefaults={wizard.typeDefaults} />}
+              guideKey={stepKey(kind, step, 'guide')}
+              extra={<StepTypeNote step={step} itemType={wizard.itemType} typeDefaults={wizard.typeDefaults} kind={kind} />}
             />
           )}
         </div>

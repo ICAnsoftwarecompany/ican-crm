@@ -1,6 +1,7 @@
 # features/products/item-type-wizard — إضافة نوع منتج أو خدمة
 
-> **Documentation update:** 2026-10-15 00:43 (Africa/Cairo) — `QuickItemTypeDialog` اتضاف (نوع سريع من إضافة المنتج)، و`HelpTip` / `TutorialPanel` / `usePersistentFlag` اتنقلوا لـ `components/common` و`hooks` لأن إضافة المنتج بتستخدمهم كمان.
+> **Documentation update:** 2026-10-15 13:30 (Africa/Cairo) — أنواع الخدمات مالهاش خطوة وحدات (`supportsUnits` للمنتجات بس)، وقوالب الخدمات من غير وحدات.
+> 2026-10-15 00:43 (Africa/Cairo) — `QuickItemTypeDialog` اتضاف (نوع سريع من إضافة المنتج)، و`HelpTip` / `TutorialPanel` / `usePersistentFlag` اتنقلوا لـ `components/common` و`hooks` لأن إضافة المنتج بتستخدمهم كمان.
 > 2026-10-15 00:08 (Africa/Cairo) — الفولدر اتعمل وكل مكونات إضافة النوع اتنقلت فيه، والملف ده اتكتب.
 
 الفولدر ده فيه **كل حاجة تخص إضافة وتعديل نوع صنف** (Item Type) في الكتالوج: الصفحة، المراحل، القوالب الجاهزة،

@@ -10,6 +10,78 @@ export default {
     image: { title: 'Image', text: 'Optional picture. It is not kept in drafts; choose it again when you continue a draft.' },
     status: { title: 'Active', text: 'Only active items can be added to deals and proposals.' },
   },
+  service: {
+    description: 'A service is work you do for the customer: no stock, units or pieces. Name it, price it, choose how it is delivered (booking, visit, participants…) and what is sold with it.',
+    typeDefaultsApplied: 'Filled from the type "{{type}}": {{relations}} attached service(s). You can change them.',
+    help: {
+      name: { title: 'Service name', text: 'What customers ask for, e.g. "AC maintenance visit" or "1-hour consultation".' },
+      kind: { title: 'Kind', text: 'Service. It cannot change after saving.' },
+      itemType: { title: 'Service type', text: 'Optional. The type decides how the service is delivered: booking with a duration, an on-site visit, participants, milestones or recurrence. It also attaches its default services. Without a type you fill the details yourself.' },
+      price: { title: 'Price', text: 'The price of one service (one visit, one session, one package).' },
+      category: { title: 'Category', text: 'The service category it is listed under. Its path and details show below.' },
+      description: { title: 'Description', text: 'What the service includes and how it is delivered. It shows in proposals.' },
+      image: { title: 'Image', text: 'Optional picture of the service. It is not kept in drafts.' },
+      status: { title: 'Active', text: 'Only active services can be added to deals and proposals.' },
+    },
+    type: {
+      manual: 'No service type: you will fill the details and attached services yourself.',
+      relations: 'Attached services: {{count}}',
+    },
+    relations: {
+      child: 'Service',
+      empty: 'No attached services. Add services sold with this one, e.g. a free inspection or an optional follow-up visit.',
+      addIncluded: 'Included service',
+      addOptional: 'Optional service',
+    },
+    steps: {
+      basics: {
+        title: 'The service',
+        hint: 'Name, type, price',
+        description: 'What the service is called, its type, category and price.',
+        manual: 'No service type chosen: you fill the details yourself.',
+        withType: 'Type "{{type}}" decides how this service is delivered and fills the next steps.',
+        guide: {
+          title: 'Describe the service',
+          text: 'Start with the name and price of one service. Choosing a service type is the fastest way: it brings booking, visit or participant settings.',
+          points: { a: 'Write the name customers use.', b: 'Choose a service type, or create one quickly.', c: 'Choose a category and check its path.' },
+        },
+      },
+      capabilities: {
+        title: 'How it is delivered',
+        hint: 'Booking, visit, participants',
+        description: 'The delivery settings of the service type for this service, what a sale creates, and free fields.',
+        manual: 'No type: set what a sale creates (booking, work order, project…) and add free fields.',
+        withType: 'Settings from "{{type}}": {{capabilities}}. Leave a field empty to keep the type default.',
+        guide: {
+          title: 'Delivery details',
+          text: 'Duration of a booking, expected visit time, number of participants, warranty on the work… Here you change them for this service only.',
+          points: { a: 'Empty field = the type default.', b: '"A sale creates" decides what opens when a deal is won (booking, work order…).' },
+        },
+      },
+      relations: {
+        title: 'Attached services',
+        hint: 'Included or optional',
+        description: 'Other services sold with this one.',
+        manual: 'No type: add the services sold with this one yourself.',
+        withType: 'Type "{{type}}" attached {{relations}} service(s); change or remove them as you like.',
+        guide: {
+          title: 'Sold together',
+          text: 'Attach services that go with this one: included ones go into the deal automatically, optional ones are offered to the customer.',
+          points: { a: 'Included + price 0 = free (e.g. inspection).', b: 'Optional = offered (e.g. a follow-up visit).' },
+        },
+      },
+      review: {
+        title: 'Review and save',
+        hint: 'Check and save',
+        description: 'Check the service before saving.',
+        guide: {
+          title: 'Almost done',
+          text: 'Check each section. Saving creates the service, then its attached services in order; a failure can be retried without duplicates.',
+          points: { a: 'Use "Edit" to go back to a step.' },
+        },
+      },
+    },
+  },
   instanceModes: { serial: 'serial numbers', unit: 'unique units', batch: 'batches with expiry' },
   type: {
     manual: 'No item type: you will go through every step and fill the units, details and attached items yourself. Pieces (serials, units, batches) need a type.',

@@ -21,7 +21,8 @@ export function QuickAddForm({ kind, quick, lookups }) {
   const [newCategory, setNewCategory] = useState(false)
   const { row, update, errors, error, submit, saving } = quick
   const fieldError = (key) => (errors[key] ? t(`catalog.validation.${errors[key]}`) : undefined)
-  const help = (key) => ({ title: t(`productSetup.help.${key}.title`), text: t(`productSetup.help.${key}.text`) })
+  const helpPrefix = kind === 'service' ? 'productSetup.service.help' : 'productSetup.help'
+  const help = (key) => ({ title: t(`${helpPrefix}.${key}.title`), text: t(`${helpPrefix}.${key}.text`) })
 
   const onSubmit = async (event) => {
     event.preventDefault()
