@@ -38,6 +38,11 @@ export default {
         "title": "Review & create",
         "hint": "Check and send",
         "description": "Check everything, then create. The requests run in order; if one fails, retry continues from it."
+      },
+      "source": {
+        "title": "Lead source",
+        "hint": "Campaigns or leads",
+        "description": "Where the deal leads come from: one or more linked campaigns, or leads you pick from the CRM or add now."
       }
     },
     "pipeline": {
@@ -147,14 +152,25 @@ export default {
         "template": "Pipeline template",
         "deal": "Deal",
         "products": "Products ({{count}})",
-        "teamBatch": "Team ({{users}} users, {{teams}} teams)"
+        "teamBatch": "Team ({{users}} users, {{teams}} teams)",
+        "campaigns": "Link campaigns ({{count}})",
+        "existingLeads": "CRM leads ({{count}})",
+        "newLeads": "New leads ({{sent}}/{{count}})"
       },
       "stoppedAt": "Stopped:",
       "failed": "The request failed.",
       "noTemplateId": "The pipeline was created but its id was not returned.",
       "noDealId": "The deal was created but its id was not returned.",
       "resumeNote": "The deal exists. Retrying only sends what is left.",
-      "teamSummary": "{{users}} users and {{teams}} teams"
+      "teamSummary": "{{users}} users and {{teams}} teams",
+      "source": {
+        "campaigns": "Linked to {{count}} campaigns",
+        "leads": "{{existing}} CRM leads and {{created}} new leads",
+        "later": "Leads later from the deal page"
+      },
+      "leadsFailed": "{{count}} leads were not added:",
+      "leadsFailedHint": "\"Retry\" sends only these leads.",
+      "finishWithoutFailed": "Open the deal without them"
     },
     "errors": {
       "templateRequired": "Choose a pipeline.",
@@ -165,7 +181,17 @@ export default {
       "duplicateMember": "The same member is listed twice.",
       "incompleteMember": "Every member needs a person/team and a role.",
       "quickTeamNameRequired": "The team name is required.",
-      "quickTeamMembersRequired": "Pick at least one member."
+      "quickTeamMembersRequired": "Pick at least one member.",
+      "sourceRequired": "Choose a lead source.",
+      "campaignsRequired": "Pick at least one campaign.",
+      "leadsRequired": "Add at least one lead, or choose \"Later\".",
+      "leadRowsInvalid": "Some new leads have problems; fix or delete them.",
+      "tooManyLeads": "Creation takes up to 300 new leads; add the rest from the deal page.",
+      "leadNameRequired": "Name required",
+      "leadPhoneRequired": "Phone required",
+      "leadPhoneInvalid": "Invalid number",
+      "leadPhoneDuplicate": "Duplicate number",
+      "leadEmailInvalid": "Invalid email"
     },
     "guide": {
       "label": "About this step",
@@ -296,6 +322,111 @@ export default {
           }
         },
         "example": "If the team request fails, the deal stays created and the retry sends only the team and products."
+      },
+      "source": {
+        "title": "Lead source: where leads come from",
+        "points": {
+          "what": {
+            "title": "Why this step?",
+            "text": "A deal without leads has nothing to work. Decide now where they come from; you can change it later."
+          },
+          "campaigns": {
+            "title": "Linked to campaigns",
+            "text": "Pick one or more campaigns. \"Activate the link\" lets the campaign leads enter the deal; turn it off to prepare the deal first."
+          },
+          "free": {
+            "title": "Free deal",
+            "text": "Search the Leads Center by name or phone and click a lead to add it. They are all added in one request."
+          },
+          "newLeads": {
+            "title": "New leads",
+            "text": "Type them one by one, paste columns from Excel, or pick a file. Missing and duplicate numbers show in red so you fix them before creating."
+          },
+          "owner": {
+            "title": "Owner and stage",
+            "text": "Choose who follows these leads and which stage they start in, or leave no owner to distribute them later."
+          },
+          "later": {
+            "title": "Later",
+            "text": "No source yet? Choose \"Later\" and add leads from the deal page."
+          }
+        },
+        "example": "A \"New Cairo villas\" deal linked to the \"Ramadan\" and \"Retargeting\" campaigns, or a free deal with an Excel file of 120 visitors from an exhibition."
+      }
+    },
+    "source": {
+      "modeLabel": "Deal lead source",
+      "modes": {
+        "campaigns": {
+          "title": "Linked to campaigns",
+          "text": "The deal works one or more ad campaigns; their leads enter the deal."
+        },
+        "leads": {
+          "title": "Free deal with leads",
+          "text": "Pick leads already in the CRM, or add new ones by typing, pasting from Excel or uploading a file."
+        },
+        "later": {
+          "title": "Later",
+          "text": "Create the deal now and add leads or link a campaign from the deal page."
+        }
+      },
+      "laterNote": "No leads are added now. After creating, add them from the deal's \"Leads\" page.",
+      "campaigns": {
+        "title": "Pick campaigns",
+        "description": "The company campaigns in the CRM; a deal can be linked to several.",
+        "search": "Search campaigns",
+        "active": "Active",
+        "inactive": "Paused",
+        "emptyTitle": "No campaigns",
+        "emptyDescription": "Create a campaign in the Campaign Center first, or choose \"Free deal with leads\".",
+        "selected": "Picked campaigns ({{count}})",
+        "none": "No campaign picked yet.",
+        "activeLabel": "Activate the link now",
+        "activeHint": "On: the campaign leads enter the deal from now. You can pause or resume the link per campaign later."
+      },
+      "leads": {
+        "owner": "Leads owner",
+        "ownerHint": "Every lead added here is assigned to them. No owner: distribute them later from the deal.",
+        "noOwner": "No owner (distribute later)",
+        "stage": "Starting stage",
+        "stageHint": "The stage the CRM leads start in.",
+        "stageNewPipeline": "New pipeline: leads start in the first stage.",
+        "firstStage": "First stage",
+        "addTitle": "Add leads",
+        "addDescription": "Pick from the CRM or add new leads; they all gather in the list beside.",
+        "ways": {
+          "crm": "From CRM",
+          "type": "Type",
+          "paste": "Paste",
+          "file": "File"
+        },
+        "search": "Search leads",
+        "searchPlaceholder": "Name or phone…",
+        "searchHint": "Type at least two characters to search the Leads Center. Click a lead to add or remove it.",
+        "searchFailed": "Search failed. Try again.",
+        "addAllResults": "Add all results ({{count}})",
+        "emailOptional": "Email (optional)",
+        "enterHint": "Enter adds the lead and starts a new one.",
+        "addOne": "Add",
+        "pasteLabel": "Paste rows here",
+        "pasteHint": "Copy columns from Excel or Google Sheets (name, phone, email, company). A header row is optional, in any order.",
+        "pastePlaceholder": "Name\tPhone\nAhmed Ali\t01001234567",
+        "readPaste": "Read rows",
+        "fileLabel": "Choose an Excel or CSV file",
+        "fileHint": "First sheet only. Columns: name and phone (email and company optional). Format the phone column as Text in Excel so the leading 0 is kept. The file is read here, not uploaded as is.",
+        "fileButton": "Choose file",
+        "fileFailed": "Could not read the file. Make sure it is xlsx or csv.",
+        "nothingFound": "No leads found in the input.",
+        "added": "{{count}} leads added to the list.",
+        "cut": "Only {{added}} of {{total}} added: creation takes up to 300 new leads.",
+        "basketTitle": "Deal leads",
+        "basketSummary": "{{existing}} from CRM · {{created}} new (up to {{max}})",
+        "basketEmpty": "The list is empty. Search the CRM or add new leads.",
+        "fromCrm": "From CRM ({{count}})",
+        "newRows": "New leads ({{count}})",
+        "clearNew": "Clear new",
+        "remove": "Remove",
+        "removeInvalid": "Delete invalid rows ({{count}})"
       }
     }
   },

@@ -3,6 +3,7 @@ import { CheckCircle2, Circle, Loader2, XCircle } from 'lucide-react'
 import { ModuleNotice } from '../../../../shared/components/module-pages'
 import { usePipelineTemplates } from '../../hooks/useDeals'
 import { buildWizardRequests, countTeam } from '../../utils/dealWizard'
+import { countLeadSource } from '../../utils/leadSource'
 import { formatMoney } from '../../utils/dealMoney'
 
 const ICONS = { running: Loader2, done: CheckCircle2, error: XCircle }
@@ -20,8 +21,8 @@ function Section({ title, step, onEdit, children }) {
   )
 }
 
-/** Step 5 — summary of every answer, then the requests that will be sent and their progress. */
-export function ReviewStep({ state, created, progress, error, onEdit }) {
+/** Step 6 — summary of every answer, then the requests that will be sent and their progress. */
+export function ReviewStep({ state, created, progress, error, onEdit, onFinishWithoutFailed }) {
   const { t, i18n } = useTranslation()
   const { templates } = usePipelineTemplates()
   const template = templates.find((item) => String(item.id) === String(state.pipeline.templateId))
@@ -30,13 +31,23 @@ export function ReviewStep({ state, created, progress, error, onEdit }) {
   const teamSize = teamCount.users + teamCount.teams
   const requests = buildWizardRequests(state)
   const basics = state.basics
+  const source = countLeadSource(state.source)
+  const sentLeads = created.newLeadKeys?.length || 0
 
   const steps = [
     ...(requests.template ? [{ id: 'template', label: t('dealWorkspace.wizard.review.requests.template'), done: Boolean(created.templateId) }] : []),
     { id: 'deal', label: t('dealWorkspace.wizard.review.requests.deal'), done: Boolean(created.dealId) },
     ...(teamSize ? [{ id: 'team', label: t('dealWorkspace.wizard.review.requests.teamBatch', teamCount), done: created.teamDone === true }] : []),
     ...(requests.products(1) ? [{ id: 'products', label: t('dealWorkspace.wizard.review.requests.products', { count: state.products.ids.length }), done: created.productsDone }] : []),
+    ...(source.campaigns ? [{ id: 'campaigns', label: t('dealWorkspace.wizard.review.requests.campaigns', { count: source.campaigns }), done: created.campaignsDone }] : []),
+    ...(source.existing ? [{ id: 'existingLeads', label: t('dealWorkspace.wizard.review.requests.existingLeads', { count: source.existing }), done: created.existingLeadsDone }] : []),
+    ...(source.created ? [{ id: 'newLeads', label: t('dealWorkspace.wizard.review.requests.newLeads', { count: source.created, sent: Math.max(sentLeads, progress.newLeadsSent || 0) }), done: sentLeads >= source.created }] : []),
   ]
+  const sourceText = {
+    campaigns: t('dealWorkspace.wizard.review.source.campaigns', { count: source.campaigns }),
+    leads: t('dealWorkspace.wizard.review.source.leads', source),
+    later: t('dealWorkspace.wizard.review.source.later'),
+  }[state.source.mode] || '—'
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
@@ -61,6 +72,9 @@ export function ReviewStep({ state, created, progress, error, onEdit }) {
         <Section title={t('dealWorkspace.wizard.steps.team.title')} step="team" onEdit={onEdit}>
           <p className="text-sm text-[var(--text)]">{teamSize ? t('dealWorkspace.wizard.review.teamSummary', teamCount) : t('dealWorkspace.wizard.team.none')}</p>
         </Section>
+        <Section title={t('dealWorkspace.wizard.steps.source.title')} step="source" onEdit={onEdit}>
+          <p className="text-sm text-[var(--text)]">{sourceText}</p>
+        </Section>
       </div>
 
       <aside className="space-y-3">
@@ -79,7 +93,17 @@ export function ReviewStep({ state, created, progress, error, onEdit }) {
             })}
           </ol>
         </section>
-        {error && <ModuleNotice tone="warning">{t('dealWorkspace.wizard.review.stoppedAt')} {error.message}</ModuleNotice>}
+        {error && !error.failed && <ModuleNotice tone="warning">{t('dealWorkspace.wizard.review.stoppedAt')} {error.message}</ModuleNotice>}
+        {error?.failed && (
+          <ModuleNotice tone="warning">
+            <p className="font-semibold">{error.message}</p>
+            <ul className="mt-1 max-h-40 space-y-0.5 overflow-y-auto text-xs">
+              {error.failed.map((row) => <li key={row.key}>{row.name || '—'} <span dir="ltr">{row.phone}</span>: {row.message}</li>)}
+            </ul>
+            <p className="mt-2 text-xs">{t('dealWorkspace.wizard.review.leadsFailedHint')}</p>
+            <button type="button" onClick={onFinishWithoutFailed} className="mt-1 text-xs font-semibold text-[var(--brand-accent)] hover:underline">{t('dealWorkspace.wizard.review.finishWithoutFailed')}</button>
+          </ModuleNotice>
+        )}
         {created.dealId && !error && <ModuleNotice>{t('dealWorkspace.wizard.review.resumeNote')}</ModuleNotice>}
       </aside>
     </div>

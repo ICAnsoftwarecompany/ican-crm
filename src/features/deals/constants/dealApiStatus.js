@@ -18,6 +18,8 @@ export const DEAL_API_STATUS = {
   team: 'live',
   teamRoleUpdate: 'planned',
   products: 'live',
+  // Campaigns linked to a deal (Postman "Deal Campaign", 2026-10-16)
+  dealCampaigns: 'live',
   // Deal leads
   leadsList: 'live',
   leadsAddExisting: 'live',

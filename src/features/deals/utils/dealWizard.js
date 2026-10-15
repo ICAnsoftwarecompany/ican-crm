@@ -1,3 +1,4 @@
+import { buildCampaignsPayload, buildExistingLeadsPayload, createLeadSourceState, newLeadRows, validateLeadSource } from './leadSource'
 import { buildTemplatePayload, validateStages } from './pipelineTemplate'
 
 /**
@@ -6,9 +7,10 @@ import { buildTemplatePayload, validateStages } from './pipelineTemplate'
  * 2. basics    — the deal's first data (name, type, status, dates, targets, owner)
  * 3. products  — the products the deal works on (decides the deal's product mode)
  * 4. team      — ready teams and/or users picked one by one, each with a role (one request)
- * 5. review    — sends the requests in order (see `buildWizardRequests`)
+ * 5. source    — where the leads come from: linked campaigns, CRM / new leads ("free" deal) or later (utils/leadSource)
+ * 6. review    — sends the requests in order (see `buildWizardRequests`)
  */
-export const WIZARD_STEPS = ['pipeline', 'basics', 'products', 'team', 'review']
+export const WIZARD_STEPS = ['pipeline', 'basics', 'products', 'team', 'source', 'review']
 
 export const DEFAULT_WIZARD_STAGES = [
   { name: '', color: '#3B82F6', is_won_stage: false, is_lost_stage: false },
@@ -29,7 +31,14 @@ export function createWizardState(stageNames = []) {
     basics: { name: '', description: '', type: 'sales', status: 'active', start_date: '', end_date: '', target_revenue: '', target_leads: '', owner_id: '' },
     products: { ids: [] },
     team: { members: [], addOwner: true },
+    source: createLeadSourceState(),
   }
+}
+
+/** A saved draft from before a step existed gets that step's defaults. */
+export function withWizardDefaults(state, stageNames) {
+  const defaults = createWizardState(stageNames)
+  return state ? { ...defaults, ...state, source: { ...defaults.source, ...(state.source || {}) } } : defaults
 }
 
 /** Errors of one step as i18n keys (`dealWorkspace.wizard.errors.*`); empty object = step is valid. */
@@ -55,6 +64,7 @@ export function validateWizardStep(step, state) {
     if (new Set(keys).size !== keys.length) errors.members = 'duplicateMember'
     if (state.team.members.some((member) => !member.refId || !member.role)) errors.members = 'incompleteMember'
   }
+  if (step === 'source') Object.assign(errors, validateLeadSource(state.source))
   return errors
 }
 
@@ -104,7 +114,9 @@ export function countTeam(state) {
  * 3. `POST /api/tenant/deals/team` once for the whole team: `{ deal_id, users: [{ user_id, role }], teams: [{ team_id, role }] }`
  *    (empty lists are left out; skipped when nobody was chosen)
  * 4. `POST /api/tenant/deals/products` with `product_ids` (skipped without products)
- * `deal`, `team` and `products` take the ids created by the earlier requests.
+ * 5. source: `POST /api/tenant/deals/{id}/campaigns` `{ campaign_ids, is_active }` (campaigns mode), or
+ *    `POST /api/tenant/deals/leads/add-existing` once + `POST /api/tenant/deals/leads/create` per new lead (leads mode)
+ * `deal`, `team`, `products` and the source requests take the ids created by the earlier requests.
  */
 export function buildWizardRequests(state) {
   const template = state.pipeline.mode === 'new'
@@ -129,6 +141,9 @@ export function buildWizardRequests(state) {
     products: (dealId) => (state.products.ids.length
       ? { deal_id: toNumber(dealId) ?? dealId, product_ids: state.products.ids.map((id) => toNumber(id) ?? id) }
       : null),
+    campaigns: () => buildCampaignsPayload(state.source),
+    existingLeads: (dealId) => buildExistingLeadsPayload(state.source, dealId),
+    newLeads: newLeadRows(state.source),
   }
 }
 

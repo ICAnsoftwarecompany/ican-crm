@@ -10,6 +10,7 @@ export const WIZARD_GUIDE = {
   basics: ['what', 'type', 'period', 'targets', 'owner'],
   products: ['what', 'single', 'units', 'multi', 'later'],
   team: ['what', 'teams', 'users', 'roles', 'notify'],
+  source: ['what', 'campaigns', 'free', 'newLeads', 'owner', 'later'],
   review: ['what', 'order', 'retry', 'after'],
 }
 

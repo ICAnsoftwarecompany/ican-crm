@@ -8,6 +8,7 @@ import { Button } from '../../../../shared/components/ui/Button'
 import { useDealCreateWizard } from '../../hooks/useDealCreateWizard'
 import { WIZARD_STEPS, validateWizardStep } from '../../utils/dealWizard'
 import { BasicsStep } from './BasicsStep'
+import { LeadSourceStep } from './LeadSourceStep'
 import { PipelineStep } from './PipelineStep'
 import { ProductsStep } from './ProductsStep'
 import { ReviewStep } from './ReviewStep'
@@ -16,7 +17,7 @@ import { TeamStep } from './TeamStep'
 import { WizardStepper } from './WizardStepper'
 
 /**
- * `/deals/new` — create a deal in steps: stages → first data → products → team → review & create.
+ * `/deals/new` — create a deal in steps: stages → first data → products → team → lead source → review & create.
  * Answers are kept as a draft in this browser until the deal is created (see useDealCreateWizard).
  */
 export function DealCreateWizard() {
@@ -70,7 +71,8 @@ export function DealCreateWizard() {
           {step === 'basics' && <BasicsStep value={state.basics} onChange={(patch) => update('basics', patch)} errors={errors} />}
           {step === 'products' && <ProductsStep value={state.products} onChange={(patch) => update('products', patch)} />}
           {step === 'team' && <TeamStep value={state.team} ownerId={state.basics.owner_id} onChange={(patch) => update('team', patch)} errors={errors} />}
-          {step === 'review' && <ReviewStep state={state} created={wizard.created} progress={wizard.progress} error={wizard.error} onEdit={goTo} />}
+          {step === 'source' && <LeadSourceStep value={state.source} pipeline={state.pipeline} ownerId={state.basics.owner_id} onChange={(patch) => update('source', patch)} errors={errors} />}
+          {step === 'review' && <ReviewStep state={state} created={wizard.created} progress={wizard.progress} error={wizard.error} onEdit={goTo} onFinishWithoutFailed={wizard.finishWithoutFailed} />}
         </fieldset>
         <div className="hidden xl:block"><StepGuide step={step} /></div>
         </div>

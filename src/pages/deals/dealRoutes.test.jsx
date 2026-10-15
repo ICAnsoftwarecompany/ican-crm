@@ -41,6 +41,9 @@ const routes = [
   [/\/api\/tenant\/deals$/, { data: [deal] }],
   [/\/api\/tenant\/product\/data$/, { data: [{ id: 30, name: 'Villas', products: [{ id: 31, name: 'Villa 12', price: 9000000, category_id: 30, unit_mode: 'unique' }, { id: 32, name: 'Sedan X', price: 800000, category_id: 30, available_units: 5 }] }] }],
   [/\/api\/tenant\/teams\/get$/, { data: [{ id: 3, name: 'Team A', users: [{ id: 4, name: 'Nour' }, { id: 6, name: 'Hany' }] }] }],
+  [/\/api\/tenant\/campaigns\/active$/, { data: [{ id: 1, name: 'Ramadan' }] }],
+  [/\/api\/tenant\/campaigns\/inactive$/, { data: [{ id: 2, name: 'Old offer' }] }],
+  [/\/api\/tenant\/customers\/data$/, { data: [{ id: 70, name: 'Mona', phone: '01200000001', lead: { id: 15, name: 'Mona', phone: '01200000001' } }] }],
   [/\/api\/tenant\/users\/get$/, { data: [{ id: 2, name: 'Karim' }, { id: 4, name: 'Nour' }] }],
   [/\/api\/pipeline-templates$/, { data: [{ id: 5, name: 'Sales Pipeline', type: 'sales', stages }] }],
 ]
@@ -49,7 +52,8 @@ const get = vi.fn(async (url) => {
   const match = routes.find(([pattern]) => pattern.test(url))
   return { data: match ? match[1] : { data: [] } }
 })
-const post = vi.fn(async (url) => {
+const post = vi.fn(async (url, body) => {
+  if (url === '/api/tenant/deals/leads/create' && body?.name === 'Bad') throw Object.assign(new Error('x'), { response: { data: { message: 'phone already exists' } } })
   if (url.endsWith('/won')) return { data: { data: contract } }
   if (url === '/api/tenant/pipeline-templates') return { data: { data: { id: 77 } } }
   if (url === '/api/tenant/deals') return { data: { data: { id: 88 } } }
@@ -185,18 +189,27 @@ describe('deals area', () => {
     fireEvent.click(await screen.findByRole('checkbox', { name: /^Nour/ }))
     expect(screen.getByText('dealWorkspace.wizard.team.summary')).toBeTruthy()
     next()
-    // 5. Review → create.
+    // 5. Lead source: linked to a campaign (a choice and a campaign are required).
+    next()
+    expect(await screen.findByText('dealWorkspace.wizard.errors.sourceRequired')).toBeTruthy()
+    fireEvent.click(screen.getByRole('radio', { name: 'dealWorkspace.wizard.source.modes.campaigns.title' }))
+    next()
+    expect(await screen.findByText('dealWorkspace.wizard.errors.campaignsRequired')).toBeTruthy()
+    fireEvent.click(await screen.findByRole('checkbox', { name: 'Ramadan' }))
+    next()
+    // 6. Review → create.
     fireEvent.click(await screen.findByText('dealWorkspace.wizard.create'))
     await waitFor(() => expect(router.state.location.pathname).toBe('/deals/88'))
 
     const urls = post.mock.calls.map(([url]) => url)
-    expect(urls).toEqual(['/api/tenant/pipeline-templates', '/api/tenant/deals', '/api/tenant/deals/team', '/api/tenant/deals/products'])
+    expect(urls).toEqual(['/api/tenant/pipeline-templates', '/api/tenant/deals', '/api/tenant/deals/team', '/api/tenant/deals/products', '/api/tenant/deals/88/campaigns'])
     const bodies = post.mock.calls.map(([, body]) => body)
     expect(bodies[0]).toMatchObject({ name: 'Villas pipeline', type: 'sales', status: true })
     expect(bodies[0].stages.filter((stage) => stage.is_won_stage)).toHaveLength(1)
     expect(bodies[1]).toMatchObject({ pipeline_template_id: 77, name: 'Villa 12 sale' })
     expect(bodies[2]).toEqual({ deal_id: 88, users: [{ user_id: 4, role: 'sales_rep' }], teams: [{ team_id: 3, role: 'manager' }] })
     expect(bodies[3]).toEqual({ deal_id: 88, product_ids: [31] })
+    expect(bodies[4]).toEqual({ campaign_ids: [1], is_active: true })
   })
   it('quick team: with no teams, creates one from the team step and adds it to the deal', async () => {
     const teamsRoute = routes.find(([pattern]) => pattern.test('/api/tenant/teams/get'))
@@ -223,6 +236,8 @@ describe('deals area', () => {
       await waitFor(() => expect(post).toHaveBeenCalledWith('/api/tenant/teams/create', { name: 'Villas team', active: true, type: 'sales', members: [4] }))
       await waitFor(() => expect(screen.getByText('dealWorkspace.wizard.team.summary')).toBeTruthy())
       next()
+      fireEvent.click(await screen.findByRole('radio', { name: 'dealWorkspace.wizard.source.modes.later.title' }))
+      next()
       fireEvent.click(await screen.findByText('dealWorkspace.wizard.create'))
       await waitFor(() => expect(post.mock.calls.some(([url]) => url === '/api/tenant/deals/team')).toBe(true))
       const [, body] = post.mock.calls.find(([url]) => url === '/api/tenant/deals/team')
@@ -230,5 +245,49 @@ describe('deals area', () => {
     } finally {
       teamsRoute[1] = saved
     }
+  })
+  it('lead source: a free deal with CRM leads and pasted new leads; a refused lead does not block the others', async () => {
+    const router = renderAt('/deals/new')
+    const next = () => fireEvent.click(screen.getByText('dealWorkspace.wizard.next'))
+    fireEvent.click(await screen.findByText('dealWorkspace.wizard.pipeline.new.title'))
+    fireEvent.change(screen.getByLabelText(/^dealWorkspace.pipelines.name/), { target: { value: 'P' } })
+    next()
+    fireEvent.change(await screen.findByLabelText(/^dealWorkspace.fields.name/), { target: { value: 'Expo deal' } })
+    next()
+    await screen.findByText('Villa 12')
+    next()
+    await screen.findByText('dealWorkspace.wizard.team.users.title')
+    next()
+
+    fireEvent.click(await screen.findByRole('radio', { name: 'dealWorkspace.wizard.source.modes.leads.title' }))
+    // From the CRM: search, click to add.
+    fireEvent.change(screen.getByLabelText('dealWorkspace.wizard.source.leads.search'), { target: { value: 'Mo' } })
+    fireEvent.click(await screen.findByRole('button', { name: /Mona/ }))
+    expect(screen.getByText('dealWorkspace.wizard.source.leads.fromCrm')).toBeTruthy()
+    // Pasted from Excel: one duplicate of the CRM lead's phone → flagged, deleted with one click.
+    fireEvent.click(screen.getByRole('tab', { name: 'dealWorkspace.wizard.source.leads.ways.paste' }))
+    fireEvent.change(screen.getByLabelText(/^dealWorkspace.wizard.source.leads.pasteLabel/), { target: { value: 'Name\tPhone\nAli\t0100 111 2222\nBad\t01005556666\nDup\t01200000001' } })
+    fireEvent.click(screen.getByText('dealWorkspace.wizard.source.leads.readPaste'))
+    expect(await screen.findByText('dealWorkspace.wizard.errors.leadPhoneDuplicate')).toBeTruthy()
+    next()
+    expect(await screen.findByText('dealWorkspace.wizard.errors.leadRowsInvalid')).toBeTruthy()
+    fireEvent.click(screen.getByText('dealWorkspace.wizard.source.leads.removeInvalid'))
+    next()
+
+    fireEvent.click(await screen.findByText('dealWorkspace.wizard.create'))
+    expect(await screen.findByText('dealWorkspace.wizard.review.leadsFailed')).toBeTruthy()
+    expect(screen.getByText(/phone already exists/)).toBeTruthy()
+    const calls = post.mock.calls.filter(([url]) => url.startsWith('/api/tenant/deals/leads/'))
+    expect(calls.map(([url]) => url)).toEqual(['/api/tenant/deals/leads/add-existing', '/api/tenant/deals/leads/create', '/api/tenant/deals/leads/create'])
+    expect(calls[0][1]).toEqual({ deal_id: 88, lead_ids: [15] })
+    expect(calls[1][1]).toEqual({ deal_id: 88, name: 'Ali', phone: '0100 111 2222', type: 'lead', source: 'manual', linked_type: 'manual' })
+
+    // Retry sends only the refused lead; then open the deal without it.
+    post.mockClear()
+    fireEvent.click(screen.getByText('dealWorkspace.wizard.retry'))
+    await waitFor(() => expect(post).toHaveBeenCalledTimes(1))
+    expect(post.mock.calls[0][1]).toMatchObject({ name: 'Bad' })
+    fireEvent.click(await screen.findByText('dealWorkspace.wizard.review.finishWithoutFailed'))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/deals/88'))
   })
 })
