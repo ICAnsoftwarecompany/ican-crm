@@ -8,7 +8,8 @@ export default {
       "reports": "Reports & statistics",
       "pipelines": "Pipelines",
       "new": "New deal",
-      "calendar": "Calendar"
+      "calendar": "Calendar",
+      "overview": "Overview"
     },
     "dealsDescription": "Each deal has its own workspace with its leads, team, products and contracts. Click a deal to open it.",
     "contractsDescription": "Contracts of every deal.",
@@ -88,6 +89,21 @@ export default {
         "unassigned": "{{count}} unassigned",
         "stale": "{{count}} without follow-up"
       }
+    },
+    "overview": {
+      "description": "Open one or more deals and see their numbers from the server: leads, won and lost, revenue, stages and owners — or compare them. Open deals and their numbers stay saved in this browser.",
+      "openDeals": "Open deals",
+      "emptyTitle": "No deal open yet",
+      "emptyDescription": "Pick a deal to see its overview; you can open several and switch between them.",
+      "tabsLabel": "Open deals",
+      "closeTab": "Close {{name}}",
+      "compare": "Compare ({{count}})",
+      "pickerTitle": "Open deals",
+      "pickerHint": "Click a deal to open it in a tab; you can open several (up to 8).",
+      "search": "Search deals",
+      "compareLeads": "Leads by status",
+      "compareRevenue": "Revenue per deal",
+      "compareFailed": "Could not load this deal's numbers."
     }
   }
 }

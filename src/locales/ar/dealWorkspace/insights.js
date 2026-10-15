@@ -98,5 +98,67 @@ export default {
         "description": "تنبيه للعملاء الراكدين والأقساط المتأخرة ومشاكل التقدم."
       }
     }
+  },
+  "analytics": {
+    "updated": "آخر تحديث {{time}}",
+    "refresh": "تحديث",
+    "openDeal": "فتح الصفقة",
+    "emptyTitle": "لا توجد أرقام",
+    "emptyDescription": "لم يُرجع الخادم بيانات لهذه الصفقة.",
+    "kpis": {
+      "total": "إجمالي الليدز",
+      "open": "مفتوحة",
+      "won": "مكسوبة",
+      "lost": "خاسرة",
+      "revenue": "الإيراد",
+      "achievement": "تحقيق الهدف",
+      "winRate": "نسبة الكسب",
+      "daysLeft": "الأيام المتبقية",
+      "ofTarget": "من {{value}} مستهدف ({{percent}})",
+      "noTarget": "بدون مستهدف",
+      "winRateHint": "نسبة الكسب {{value}}",
+      "targetRevenue": "المستهدف {{value}}",
+      "achievementHint": "الإيراد ÷ الإيراد المستهدف",
+      "achievementOf": "تحقيق الهدف {{value}}",
+      "winRateFormula": "المكسوبة ÷ (المكسوبة + الخاسرة)",
+      "elapsed": "مرّ {{percent}}% من {{days}} يوم",
+      "noPeriod": "بدون مدة"
+    },
+    "progress": {
+      "leads": "الليدز من المستهدف",
+      "revenue": "الإيراد من المستهدف",
+      "time": "الوقت المنقضي"
+    },
+    "charts": {
+      "stages": "الليدز في كل مرحلة",
+      "stagesHint": "من ملخص المراحل في الخادم",
+      "status": "حالة الليدز",
+      "owners": "أداء المسؤولين",
+      "allTime": "كل الفترات (من الخادم)"
+    },
+    "owners": {
+      "title": "أداء المسؤولين",
+      "description": "الليدز والمكسوب والإيراد لكل مسؤول في الصفقة.",
+      "owner": "المسؤول",
+      "emptyTitle": "لا يوجد مسؤولون بعد",
+      "emptyDescription": "يظهر الأداء عندما تُسند ليدز الصفقة لأعضاء الفريق."
+    }
+  },
+  "completeness": {
+    "label": "الاكتمال",
+    "title": "اكتمال إعداد الصفقة",
+    "of": "{{done}} من {{total}}",
+    "unknownNote": "بعض البنود لم تُحمّل بعد لهذه الصفقة (المنتجات أو الفريق أو الليدز) ولم تُحسب.",
+    "items": {
+      "description": "وصف",
+      "period": "تاريخ البداية والنهاية",
+      "targetLeads": "عدد العملاء المستهدف",
+      "targetRevenue": "الإيراد المستهدف",
+      "owner": "مسؤول الصفقة",
+      "stages": "مراحل (قالب مسار)",
+      "products": "منتجات",
+      "team": "فريق",
+      "leads": "ليدز"
+    }
   }
 }

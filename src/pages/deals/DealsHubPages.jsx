@@ -2,9 +2,14 @@ import { useTranslation } from 'react-i18next'
 import { CalendarDays, FileSignature, GitBranch } from 'lucide-react'
 import { ModulePageHeader } from '../../shared/components/module-pages'
 import { ReportsPage, useReportRange } from '../../shared/components/reports'
-import { DealContractsTable, DealCreateWizard, DealsHubCalendar, DealsHubList, PipelineTemplatesPanel, useDealsHubReport } from '../../features/deals'
+import { DealContractsTable, DealCreateWizard, DealsHubCalendar, DealsHubList, DealsOverview, PipelineTemplatesPanel, useDealsHubReport } from '../../features/deals'
 
-/** Thin route pages of the deals hub (`/deals`, `/deals/new`, `/deals/contracts`, `/deals/calendar`, `/deals/reports`, `/deals/pipelines`). */
+/** Thin route pages of the deals hub (`/deals/overview`, `/deals`, `/deals/new`, `/deals/contracts`, `/deals/calendar`, `/deals/reports`, `/deals/pipelines`). */
+
+/** `/deals/overview` — open one or more deals and see their backend overview, or compare them. */
+export function DealsOverviewPage() {
+  return <DealsOverview />
+}
 
 /** `/deals` — every deal as a table or a board, with quick info (products, team, last action). */
 export function DealsListPage() {

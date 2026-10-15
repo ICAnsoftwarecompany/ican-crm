@@ -81,14 +81,22 @@ export default {
     "note": "Note",
     "leadStatus": "Lead status",
     "estimatedValue": "Estimated value",
-    "lastActivity": "Last activity"
+    "lastActivity": "Last activity",
+    "leadsProgress": "Leads / target",
+    "targetLeads": "Target leads",
+    "targetRevenue": "Target revenue",
+    "daysLeft": "Days left",
+    "daysValue": "{{count}} days",
+    "createdAt": "Created",
+    "updatedAt": "Last updated"
   },
   "common": {
     "choose": "Choose...",
     "loading": "Loading...",
     "cancel": "Cancel",
     "continue": "Continue",
-    "actionFailed": "The action failed. Try again."
+    "actionFailed": "The action failed. Try again.",
+    "close": "Close"
   },
   "board": {
     "empty": "No leads in this stage."
@@ -123,5 +131,12 @@ export default {
       "dealUpdated": "Deal updated",
       "dealCreated": "Deal created"
     }
+  },
+  "drawer": {
+    "description": "Deal data",
+    "openPage": "Open deal page",
+    "liveNumbers": "Deal numbers now",
+    "analyticsFailed": "Could not load the deal numbers.",
+    "fields": "All data"
   }
 }

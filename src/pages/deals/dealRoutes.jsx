@@ -1,5 +1,5 @@
 import { DealWorkspaceLayout, DealsHubLayout } from '../../features/deals'
-import { DealsCalendarPage, DealsContractsPage, DealsCreatePage, DealsListPage, DealsPipelinesPage, DealsReportsPage } from './DealsHubPages'
+import { DealsCalendarPage, DealsContractsPage, DealsCreatePage, DealsListPage, DealsOverviewPage, DealsPipelinesPage, DealsReportsPage } from './DealsHubPages'
 import {
   DealAiSetupPage,
   DealAssistantPage,
@@ -31,6 +31,7 @@ export const dealRoutes = [
       { path: 'new', element: <DealsCreatePage /> },
       { path: 'contracts', element: <DealsContractsPage /> },
       { path: 'calendar', element: <DealsCalendarPage /> },
+      { path: 'overview', element: <DealsOverviewPage /> },
       { path: 'reports', element: <DealsReportsPage /> },
       { path: 'pipelines', element: <DealsPipelinesPage /> },
     ],

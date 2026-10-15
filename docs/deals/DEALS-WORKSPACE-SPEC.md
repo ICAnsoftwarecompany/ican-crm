@@ -368,6 +368,8 @@ POST /api/tenant/deals/contracts/{contractId}/installments/{installmentId}/pay
 ### 9.4 الأنشطة (اتشرح في 9.1)
 
 ### 9.5 التحليلات
+
+> *2026-10-16 01:12 (Africa/Cairo)*: `overview` و`owners` مستخدمين في صفحة نظرة عامة `/deals/overview`، ودرور الجدول، ونظرة/تقارير الصفقة (`hooks/useDealAnalytics.js` + `utils/dealAnalytics.js`). طلب "analytics overview funnel" في Postman بيشاور على نفس رابط `overview`، فالـ funnel = `stages_summary`.
 - تصليح طلب "analytics overview funnel" في الكولكشن (بيشاور على `/overview`) → `GET /deals/{id}/analytics/funnel`.
 - إضافة `GET /deals/{id}/analytics/sources` (زي الماركداون).
 - شكل مقترح لـ overview: `{ total_leads, open, won, lost, revenue, pipeline_value, achievement_percentage, win_rate,
@@ -482,3 +484,4 @@ POST /api/tenant/deals/wizard
 | 2026-10-16 00:10 (Africa/Cairo) | إنشاء الصفقة: خطوة الفريق بتبعت الفريق كله في طلب واحد `POST /deals/team` `{deal_id, users[], teams[]}`، وبقت بطريقتين (فريق جاهز، أو تكوين فريق من المستخدمين، أو الاتنين) بقوائم بحث ودور لكل اختيار؛ لوحة شرح لكل خطوة وشرح تحت كل حقل. |
 | 2026-10-16 00:27 (Africa/Cairo) | إنشاء الصفقة — فريق سريع: من خطوة الفريق (لما مفيش فرق أو بزر "فريق جديد") نافذة `QuickTeamDialog` بتنشئ فريق مبيعات بـ `POST /teams/create` وتضيفه للصفقة مباشرة (`teams: [{team_id, role: 'sales_rep'}]`)، مع خيار استبدال المستخدمين المختارين بالفريق. |
 | 2026-10-16 00:59 (Africa/Cairo) | إنشاء الصفقة — خطوة جديدة "مصدر الليدز" قبل المراجعة: ربط الصفقة بحملة أو أكتر (`POST /deals/{id}/campaigns`)، أو صفقة حرة بليدز من النظام (`add-existing`) و/أو ليدز جديدة بالكتابة/اللصق من Excel/ملف (`leads/create` لكل ليد، والمرفوض بيتعاد لوحده)، أو لاحقاً. `dealCampaignsApi` (attach/update/list/info/detach) جاهزة لصفحة حملات الصفقة. |
+| 2026-10-16 01:12 (Africa/Cairo) | الهَب: (1) جدول الصفقات بيعرض كل بيانات الصفقة كأعمدة (`components/hub/useDealFields.jsx` — نفس الحقول للجدول والدرور) ومنها **الاكتمال** (`utils/dealCompleteness.js`: وصف، مدة، مستهدف عملاء، مستهدف إيراد، مسؤول، مراحل، منتجات، فريق، ليدز؛ البنود غير المحمّلة ما بتتحسبش). زر بجوار الاسم بيفتح `DealQuickDrawer` (زر "فتح صفحة الصفقة" فوق، الناقص بلينك لمكان إصلاحه، أرقام `analytics/overview`، كل الحقول). (2) صفحة **نظرة عامة** `/deals/overview` أول عنصر في السايد بار: فتح أكتر من صفقة كتبويبات + تبويب مقارنة؛ لكل صفقة `analytics/overview` (stats + stages_summary كـ funnel) و`analytics/owners`؛ التبويبات وأرقام كل صفقة محفوظة في المتصفح (`deals:analytics:<kind>:<id>`) وبتتحدث في الخلفية لو أقدم من 5 دقائق. (3) داخل `/deals/:id`: النظرة العامة بتاخد الأرقام والمراحل من الخادم + جدول أداء المسؤولين، والتقارير فيها رسم المسؤولين ونسبة تحقيق الهدف. `achievement_percentage` نسبة مئوية جاهزة (0.12 = 0.12%). |

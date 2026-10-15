@@ -81,14 +81,22 @@ export default {
     "note": "ملاحظة",
     "leadStatus": "حالة العميل",
     "estimatedValue": "القيمة المتوقعة",
-    "lastActivity": "آخر نشاط"
+    "lastActivity": "آخر نشاط",
+    "leadsProgress": "الليدز / المستهدف",
+    "targetLeads": "العملاء المستهدفون",
+    "targetRevenue": "الإيراد المستهدف",
+    "daysLeft": "الأيام المتبقية",
+    "daysValue": "{{count}} يوم",
+    "createdAt": "تاريخ الإنشاء",
+    "updatedAt": "آخر تعديل"
   },
   "common": {
     "choose": "اختر...",
     "loading": "جاري التحميل...",
     "cancel": "إلغاء",
     "continue": "متابعة",
-    "actionFailed": "فشل الإجراء. حاول مرة أخرى."
+    "actionFailed": "فشل الإجراء. حاول مرة أخرى.",
+    "close": "إغلاق"
   },
   "board": {
     "empty": "لا يوجد عملاء في هذه المرحلة."
@@ -123,5 +131,12 @@ export default {
       "dealUpdated": "تعديل الصفقة",
       "dealCreated": "إنشاء الصفقة"
     }
+  },
+  "drawer": {
+    "description": "بيانات الصفقة",
+    "openPage": "فتح صفحة الصفقة",
+    "liveNumbers": "أرقام الصفقة الآن",
+    "analyticsFailed": "تعذّر تحميل أرقام الصفقة.",
+    "fields": "كل البيانات"
   }
 }

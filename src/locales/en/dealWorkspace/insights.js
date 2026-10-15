@@ -98,5 +98,67 @@ export default {
         "description": "Flag stale leads, late installments and pace problems."
       }
     }
+  },
+  "analytics": {
+    "updated": "Updated {{time}}",
+    "refresh": "Refresh",
+    "openDeal": "Open deal",
+    "emptyTitle": "No numbers",
+    "emptyDescription": "The server returned no data for this deal.",
+    "kpis": {
+      "total": "Total leads",
+      "open": "Open",
+      "won": "Won",
+      "lost": "Lost",
+      "revenue": "Revenue",
+      "achievement": "Target achieved",
+      "winRate": "Win rate",
+      "daysLeft": "Days left",
+      "ofTarget": "of {{value}} target ({{percent}})",
+      "noTarget": "No target",
+      "winRateHint": "Win rate {{value}}",
+      "targetRevenue": "Target {{value}}",
+      "achievementHint": "Revenue ÷ target revenue",
+      "achievementOf": "Target achieved {{value}}",
+      "winRateFormula": "Won ÷ (won + lost)",
+      "elapsed": "{{percent}}% of {{days}} days passed",
+      "noPeriod": "No period"
+    },
+    "progress": {
+      "leads": "Leads of target",
+      "revenue": "Revenue of target",
+      "time": "Time passed"
+    },
+    "charts": {
+      "stages": "Leads per stage",
+      "stagesHint": "From the server stage summary",
+      "status": "Lead status",
+      "owners": "Owners performance",
+      "allTime": "All time (from the server)"
+    },
+    "owners": {
+      "title": "Owners performance",
+      "description": "Leads, won and revenue per owner in the deal.",
+      "owner": "Owner",
+      "emptyTitle": "No owners yet",
+      "emptyDescription": "Performance shows once the deal leads are assigned to team members."
+    }
+  },
+  "completeness": {
+    "label": "Completeness",
+    "title": "Deal setup completeness",
+    "of": "{{done}} of {{total}}",
+    "unknownNote": "Some items are not loaded yet for this deal (products, team or leads) and are not counted.",
+    "items": {
+      "description": "Description",
+      "period": "Start and end dates",
+      "targetLeads": "Target leads",
+      "targetRevenue": "Target revenue",
+      "owner": "Deal owner",
+      "stages": "Stages (pipeline template)",
+      "products": "Products",
+      "team": "Team",
+      "leads": "Leads"
+    }
   }
 }

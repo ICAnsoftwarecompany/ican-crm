@@ -73,7 +73,7 @@ export function DealsHubList() {
       </div>
 
       {view === 'table' ? (
-        <DealsTable deals={deals} infos={quick.infos} query={query} />
+        <DealsTable deals={deals} infos={quick.infos} leadsByDeal={quick.leadsByDeal} query={query} />
       ) : (
         <ResourceState
           isLoading={query.isLoading}

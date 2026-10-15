@@ -1,73 +1,97 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { DataTable } from '../../../../shared/components/data-table'
-import { formatMoney, progressPercent } from '../../utils/dealMoney'
-import { DealStatusBadge } from '../common/DealStatusBadge'
-import { ProgressBar } from '../common/ProgressBar'
+import { useUsers } from '../../../users'
+import { usePipelineTemplates } from '../../hooks/useDeals'
+import { buildDealCompleteness } from '../../utils/dealCompleteness'
 import { useQuickInfoLabels } from './DealQuickInfo'
+import { DealQuickDrawer } from './DealQuickDrawer'
+import { useDealFields } from './useDealFields'
+
+const DAY_MS = 86400000
+const daysUntil = (value, now = Date.now()) => {
+  if (!value) return null
+  const end = new Date(`${String(value).slice(0, 10)}T23:59:59`).getTime()
+  return Number.isNaN(end) ? null : Math.max(0, Math.ceil((end - now) / DAY_MS))
+}
 
 /**
- * Every deal of the tenant as a table (rows from DealsHubList, with quick info: products, team, last action).
- * Click a row to open the deal's workspace.
+ * Every deal of the tenant as a table with all its data as columns (useDealFields), including setup completeness.
+ * The icon beside the name opens the same data in a drawer (DealQuickDrawer, with "open deal page" on top);
+ * clicking a row opens the deal's workspace.
  */
-export function DealsTable({ deals, infos, query }) {
-  const { t, i18n } = useTranslation()
+export function DealsTable({ deals, infos, leadsByDeal = new Map(), query }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const labels = useQuickInfoLabels()
+  const fields = useDealFields()
+  const { templates } = usePipelineTemplates()
+  const usersQuery = useUsers()
+  const [drawerId, setDrawerId] = useState(null)
 
-  // Quick info as plain columns, so it sorts, filters and exports like the rest.
-  const rows = useMemo(() => deals.map((deal) => {
-    const info = infos.get(String(deal.id))
-    return {
-      ...deal,
-      productsLabel: labels.products(info),
-      productsCount: info?.productsCount ?? null,
-      teamLabel: labels.team(info),
-      teamCount: info?.teamCount ?? null,
-      lastActionLabel: labels.lastAction(info),
-      lastActionAt: info?.lastAction?.at || '',
-    }
-  }), [deals, infos, labels])
+  // Quick info + names as plain columns, so everything sorts, filters and exports like the rest.
+  const rows = useMemo(() => {
+    const templateNames = new Map(templates.map((template) => [String(template.id), template.name]))
+    const userNames = new Map((usersQuery.data || []).map((user) => [String(user.id), user.name || user.email || '']))
+    return deals.map((deal) => {
+      const id = String(deal.id)
+      const info = infos.get(id)
+      const listCount = deal.leads_count ?? deal.deal_leads_count
+      const leadsCount = listCount !== undefined && listCount !== null ? Number(listCount) : leadsByDeal.get(id)?.length ?? null
+      const completeness = buildDealCompleteness(deal, { productsCount: info?.productsCount ?? null, teamCount: info?.teamCount ?? null, leadsCount })
+      return {
+        ...deal,
+        leadsCount,
+        typeLabel: deal.type ? t(`dealWorkspace.options.dealType.${deal.type}`, deal.type) : '',
+        pipelineName: deal.pipeline_template?.name || deal.pipelineTemplate?.name || templateNames.get(String(deal.pipeline_template_id)) || '',
+        ownerName: deal.owner?.name || deal.owner_name || userNames.get(String(deal.owner_id)) || '',
+        productsLabel: labels.products(info),
+        productsCount: info?.productsCount ?? null,
+        teamLabel: labels.team(info),
+        teamCount: info?.teamCount ?? null,
+        lastActionLabel: labels.lastAction(info),
+        lastActionAt: info?.lastAction?.at || '',
+        daysLeft: daysUntil(deal.end_date),
+        completeness,
+        completenessScore: completeness.score,
+      }
+    })
+  }, [deals, infos, labels, leadsByDeal, t, templates, usersQuery.data])
 
-  const columns = useMemo(() => [
-    { id: 'name', header: t('dealWorkspace.fields.name'), accessor: 'name', filterType: 'text', render: (row) => <span className="font-semibold text-[var(--text)]">{row.name}</span> },
-    {
-      id: 'status', header: t('dealWorkspace.fields.status'), accessor: 'statusValue', filterType: 'select',
-      filterOptions: ['draft', 'active', 'paused', 'completed', 'cancelled'].map((value) => ({ value, label: t(`dealWorkspace.options.dealStatus.${value}`) })),
-      render: (row) => <DealStatusBadge status={row.status} />,
-    },
-    { id: 'type', header: t('dealWorkspace.fields.type'), accessor: 'type', render: (row) => (row.type ? t(`dealWorkspace.options.dealType.${row.type}`, row.type) : '—') },
-    { id: 'owner', header: t('dealWorkspace.fields.owner'), accessor: 'owner.name', render: (row) => row.owner?.name || row.owner_name || '—' },
-    {
-      id: 'leads', header: t('dealWorkspace.fields.leads'), accessor: 'leadsCount',
-      render: (row) => <div className="min-w-[120px]"><ProgressBar value={progressPercent(row.leadsCount, row.target_leads)} label={<span dir="ltr">{row.leadsCount} / {row.target_leads ?? '—'}</span>} /></div>,
-    },
-    { id: 'revenue', header: t('dealWorkspace.fields.revenue'), accessor: 'target_revenue', filterType: 'number', render: (row) => (row.target_revenue == null ? '—' : <span dir="ltr">{formatMoney(row.target_revenue, i18n.language)}</span>) },
-    { id: 'products', header: t('dealWorkspace.quickInfo.products'), accessor: 'productsLabel', filterType: 'text', render: (row) => <span className={row.productsCount === 0 ? 'text-amber-700 dark:text-amber-300' : ''}>{row.productsLabel}</span> },
-    { id: 'team', header: t('dealWorkspace.quickInfo.team'), accessor: 'teamLabel', filterType: 'text', render: (row) => <span className={row.teamCount === 0 ? 'text-amber-700 dark:text-amber-300' : ''}>{row.teamLabel}</span> },
-    { id: 'lastAction', header: t('dealWorkspace.quickInfo.lastAction'), accessor: 'lastActionLabel', render: (row) => <span className="text-xs text-[var(--text-muted)]">{row.lastActionLabel}</span> },
-    { id: 'dates', header: t('dealWorkspace.fields.period'), accessor: 'start_date', filterType: 'date', render: (row) => <span dir="ltr">{String(row.start_date || '—').slice(0, 10)} → {String(row.end_date || '—').slice(0, 10)}</span> },
-  ], [i18n.language, t])
+  const columns = useMemo(() => fields.map((field) => ({
+    id: field.id,
+    header: field.label,
+    accessor: field.accessor,
+    filterType: field.filterType,
+    filterOptions: field.filterOptions,
+    render: field.render,
+    ...(field.id === 'name' ? { drawerTrigger: true } : {}),
+  })), [fields])
+  const drawerRow = drawerId ? rows.find((row) => String(row.id) === drawerId) : null
 
   return (
-    <DataTable
-      data={rows}
-      columns={columns}
-      tableId="deals-workspace"
-      isLoading={query.isLoading}
-      error={query.error}
-      onRetry={query.refetch}
-      onRowClick={(row) => navigate(`/deals/${row.id}`)}
-      emptyMessage={t('dealWorkspace.empty')}
-      enableSorting
-      enableFiltering
-      enableGlobalSearch
-      enablePagination
-      enableColumnVisibility
-      enableExport
-      showToolbar
-      showFooter
-    />
+    <>
+      <DataTable
+        data={rows}
+        columns={columns}
+        tableId="deals-workspace"
+        isLoading={query.isLoading}
+        error={query.error}
+        onRetry={query.refetch}
+        onRowClick={(row) => navigate(`/deals/${row.id}`)}
+        onOpenRowDrawer={(row) => setDrawerId(String(row.id))}
+        emptyMessage={t('dealWorkspace.empty')}
+        enableSorting
+        enableFiltering
+        enableGlobalSearch
+        enablePagination
+        enableColumnVisibility
+        enableExport
+        showToolbar
+        showFooter
+      />
+      <DealQuickDrawer row={drawerRow} fields={fields} onClose={() => setDrawerId(null)} />
+    </>
   )
 }

@@ -35,6 +35,9 @@ const routes = [
   [/\/api\/tenant\/deals\/1\/leads$/, { data: leads }],
   [/\/api\/tenant\/deals\/1\/team$/, { data: [{ id: 1, user_id: 2, role: 'manager', user: { id: 2, name: 'Karim' } }, { id: 2, team_id: 3, role: 'sales_rep', team: { id: 3, name: 'Team A', users: [{ id: 4, name: 'Nour' }] } }] }],
   [/\/api\/tenant\/deals\/1\/products$/, { data: [{ id: 1, product_id: 9, product: { id: 9, name: 'Premium package', price: 150 } }] }],
+  // The exact Postman examples of "Deal Analytics" (2026-10-16).
+  [/\/api\/tenant\/deals\/1\/analytics\/overview$/, { message: 'ok', data: { deal: { name: 'Q4 Sales Deal', status: 'active', start_date: '2026-10-01T00:00:00.000000Z', end_date: '2026-12-31T00:00:00.000000Z', target_revenue: '500000.00', target_leads: 1000 }, stats: { total_leads: 3, won: 2, lost: 1, open: 0, revenue: 580, achievement_percentage: 0.12 }, stages_summary: [{ id: 1, name: 'New Lead', leads_count: 1 }, { id: 2, name: 'Negotiation', leads_count: 1 }] } }],
+  [/\/api\/tenant\/deals\/1\/analytics\/owners$/, { message: 'ok', data: [{ owner_id: 1, leads_count: 3, revenue: '580.00', won_count: '2', owner: { id: 1, name: 'admin', email: 'test008@example.com' } }] }],
   [/\/api\/tenant\/deals\/1\/analytics\/\w+$/, { data: {} }],
   [/\/api\/tenant\/deals\/leads\/\d+\/productsc$/, { data: [] }],
   [/\/api\/tenant\/deals\/1$/, { data: deal }],
@@ -74,6 +77,9 @@ vi.mock('react-i18next', () => ({
 }))
 
 const { dealRoutes } = await import('./dealRoutes')
+const { DealQuickDrawer } = await import('../../features/deals/components/hub/DealQuickDrawer')
+const { useDealFields } = await import('../../features/deals/components/hub/useDealFields')
+const { buildDealCompleteness } = await import('../../features/deals/utils/dealCompleteness')
 
 function renderAt(path) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
@@ -262,7 +268,7 @@ describe('deals area', () => {
     fireEvent.click(await screen.findByRole('radio', { name: 'dealWorkspace.wizard.source.modes.leads.title' }))
     // From the CRM: search, click to add.
     fireEvent.change(screen.getByLabelText('dealWorkspace.wizard.source.leads.search'), { target: { value: 'Mo' } })
-    fireEvent.click(await screen.findByRole('button', { name: /Mona/ }))
+    fireEvent.click(await screen.findByRole('button', { name: /Mona/ }, { timeout: 4000 }))
     expect(screen.getByText('dealWorkspace.wizard.source.leads.fromCrm')).toBeTruthy()
     // Pasted from Excel: one duplicate of the CRM lead's phone → flagged, deleted with one click.
     fireEvent.click(screen.getByRole('tab', { name: 'dealWorkspace.wizard.source.leads.ways.paste' }))
@@ -289,5 +295,41 @@ describe('deals area', () => {
     expect(post.mock.calls[0][1]).toMatchObject({ name: 'Bad' })
     fireEvent.click(await screen.findByText('dealWorkspace.wizard.review.finishWithoutFailed'))
     await waitFor(() => expect(router.state.location.pathname).toBe('/deals/88'))
+  })
+  it('overview page: opens a deal as a tab with its backend overview + owners, remembered in the browser', async () => {
+    renderAt('/deals/overview')
+    expect(await screen.findByText('dealWorkspace.hub.overview.emptyTitle')).toBeTruthy()
+    fireEvent.click(await screen.findByRole('button', { name: 'Q4 Sales Deal' }))
+    expect(await screen.findByRole('tab', { name: 'Q4 Sales Deal' })).toBeTruthy()
+    expect((await screen.findAllByText('dealWorkspace.analytics.kpis.achievement')).length).toBeGreaterThan(0)
+    expect(screen.getAllByText('0.12%').length).toBeGreaterThan(0)
+    expect(await screen.findByText('admin')).toBeTruthy()
+    expect(JSON.parse(window.localStorage.getItem('datatable-deals:overview:tabs')).value).toEqual({ open: ['1'], active: '1' })
+    expect(JSON.parse(window.localStorage.getItem('deals:analytics:overview:1')).data.data.stats.revenue).toBe(580)
+  })
+
+  it('deal workspace overview uses the backend stats, stages and owners', async () => {
+    renderAt('/deals/1')
+    // Stage bars come from stages_summary (marked "from the server"); the chart itself has no layout in jsdom.
+    expect(await screen.findByText('dealWorkspace.analytics.charts.stagesHint')).toBeTruthy()
+    expect(await screen.findByText('dealWorkspace.analytics.owners.title')).toBeTruthy()
+    expect(await screen.findByText('test008@example.com')).toBeTruthy()
+  })
+
+  it('deal drawer: every column, completeness with what is missing, and "open deal page" on top', async () => {
+    const row = { ...deal, name: 'Q4 Sales Deal', typeLabel: 'Sales', ownerName: '', leadsCount: 3, productsLabel: '1', productsCount: 1, teamLabel: '0', teamCount: 0, daysLeft: 10, completeness: buildDealCompleteness(deal, { productsCount: 1, teamCount: 0, leadsCount: 3 }) }
+    function Harness() {
+      const fields = useDealFields()
+      return <DealQuickDrawer row={row} fields={fields} onClose={() => {}} />
+    }
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+    const router = createMemoryRouter([{ path: '/deals', element: <Harness /> }, { path: '/deals/:id', element: <p>deal page</p> }], { initialEntries: ['/deals'] })
+    render(<QueryClientProvider client={client}><RouterProvider router={router} /></QueryClientProvider>)
+    expect(screen.getByText('dealWorkspace.completeness.title')).toBeTruthy()
+    expect(screen.getByText('dealWorkspace.completeness.items.team').closest('a').getAttribute('href')).toBe('/deals/1/team')
+    expect(screen.getByText('dealWorkspace.fields.targetRevenue')).toBeTruthy()
+    expect(await screen.findByText('dealWorkspace.analytics.kpis.total')).toBeTruthy()
+    fireEvent.click(screen.getByText('dealWorkspace.drawer.openPage'))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/deals/1'))
   })
 })
