@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Briefcase, Clock, ExternalLink, Hash, Mail, MoreVertical, NotebookPen, PanelRightOpen, Phone, UserRound, Users } from 'lucide-react'
+import { Briefcase, Clock, ExternalLink, Hash, HeartHandshake, Mail, MoreVertical, NotebookPen, PanelRightOpen, Phone, UserRound, Users } from 'lucide-react'
 
 import { CustomerSourceBadge } from '../../../../shared/components/Icons/CustomerSourceBadge'
 import { DropdownMenu } from '../../../../shared/components/overlays/DropdownMenu'
@@ -86,6 +86,7 @@ export function CustomerPipelineCard({
     { id: 'meeting', label: t('customers.page.actions.addMeeting'), icon: <Users size={14} />, onSelect: () => actions.onAddMeeting?.(customer) },
     { id: 'call', label: t('customers.page.actions.addCall'), icon: <Phone size={14} />, onSelect: () => actions.onAddCall?.(customer) },
     { id: 'follow-up', label: t('customers.page.actions.addFollowUp'), icon: <NotebookPen size={14} />, onSelect: () => actions.onAddFollowUp?.(customer) },
+    ...(actions.onAddInterest ? [{ id: 'interest', label: t('leads.interestDialog.contextAction'), icon: <HeartHandshake size={14} />, onSelect: () => actions.onAddInterest(customer) }] : []),
   ]
 
   const lines = visibleFieldIds.map(renderLine).filter(Boolean)

@@ -32,7 +32,7 @@ vi.mock('../../../services/httpClient', () => ({
 const i18n = { language: 'en', dir: () => 'ltr', changeLanguage: async () => {}, on() {}, off() {} }
 const t = (key) => key
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t, i18n }), Trans: ({ children }) => children, initReactI18next: { type: '3rdParty', init() {} } }))
-vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn(), info: vi.fn() } }))
+vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn(), info: vi.fn(), warning: vi.fn() } }))
 
 const { LeadInterestDialog } = await import('./LeadInterestDialog')
 
@@ -91,5 +91,16 @@ describe('LeadInterestDialog', () => {
     await waitFor(() => expect(post).toHaveBeenCalled())
     expect(post.mock.calls[0][0]).toBe('/api/tenant/interesteds/edite')
     expect(post.mock.calls[0][1]).toMatchObject({ id: 12, lead_id: 5, interesteds: [{ id: 12, product_id: 42, interest_level: 'low', note: 'later' }] })
+  })
+
+  it('bulk: the same interest is saved once per selected lead (customers without a lead skipped)', async () => {
+    const { onSaved } = renderDialog({ customer: null, customers: [{ id: 1, lead: { id: 5 } }, { id: 2, lead: { id: 6 } }, { id: 3 }] })
+    expect(await screen.findByText('leads.interestDialog.skippedNoLead')).toBeTruthy()
+    fireEvent.click(await screen.findByText('Travel insurance'))
+    await screen.findByText('leads.interestDialog.fields.level')
+    fireEvent.submit(document.getElementById('form-dialog'))
+    await waitFor(() => expect(onSaved).toHaveBeenCalled())
+    expect(post.mock.calls.map((call) => call[1].lead_id)).toEqual([5, 6])
+    expect(post.mock.calls[0][1].interesteds[0]).toMatchObject({ product_id: 43, quantity: 1 })
   })
 })

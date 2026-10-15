@@ -24,6 +24,14 @@ export default {
     "ruleCreateFailed": "فشل إنشاء قاعدة التوزيع"
   },
   "interestDialog": {
+    "bulkDescription": "إضافة نفس الاهتمام لـ {{count}} عميل محدد",
+    "followUpHint": "اربط المتابعة بمنتج أو خدمة أو خطة أو باقة من الكتالوج",
+    "bulkAdded": "اتضاف الاهتمام لـ {{count}} عميل",
+    "bulkPartial": "اتضاف لـ {{saved}} وفشل لـ {{failed}}",
+    "customersCount": "{{count}} عميل محدد",
+    "skippedNoLead": "{{count}} من المحددين مش مربوطين بليد وهيتخطوا",
+    "bulkButton": "إضافة اهتمام",
+    "contextAction": "إضافة اهتمام (منتج أو خدمة)",
     "addTitle": "إضافة اهتمام",
     "editTitle": "تعديل الاهتمام",
     "pickDescription": "العميل: {{name}} — اختار المنتج أو الخدمة اللي مهتم بيها",

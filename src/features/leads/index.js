@@ -22,4 +22,4 @@ export {
   validateCloseForm,
 } from './close/leadClose'
 // Interests on the new catalog (2026-10-15): add / edit dialog and the shared interest card.
-export { InterestCard, InterestLevelBadge, LeadInterestDialog, toInterestView, useInterestCatalogIndex } from './interests'
+export { InterestCard, InterestLevelBadge, LeadInterestDialog, LeadInterestFields, toInterestView, useInterestCatalogIndex, useLeadInterestForm } from './interests'

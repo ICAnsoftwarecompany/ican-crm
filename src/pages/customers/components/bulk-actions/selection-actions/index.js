@@ -1,4 +1,5 @@
 export { AddFollowUpBulkAction } from './follow-up/AddFollowUpBulkAction'
+export { AddInterestBulkAction } from './interest/AddInterestBulkAction'
 export { ChangeStatusBulkAction } from './status/ChangeStatusBulkAction'
 export { ChangeTagBulkAction } from './ChangeTagBulkAction'
 export { SocialMessagingBulkActions } from './SocialMessagingBulkActions'

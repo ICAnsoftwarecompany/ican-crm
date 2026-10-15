@@ -1,5 +1,7 @@
 // Lead interests on the new catalog (2026-10-15). See README.md.
 export { LeadInterestDialog } from './LeadInterestDialog'
+export { LeadInterestFields } from './components/LeadInterestFields'
+export { useLeadInterestForm } from './hooks/useLeadInterestForm'
 export { InterestCard, InterestLevelBadge, useInterestPrice } from './components/InterestCard'
 export { useInterestCatalogIndex } from './hooks/useInterestCatalogIndex'
 export { getInterestProfile, resolveItemType } from './utils/interestProfile'

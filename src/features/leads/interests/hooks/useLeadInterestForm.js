@@ -14,8 +14,11 @@ import {
  * State of the lead interest dialog (2026-10-15): the catalog (normalized products + item types), the chosen
  * product with its profile, the per-product resources the profile needs (units, attached items, pieces), the
  * estimate and the save. `stage` = `pick` (choose a product) | `details`.
+ * `leadIds`: one lead, or several for the bulk action (the same interest is saved on each, one request per lead).
+ * `prepare()` validates and returns `{ payloads }` (or `{ errors }`) for callers that save it themselves (the
+ * follow-up dialog saves it after the follow-up); `submit()` validates and saves.
  */
-export function useLeadInterestForm({ open, interest, leadId }) {
+export function useLeadInterestForm({ open, interest, leadIds = [] }) {
   const productsQuery = useCatalogProducts()
   const itemTypesQuery = useItemTypes()
   const mutations = useLeadMutations()
@@ -76,18 +79,35 @@ export function useLeadInterestForm({ open, interest, leadId }) {
     }))
   }
 
-  const submit = async () => {
+  const prepare = () => {
     const nextErrors = validateInterestForm(form, profile)
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length) {
       if (nextErrors.productId) setStage('pick')
-      return null
+      return { errors: nextErrors }
     }
-    const payload = buildInterestPayload({ leadId, form, product, profile, interestId: isEdit ? interest.id : null, estimate })
-    const response = isEdit
-      ? await mutations.updateInterested.mutateAsync(payload)
-      : await mutations.saveInterested.mutateAsync(payload)
-    return { response, payload }
+    const interestId = isEdit ? interest.id : null
+    return { payloads: leadIds.map((leadId) => buildInterestPayload({ leadId, form, product, profile, interestId, estimate })) }
+  }
+
+  /** `{ saved, failed, response, payload }`, or null when the form is invalid. Bulk: failures don't stop the rest. */
+  const submit = async () => {
+    const prepared = prepare()
+    if (prepared.errors) return null
+    const save = isEdit ? mutations.updateInterested : mutations.saveInterested
+    let response = null
+    let saved = 0
+    const failed = []
+    for (const payload of prepared.payloads) {
+      try {
+        response = await save.mutateAsync(payload)
+        saved += 1
+      } catch (error) {
+        if (prepared.payloads.length === 1) throw error
+        failed.push({ leadId: payload.lead_id, error })
+      }
+    }
+    return { saved, failed, response, payload: prepared.payloads[0] }
   }
 
   return {
@@ -99,6 +119,7 @@ export function useLeadInterestForm({ open, interest, leadId }) {
     update,
     chooseProduct,
     toggleIn,
+    prepare,
     submit,
     saving: mutations.saveInterested.isPending || mutations.updateInterested.isPending,
     catalog: { products, itemTypes, isLoading: productsQuery.isLoading, error: productsQuery.error, refetch: productsQuery.refetch },

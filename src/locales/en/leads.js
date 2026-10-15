@@ -24,6 +24,14 @@ export default {
     "ruleCreateFailed": "Failed to create distribution rule"
   },
   "interestDialog": {
+    "bulkDescription": "Add the same interest to {{count}} selected customers",
+    "followUpHint": "Link the follow-up to a product, service, plan or bundle from the catalog",
+    "bulkAdded": "Interest added to {{count}} customers",
+    "bulkPartial": "Added to {{saved}}, failed for {{failed}}",
+    "customersCount": "{{count}} selected customers",
+    "skippedNoLead": "{{count}} selected have no lead and will be skipped",
+    "bulkButton": "Add interest",
+    "contextAction": "Add interest (product or service)",
     "addTitle": "Add interest",
     "editTitle": "Edit interest",
     "pickDescription": "Customer: {{name}} — choose the product or service they are interested in",

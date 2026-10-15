@@ -1,31 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
-import { CalendarClock, CheckCircle2, ChevronDown, GripHorizontal, X } from 'lucide-react'
+import { GripHorizontal, X, Zap } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { isClosingStatus } from '../../../../features/leads'
+import { useLeadInterestForm } from '../../../../features/leads'
 import { useLeadMutations } from '../../../../features/leads/hooks/useLeads'
 import { useMeetingMutations } from '../../../../features/meetings/hooks/useMeetings'
-import { useProducts } from '../../../../features/products/hooks/useProducts'
+import { useLocalStorage } from '../../../../shared/components/data-table/hooks/useLocalStorage'
 import { Button } from '../../../../shared/components/ui/Button'
-import { Input } from '../../../../shared/components/ui/Input'
 import { cn } from '../../../../shared/utils/cn'
 import { FollowUpScheduleSection } from './FollowUpScheduleSection'
 import { FollowUpInterestedProductSection } from './FollowUpInterestedProductSection'
+import { FollowUpMainFields, getStatusLabel } from './FollowUpMainFields'
 
 const DRAG_LONG_PRESS_MS = 260
-
-function getResultOptions(t) {
-  return [
-    { value: '', label: t('customers.followUp.results.none') },
-    { value: 'no_answer', label: t('customers.followUp.results.noAnswer') },
-    { value: 'answered', label: t('customers.followUp.results.answered') },
-    { value: 'interested', label: t('customers.followUp.results.interested') },
-    { value: 'not_interested', label: t('customers.followUp.results.notInterested') },
-    { value: 'follow_up', label: t('customers.followUp.results.followUpLater') },
-  ]
-}
 
 function getLead(customer) {
   return customer?.lead || {}
@@ -52,14 +41,6 @@ function getAssignedUserId(customer) {
 function getCustomerPhone(customer) {
   const lead = getLead(customer)
   return lead?.phone || customer?.phone || ''
-}
-
-function getStatusLabel(status) {
-  return status?.status || status?.name || status?.title || ''
-}
-
-function isStatusNoteRequired(status) {
-  return Number(status?.has_resone ?? status?.has_reason ?? 0) === 1
 }
 
 function getCurrentStatusId(customer) {
@@ -170,7 +151,6 @@ export function FollowUpNoteDialog({
   const { t } = useTranslation()
   const mutations = useLeadMutations()
   const meetingMutations = useMeetingMutations()
-  const productsQuery = useProducts()
   const longPressTimerRef = useRef(null)
   const dragStateRef = useRef(null)
   const resizeStateRef = useRef(null)
@@ -204,12 +184,15 @@ export function FollowUpNoteDialog({
     schedule_reminder_unit: 'minutes',
     activity_at: formatDateTimeLocalInput(new Date()),
     interest_enabled: false,
-    interest_product_id: '',
-    interest_level: 'high',
-    interest_note: '',
   })
 
   const leadId = getLeadId(customer)
+  // Quick follow-up (2026-10-15): follow-up, note, time and short note only; remembered in this browser.
+  const [quickMode, setQuickMode] = useLocalStorage('customers-follow-up-quick', false)
+  // Interest linked to the follow-up, on the new catalog; saved after the follow-up.
+  const interestState = useLeadInterestForm({ open, leadIds: leadId ? [leadId] : [] })
+  const withInterest = Boolean(form.interest_enabled) && !quickMode
+  const withSchedule = Boolean(form.schedule_enabled) && !quickMode
   const customerName = getCustomerName(customer, t)
   const resolvedCurrentStatus = useMemo(
     () => resolveCurrentStatus(customer, statuses, currentStatus),
@@ -220,20 +203,17 @@ export function FollowUpNoteDialog({
     () => statuses.find((status) => String(status?.id) === String(form.new_status_id)) || null,
     [form.new_status_id, statuses]
   )
-  const products = productsQuery.data || []
-  const selectedInterestedProduct = useMemo(
-    () => products.find((product) => String(product?.id) === String(form.interest_product_id)) || null,
-    [form.interest_product_id, products]
-  )
   const canSubmit = useMemo(() => {
     const hasText = Boolean(String(form.description || '').trim() || String(form.note || '').trim())
-    const hasStatusChoice = !form.shouldChangeStatus || Boolean(selectedStatus)
-    const hasInterestedProduct = !form.interest_enabled || Boolean(form.interest_product_id)
+    const hasStatusChoice = quickMode || !form.shouldChangeStatus || Boolean(selectedStatus)
+    const hasInterestedProduct = !withInterest || Boolean(interestState.product)
     return Boolean(leadId && hasText && hasStatusChoice && hasInterestedProduct)
-  }, [form.description, form.interest_enabled, form.interest_product_id, form.note, form.shouldChangeStatus, leadId, selectedStatus])
+  }, [form.description, form.note, form.shouldChangeStatus, interestState.product, leadId, quickMode, selectedStatus, withInterest])
   const isScheduleExpanded = Boolean(form.schedule_enabled)
   const isInterestExpanded = Boolean(form.interest_enabled)
   const sectionsLayoutClass = useMemo(() => {
+    if (quickMode) return 'grid-cols-1'
+
     if (isScheduleExpanded && isInterestExpanded) {
       return 'xl:grid-cols-3'
     }
@@ -247,7 +227,7 @@ export function FollowUpNoteDialog({
     }
 
     return 'xl:grid-cols-[minmax(0,1.8fr)_minmax(220px,0.55fr)_minmax(220px,0.55fr)]'
-  }, [isInterestExpanded, isScheduleExpanded])
+  }, [isInterestExpanded, isScheduleExpanded, quickMode])
 
   const setLayout = useCallback((nextLayout) => {
     const value = clampFloatingLayout(nextLayout)
@@ -374,9 +354,6 @@ export function FollowUpNoteDialog({
       schedule_reminder_unit: 'minutes',
       activity_at: formatDateTimeLocalInput(new Date()),
       interest_enabled: false,
-      interest_product_id: '',
-      interest_level: 'high',
-      interest_note: '',
     })
   }, [currentStatus, customer, open, statuses, t])
 
@@ -427,17 +404,19 @@ export function FollowUpNoteDialog({
       return
     }
 
-    if (form.shouldChangeStatus && !selectedStatus) {
+    const changeStatus = form.shouldChangeStatus && !quickMode
+    if (changeStatus && !selectedStatus) {
       toast.error(t('customers.followUp.errors.chooseNewStatusFirst'))
       return
     }
 
-    if (form.schedule_enabled && form.schedule_type !== 'none' && (!form.schedule_start_at || !form.schedule_end_at)) {
+    if (withSchedule && form.schedule_type !== 'none' && (!form.schedule_start_at || !form.schedule_end_at)) {
       toast.error(t('customers.followUp.errors.chooseScheduleRange'))
       return
     }
 
-    if (form.interest_enabled && !form.interest_product_id) {
+    const interest = withInterest ? interestState.prepare() : null
+    if (interest?.errors) {
       toast.error(t('customers.followUp.errors.chooseInterestedProductFirst'))
       return
     }
@@ -449,11 +428,11 @@ export function FollowUpNoteDialog({
       title,
       description: text,
       note: note || text,
-      data: buildDataPayload(form),
+      data: quickMode ? {} : buildDataPayload(form),
       activity_at: formatDateTimeForApi(form.activity_at || formatDateTimeLocalInput(new Date())),
     }
 
-    if (form.shouldChangeStatus && selectedStatus) {
+    if (changeStatus && selectedStatus) {
       payload.new_status_id = selectedStatus.id
       payload.new_status_title = getStatusLabel(selectedStatus)
       payload.old_status_title = oldStatusTitle || ''
@@ -462,20 +441,11 @@ export function FollowUpNoteDialog({
     try {
       const savedActionResult = await mutations.saveAction.mutateAsync(payload)
 
-      if (form.interest_enabled && form.interest_product_id) {
-        await mutations.saveInterested.mutateAsync({
-          lead_id: Number(leadId),
-          interesteds: [
-            {
-              product_id: Number(form.interest_product_id),
-              note: String(form.interest_note || '').trim(),
-              interest_level: String(form.interest_level || 'high').trim(),
-            },
-          ],
-        })
+      for (const interestPayload of interest?.payloads || []) {
+        await mutations.saveInterested.mutateAsync(interestPayload)
       }
 
-      if (form.schedule_enabled && form.schedule_type !== 'none') {
+      if (withSchedule && form.schedule_type !== 'none') {
         const savedActivityId = getSavedActivityId(savedActionResult)
         const baseScheduleTitle = String(form.schedule_title || form.title || '').trim()
         const scheduleFollowUpLabel = form.schedule_type === 'call'
@@ -511,7 +481,7 @@ export function FollowUpNoteDialog({
         })
       }
 
-      toast.success(form.shouldChangeStatus ? t('customers.followUp.toasts.noteAndStatusAdded') : t('customers.followUp.toasts.noteAdded'))
+      toast.success(changeStatus ? t('customers.followUp.toasts.noteAndStatusAdded') : t('customers.followUp.toasts.noteAdded'))
       onSaved?.({ payload, customer, savedActivityId: getSavedActivityId(savedActionResult) })
       onClose?.()
     } catch (error) {
@@ -525,36 +495,51 @@ export function FollowUpNoteDialog({
         role="dialog"
         aria-modal="false"
         aria-label={t('customers.followUp.addFollowUp')}
-        className="pointer-events-auto fixed max-h-[calc(100vh-24px)] overflow-hidden rounded-2xl border border-[#BEEFF2] bg-white shadow-2xl"
+        className="pointer-events-auto fixed max-h-[calc(100vh-24px)] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl"
         style={{
           left: 0,
           top: 0,
-          width: layout.width,
-          height: layout.height,
+          // Quick follow-up: narrower and as tall as its four fields (2026-10-15).
+          width: quickMode ? Math.min(layout.width, 640) : layout.width,
+          height: quickMode ? 'auto' : layout.height,
           transform: `translate3d(${layout.x}px, ${layout.y}px, 0)`,
         }}
       >
         <div
           className={cn(
-            'flex cursor-grab touch-none select-none items-center justify-between gap-3 border-b border-[#E5F7F8] bg-[#F8FEFF] px-4 py-3 active:cursor-grabbing',
-            isDragging && 'bg-[#E8F9FA]'
+            'flex cursor-grab touch-none select-none items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 active:cursor-grabbing',
+            isDragging && 'opacity-90'
           )}
           title={t('customers.followUp.pressHoldToMove')}
           onPointerDown={handleHeaderPointerDown}
         >
           <div className="min-w-0">
-            <h3 className="truncate text-base font-black text-[#111827]">{t('customers.followUp.addFollowUp')}</h3>
-            <p className="mt-0.5 truncate text-xs font-bold text-[#64748B]">{customerName}</p>
+            <h3 className="truncate text-base font-black text-[var(--text)]">{t('customers.followUp.addFollowUp')}</h3>
+            <p className="mt-0.5 truncate text-xs font-bold text-[var(--text-muted)]">{customerName}</p>
           </div>
 
           <div className="flex shrink-0 items-center gap-1">
-            <GripHorizontal size={17} className="text-[#64748B]" />
+            <label
+              className="me-1 inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1.5 text-xs font-bold text-[var(--text)]"
+              title={t('customers.followUp.quickModeHint')}
+              onPointerDown={(event) => event.stopPropagation()}
+            >
+              <input
+                type="checkbox"
+                checked={Boolean(quickMode)}
+                onChange={(event) => setQuickMode(event.target.checked)}
+                className="h-4 w-4 accent-[#00C2CB]"
+              />
+              <Zap size={14} className="text-[#00A3AA]" aria-hidden="true" />
+              {t('customers.followUp.quickMode')}
+            </label>
+            <GripHorizontal size={17} className="text-[var(--text-muted)]" />
             <button
               type="button"
               onClick={onClose}
               onPointerDown={(event) => event.stopPropagation()}
               disabled={mutations.saveAction.isPending}
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#D8E7EA] bg-white text-[#64748B] transition hover:bg-[#F8FAFC] disabled:opacity-60"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] transition hover:bg-[var(--surface-2)] disabled:opacity-60"
               aria-label={t('customers.table.activityTimeline.close')}
             >
               <X size={17} />
@@ -565,157 +550,43 @@ export function FollowUpNoteDialog({
         <form
           onSubmit={handleSubmit}
           className="flex flex-col gap-4 overflow-hidden p-4"
-          style={{ height: Math.max(220, (Number(layout.height) || 760) - 74) }}
+          style={quickMode ? undefined : { height: Math.max(220, (Number(layout.height) || 760) - 74) }}
         >
           <div className={cn('grid min-h-0 flex-1 gap-4', sectionsLayoutClass)}>
-            <div className="min-h-0 space-y-4 overflow-y-auto pe-1">
-              <Input
-                type="text"
-                label={t('customers.followUp.statusFieldLabel')}
-                value={form.title}
-                onChange={(event) => updateForm('title', event.target.value)}
-                placeholder={oldStatusTitle || t('customers.followUp.defaultTitle')}
-              />
-
-              <label className="block">
-                <span className="mb-1.5 block text-sm font-black text-[#111827]">{t('customers.followUp.noteTextLabel')}</span>
-                <textarea
-                  value={form.description}
-                  onChange={(event) => updateForm('description', event.target.value)}
-                  rows={5}
-                  className="min-h-32 w-full resize-y rounded-xl border border-[#D8E7EA] bg-[#FBFEFF] px-3 py-2 text-sm font-bold text-[#111827] outline-none transition focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]"
-                  placeholder={t('customers.followUp.notePlaceholder')}
-                  autoFocus
-                />
-              </label>
-
-              <Input
-                type="text"
-                label={t('customers.followUp.shortNoteLabel')}
-                value={form.note}
-                onChange={(event) => updateForm('note', event.target.value)}
-                placeholder={t('customers.followUp.optionalPlaceholder')}
-              />
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Input
-                  type="number"
-                  min="0"
-                  label={t('customers.followUp.durationLabel')}
-                  value={form.duration}
-                  onChange={(event) => updateForm('duration', event.target.value)}
-                  placeholder="15"
-                />
-
-                <label className="grid gap-1.5">
-                  <span className="text-sm font-medium font-arabic text-[var(--text)]">{t('customers.followUp.resultLabel')}</span>
-                  <select
-                    value={form.result}
-                    onChange={(event) => updateForm('result', event.target.value)}
-                    className="h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-arabic text-[var(--text)] outline-none transition-colors focus:border-transparent focus:ring-2 focus:ring-[#00C2CB]"
-                  >
-                    {getResultOptions(t).map((option) => (
-                      <option key={option.value || 'empty'} value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-
-              <Input
-                type="datetime-local"
-                label={t('customers.followUp.activityTimeLabel')}
-                value={form.activity_at}
-                onChange={(event) => updateForm('activity_at', event.target.value)}
-                startIcon={<CalendarClock size={16} />}
-              />
-
-              <div className="rounded-xl border border-[#D7EEF0] bg-[#F8FEFF] p-3">
-                <label className="flex cursor-pointer items-center justify-between gap-3">
-                  <span className="min-w-0">
-                    <span className="block text-sm font-black text-[#111827]">{t('customers.followUp.changeStatusQuestion')}</span>
-                    <span className="mt-0.5 block text-xs font-bold text-[#64748B]">
-                      {t('customers.followUp.changeStatusHint')}
-                    </span>
-                  </span>
-                  <input
-                    type="checkbox"
-                    checked={form.shouldChangeStatus}
-                    onChange={(event) => {
-                      const checked = event.target.checked
-                      setForm((current) => ({
-                        ...current,
-                        shouldChangeStatus: checked,
-                        new_status_id: checked ? current.new_status_id : '',
-                      }))
-                    }}
-                    className="h-5 w-5 rounded border-[#BEEFF2] text-[#00AEB8] focus:ring-[#00C2CB]"
-                  />
-                </label>
-
-                {form.shouldChangeStatus ? (
-                  <div className="mt-3 grid gap-2">
-                    <label className="grid gap-1.5">
-                      <span className="text-sm font-medium font-arabic text-[var(--text)]">{t('customers.followUp.newStatusLabel')}</span>
-                      <div className="relative">
-                        <select
-                          value={form.new_status_id}
-                          onChange={(event) => updateForm('new_status_id', event.target.value)}
-                          className="h-10 w-full appearance-none rounded-lg border border-[var(--border)] bg-white px-3 pe-9 text-sm font-arabic text-[var(--text)] outline-none transition-colors focus:border-transparent focus:ring-2 focus:ring-[#00C2CB]"
-                        >
-                          <option value="">{t('customers.followUp.chooseStatusPlaceholder')}</option>
-                          {statuses.map((status) => (
-                            <option key={status.id} value={status.id} disabled={isClosingStatus(status)}>
-                              {isClosingStatus(status) ? `${getStatusLabel(status)} — ${t('customers.leadClose.useCloseDialog')}` : isStatusNoteRequired(status)
-                                ? `${getStatusLabel(status)}${t('customers.followUp.noteRequiredSuffix')}`
-                                : getStatusLabel(status)}
-                            </option>
-                          ))}
-                        </select>
-                        <ChevronDown size={16} className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-[#64748B]" />
-                      </div>
-                    </label>
-
-                    <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-[#64748B]">
-                      <span className="rounded-full bg-white px-2 py-1 ring-1 ring-[#D7EEF0]">
-                        {t('customers.followUp.currentStatusLabel', { status: oldStatusTitle || '-' })}
-                      </span>
-                      {selectedStatus ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-[#ECFDF3] px-2 py-1 text-[#166534] ring-1 ring-[#BBF7D0]">
-                          <CheckCircle2 size={13} />
-                          {t('customers.followUp.willChangeTo', { status: getStatusLabel(selectedStatus) })}
-                          {isStatusNoteRequired(selectedStatus) ? t('customers.followUp.noteRequiredSuffix') : ''}
-                        </span>
-                      ) : null}
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-
-            <FollowUpScheduleSection form={form} updateForm={updateForm} />
-
-            <FollowUpInterestedProductSection
+            <FollowUpMainFields
               form={form}
+              setForm={setForm}
               updateForm={updateForm}
-              products={products}
-              isProductsLoading={productsQuery.isLoading}
-              selectedProduct={selectedInterestedProduct}
+              statuses={statuses}
+              selectedStatus={selectedStatus}
+              oldStatusTitle={oldStatusTitle}
+              quick={Boolean(quickMode)}
             />
+
+            {!quickMode && <FollowUpScheduleSection form={form} updateForm={updateForm} />}
+
+            {!quickMode && (
+              <FollowUpInterestedProductSection
+                enabled={Boolean(form.interest_enabled)}
+                onToggle={(checked) => updateForm('interest_enabled', checked)}
+                interestState={interestState}
+              />
+            )}
           </div>
 
-          <div className="flex items-center justify-end gap-2 border-t border-[#EEF2F4] pt-4">
+          <div className="flex items-center justify-end gap-2 border-t border-[var(--border)] pt-4">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
-              disabled={mutations.saveAction.isPending || meetingMutations.create.isPending}
+              disabled={mutations.saveAction.isPending || meetingMutations.create.isPending || mutations.saveInterested.isPending}
             >
               {t('customers.table.cancel')}
             </Button>
             <Button
               type="submit"
               variant="accent"
-              loading={mutations.saveAction.isPending || meetingMutations.create.isPending}
+              loading={mutations.saveAction.isPending || meetingMutations.create.isPending || mutations.saveInterested.isPending}
               disabled={!canSubmit}
             >
               {t('customers.followUp.saveFollowUp')}
@@ -723,7 +594,7 @@ export function FollowUpNoteDialog({
           </div>
         </form>
 
-        <button
+        {!quickMode && <button
           type="button"
           className={cn(
             'absolute bottom-2 right-2 h-4 w-4 rounded-sm border border-[#BEEFF2] bg-[#F8FEFF] text-transparent',
@@ -732,7 +603,7 @@ export function FollowUpNoteDialog({
           title={t('customers.table.activityTimeline.resizeWindow')}
           aria-label={t('customers.table.activityTimeline.resizeWindow')}
           onPointerDown={handleResizePointerDown}
-        />
+        />}
       </div>
     </div>,
     document.body

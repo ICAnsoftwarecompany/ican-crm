@@ -27,6 +27,8 @@ import { definitionsApi } from '../../features/definitions/api/definitionsApi'
 import { requestOpenMessengerSidebar } from '../../features/conversations/constants/messengerSidebarEvents'
 import { extractLeadStatuses } from './utils/customerStatus'
 import { FollowUpNoteDialog } from './components/follow-up-note'
+import { buildCustomerRowContextActions } from './utils/customerRowContextActions'
+import { LeadInterestDialog } from '../../features/leads'
 import { MeetingDataDrawer, ScheduleActivityDialog } from '../../features/call-meetings'
 import { buildAfterMeetingReportUrl, buildScheduleStatusPayload } from '../../features/call-meetings/utils/scheduleUiUtils'
 import { useMeetingMutations } from '../../features/meetings/hooks/useMeetings'
@@ -592,6 +594,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
   const [selectedActivityItem, setSelectedActivityItem] = useState(null)
   const [activityRangeDays, setActivityRangeDays] = useLocalStorage('customers-activity-drawer-range-days', 1)
   const [leadNoteDialogRow, setLeadNoteDialogRow] = useState(null)
+  const [interestDialogRow, setInterestDialogRow] = useState(null)
   const [scheduleDialog, setScheduleDialog] = useState(null)
   const [viewMode, setViewMode] = useCustomersViewMode()
   const isPipelineView = !showTrash && viewMode === CUSTOMERS_VIEW_MODES.PIPELINE
@@ -1175,51 +1178,15 @@ export function CustomersPage({ defaultShowTrash = false }) {
     ]
   }
 
-  const getRowContextActions = useCallback(({ row }) => {
-    if (!row || showTrash) return []
-
-    const customerName = row?.lead?.name || row?.name || row?.email || row?.phone || `#${row?.id || row?.customer_id || ''}`
-
-    return [
-      {
-        id: 'customers-page-table-customization',
-        label: t('customers.page.actions.customizeTable'),
-        section: t('customers.page.actions.additionalSettingsSection'),
-        tab: 'format',
-        onClick: () => setIsTableSettingsOpen(true),
-      },
-      {
-        id: 'customers-row-add-meeting',
-        label: t('customers.page.actions.addMeeting'),
-        section: t('customers.page.actions.customerActionsSection'),
-        tab: 'actions',
-        onClick: () => handleOpenScheduledActivityDialog(row, 'meeting'),
-      },
-      {
-        id: 'customers-row-add-call',
-        label: t('customers.page.actions.addCall'),
-        section: t('customers.page.actions.customerActionsSection'),
-        tab: 'actions',
-        onClick: () => handleOpenScheduledActivityDialog(row, 'call'),
-      },
-      {
-        id: 'customers-row-add-follow-up',
-        label: t('customers.page.actions.addFollowUp'),
-        section: t('customers.page.actions.customerActionsSection'),
-        tab: 'actions',
-        onClick: () => handleOpenLeadNoteDialog(row),
-      },
-      {
-        id: 'customers-row-toggle-selection',
-        label: t('customers.page.actions.selectCustomer', { name: customerName }),
-        section: t('customers.page.actions.customerActionsSection'),
-        tab: 'actions',
-        onClick: (_targetRow, context) => {
-          context?.toggleSelection?.()
-        },
-      },
-    ]
-  }, [handleOpenLeadNoteDialog, handleOpenScheduledActivityDialog, setIsTableSettingsOpen, showTrash, t])
+  const getRowContextActions = useCallback(({ row }) => buildCustomerRowContextActions({
+    row,
+    t,
+    showTrash,
+    onCustomizeTable: () => setIsTableSettingsOpen(true),
+    onSchedule: handleOpenScheduledActivityDialog,
+    onAddFollowUp: handleOpenLeadNoteDialog,
+    onAddInterest: setInterestDialogRow,
+  }), [handleOpenLeadNoteDialog, handleOpenScheduledActivityDialog, setIsTableSettingsOpen, showTrash, t])
 
   const { columns, serialColumnRender } = useCustomersTableColumns({
     t,
@@ -1331,6 +1298,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
                 onAddMeeting: (row) => handleOpenScheduledActivityDialog(row, 'meeting'),
                 onAddCall: (row) => handleOpenScheduledActivityDialog(row, 'call'),
                 onAddFollowUp: handleOpenLeadNoteDialog,
+                onAddInterest: setInterestDialogRow,
                 onOpenMessenger: handleOpenMessengerFromChannel,
                 onOpenGmail: handleOpenGmailFromChannel,
               }}
@@ -1418,6 +1386,13 @@ export function CustomersPage({ defaultShowTrash = false }) {
         onClose={() => setIsDetailsOpen(false)}
         onStatusChanged={handleCustomerStatusChanged}
         initialTab={detailsInitialTab}
+      />
+
+      <LeadInterestDialog
+        open={Boolean(interestDialogRow)}
+        customer={interestDialogRow}
+        onClose={() => setInterestDialogRow(null)}
+        onSaved={() => refetch()}
       />
 
       <TableSettingsDrawer

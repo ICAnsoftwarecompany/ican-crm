@@ -335,6 +335,8 @@ export default {
     }
   },
   "followUp": {
+    "quickMode": "Quick follow-up",
+    "quickModeHint": "Shows only follow-up, note, time and short note; remembered in this browser",
     "results": {
       "none": "No outcome",
       "noAnswer": "No Answer",
