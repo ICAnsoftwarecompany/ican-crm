@@ -1274,7 +1274,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
         />
       )}
 
-      <div className={`grid min-w-0 gap-3 ${activeActivityDrawerType && !isPipelineView ? 'xl:grid-cols-[minmax(0,1fr)_340px]' : 'grid-cols-1'}`}>
+      <div className={`!mt-2 grid min-w-0 gap-3 ${activeActivityDrawerType && !isPipelineView ? 'xl:grid-cols-[minmax(0,1fr)_340px]' : 'grid-cols-1'}`}>
         <section className="overflow-x-auto min-w-0">
           {isPipelineView ? (
             <CustomersPipelineSection

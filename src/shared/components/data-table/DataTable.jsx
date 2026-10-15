@@ -1365,7 +1365,7 @@ export function DataTable({
       {showToolbar && (
         <>
           {toolbarActionsNode && (
-            <div className="mb-3 flex min-w-0 flex-wrap items-center gap-2">
+            <div className="contents">
               {toolbarActionsNode}
             </div>
           )}
@@ -1431,11 +1431,12 @@ export function DataTable({
 
             {realtimeStatusMeta && (
               <div
-                className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-xs text-[var(--text-muted)]"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-xs text-[var(--text-muted)]"
                 title={realtimeStatusMeta.label}
+                aria-label={realtimeStatusMeta.label}
               >
                 <span className={`h-2 w-2 rounded-full ${realtimeStatusMeta.color}`} />
-                <span className="hidden xl:inline">{realtimeStatusMeta.label}</span>
+                <span className="sr-only">{realtimeStatusMeta.label}</span>
               </div>
             )}
 

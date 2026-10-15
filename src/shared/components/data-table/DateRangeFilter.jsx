@@ -180,7 +180,7 @@ export function DateRangeFilter({ dateColumns = [], value = EMPTY_VALUE, onChang
         aria-expanded={isOpen}
       >
         <CalendarRange size={16} />
-        <span className="hidden xl:inline">
+        <span className="sr-only">
           {hasActiveFilter ? getColumnLabel(activeColumn) : t('dataTable.dateFilter.button')}
         </span>
         <ChevronDown size={14} />

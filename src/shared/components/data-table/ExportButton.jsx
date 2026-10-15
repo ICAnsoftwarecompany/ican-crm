@@ -5,14 +5,14 @@ export function ExportButton({ onClick, disabled = false }) {
   return (
     <Button
       variant="outline"
-      size="sm"
+      size="icon"
       onClick={onClick}
       disabled={disabled}
       className="gap-2"
       title="Export to Excel"
     >
       <Download size={16} />
-       Excel
+       <span className="sr-only">Excel</span>
     </Button>
   )
 }

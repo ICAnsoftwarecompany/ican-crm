@@ -17,25 +17,25 @@ export function OutcomeBulkActions({ rows = [], onDone }) {
     <>
       <Button
         variant="outline"
-        size="sm"
+        size="icon"
         onClick={() => setOpen('won')}
         disabled={!single}
         title={single ? t('customers.leadOutcome.contextWon') : t('customers.leadOutcome.wonSingleOnly')}
         className="whitespace-nowrap text-[#15803D]"
       >
         <Trophy size={14} />
-        {t('customers.leadOutcome.won.action')}
+        <span className="sr-only">{t('customers.leadOutcome.won.action')}</span>
       </Button>
       <Button
         variant="outline"
-        size="sm"
+        size="icon"
         onClick={() => setOpen('lost')}
         disabled={!rows.length}
         title={t('customers.leadOutcome.contextLost')}
         className="whitespace-nowrap text-[#B91C1C]"
       >
         <ThumbsDown size={14} />
-        {t('customers.leadOutcome.lost.action')}
+        <span className="sr-only">{t('customers.leadOutcome.lost.action')}</span>
       </Button>
       <LeadWonDialog open={open === 'won'} customer={rows[0] || null} onClose={() => setOpen(null)} onDone={onDone} />
       <LeadLostDialog open={open === 'lost'} customers={rows} onClose={() => setOpen(null)} onDone={onDone} />

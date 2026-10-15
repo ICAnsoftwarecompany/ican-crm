@@ -362,10 +362,10 @@ export function CustomersBulkActions({
     <>
       <div
         className={cn(
-          'flex rounded-xl border border-[#BEEFF2] bg-[#F8FEFF] p-2 shadow-sm',
+          'flex rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 shadow-sm',
           isVerticalPinned
             ? 'w-full min-w-0 flex-col gap-2'
-            : 'min-w-[min(720px,100%)] flex-col gap-2 xl:flex-row xl:items-center',
+            : 'min-w-0 flex-wrap items-center gap-2',
           isHorizontalPinned && 'fixed inset-x-4 top-3 z-[95] max-h-[calc(100vh-1.5rem)] overflow-auto shadow-2xl backdrop-blur'
         )}
       >
@@ -374,7 +374,7 @@ export function CustomersBulkActions({
           <PinBulkActionsButton pinMode={activePinMode} onPinModeChange={setPinMode} />
         </div>
 
-        <div className={cn('grid min-w-0 flex-1 gap-2', !isVerticalPinned && 'md:grid-cols-2')}>
+        <div className={cn('grid min-w-0 gap-2', !isVerticalPinned && 'grid-cols-2 w-full sm:w-64')}>
           <ChangeStatusBulkAction
             value={statusId}
             statuses={statusOptions}
@@ -396,7 +396,7 @@ export function CustomersBulkActions({
           />
         </div>
 
-        <div className={cn('flex shrink-0 flex-wrap items-center gap-2', isVerticalPinned && '[&>button]:w-full')}>
+        <div className="flex shrink-0 flex-wrap items-center gap-1.5">
           <AddFollowUpBulkAction disabled={!canAddLeadNote} onClick={handleAddLeadNote} />
           <AddInterestBulkAction rows={selectedRows} onDone={onDone} />
           <OutcomeBulkActions rows={selectedRows} onDone={onDone} />

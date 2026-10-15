@@ -66,10 +66,10 @@ export function SavedFiltersDialog({ tableId, columns, rows, filters, onApply })
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={openDialog} className="gap-2" aria-label={t('dataTable.savedFilters.button')}>
+      <Button variant="outline" size="icon" onClick={openDialog} className="relative" title={t('dataTable.savedFilters.button')} aria-label={t('dataTable.savedFilters.button')}>
         <Filter size={16} />
-        <span className="hidden xl:inline">{t('dataTable.savedFilters.button')}</span>
-        {activeId && <span className="h-2 w-2 rounded-full bg-[#00A8B0]" />}
+        <span className="sr-only">{t('dataTable.savedFilters.button')}</span>
+        {activeId && <span className="absolute end-1 top-1 h-2 w-2 rounded-full bg-[#00A8B0]" />}
       </Button>
       <AppModal isOpen={open} onClose={() => setOpen(false)} title={t('dataTable.savedFilters.title')} size="lg" closeOnBackdrop={false}>
         <div className="space-y-5">

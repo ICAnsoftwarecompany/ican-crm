@@ -3,7 +3,7 @@ import { cn } from '../../../../../shared/utils/cn'
 
 export function SocialMessagingBulkActions({ selectedCount = 0, disabled = false, onOpenChannel, compact = false }) {
   return (
-    <div className={cn('rounded-xl border border-[#D7EEF0] bg-white p-3', compact && 'p-2')}>
+    <div className={cn('border-[var(--border)]', compact ? 'border-t pt-2' : 'border-s ps-2')}>
       <SocialChannelsList disabled={disabled} onOpenChannel={onOpenChannel} compact={compact} />
     </div>
   )

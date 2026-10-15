@@ -16,7 +16,7 @@ export function DataTableColumnSplitToggle({ enabled, onConfigure }) {
       aria-pressed={enabled}
     >
       <Columns2 size={16} />
-      <span className="hidden xl:inline">{t(enabled ? 'dataTable.columnSplit.enabled' : 'dataTable.columnSplit.button')}</span>
+      <span className="sr-only">{t(enabled ? 'dataTable.columnSplit.enabled' : 'dataTable.columnSplit.button')}</span>
     </button>
   )
 }

@@ -12,15 +12,15 @@ export function SocialChannelButton({ channel, disabled = false, onClick, compac
       onClick={() => onClick?.(channel.id)}
       disabled={disabled}
       className={cn(
-        'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-black transition-colors disabled:cursor-not-allowed disabled:opacity-50',
-        'border-[#D7EEF0] bg-white text-[var(--text)] hover:bg-[#F8FEFF]',
-        compact && 'w-full justify-center px-2'
+        'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-xs font-black transition-colors disabled:cursor-not-allowed disabled:opacity-50',
+        'border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:border-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)]',
+        compact && 'justify-self-center'
       )}
       title={label}
       aria-label={label}
     >
       <SocialChannelBadge channel={channel} />
-      <span>{channel.label}</span>
+      <span className="sr-only">{channel.label}</span>
     </button>
   )
 }

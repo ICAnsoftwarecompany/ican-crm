@@ -32,19 +32,22 @@ export function CustomersHeaderTools({ multiViewStatusId = null, activeActivityD
         type="button"
         onClick={() => setCatalogOpen(true)}
         className={cn(toolClass, catalogOpen ? 'border-[#00C2CB] bg-[var(--surface-2)] text-[#007A80]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-2)]')}
-        title={t('catalog.browser.description')}
+        title={t('catalog.browser.button')}
+        aria-label={t('catalog.browser.button')}
       >
         <Package size={16} />
-        {t('catalog.browser.button')}
+        <span className="customers-header-tool-label">{t('catalog.browser.button')}</span>
       </button>
 
       <button
         type="button"
         onClick={openMultiView}
+        title={t('customers.productsDialog.dualView')}
+        aria-label={t('customers.productsDialog.dualView')}
         className={cn(toolClass, 'border-[#00C2CB] bg-[var(--surface)] text-[#007A80] hover:bg-[var(--surface-2)]')}
       >
         <Columns2 size={16} />
-        {t('customers.productsDialog.dualView')}
+        <span className="customers-header-tool-label">{t('customers.productsDialog.dualView')}</span>
       </button>
 
       {showActivities && (

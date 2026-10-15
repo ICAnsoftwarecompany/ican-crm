@@ -14,13 +14,13 @@ export function DataTableToolbar({
   children,
 }) {
   return (
-    <div className="mb-4 flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start">
+    <div className="mb-4 flex min-w-0 flex-wrap items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-2">
       {showGlobalSearch && (
-        <div className="min-w-0 flex-1">
+        <div className="min-w-40 flex-1 basis-44 [&_input]:h-9 [&_input]:text-xs">
           <GlobalSearch value={globalFilter} onChange={onGlobalFilterChange} tableId={tableId} />
         </div>
       )}
-      <div className="flex min-w-0 flex-wrap items-center gap-2 sm:flex-nowrap sm:overflow-x-auto sm:pb-1 lg:justify-end">
+      <div className="ms-auto flex max-w-full flex-wrap items-center gap-1.5 whitespace-nowrap [&>*]:shrink-0 [&>button]:h-9 [&>button]:rounded-lg [&>button]:text-xs [&>div>button]:h-9">
         {showColumnVisibility && (
           <ColumnVisibilityToggle
             columns={columns}

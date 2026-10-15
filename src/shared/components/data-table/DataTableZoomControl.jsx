@@ -51,7 +51,7 @@ export function DataTableZoomControl({ value = 100, onChange }) {
       <select
         value={DATA_TABLE_ZOOM_OPTIONS[currentIndex]}
         onChange={(event) => updateZoom(event.target.value)}
-        className="h-9 min-w-20 bg-transparent px-2 text-center text-xs font-bold outline-none"
+        className="h-9 w-16 min-w-0 bg-transparent px-1 text-center text-xs font-bold outline-none"
         aria-label={t('dataTable.zoom.level')}
         title={t('dataTable.zoom.level')}
       >

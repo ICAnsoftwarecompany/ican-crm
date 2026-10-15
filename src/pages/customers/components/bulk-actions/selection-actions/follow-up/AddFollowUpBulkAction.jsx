@@ -7,7 +7,7 @@ export function AddFollowUpBulkAction({ disabled = false, onClick }) {
   return (
     <Button
       variant="ai"
-      size="sm"
+      size="icon"
       onClick={onClick}
       disabled={disabled}
       title={
@@ -18,7 +18,7 @@ export function AddFollowUpBulkAction({ disabled = false, onClick }) {
       className="whitespace-nowrap"
     >
       <Plus size={14} />
-      {t('customers.followUp.addFollowUp')}
+      <span className="sr-only">{t('customers.followUp.addFollowUp')}</span>
     </Button>
   )
 }

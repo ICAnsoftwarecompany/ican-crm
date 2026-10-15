@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CheckCircle2, Edit3, ListChecks, Plus, RefreshCw } from 'lucide-react'
+import { ArrowDown, ArrowRight, CheckCircle2, Edit3, ListChecks, Plus, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 import { CloseKindsNotice, LostReasonsManager, useLostReasons } from '../../../../features/definitions'
 import { AppModal } from '../../../../shared/components/overlays/AppModal'
@@ -68,6 +68,27 @@ function getEnabledMeta(status) {
 
 export function CustomerStatusesTab() {
   const { t } = useTranslation()
+  const stagesRef = useRef(null)
+  const [wrappedStages, setWrappedStages] = useState([])
+
+  useLayoutEffect(() => {
+    const container = stagesRef.current
+    if (!container) return undefined
+
+    const updateArrows = () => {
+      const stages = Array.from(container.children)
+      const next = stages.map((stage, index) => Boolean(
+        stages[index + 1] && stages[index + 1].offsetTop > stage.offsetTop
+      ))
+      setWrappedStages((current) => current.length === next.length && current.every((value, index) => value === next[index]) ? current : next)
+    }
+
+    updateArrows()
+    const observer = new ResizeObserver(updateArrows)
+    observer.observe(container)
+    Array.from(container.children).forEach((stage) => observer.observe(stage))
+    return () => observer.disconnect()
+  })
   const queryClient = useQueryClient()
   const [dialogMode, setDialogMode] = useState(null)
   const [selectedStatus, setSelectedStatus] = useState(null)
@@ -188,7 +209,7 @@ export function CustomerStatusesTab() {
       {!statusesQuery.isLoading && !statusesQuery.isError && leadStatuses.length > 0 && (
         <section className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3">
           <div className="mb-3 text-sm font-bold text-[var(--text-muted)]">{t('customers.customization.stagesSequence')}</div>
-          <div className="flex flex-wrap items-stretch gap-2">
+          <div ref={stagesRef} className="relative flex flex-wrap items-stretch gap-2">
             {leadStatuses.map((status, index) => {
               const enabledMeta = getEnabledMeta(status)
               const stageKindLabel = getStageKindLabel(status)
@@ -251,7 +272,9 @@ export function CustomerStatusesTab() {
                   </article>
 
                   {index < leadStatuses.length - 1 ? (
-                    <span className="text-lg font-black text-[#94A3B8]">→</span>
+                    <span className="inline-flex w-6 shrink-0 items-center justify-center text-[var(--text-muted)]" aria-hidden="true">
+                      {wrappedStages[index] ? <ArrowDown size={18} /> : <ArrowRight size={18} className="rtl:rotate-180" />}
+                    </span>
                   ) : null}
                 </div>
               )

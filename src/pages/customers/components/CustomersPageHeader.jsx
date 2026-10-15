@@ -1,4 +1,5 @@
 import { CustomersPageActions } from './page-actions'
+import './CustomersPageHeader.css'
 
 export function CustomersPageHeader({
   title,
@@ -12,17 +13,17 @@ export function CustomersPageHeader({
   viewToggle = null,
 }) {
   return (
-    <header className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2">
-      <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-        <div className="min-w-0">
+    <header className="customers-page-header rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2">
+      <div className="customers-page-header-layout">
+        <div className="customers-page-header-title min-w-0">
           <h1 className="text-base font-bold leading-6 text-[var(--text)]">{title}</h1>
           {description && (
             <p className="max-w-3xl truncate text-xs leading-5 text-[var(--text-muted)]">{description}</p>
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          {viewToggle}
+        <div className="customers-page-header-controls">
+          {viewToggle && <div className="customers-page-header-views">{viewToggle}</div>}
           <CustomersPageActions
             onAdd={onAdd}
             onImport={onImport}

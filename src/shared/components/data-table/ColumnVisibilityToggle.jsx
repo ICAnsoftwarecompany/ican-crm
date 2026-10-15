@@ -205,12 +205,14 @@ export function ColumnVisibilityToggle({
     <div className="relative min-w-0" ref={triggerRef}>
       <Button
         variant="outline"
-        size="sm"
+        size="icon"
         onClick={() => setIsOpen(!isOpen)}
         className="max-w-full gap-2"
+        title={t('dataTable.columns.button', { count: visibleCount })}
+        aria-label={t('dataTable.columns.button', { count: visibleCount })}
       >
         <Settings size={16} />
-        {t('dataTable.columns.button', { count: visibleCount })}
+        <span className="sr-only">{t('dataTable.columns.button', { count: visibleCount })}</span>
       </Button>
       {panel}
     </div>

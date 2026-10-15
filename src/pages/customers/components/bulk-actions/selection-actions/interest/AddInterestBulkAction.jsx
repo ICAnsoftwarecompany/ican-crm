@@ -16,14 +16,14 @@ export function AddInterestBulkAction({ rows = [], onDone }) {
     <>
       <Button
         variant="outline"
-        size="sm"
+        size="icon"
         onClick={() => setOpen(true)}
         disabled={!rows.length}
-        title={t('leads.interestDialog.customersCount', { count: rows.length })}
+        title={`${t('leads.interestDialog.bulkButton')} — ${t('leads.interestDialog.customersCount', { count: rows.length })}`}
         className="whitespace-nowrap"
       >
         <HeartHandshake size={14} />
-        {t('leads.interestDialog.bulkButton')}
+        <span className="sr-only">{t('leads.interestDialog.bulkButton')}</span>
       </Button>
       <LeadInterestDialog
         open={open}

@@ -23,7 +23,7 @@ export function DataTableRowSplitToggle({ enabled, onToggle, onConfigure }) {
       aria-pressed={enabled}
     >
       <TableRowsSplit size={16} />
-      <span className="hidden xl:inline">{t(enabled ? 'dataTable.rowSplit.enabled' : 'dataTable.rowSplit.button')}</span>
+      <span className="sr-only">{t(enabled ? 'dataTable.rowSplit.enabled' : 'dataTable.rowSplit.button')}</span>
     </button>
   )
 }
