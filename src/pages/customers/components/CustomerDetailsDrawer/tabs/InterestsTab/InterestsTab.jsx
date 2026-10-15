@@ -3,7 +3,7 @@ import { BadgeDollarSign, CalendarDays, Eye, ImageIcon, Package, Pencil, StickyN
 
 import { AppModal } from '../../../../../../shared/components/overlays/AppModal'
 import { buildCustomerAssetUrl } from '../../../customers-table/CustomerTableDetailsDialogs/CustomerTableDetailsDialogs'
-import { InterestFormDialog } from '../../quick-actions/interests'
+import { InterestFactsChips, LeadInterestDialog } from '../../../../../../features/leads'
 import { EmptyPanel } from '../../CustomerDetailsTabPrimitives'
 import { fieldValue, formatDateTime12 } from '../../customerDetailsUtils'
 import { useTranslation } from 'react-i18next'
@@ -281,6 +281,8 @@ export function InterestsTab({ customer, layoutMode = 'compact' }) {
                       ) : null}
                     </div>
 
+                    <InterestFactsChips interest={interest} />
+
                     {productDataItems.length ? (
                       <div className="mt-2">
                         <ProductDataChips items={productDataItems.slice(0, 1)} />
@@ -314,7 +316,7 @@ export function InterestsTab({ customer, layoutMode = 'compact' }) {
       </div>
 
       <InterestDetailsDialog interest={selectedInterest} onClose={() => setSelectedInterest(null)} />
-      <InterestFormDialog
+      <LeadInterestDialog
         open={Boolean(editingInterest)}
         customer={customer}
         interest={editingInterest}

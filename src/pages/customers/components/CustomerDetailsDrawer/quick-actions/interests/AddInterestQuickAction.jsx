@@ -3,7 +3,7 @@ import { HeartHandshake } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { QuickActionButton } from '../QuickActionButton'
-import { InterestFormDialog } from './InterestFormDialog'
+import { LeadInterestDialog } from '../../../../../../features/leads'
 import { useTranslation } from 'react-i18next'
 
 function getLeadId(customer) {
@@ -32,7 +32,7 @@ export function AddInterestQuickAction({ customer, onInterestChanged }) {
         alertTitle={leadId ? t('customers.interestForm.addForCustomer') : t('customers.interestForm.noLead')}
       />
 
-      <InterestFormDialog
+      <LeadInterestDialog
         open={open}
         customer={customer}
         onClose={() => setOpen(false)}
