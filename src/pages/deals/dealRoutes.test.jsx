@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // Smoke test of the whole deals area (2026-10-03): every hub and workspace page renders against a fake
 // backend that answers like the Postman "Deals Workspace" collection; the won / lost dialogs open from the board.
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -53,6 +53,7 @@ const post = vi.fn(async (url) => {
   if (url.endsWith('/won')) return { data: { data: contract } }
   if (url === '/api/tenant/pipeline-templates') return { data: { data: { id: 77 } } }
   if (url === '/api/tenant/deals') return { data: { data: { id: 88 } } }
+  if (url === '/api/tenant/teams/create') return { data: { data: { id: 9 } } }
   return { data: {} }
 })
 vi.mock('../../services/httpClient', () => ({
@@ -196,5 +197,38 @@ describe('deals area', () => {
     expect(bodies[1]).toMatchObject({ pipeline_template_id: 77, name: 'Villa 12 sale' })
     expect(bodies[2]).toEqual({ deal_id: 88, users: [{ user_id: 4, role: 'sales_rep' }], teams: [{ team_id: 3, role: 'manager' }] })
     expect(bodies[3]).toEqual({ deal_id: 88, product_ids: [31] })
+  })
+  it('quick team: with no teams, creates one from the team step and adds it to the deal', async () => {
+    const teamsRoute = routes.find(([pattern]) => pattern.test('/api/tenant/teams/get'))
+    const saved = teamsRoute[1]
+    teamsRoute[1] = { data: [] }
+    try {
+      renderAt('/deals/new')
+      const next = () => fireEvent.click(screen.getByText('dealWorkspace.wizard.next'))
+      fireEvent.click(await screen.findByText('dealWorkspace.wizard.pipeline.new.title'))
+      fireEvent.change(screen.getByLabelText(/^dealWorkspace.pipelines.name/), { target: { value: 'P' } })
+      next()
+      fireEvent.change(await screen.findByLabelText(/^dealWorkspace.fields.name/), { target: { value: 'Deal' } })
+      next()
+      await screen.findByText('Villa 12')
+      next()
+      fireEvent.click(await screen.findByText('dealWorkspace.wizard.team.quick.openEmpty'))
+      const dialogSubmit = await screen.findByText('dealWorkspace.wizard.team.quick.submit')
+      fireEvent.click(dialogSubmit)
+      expect(await screen.findByText('dealWorkspace.wizard.errors.quickTeamNameRequired')).toBeTruthy()
+      fireEvent.change(screen.getByLabelText(/^dealWorkspace.wizard.team.quick.name/), { target: { value: 'Villas team' } })
+      const dialog = screen.getByText('dealWorkspace.wizard.team.quick.footnote').closest('div')
+      fireEvent.click(within(dialog).getByRole('checkbox', { name: /^Nour/ }))
+      fireEvent.click(dialogSubmit)
+      await waitFor(() => expect(post).toHaveBeenCalledWith('/api/tenant/teams/create', { name: 'Villas team', active: true, type: 'sales', members: [4] }))
+      await waitFor(() => expect(screen.getByText('dealWorkspace.wizard.team.summary')).toBeTruthy())
+      next()
+      fireEvent.click(await screen.findByText('dealWorkspace.wizard.create'))
+      await waitFor(() => expect(post.mock.calls.some(([url]) => url === '/api/tenant/deals/team')).toBe(true))
+      const [, body] = post.mock.calls.find(([url]) => url === '/api/tenant/deals/team')
+      expect(body).toEqual({ deal_id: 88, teams: [{ team_id: 9, role: 'sales_rep' }] })
+    } finally {
+      teamsRoute[1] = saved
+    }
   })
 })

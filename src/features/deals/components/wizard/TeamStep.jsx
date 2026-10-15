@@ -1,9 +1,12 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Send, UsersRound } from 'lucide-react'
+import { Plus, Send, UsersRound } from 'lucide-react'
+import { Button } from '../../../../shared/components/ui/Button'
 import { useTeams } from '../../../teams'
 import { useUsers } from '../../../users'
 import { TEAM_ROLES } from '../../constants/dealOptions'
+import { addQuickTeamToMembers } from '../../utils/quickTeam'
+import { QuickTeamDialog } from './QuickTeamDialog'
 import { TeamPicker } from './TeamPicker'
 
 const DEFAULT_ROLE = 'sales_rep'
@@ -14,12 +17,14 @@ const teamMembersOf = (team) => [team?.members, team?.users].find(Array.isArray)
  * (`POST /deals/team` with `users[]` and `teams[]`):
  * - ready teams: pick existing teams (everyone in the team joins with the chosen role);
  * - build the team: pick users one by one, each with a role.
- * The owner (step 2) can be added as manager automatically.
+ * The owner (step 2) can be added as manager automatically. No fitting team? "Quick team" creates one
+ * (`POST /teams/create`, QuickTeamDialog) and adds it to the deal right away.
  */
 export function TeamStep({ value, onChange, ownerId, errors = {} }) {
   const { t, i18n } = useTranslation()
   const usersQuery = useUsers()
   const teamsQuery = useTeams()
+  const [quickOpen, setQuickOpen] = useState(false)
   const users = useMemo(() => (usersQuery.data || []).map((user) => ({ id: String(user.id), name: user.name || user.email || `#${user.id}`, meta: user.email && user.name ? user.email : '' })), [usersQuery.data])
   const teams = useMemo(() => (teamsQuery.data || []).map((team) => {
     const members = teamMembersOf(team)
@@ -40,6 +45,15 @@ export function TeamStep({ value, onChange, ownerId, errors = {} }) {
   }
   const setRole = (kind) => (id, role) => onChange({ members: value.members.map((member) => (member.kind === kind && String(member.refId) === id ? { ...member, role } : member)) })
 
+  const pickedUserIds = value.members.filter((member) => member.kind !== 'team').map((member) => String(member.refId))
+  const onQuickCreated = ({ teamId, memberIds, replaceUsers }) => {
+    onChange({ members: addQuickTeamToMembers(value.members, { teamId, memberIds, replaceUsers }) })
+    setQuickOpen(false)
+  }
+  const quickButton = (variant) => (
+    <Button type="button" size="sm" variant={variant} onClick={() => setQuickOpen(true)}><Plus size={14} />{t(variant === 'outline' ? 'dealWorkspace.wizard.team.quick.open' : 'dealWorkspace.wizard.team.quick.openEmpty')}</Button>
+  )
+
   const userCount = selectedUsers.size + (lockedUsers.size && !selectedUsers.has(owner.id) ? 1 : 0)
   const teamCount = selectedTeams.size
 
@@ -58,6 +72,8 @@ export function TeamStep({ value, onChange, ownerId, errors = {} }) {
           onRetry={teamsQuery.refetch}
           emptyTitle={t('dealWorkspace.wizard.team.teams.emptyTitle')}
           emptyDescription={t('dealWorkspace.wizard.team.teams.emptyDescription')}
+          headerAction={teams.length ? quickButton('outline') : null}
+          emptyAction={quickButton('primary')}
         />
         <TeamPicker
           title={t('dealWorkspace.wizard.team.users.title')}
@@ -101,6 +117,7 @@ export function TeamStep({ value, onChange, ownerId, errors = {} }) {
         {userCount || teamCount ? <Send size={15} className="text-[var(--brand-accent)]" /> : <UsersRound size={15} className="text-[var(--text-muted)]" />}
         {userCount || teamCount ? t('dealWorkspace.wizard.team.summary', { users: userCount, teams: teamCount }) : t('dealWorkspace.wizard.team.none')}
       </div>
+      <QuickTeamDialog open={quickOpen} users={users} initialMemberIds={pickedUserIds} onClose={() => setQuickOpen(false)} onCreated={onQuickCreated} />
       {errors.members && <p className="text-xs text-red-600 dark:text-red-400">{t(`dealWorkspace.wizard.errors.${errors.members}`)}</p>}
       <p className="text-xs text-[var(--text-muted)]">{t('dealWorkspace.team.add.notifyHint')}</p>
     </div>

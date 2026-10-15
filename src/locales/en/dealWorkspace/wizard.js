@@ -101,8 +101,8 @@ export default {
       "teams": {
         "title": "Pick a ready team",
         "description": "Everyone in the team joins the deal with the role you set.",
-        "emptyTitle": "No teams",
-        "emptyDescription": "No teams are defined yet. Build the team from users next to this section."
+        "emptyTitle": "No teams yet",
+        "emptyDescription": "Create a quick team now and it joins the deal right away, or build the team from users next to this section."
       },
       "users": {
         "title": "Build a team from users",
@@ -116,7 +116,28 @@ export default {
         "sales_rep": "Works the leads assigned to them: contact, follow-up, win and loss.",
         "viewer": "Sees the deal and its reports without editing."
       },
-      "summary": "Sent in one request: {{users}} users and {{teams}} teams."
+      "summary": "Sent in one request: {{users}} users and {{teams}} teams.",
+      "quick": {
+        "open": "New team",
+        "openEmpty": "Create a quick team",
+        "title": "Create a quick team",
+        "description": "Create a new sales team for the company; it joins this deal as soon as it is created.",
+        "name": "Team name",
+        "namePlaceholder": "e.g. Villas sales team",
+        "nameHint": "Shows in the teams list and can be picked for later deals.",
+        "leader": "Team leader (optional)",
+        "leaderHint": "Joins the team automatically; distribution rules can target them later.",
+        "noLeader": "No leader",
+        "leaderMember": "Team leader",
+        "members": "Team members ({{count}})",
+        "replaceUsers": "Replace the picked users with the new team",
+        "replaceUsersHint": "Users now inside the team are no longer listed one by one in the deal; they join with the team and its role.",
+        "footnote": "The team is created as an active \"Sales\" team. You can change its type and members later in Leads Center → Sales teams.",
+        "submit": "Create and add to the deal",
+        "created": "\"{{name}}\" created and added to the deal",
+        "failed": "Could not create the team",
+        "noId": "The team was created but its id was not returned. Pick it from the list once it refreshes."
+      }
     },
     "review": {
       "edit": "Edit",
@@ -142,7 +163,9 @@ export default {
       "endBeforeStart": "The end date is before the start date.",
       "negative": "Cannot be negative.",
       "duplicateMember": "The same member is listed twice.",
-      "incompleteMember": "Every member needs a person/team and a role."
+      "incompleteMember": "Every member needs a person/team and a role.",
+      "quickTeamNameRequired": "The team name is required.",
+      "quickTeamMembersRequired": "Pick at least one member."
     },
     "guide": {
       "label": "About this step",
@@ -234,8 +257,8 @@ export default {
             "text": "Only team members get the deal leads distributed to them, see its workspace and appear in its performance reports."
           },
           "teams": {
-            "title": "A ready team",
-            "text": "If the company has a sales team defined, pick it: all its members join the deal with the role you set."
+            "title": "A ready team or a quick team",
+            "text": "Pick a defined sales team and all its members join the deal with the role you set. No fitting team? \"Create a quick team\" creates one now and adds it to the deal right away."
           },
           "users": {
             "title": "Build a team from users",
