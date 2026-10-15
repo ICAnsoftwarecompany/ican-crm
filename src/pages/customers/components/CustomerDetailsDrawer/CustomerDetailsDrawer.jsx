@@ -55,6 +55,7 @@ import { TasksTab } from './tabs/TasksTab'
 import { TimelineTab } from './tabs/TimeLineTap/TimelineTab'
 import { CallsActionTab, MeetingsActionTab } from '../../../../features/call-meetings'
 import { CustomerServiceTabSlot } from './tabs/CustomerServiceTabSlot'
+import { CustomerOutcomeButtons } from './CustomerOutcomeButtons'
 
 const DRAWER_TABS_ORDER_KEY = 'customer-details-drawer-tabs-order:v4'
 const DRAWER_TABS_LONG_PRESS_MS = 280
@@ -928,18 +929,6 @@ function CustomerHeaderModern({
                 {t('customers.drawer.noStatus')}
               </span>
             )}
-            <span
-              className="hidden"
-              title={t('customers.drawer.tagTitle', { tag: tagLabel || noTagLabel })}
-              aria-label={t('customers.drawer.tagTitle', { tag: tagLabel || noTagLabel })}
-            >
-              <CustomerTagChanger
-                customer={customer}
-                currentTag={currentTag}
-                tags={tags}
-                onChanged={onTagChanged}
-              />
-            </span>
             <CustomerSourceBadge source={source} title={source ? t('customers.drawer.sourceTitle', { source }) : undefined} />
             {linkedByName ? (
               <span
@@ -993,7 +982,7 @@ function CustomerHeaderModern({
               </span>
             )}
           </div>
-
+          <CustomerOutcomeButtons customer={customer} onDone={() => onStatusChanged?.()} />
         </div>
       </div>
     </div>

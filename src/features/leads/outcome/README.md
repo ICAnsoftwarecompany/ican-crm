@@ -1,6 +1,7 @@
 # features/leads/outcome — كسب وخسارة الليد من مركز العملاء
 
-> **Documentation update:** 2026-10-15 17:40 (Africa/Cairo) — الفولدر اتعمل.
+> **Documentation update:** 2026-10-15 17:55 (Africa/Cairo) — زرارين الكسب والخسارة في كارت بيانات العميل.
+> 2026-10-15 17:40 (Africa/Cairo) — الفولدر اتعمل.
 
 | | |
 |---|---|
@@ -13,6 +14,7 @@
 ## بيتفتح منين
 | المكان | الكسب | الخسارة |
 |---|---|---|
+| كارت بيانات العميل (الدرج وصفحة الليد) | ✓ | ✓ (`pages/customers/.../CustomerDetailsDrawer/CustomerOutcomeButtons.jsx`، تحت التواريخ) |
 | درج العميل (الأزرار السريعة) | `WonQuickAction` | `LostQuickAction` (`pages/customers/.../quick-actions/OutcomeQuickActions.jsx`) |
 | الكليك يمين على الصف | "كسب العميل (تسجيل بيع)" | "خسارة العميل" (`pages/customers/utils/customerRowContextActions.js`) |
 | قائمة كارت الـ Pipeline | ✓ | ✓ |
