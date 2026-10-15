@@ -1227,5 +1227,67 @@ export default {
       "won": "No sale status: set a status's kind to \"Contract / purchase status\" so leads can be closed as sold.",
       "lost": "No lost status: set a status's kind to \"Lost status\" so leads can be closed as lost."
     }
+  },
+  "leadOutcome": {
+    "won": {
+      "title": "Mark as won",
+      "description": "Record a sale for {{name}}: deal, products and payment",
+      "submit": "Record the win",
+      "deal": "Deal",
+      "dealHint": "The sale is recorded on this deal (contract and payment plan)",
+      "dealRequired": "Choose the deal",
+      "products": "Products or services sold",
+      "success": "Win recorded and contract created",
+      "failed": "Could not record the win",
+      "action": "Won"
+    },
+    "lost": {
+      "title": "Mark as lost",
+      "description": "Close {{name}} as lost",
+      "bulkDescription": "Close {{count}} customers as lost with the same reason",
+      "submit": "Record the loss",
+      "reason": "Lost reason",
+      "reasonRequired": "Choose a lost reason",
+      "noReasons": "No lost reasons are defined yet.",
+      "defineReasons": "Define them on the lost status",
+      "notePlaceholder": "More details (optional)",
+      "success": "Loss recorded",
+      "bulkSuccess": "Loss recorded for {{count}} customers",
+      "partial": "Recorded for {{saved}}, failed for {{failed}}",
+      "failed": "Could not record the loss",
+      "action": "Lost"
+    },
+    "note": "Note",
+    "noLead": "This customer has no lead",
+    "skippedNoLead": "{{count}} selected have no lead and will be skipped",
+    "contextWon": "Mark as won (record a sale)",
+    "contextLost": "Mark as lost",
+    "wonSingleOnly": "Win one customer at a time (each sale has its own products and payment)"
+  },
+  "lostReasons": {
+    "title": "Lost reasons",
+    "hint": "Reasons offered when a customer is closed as lost. Changes save at once.",
+    "empty": "No reasons yet. Add the first one below.",
+    "loadFailed": "Could not load lost reasons",
+    "retry": "Retry",
+    "name": "Reason",
+    "namePlaceholder": "New reason (e.g. price too high)",
+    "description": "Description",
+    "descriptionPlaceholder": "Description (optional)",
+    "add": "Add",
+    "active": "Active",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "deleteTitle": "Delete lost reason",
+    "deleteMessage": "The reason \"{{name}}\" will be deleted. If it was used before, turn it off instead.",
+    "cardButton": "Lost reasons ({{count}})",
+    "toasts": {
+      "created": "Reason added",
+      "updated": "Reason saved",
+      "deleted": "Reason deleted",
+      "failed": "Could not save the change"
+    }
   }
 }

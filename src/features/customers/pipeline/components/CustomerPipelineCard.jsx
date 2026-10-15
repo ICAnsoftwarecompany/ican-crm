@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Briefcase, Clock, ExternalLink, Hash, HeartHandshake, Mail, MoreVertical, NotebookPen, PanelRightOpen, Phone, UserRound, Users } from 'lucide-react'
+import { Briefcase, Clock, ExternalLink, Hash, HeartHandshake, Mail, MoreVertical, NotebookPen, PanelRightOpen, Phone, ThumbsDown, Trophy, UserRound, Users } from 'lucide-react'
 
 import { CustomerSourceBadge } from '../../../../shared/components/Icons/CustomerSourceBadge'
 import { DropdownMenu } from '../../../../shared/components/overlays/DropdownMenu'
@@ -87,6 +87,8 @@ export function CustomerPipelineCard({
     { id: 'call', label: t('customers.page.actions.addCall'), icon: <Phone size={14} />, onSelect: () => actions.onAddCall?.(customer) },
     { id: 'follow-up', label: t('customers.page.actions.addFollowUp'), icon: <NotebookPen size={14} />, onSelect: () => actions.onAddFollowUp?.(customer) },
     ...(actions.onAddInterest ? [{ id: 'interest', label: t('leads.interestDialog.contextAction'), icon: <HeartHandshake size={14} />, onSelect: () => actions.onAddInterest(customer) }] : []),
+    ...(actions.onMarkWon ? [{ id: 'won', label: t('customers.leadOutcome.contextWon'), icon: <Trophy size={14} />, onSelect: () => actions.onMarkWon(customer) }] : []),
+    ...(actions.onMarkLost ? [{ id: 'lost', label: t('customers.leadOutcome.contextLost'), icon: <ThumbsDown size={14} />, onSelect: () => actions.onMarkLost(customer) }] : []),
   ]
 
   const lines = visibleFieldIds.map(renderLine).filter(Boolean)

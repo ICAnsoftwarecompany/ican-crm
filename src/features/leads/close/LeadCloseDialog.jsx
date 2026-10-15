@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FormDialog } from '../../../shared/components/overlays/FormDialog'
+import { useLostReasons } from '../../definitions'
 import { createCloseForm, getLeadInterests, getLeadOpenDeal, getStatusReasons, getStatusesOfKind, isReasonRequired, validateCloseForm } from './leadClose'
 import { CloseField, closeInputClass } from './CloseField'
 import { FollowUpFields } from './FollowUpFields'
@@ -33,7 +34,13 @@ export function LeadCloseDialog({ request, submitting, onCancel, onSubmit }) {
 
   const choices = useMemo(() => (mode && mode !== 'reopen' ? getStatusesOfKind(request?.statuses, mode) : []), [mode, request])
   const status = useMemo(() => (request?.statuses || []).find((entry) => String(entry.id) === form.statusId) || request?.status || null, [form.statusId, request])
-  const reasons = useMemo(() => getStatusReasons(status), [status])
+  // Lost: the tenant's lost reasons (Definitions → the lost status, 2026-10-15) when defined, else the status / default list.
+  const lostReasonsQuery = useLostReasons({ activeOnly: true, enabled: mode === 'lost' })
+  const reasons = useMemo(() => {
+    const defined = mode === 'lost' ? lostReasonsQuery.data || [] : []
+    if (defined.length) return defined.map((reason) => ({ id: reason.id, key: reason.code || String(reason.id), label: reason.name }))
+    return getStatusReasons(status)
+  }, [lostReasonsQuery.data, mode, status])
   const reasonRequired = isReasonRequired(mode, status, reasons)
   const interests = useMemo(() => (bulk ? [] : getLeadInterests(rows[0])), [bulk, rows])
   const openDeal = useMemo(() => (bulk ? null : getLeadOpenDeal(rows[0])), [bulk, rows])

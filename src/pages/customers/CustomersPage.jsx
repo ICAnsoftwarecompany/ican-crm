@@ -29,7 +29,7 @@ import { requestOpenMessengerSidebar } from '../../features/conversations/consta
 import { extractLeadStatuses } from './utils/customerStatus'
 import { FollowUpNoteDialog } from './components/follow-up-note'
 import { buildCustomerRowContextActions } from './utils/customerRowContextActions'
-import { LeadInterestDialog } from '../../features/leads'
+import { useLeadActionDialogs } from '../../features/leads'
 import { MeetingDataDrawer, ScheduleActivityDialog } from '../../features/call-meetings'
 import { buildAfterMeetingReportUrl, buildScheduleStatusPayload } from '../../features/call-meetings/utils/scheduleUiUtils'
 import { useMeetingMutations } from '../../features/meetings/hooks/useMeetings'
@@ -595,7 +595,6 @@ export function CustomersPage({ defaultShowTrash = false }) {
   const [selectedActivityItem, setSelectedActivityItem] = useState(null)
   const [activityRangeDays, setActivityRangeDays] = useLocalStorage('customers-activity-drawer-range-days', 1)
   const [leadNoteDialogRow, setLeadNoteDialogRow] = useState(null)
-  const [interestDialogRow, setInterestDialogRow] = useState(null)
   const [scheduleDialog, setScheduleDialog] = useState(null)
   const [viewMode, setViewMode] = useCustomersViewMode()
   const isPipelineView = !showTrash && viewMode === CUSTOMERS_VIEW_MODES.PIPELINE
@@ -667,6 +666,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
   const isLoading = showTrash ? deletedQuery.isLoading : customersQuery.isLoading
   const error = showTrash ? deletedQuery.error : customersQuery.error
   const refetch = () => (showTrash ? deletedQuery.refetch() : customersQuery.refetch())
+  const leadActions = useLeadActionDialogs({ onDone: refetch })
 
   useEffect(() => {
     if (showTrash || isLoading) return undefined
@@ -1186,8 +1186,10 @@ export function CustomersPage({ defaultShowTrash = false }) {
     onCustomizeTable: () => setIsTableSettingsOpen(true),
     onSchedule: handleOpenScheduledActivityDialog,
     onAddFollowUp: handleOpenLeadNoteDialog,
-    onAddInterest: setInterestDialogRow,
-  }), [handleOpenLeadNoteDialog, handleOpenScheduledActivityDialog, setIsTableSettingsOpen, showTrash, t])
+    onAddInterest: leadActions.openInterest,
+    onMarkWon: leadActions.openWon,
+    onMarkLost: leadActions.openLost,
+  }), [handleOpenLeadNoteDialog, handleOpenScheduledActivityDialog, leadActions, setIsTableSettingsOpen, showTrash, t])
 
   const { columns, serialColumnRender } = useCustomersTableColumns({
     t,
@@ -1297,7 +1299,9 @@ export function CustomersPage({ defaultShowTrash = false }) {
                 onAddMeeting: (row) => handleOpenScheduledActivityDialog(row, 'meeting'),
                 onAddCall: (row) => handleOpenScheduledActivityDialog(row, 'call'),
                 onAddFollowUp: handleOpenLeadNoteDialog,
-                onAddInterest: setInterestDialogRow,
+                onAddInterest: leadActions.openInterest,
+                onMarkWon: leadActions.openWon,
+                onMarkLost: leadActions.openLost,
                 onOpenMessenger: handleOpenMessengerFromChannel,
                 onOpenGmail: handleOpenGmailFromChannel,
               }}
@@ -1387,12 +1391,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
         initialTab={detailsInitialTab}
       />
 
-      <LeadInterestDialog
-        open={Boolean(interestDialogRow)}
-        customer={interestDialogRow}
-        onClose={() => setInterestDialogRow(null)}
-        onSaved={() => refetch()}
-      />
+      {leadActions.dialogs}
 
       <TableSettingsDrawer
         open={isTableSettingsOpen}

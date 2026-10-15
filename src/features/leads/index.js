@@ -23,3 +23,5 @@ export {
 } from './close/leadClose'
 // Interests on the new catalog (2026-10-15): add / edit dialog and the shared interest card.
 export { InterestCard, InterestLevelBadge, LeadInterestDialog, LeadInterestFields, toInterestView, useInterestCatalogIndex, useLeadInterestForm } from './interests'
+// Won / lost outside a deal board (2026-10-15): dialogs, API and the row-action launcher.
+export { LeadLostDialog, LeadWonDialog, useLeadActionDialogs, useLeadOutcome } from './outcome'

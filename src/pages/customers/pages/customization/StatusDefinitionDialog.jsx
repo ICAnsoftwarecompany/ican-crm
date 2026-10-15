@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { StatusReasonsEditor, buildReasonsPayload, hasDuplicateReason, isDefinitionsApiLive, readStatusReasons } from '../../../../features/definitions'
+import { LostReasonsManager, StatusReasonsEditor, buildReasonsPayload, hasDuplicateReason, isDefinitionsApiLive, readStatusReasons } from '../../../../features/definitions'
 import { FormDialog } from '../../../../shared/components/overlays/FormDialog'
 import { Input } from '../../../../shared/components/ui/Input'
 import { Select } from '../../../../shared/components/ui/Select'
@@ -96,7 +96,8 @@ export function StatusDefinitionDialog({
   const [reasons, setReasons] = useState([])
   const [reasonsError, setReasonsError] = useState('')
   const reasonsLive = isDefinitionsApiLive('statusReasons')
-  const reasonKind = { deal: 'won', lost: 'lost', retarget: 'retarget' }[form.stageKind] || null
+  // Lost reasons are tenant definitions with their own API (LostReasonsManager, 2026-10-15); sale / retarget keep the planned per-status editor.
+  const reasonKind = { deal: 'won', retarget: 'retarget' }[form.stageKind] || null
 
   useEffect(() => {
     if (!open) return
@@ -181,6 +182,8 @@ export function StatusDefinitionDialog({
         options={REASON_OPTIONS}
         placeholder={t('customers.customization.choose')}
       />
+
+      {form.stageKind === 'lost' && <LostReasonsManager />}
 
       {reasonKind && (
         <StatusReasonsEditor

@@ -21,6 +21,7 @@ import { SelectedCountBadge } from './SelectedCountBadge'
 import {
   AddFollowUpBulkAction,
   AddInterestBulkAction,
+  OutcomeBulkActions,
   ChangeStatusBulkAction,
   ChangeTagBulkAction,
   SocialMessagingBulkActions,
@@ -398,6 +399,7 @@ export function CustomersBulkActions({
         <div className={cn('flex shrink-0 flex-wrap items-center gap-2', isVerticalPinned && '[&>button]:w-full')}>
           <AddFollowUpBulkAction disabled={!canAddLeadNote} onClick={handleAddLeadNote} />
           <AddInterestBulkAction rows={selectedRows} onDone={onDone} />
+          <OutcomeBulkActions rows={selectedRows} onDone={onDone} />
         </div>
 
         <SocialMessagingBulkActions

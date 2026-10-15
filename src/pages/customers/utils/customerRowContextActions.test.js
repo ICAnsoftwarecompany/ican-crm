@@ -23,4 +23,14 @@ describe('buildCustomerRowContextActions', () => {
   it('has no actions in the trash', () => {
     expect(buildCustomerRowContextActions({ row: { id: 1 }, t, showTrash: true })).toEqual([])
   })
+
+  it('adds won and lost when their handlers are given', () => {
+    const onMarkWon = vi.fn()
+    const onMarkLost = vi.fn()
+    const row = { id: 1 }
+    const actions = buildCustomerRowContextActions({ row, t, showTrash: false, onCustomizeTable: vi.fn(), onSchedule: vi.fn(), onAddFollowUp: vi.fn(), onAddInterest: vi.fn(), onMarkWon, onMarkLost })
+    expect(actions.map((action) => action.id)).toContain('customers-row-mark-won')
+    actions.find((action) => action.id === 'customers-row-mark-lost').onClick()
+    expect(onMarkLost).toHaveBeenCalledWith(row)
+  })
 })

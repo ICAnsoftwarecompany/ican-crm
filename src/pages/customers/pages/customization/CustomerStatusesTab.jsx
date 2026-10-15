@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CheckCircle2, Edit3, Plus, RefreshCw } from 'lucide-react'
+import { CheckCircle2, Edit3, ListChecks, Plus, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
-import { CloseKindsNotice } from '../../../../features/definitions'
+import { CloseKindsNotice, LostReasonsManager, useLostReasons } from '../../../../features/definitions'
+import { AppModal } from '../../../../shared/components/overlays/AppModal'
 import { definitionsApi } from '../../../../features/definitions/api/definitionsApi'
 import { getMissingCloseKinds } from '../../../../features/leads'
 import { QUERY_KEYS } from '../../../../shared/constants/queryKeys'
@@ -70,6 +71,8 @@ export function CustomerStatusesTab() {
   const queryClient = useQueryClient()
   const [dialogMode, setDialogMode] = useState(null)
   const [selectedStatus, setSelectedStatus] = useState(null)
+  const [lostReasonsOpen, setLostReasonsOpen] = useState(false)
+  const lostReasonsQuery = useLostReasons()
 
   const statusesQuery = useQuery({
     queryKey: QUERY_KEYS.statuses.list,
@@ -225,7 +228,17 @@ export function CustomerStatusesTab() {
                       </div>
                     </div>
 
-                    <div className="mt-3 flex justify-end">
+                    <div className="mt-3 flex flex-wrap justify-end gap-2">
+                      {isEnabled(status?.is_lost) && (
+                        <button
+                          type="button"
+                          onClick={() => setLostReasonsOpen(true)}
+                          className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-[var(--border)] px-2.5 text-xs font-semibold text-[var(--text)] hover:bg-[var(--surface-2)]"
+                        >
+                          <ListChecks size={14} />
+                          {t('customers.lostReasons.cardButton', { count: lostReasonsQuery.data?.length ?? 0 })}
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => openEditDialog(status)}
@@ -246,6 +259,10 @@ export function CustomerStatusesTab() {
           </div>
         </section>
       )}
+
+      <AppModal isOpen={lostReasonsOpen} onClose={() => setLostReasonsOpen(false)} title={t('customers.lostReasons.title')} size="lg">
+        <LostReasonsManager />
+      </AppModal>
 
       <StatusDefinitionDialog
         open={Boolean(dialogMode)}

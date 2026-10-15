@@ -6,6 +6,7 @@ import { EmailQuickAction } from './EmailQuickAction'
 import { FollowUpQuickAction } from './FollowUpQuickAction'
 import { AddInterestQuickAction } from './interests'
 import { MessengerQuickAction } from './MessengerQuickAction'
+import { LostQuickAction, WonQuickAction } from './OutcomeQuickActions'
 import { SmsQuickAction } from './SmsQuickAction'
 import { StatusQuickAction } from './StatusQuickAction'
 import { WhatsappQuickAction } from './WhatsappQuickAction'
@@ -45,6 +46,9 @@ const ACTIONS = [
       />
     ),
   },
+  // Won / lost outside a deal board (2026-10-15).
+  { id: 'won', render: (props) => <WonQuickAction customer={props.customer} onDone={() => props.onStatusChanged?.()} /> },
+  { id: 'lost', render: (props) => <LostQuickAction customer={props.customer} onDone={() => props.onStatusChanged?.()} /> },
   {
     id: 'call',
     render: (props) => <CallQuickAction customer={props.customer} onTimelineAction={props.onTimelineAction} />,
