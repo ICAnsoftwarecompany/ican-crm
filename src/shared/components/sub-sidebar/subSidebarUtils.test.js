@@ -26,6 +26,14 @@ describe('getVisibleSubSidebarGroups', () => {
   })
 })
 
+describe('children (sub-pages)', () => {
+  it('drops hidden children and flattens them after their parent', () => {
+    const groups = [{ id: 'a', items: [{ to: '/p', label: 'P', icon: Icon, children: [{ to: '/p/1', label: '1' }, { to: '/p/2', label: '2', hidden: true }] }] }]
+    expect(getVisibleSubSidebarGroups(groups)[0].items[0].children.map((child) => child.to)).toEqual(['/p/1'])
+    expect(flattenSubSidebarItems(groups).map((item) => item.to)).toEqual(['/p', '/p/1'])
+  })
+})
+
 describe('flattenSubSidebarItems / getSubSidebarItemKey', () => {
   it('flattens visible items in order and prefers id as key', () => {
     const groups = [

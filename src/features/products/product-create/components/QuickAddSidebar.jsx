@@ -17,10 +17,10 @@ export function QuickAddSidebar({ kind, added = [], categories = [] }) {
   const [showAll, setShowAll] = useState(false)
   const allQuery = useCatalogProducts()
   const categoryName = useMemo(() => new Map(categories.map((category) => [String(category.id), category._pathLabel || category.name])), [categories])
-  const entity = kind === 'service' ? 'service' : 'product'
+  const entity = kind
 
   const rows = showAll
-    ? (allQuery.data || []).filter((item) => (kind === 'service' ? item.kind === 'service' : item.kind !== 'service'))
+    ? (allQuery.data || []).filter((item) => item.kind === kind)
       .map((item) => ({ key: String(item.id), id: item.id, name: item.name, price: item.price, category: categoryName.get(String(item.categoryId)) || item.category?.name }))
     : added.map((item) => ({ ...item, category: categoryName.get(String(item.categoryId)) }))
 

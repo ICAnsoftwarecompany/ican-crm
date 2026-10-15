@@ -7,7 +7,8 @@ import { ProductCreateWizard } from '../../features/products'
  */
 export function ProductCreatePage() {
   const [params] = useSearchParams()
-  const kind = params.get('kind') === 'service' ? 'service' : 'product'
+  // product · service · plan · bundle (plans and bundles live under Services since 2026-10-15)
+  const kind = ['service', 'plan', 'bundle'].includes(params.get('kind')) ? params.get('kind') : 'product'
   const itemTypeId = params.get('item_type') || ''
   const draftId = params.get('draft') || ''
   return <ProductCreateWizard key={`${kind}-${itemTypeId}-${draftId}`} kind={kind} initialItemTypeId={itemTypeId} draftId={draftId} />

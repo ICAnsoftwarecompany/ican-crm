@@ -31,7 +31,7 @@ column), `plain` (inside the mobile drawer).
   width?: number,                                                        // attached width, default 260
   groups: [
     { id, label?, note?, divider?, items: [
-      { id?, to, label, icon, end?, disabled?, badge?, trailing?, hidden? },
+      { id?, to, label, icon, end?, disabled?, badge?, trailing?, hidden?, children? },
     ] },
   ],
   footerItems?: [/* same item shape — e.g. the area's Settings link */],
@@ -39,6 +39,9 @@ column), `plain` (inside the mobile drawer).
 ```
 
 - Labels are passed **translated** (`t('...')`) — the component never guesses i18n keys.
+- `children` *(2026-10-15 13:43 (Africa/Cairo))*: sub-pages of the item, same shape, shown indented under it (one
+  level only; hidden in the collapsed rail; hidden children are dropped too). Give the parent `end: true` when its
+  children live under its path. Example: one page per product type under "Products" (`pages/products/constants/productNavigation.js`).
 - `hidden: true` drops an item (plan/permission gating decided by the caller). `disabled: true` shows it greyed out
   (e.g. "coming soon"). Remember: hiding a link is UX only, never authorization.
 - Keep the area's config in one function next to the area, e.g. `getCustomersSidebarConfig(t)`

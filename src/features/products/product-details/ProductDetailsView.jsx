@@ -38,8 +38,10 @@ export function ProductDetailsView({ productId }) {
 
   const itemType = useResolvedItemType(product)
 
-  const backTo = product?.kind === 'service' ? '/products/services' : '/products'
-  const backLabel = product?.kind === 'service' ? t('catalog.list.services.title') : t('catalog.list.products.title')
+  // Each kind goes back to its own list (plans and bundles live under Services since 2026-10-15).
+  const listKey = { service: 'services', plan: 'plans', bundle: 'bundles' }[product?.kind] || 'products'
+  const backTo = { services: '/products/services', plans: '/products/services/plans', bundles: '/products/services/bundles' }[listKey] || '/products'
+  const backLabel = t(`catalog.list.${listKey}.title`)
 
   if (query.isLoading) {
     return (

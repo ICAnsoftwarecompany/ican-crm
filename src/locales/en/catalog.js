@@ -1,6 +1,8 @@
 // Catalog screens under /products (Products & Catalog API, added 2026-10-06).
 export default {
   nav: {
+    plans: 'Plans & subscriptions',
+    bundles: 'Bundles',
     overview: 'Overview',
     catalog: 'Catalog',
     products: 'Products',
@@ -68,6 +70,27 @@ export default {
       empty: 'No services yet',
       total: 'Total services',
     },
+    plans: {
+      title: 'Plans & subscriptions',
+      description: 'Plans that renew on a schedule: software subscriptions, maintenance contracts, memberships.',
+      create: 'New plan',
+      empty: 'No plans yet',
+      total: 'Total plans',
+    },
+    bundles: {
+      title: 'Bundles',
+      description: 'Offers that sell several products and services together.',
+      create: 'New bundle',
+      empty: 'No bundles yet',
+      total: 'Total bundles',
+    },
+    byType: {
+      loading: 'Item type',
+      description: 'Every item of the type "{{name}}".',
+      editType: 'Edit type',
+      notFound: 'This item type was not found or is inactive.',
+      empty: 'No items of this type yet',
+    },
   },
   product: {
     addTitle: 'Add {{entity}}',
@@ -112,7 +135,7 @@ export default {
     capabilitiesHint: 'Values from "{{type}}" apply unless you change them here.',
   },
   create: {
-    title: { product: 'New product', service: 'New service' },
+    title: { product: 'New product', service: 'New service', plan: 'New plan', bundle: 'New bundle' },
     description: 'Step by step, as the catalog API expects: the product, its units, capabilities, attached items and pieces are saved in one go.',
     stepsLabel: 'Steps',
     steps: {

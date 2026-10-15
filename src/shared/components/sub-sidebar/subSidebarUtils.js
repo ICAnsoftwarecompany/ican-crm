@@ -10,6 +10,8 @@
  * @property {boolean} [disabled] - Rendered but not clickable (e.g. "coming soon").
  * @property {string} [badge] - Short translated badge text ("Soon", a count, ...).
  * @property {boolean} [hidden] - Dropped by getVisibleSubSidebarGroups (permission/plan gating done by the caller).
+ * @property {SubSidebarItem[]} [children] - Sub-pages shown indented under the item (one level; hidden when the
+ *   sidebar is collapsed). Added 2026-10-15 (e.g. one page per product type).
  *
  * @typedef {Object} SubSidebarGroup
  * @property {string} id
@@ -26,11 +28,16 @@ export function getSubSidebarItemKey(item) {
 /** Removes hidden items, then groups left with no items. */
 export function getVisibleSubSidebarGroups(groups = []) {
   return groups
-    .map((group) => ({ ...group, items: (group.items || []).filter((item) => item && !item.hidden) }))
+    .map((group) => ({
+      ...group,
+      items: (group.items || [])
+        .filter((item) => item && !item.hidden)
+        .map((item) => (item.children ? { ...item, children: item.children.filter((child) => child && !child.hidden) } : item)),
+    }))
     .filter((group) => group.items.length > 0)
 }
 
 /** Flat list of every visible item — handy for tests and "find current page" logic. */
 export function flattenSubSidebarItems(groups = []) {
-  return getVisibleSubSidebarGroups(groups).flatMap((group) => group.items)
+  return getVisibleSubSidebarGroups(groups).flatMap((group) => group.items.flatMap((item) => [item, ...(item.children || [])]))
 }

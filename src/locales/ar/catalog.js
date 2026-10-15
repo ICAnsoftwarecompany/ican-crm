@@ -1,6 +1,8 @@
 // شاشات الكتالوج تحت /products (Products & Catalog API، أُضيف 2026-10-06).
 export default {
   nav: {
+    plans: 'الخطط والاشتراكات',
+    bundles: 'الباقات',
     overview: 'نظرة عامة',
     catalog: 'الكتالوج',
     products: 'المنتجات',
@@ -68,6 +70,27 @@ export default {
       empty: 'لا توجد خدمات بعد',
       total: 'إجمالي الخدمات',
     },
+    plans: {
+      title: 'الخطط والاشتراكات',
+      description: 'خطط بتتجدد على فترات: اشتراكات برامج، عقود صيانة، عضويات.',
+      create: 'خطة جديدة',
+      empty: 'لسه مفيش خطط',
+      total: 'إجمالي الخطط',
+    },
+    bundles: {
+      title: 'الباقات',
+      description: 'عروض بتبيع كذا منتج وخدمة مع بعض.',
+      create: 'باقة جديدة',
+      empty: 'لسه مفيش باقات',
+      total: 'إجمالي الباقات',
+    },
+    byType: {
+      loading: 'نوع الصنف',
+      description: 'كل الأصناف من النوع "{{name}}".',
+      editType: 'تعديل النوع',
+      notFound: 'النوع ده مش موجود أو موقوف.',
+      empty: 'لسه مفيش أصناف من النوع ده',
+    },
   },
   product: {
     addTitle: 'إضافة {{entity}}',
@@ -112,7 +135,7 @@ export default {
     capabilitiesHint: 'القيم الافتراضية من "{{type}}" هتتطبق إلا لو غيرتها هنا.',
   },
   create: {
-    title: { product: 'منتج جديد', service: 'خدمة جديدة' },
+    title: { product: 'منتج جديد', service: 'خدمة جديدة', plan: 'خطة جديدة', bundle: 'باقة جديدة' },
     description: 'خطوة بخطوة زي ما الـ API بتاع الكتالوج متوقع: المنتج ووحداته وقدراته والعناصر المرفقة والقطع بيتحفظوا مرة واحدة.',
     stepsLabel: 'الخطوات',
     steps: {

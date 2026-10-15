@@ -26,8 +26,7 @@ export function removeDraft(list = [], id) {
   return list.filter((item) => item.id !== id)
 }
 
-/** Drafts of this wizard (`service` drafts in the service wizard, the others in the product wizard). */
+/** Drafts of this wizard: same kind (product, service, plan or bundle; drafts without a kind are products). */
 export function draftsForKind(list = [], kind = 'product') {
-  const isService = kind === 'service'
-  return list.filter((item) => (item.kind === 'service') === isService)
+  return list.filter((item) => (item.kind || 'product') === kind)
 }

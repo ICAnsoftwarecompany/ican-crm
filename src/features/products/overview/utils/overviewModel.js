@@ -1,7 +1,7 @@
 /**
  * Numbers of `/products/overview` (2026-10-15). Pure, tested. Charts use the shared reports engine shapes.
  *
- * "products" = every item that is not a service (product, plan, bundle); "services" = kind service.
+ * "products" = kind product; "services" = services, plans and bundles (they live under Services since 2026-10-15).
  * Values: `listValue` = sum of prices (what the catalog lists); `stockValue` = Σ price × stock for stock-tracked items.
  */
 import { countBy } from '../../../../shared/components/reports'
@@ -37,11 +37,11 @@ function summarize(items, { categoryNames, itemTypeNames }) {
 export function buildProductsOverview({ products = [], itemTypes = [], categories = [] } = {}) {
   const categoryNames = new Map(categories.map((category) => [String(category.id), category._pathLabel || category.name]))
   const itemTypeNames = new Map(itemTypes.map((itemType) => [String(itemType.id), itemType.name]))
-  const services = products.filter((item) => item.kind === 'service')
-  const goods = products.filter((item) => item.kind !== 'service')
+  const services = products.filter((item) => item.kind !== 'product')
+  const goods = products.filter((item) => item.kind === 'product')
   const product = summarize(goods, { categoryNames, itemTypeNames })
   const service = summarize(services, { categoryNames, itemTypeNames })
-  const activeTypes = (kind) => itemTypes.filter((itemType) => itemType.status && (kind === 'service' ? itemType.kind === 'service' : itemType.kind !== 'service')).length
+  const activeTypes = (kind) => itemTypes.filter((itemType) => itemType.status && (kind === 'product' ? itemType.kind === 'product' : itemType.kind !== 'product')).length
   return {
     total: { count: products.length, listValue: product.listValue + service.listValue, stockValue: product.stockValue },
     product: { ...product, itemTypes: activeTypes('product') },

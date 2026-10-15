@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Plus, RefreshCw } from 'lucide-react'
+import { Plus, RefreshCw, Settings2 } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
 import { DataTable } from '../../../../shared/components/data-table'
 import { PageToolbar } from '../../../../shared/components/data/PageToolbar'
@@ -18,20 +18,34 @@ import { useCapabilityName, useOptionLabel } from '../common/catalogUi'
 import { ProductFormDrawer } from './ProductFormDrawer'
 import { useProductColumns } from './useProductColumns'
 
+const LIST_COPY = { product: 'products', service: 'services', plan: 'plans', bundle: 'bundles' }
+const LIST_KINDS = Object.keys(LIST_COPY)
+
+/** Where "new" goes for a list: the kind's create wizard (and the item type, on a type page). */
+function createPath(kind, itemTypeId) {
+  const params = new URLSearchParams()
+  if (kind !== 'product') params.set('kind', kind)
+  if (itemTypeId) params.set('item_type', itemTypeId)
+  return `/products/new${params.toString() ? `?${params}` : ''}`
+}
+
 /**
- * Products (`kind` product / plan / bundle) or services (`kind` service) list — 2026-10-06.
+ * One list per kind (2026-10-15): `/products` products, `/products/services` services, `/products/services/plans`
+ * plans, `/products/services/bundles` bundles — and one per item type (`itemTypeId`, `/products/types/:id`, title =
+ * the type's name). Was: products (product / plan / bundle) or services — 2026-10-06.
  * 2026-10-15: every field as a column, a completeness column (what is missing), the quick-view drawer from the icon
  * next to the name (DataTable `onOpenRowDrawer`), no stat tiles (the numbers live on `/products/overview`).
  * Clicking a row opens `/products/:id`; "new" opens `/products/new`; edit stays a drawer.
  */
-export function CatalogProductsView({ kind = 'product' }) {
+export function CatalogProductsView({ kind: kindProp = 'product', itemTypeId = '' }) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const optionLabel = useOptionLabel()
   const capabilityName = useCapabilityName()
-  const isServices = kind === 'service'
-  const query = useCatalogProducts(isServices ? { kind: 'service' } : {})
   const itemTypesQuery = useItemTypes()
+  const scopeType = itemTypeId ? (itemTypesQuery.data || []).find((itemType) => String(itemType.id) === String(itemTypeId)) || null : null
+  const kind = scopeType?.kind && LIST_KINDS.includes(scopeType.kind) ? scopeType.kind : LIST_KINDS.includes(kindProp) ? kindProp : 'product'
+  const query = useCatalogProducts()
   const categoriesQuery = useProductCategories()
   const [drawer, setDrawer] = useState(null)
   const [quickView, setQuickView] = useState(null)
@@ -45,7 +59,7 @@ export function CatalogProductsView({ kind = 'product' }) {
   const rows = useMemo(() => {
     const date = (value) => (value ? formatDate(value, i18n.language, { dateStyle: 'medium' }) : '')
     return (query.data || [])
-      .filter((product) => (isServices ? product.kind === 'service' : product.kind !== 'service'))
+      .filter((product) => (itemTypeId ? String(product.itemTypeId) === String(itemTypeId) : product.kind === kind))
       .map((product) => {
         const itemType = itemTypesById.get(String(product.itemTypeId)) || product.itemType
         const capabilities = visibleCapabilities(itemType?.capabilities)
@@ -68,39 +82,50 @@ export function CatalogProductsView({ kind = 'product' }) {
           _updatedAtLabel: date(product.updatedAt),
         }
       })
-  }, [capabilityName, categoryPaths, i18n.language, isServices, itemTypesById, optionLabel, query.data, t])
+  }, [capabilityName, categoryPaths, i18n.language, itemTypeId, itemTypesById, kind, optionLabel, query.data, t])
 
   const openDetails = useCallback((row) => navigate(`/products/${row.id}`), [navigate])
   const openEdit = useCallback((row) => setDrawer({ mode: 'edit', product: row }), [])
   const openComplete = useCallback((row) => navigate(`/products/${row.id}/complete`), [navigate])
-  const columns = useProductColumns({ showKind: !isServices, onView: openDetails, onEdit: openEdit, onComplete: openComplete })
-  const copyKey = isServices ? 'services' : 'products'
+  const columns = useProductColumns({ showKind: false, onView: openDetails, onEdit: openEdit, onComplete: openComplete })
+  const copyKey = LIST_COPY[kind]
+  const title = itemTypeId ? scopeType?.name || t('catalog.list.byType.loading') : t(`catalog.list.${copyKey}.title`)
+  const description = itemTypeId
+    ? scopeType?.description || t('catalog.list.byType.description', { name: scopeType?.name || '' })
+    : t(`catalog.list.${copyKey}.description`)
 
   return (
     <div className="space-y-4">
-      <PageToolbar title={t(`catalog.list.${copyKey}.title`)} description={t(`catalog.list.${copyKey}.description`)}>
+      <PageToolbar title={title} description={description}>
+        {itemTypeId && (
+          <Button variant="outline" onClick={() => navigate(`/products/item-types/${encodeURIComponent(itemTypeId)}`)}>
+            <Settings2 size={16} />
+            {t('catalog.list.byType.editType')}
+          </Button>
+        )}
         <Button variant="outline" onClick={() => query.refetch()} disabled={query.isFetching}>
           <RefreshCw size={16} className={query.isFetching ? 'animate-spin' : ''} />
           {t('catalog.common.refresh')}
         </Button>
-        <Button onClick={() => navigate(isServices ? '/products/new?kind=service' : '/products/new')}>
+        <Button onClick={() => navigate(createPath(kind, itemTypeId))}>
           <Plus size={16} />
           {t(`catalog.list.${copyKey}.create`)}
         </Button>
       </PageToolbar>
 
-      <CatalogSetupGuide kind={isServices ? 'service' : 'product'} />
+      {!itemTypeId && ['product', 'service'].includes(kind) && <CatalogSetupGuide kind={kind} />}
+      {itemTypeId && !itemTypesQuery.isLoading && !scopeType && <p role="status" className="rounded-lg bg-[var(--surface-2)] p-3 text-sm text-[var(--text)]">{t('catalog.list.byType.notFound')}</p>}
 
       <DataTable
         data={rows}
         columns={columns}
-        tableId={isServices ? 'catalog-services-v2' : 'catalog-products-v2'}
+        tableId={itemTypeId ? 'catalog-by-type' : `catalog-${copyKey}-v2`}
         isLoading={query.isLoading}
         error={query.error}
         onRetry={() => query.refetch()}
         onRowClick={openDetails}
         onOpenRowDrawer={setQuickView}
-        emptyMessage={t(`catalog.list.${copyKey}.empty`)}
+        emptyMessage={itemTypeId ? t('catalog.list.byType.empty') : t(`catalog.list.${copyKey}.empty`)}
       />
 
       <ProductQuickDrawer
@@ -116,7 +141,7 @@ export function CatalogProductsView({ kind = 'product' }) {
         open={Boolean(drawer)}
         mode={drawer?.mode}
         product={drawer?.product}
-        kind={isServices ? 'service' : 'product'}
+        kind={kind}
         onClose={() => setDrawer(null)}
       />
     </div>

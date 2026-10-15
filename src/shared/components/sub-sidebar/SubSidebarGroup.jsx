@@ -9,7 +9,17 @@ export function SubSidebarGroup({ group, collapsed = false, onNavigate, children
         <h3 className="px-2 text-[11px] font-bold text-[var(--text-light)]">{group.label}</h3>
       )}
       {(group.items || []).map((item) => (
-        <SubSidebarNavItem key={getSubSidebarItemKey(item)} item={item} collapsed={collapsed} onNavigate={onNavigate} />
+        <div key={getSubSidebarItemKey(item)}>
+          <SubSidebarNavItem item={item} collapsed={collapsed} onNavigate={onNavigate} />
+          {/* Sub-pages (2026-10-15): one level, indented, hidden in the collapsed rail. */}
+          {!collapsed && item.children?.length > 0 && (
+            <div className="ms-4 mt-0.5 space-y-0.5 border-s border-[var(--border)] ps-1.5" role="group" aria-label={item.label}>
+              {item.children.map((child) => (
+                <SubSidebarNavItem key={getSubSidebarItemKey(child)} item={child} collapsed={false} onNavigate={onNavigate} />
+              ))}
+            </div>
+          )}
+        </div>
       ))}
       {children}
       {!collapsed && group.note && <p className="px-2 text-xs text-[var(--text-light)]">{group.note}</p>}

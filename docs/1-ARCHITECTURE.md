@@ -243,11 +243,12 @@ Generic stage board with optional swimlanes; stages come from data, never hardco
 
 ### Sub-sidebar
 
-> **Documentation update:** 2026-10-01 00:25 (Africa/Cairo) — section added.
+> **Documentation update:** 2026-10-01 00:25 (Africa/Cairo) — section added. 2026-10-15 13:43 (Africa/Cairo) — items can have `children` (one level of sub-pages).
 
 **Status:** CURRENT · **Code:** `shared/components/sub-sidebar/` ([README](../src/shared/components/sub-sidebar/README.md)) · **Tests:** `subSidebarUtils.test.js`
 
 - **Rule:** every internal/sub sidebar (the second navigation column inside an area) is built from `shared/components/sub-sidebar`. Do **not** write a new `*Sidebar.jsx` with its own `NavLink` styling, collapse toggle or mobile drawer. Also in `CLAUDE.md` (rule 10).
+- **Sub-pages** *(2026-10-15 13:43 (Africa/Cairo))*: an item may have `children` (same item shape), shown indented under it, one level only, hidden in the collapsed rail. Products & Services uses it for one page per item type and for plans / bundles under Services.
 - **Default:** `SubSidebarLayout` = attached sidebar on desktop + menu button/drawer on mobile + `<Outlet />`, collapse state persisted in `localStorage` under the area's `storageKey`. Use it as the `element` of the area's parent route.
 - **Custom grids:** `SubSidebar` (`variant="framed"` / `"plain"`) when the page owns its grid (Outreach, Social Media); building blocks (`SubSidebarFrame`, `SubSidebarHeader`, `SubSidebarNav`, `SubSidebarNavItem`, `SubSidebarFooter`) when one part is custom (Campaign Center platform rows, Customer Hub settings).
 - **Config:** `{ header, groups: [{ id, label?, note?, divider?, items: [{ to, label, icon, end?, disabled?, badge?, hidden? }] }], footerItems? }` with labels already translated; keep it in one `get<Area>SidebarConfig(t)` function next to the area. `hidden` is UX-only gating, never authorization.

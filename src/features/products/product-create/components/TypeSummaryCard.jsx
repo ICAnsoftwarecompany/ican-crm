@@ -40,9 +40,9 @@ export function TypeSummaryCard({ itemType, loading, onQuickType, kind = 'produc
       <CapabilityChips capabilities={itemType.capabilities} emptyText={t('catalog.itemTypes.noCapabilities')} />
       <ul className="mt-2 space-y-0.5 text-xs text-[var(--text)]">
         {/* Services: no units and no pieces (2026-10-15). */}
-        {kind !== 'service' && <li>{t('productSetup.type.units', { count: units.length })}</li>}
+        {kind === 'product' && <li>{t('productSetup.type.units', { count: units.length })}</li>}
         <li>{t(kind === 'service' ? 'productSetup.service.type.relations' : 'productSetup.type.relations', { count: relations.length })}</li>
-        {kind !== 'service' && <li>{modes.length ? t('productSetup.type.pieces', { modes: modes.map((mode) => t(`productSetup.instanceModes.${mode}`)).join(' / ') }) : t('productSetup.type.noPieces')}</li>}
+        {kind === 'product' && <li>{modes.length ? t('productSetup.type.pieces', { modes: modes.map((mode) => t(`productSetup.instanceModes.${mode}`)).join(' / ') }) : t('productSetup.type.noPieces')}</li>}
         {creates && <li>{t('productSetup.type.creates', { value: optionLabel('creates', creates) })}</li>}
       </ul>
     </section>

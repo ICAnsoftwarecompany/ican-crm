@@ -327,4 +327,26 @@ describe('products area', () => {
     await waitFor(() => expect([...select.options].some((option) => option.textContent.startsWith('Installation'))).toBe(true))
     expect([...select.options].some((option) => option.textContent.startsWith('Split AC'))).toBe(false)
   })
+
+  it('adds a sidebar sub-page per item type that lists only that type', async () => {
+    const router = renderAt('/products')
+    const link = (await screen.findAllByRole('link', { name: 'Appliances' }))[0]
+    expect(screen.getAllByRole('link', { name: 'catalog.nav.plans' }).length).toBeGreaterThan(0)
+    expect(screen.getAllByRole('link', { name: 'catalog.nav.bundles' }).length).toBeGreaterThan(0)
+    fireEvent.click(link)
+    await waitFor(() => expect(router.state.location.pathname).toBe('/products/types/4'))
+    expect((await screen.findAllByText('Split AC')).length).toBeGreaterThan(0)
+    expect(screen.queryByText('Installation')).toBeNull()
+    expect(screen.getAllByText('catalog.list.byType.editType').length).toBeGreaterThan(0)
+  })
+
+  it('lists plans under services and creates them with the service-style steps', async () => {
+    const router = renderAt('/products/services/plans')
+    expect((await screen.findAllByText('catalog.list.plans.title')).length).toBeGreaterThan(0)
+    fireEvent.click((await screen.findAllByText('catalog.list.plans.create'))[0])
+    await waitFor(() => expect(`${router.state.location.pathname}${router.state.location.search}`).toBe('/products/new?kind=plan'))
+    expect((await screen.findAllByText('catalog.create.title.plan')).length).toBeGreaterThan(0)
+    expect(screen.queryByText('catalog.create.steps.stock.title')).toBeNull()
+    expect(screen.queryByText('catalog.create.steps.instances.title')).toBeNull()
+  })
 })

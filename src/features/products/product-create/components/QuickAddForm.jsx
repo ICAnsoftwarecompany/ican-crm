@@ -36,7 +36,7 @@ export function QuickAddForm({ kind, quick, lookups }) {
       <header className="mb-3">
         <h2 id="quick-add-title" className="flex items-center gap-2 text-base font-bold text-[var(--text)]">
           <Zap size={17} className="text-[var(--brand-accent)]" aria-hidden="true" />
-          {t(`productSetup.quickAdd.title.${kind === 'service' ? 'service' : 'product'}`)}
+          {t(`productSetup.quickAdd.title.${kind}`)}
         </h2>
         <p className="text-sm text-[var(--text-muted)]">{t('productSetup.quickAdd.description')}</p>
       </header>

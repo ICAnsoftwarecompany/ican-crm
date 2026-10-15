@@ -27,7 +27,6 @@ export function useProductCreateWizard({ kind = 'product', initialItemTypeId = '
   const [snapshot] = useState(() => (draftId ? drafts.get(draftId) : null))
   const formState = useProductForm({ open: true, product: null, kind, initial: snapshot })
   const itemType = formState.selectedItemType
-  const isService = kind === 'service'
   const steps = useMemo(() => getCreateSteps(formState.form.item_type_id ? itemType : null, { kind }), [formState.form.item_type_id, itemType, kind])
   const [rawStep, setStep] = useState(() => snapshot?.step || 'basics')
   const step = steps.includes(rawStep) ? rawStep : steps[Math.max(0, steps.length - 2)]
@@ -57,14 +56,14 @@ export function useProductCreateWizard({ kind = 'product', initialItemTypeId = '
   const memo = useRef({})
   const [typeDefaults, setTypeDefaults] = useState(null)
   useEffect(() => {
-    const result = applyTypeDefaults(latest.current, itemType, memo.current, { withUnits: !isService })
+    const result = applyTypeDefaults(latest.current, itemType, memo.current, { withUnits: kind === 'product' })
     memo.current = result.memo
     if (result.units) updateForm('units', result.units)
     if (result.relations) setRelations(result.relations)
     if (result.applied.units || result.applied.relations) {
       setTypeDefaults({ typeName: itemType.name, units: result.applied.units, relations: result.applied.relations })
     }
-  }, [isService, itemType, updateForm])
+  }, [itemType, kind, updateForm])
 
   const instanceModes = useMemo(() => instanceModesForItemType(itemType), [itemType])
   useEffect(() => {

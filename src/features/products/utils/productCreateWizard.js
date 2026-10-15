@@ -96,8 +96,8 @@ export function buildCreatePlan(state, itemType, { data } = {}) {
     delete product.is_stock_tracked
     delete product.stock_quantity
   }
-  // Services are sold as a service: no alternative units and no pieces (2026-10-15).
-  if (state.form.kind === 'service') delete product.units
+  // Services, plans and bundles are sold as one thing: no alternative units and no pieces (2026-10-15).
+  if (state.form.kind && state.form.kind !== 'product') delete product.units
   return {
     product,
     relations: buildRelationBodies(state.relations),

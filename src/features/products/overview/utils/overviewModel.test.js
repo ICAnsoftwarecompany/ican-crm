@@ -13,21 +13,21 @@ const categories = [{ id: 2, _pathLabel: 'Electronics / Cooling' }, { id: 9, _pa
 describe('buildProductsOverview', () => {
   const overview = buildProductsOverview({ products, itemTypes, categories })
 
-  it('totals counts and values, products include plans and bundles', () => {
+  it('totals counts and values, services include plans and bundles', () => {
     expect(overview.total).toEqual({ count: 4, listValue: 200, stockValue: 300 })
-    expect(overview.product).toMatchObject({ count: 3, active: 2, listValue: 170, stockValue: 300, withoutType: 2, withoutCategory: 1, itemTypes: 1 })
-    expect(overview.service).toMatchObject({ count: 1, listValue: 30, itemTypes: 0 })
+    expect(overview.product).toMatchObject({ count: 2, active: 2, listValue: 150, stockValue: 300, withoutType: 1, withoutCategory: 0, itemTypes: 1 })
+    expect(overview.service).toMatchObject({ count: 2, active: 1, listValue: 50, itemTypes: 0 })
   })
 
   it('ranks categories and item types with names', () => {
     expect(overview.product.topCategories[0]).toMatchObject({ key: '2', label: 'Electronics / Cooling', value: 2 })
     expect(overview.product.topItemTypes.find((row) => row.key === '4')).toMatchObject({ label: 'Appliances', value: 1 })
-    expect(overview.product.topItemTypes.find((row) => row.key === '__none__').value).toBe(2)
+    expect(overview.product.topItemTypes.find((row) => row.key === '__none__').value).toBe(1)
   })
 
   it('flags missing item types and counts incomplete items', () => {
     expect(overview.alerts).toEqual({ noProductTypes: false, noServiceTypes: true })
-    expect(overview.product.incomplete).toBe(2)
+    expect(overview.product.incomplete).toBe(1)
     expect(overview.product.completenessLevels.find((row) => row.key === 'complete').value).toBe(1)
   })
 })

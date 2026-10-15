@@ -26,6 +26,8 @@ import { RelationsStep } from './steps/RelationsStep'
 import { ReviewStep } from './steps/ReviewStep'
 import { StockStep } from './steps/StockStep'
 
+const LIST_PATHS = { product: '/products', service: '/products/services', plan: '/products/services/plans', bundle: '/products/services/bundles' }
+
 /**
  * `/products/new` (`?kind=service`, `?item_type=<id>`, `?draft=<id>`) — 2026-10-07, rebuilt 2026-10-15.
  * Full mode: steps that follow the item type, tutorial panel, quick type / category / unit dialogs, drafts.
@@ -38,12 +40,12 @@ export function ProductCreateWizard({ kind = 'product', initialItemTypeId = '', 
   const wizard = useProductCreateWizard({ kind, initialItemTypeId, draftId, t })
   const { steps, step, goTo, formState, locked } = wizard
   const [tutorial, setTutorial] = usePersistentFlag('product-tutorial', true)
-  const [quickMode, setQuickMode] = usePersistentFlag(`product-quick-add-${kind === 'service' ? 'service' : 'product'}`, false)
+  const [quickMode, setQuickMode] = usePersistentFlag(`product-quick-add-${kind}`, false)
   const [dialog, setDialog] = useState(null) // 'type' | 'category' | 'unit' | null
   const index = steps.indexOf(step)
-  const entity = kind === 'service' ? 'service' : 'product'
-  const listPath = kind === 'service' ? '/products/services' : '/products'
-  const selfPath = (id) => `/products/new?${new URLSearchParams({ ...(kind === 'service' ? { kind: 'service' } : {}), draft: id })}`
+  const entity = kind
+  const listPath = LIST_PATHS[kind] || '/products'
+  const selfPath = (id) => `/products/new?${new URLSearchParams({ ...(kind !== 'product' ? { kind } : {}), draft: id })}`
 
   const save = async () => {
     const productId = await wizard.submit()
@@ -99,7 +101,7 @@ export function ProductCreateWizard({ kind = 'product', initialItemTypeId = '', 
     <HelpScope>
       <div className="space-y-4">
         {header}
-        {step === 'basics' && <CatalogSetupGuide kind={kind} context="wizard" returnTo={kind === 'service' ? '/products/new?kind=service' : '/products/new'} />}
+        {step === 'basics' && ['product', 'service'].includes(kind) && <CatalogSetupGuide kind={kind} context="wizard" returnTo={kind === 'service' ? '/products/new?kind=service' : '/products/new'} />}
         {step === 'basics' && (
           <DraftsPanel
             drafts={wizard.drafts}

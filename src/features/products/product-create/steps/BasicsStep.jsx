@@ -11,7 +11,7 @@ export function BasicsStep({ wizard, onQuickType, onQuickCategory, kind = 'produ
       state={formState}
       onCreateItemType={onQuickType}
       onCreateCategory={onQuickCategory}
-      allowedKinds={kind === 'service' ? ['service'] : ['product', 'plan', 'bundle']}
+      allowedKinds={[kind]}
       itemTypeExtra={<TypeSummaryCard itemType={itemType} loading={Boolean(formState.form.item_type_id) && formState.isLoadingItemType} onQuickType={onQuickType} kind={kind} />}
       categoryExtra={<CategoryDetails categories={formState.categories} categoryId={formState.form.category_id} />}
     />

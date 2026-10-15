@@ -2,6 +2,7 @@
 
 > **Documentation update:** 2026-10-06 23:35 (Africa/Cairo) — README added with the catalog rebuild on the
 > Postman collection "Products & Catalog".
+> 2026-10-15 13:43 (Africa/Cairo) — lists per kind and per item type (`CatalogProductsView kind | itemTypeId`); plans and bundles moved under Services and use the service-style add flow.
 > 2026-10-15 00:56 (Africa/Cairo) — overview page (`overview/`), details + quick drawer + completeness + guided completion (`product-details/`), list shows every field; both folders have Arabic READMEs.
 > 2026-10-15 00:44 (Africa/Cairo) — add product / service moved to `product-create/` (own Arabic README): steps follow the item type, guide, quick add + side list, quick type / category, drafts, category path.
 > 2026-10-07 02:30 (Africa/Cairo) — create wizard `/products/new` (the collection's full create flow), `GET item-types/{id}` used.

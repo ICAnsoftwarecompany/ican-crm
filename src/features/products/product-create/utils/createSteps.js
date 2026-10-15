@@ -5,8 +5,8 @@
  *   step explains that pieces need a type).
  * - With an item type → only what applies: no "stock & units" for one-of-a-kind items (`unique_unit`, their stock
  *   is the units themselves), and "pieces" only when the type holds instances (serials, units, batches).
- * - Services (2026-10-15): basics → details → attached services → review. No stock, no units and no pieces (the
- *   capabilities that hold pieces are product-only).
+ * - Services, plans and bundles (2026-10-15): basics → details → attached items → review. No stock, no units and no
+ *   pieces (the capabilities that hold pieces are product-only).
  */
 export const SERVICE_CREATE_STEPS = ['basics', 'capabilities', 'relations', 'review']
 
@@ -15,7 +15,7 @@ import { CREATE_STEPS, instanceModesForItemType } from '../../utils/productCreat
 const codesOf = (itemType) => (itemType?.capabilities || []).map((capability) => capability.code)
 
 export function getCreateSteps(itemType, { kind = 'product' } = {}) {
-  if (kind === 'service') return [...SERVICE_CREATE_STEPS]
+  if (kind !== 'product') return [...SERVICE_CREATE_STEPS]
   if (!itemType) return [...CREATE_STEPS]
   const codes = codesOf(itemType)
   const hasInstances = instanceModesForItemType(itemType).length > 0
