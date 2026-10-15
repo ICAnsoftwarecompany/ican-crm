@@ -12,7 +12,7 @@ import { FollowUpCustomersPage } from '../../pages/customers/pages/FollowUpCusto
 import { InactiveCustomersPage } from '../../pages/customers/pages/InactiveCustomersPage'
 import { CustomerSegmentsPage } from '../../pages/customers/pages/CustomerSegmentsPage'
 import { SalesTeamsLayout } from '../../pages/sales-teams/SalesTeamsLayout'
-import { SalesTeamsPage, SalesTeamsReportsPage, SalesTeamsRuleBuilderPage, SalesTeamsRulesPage } from '../../pages/sales-teams/SalesTeamsPages'
+import { SalesTeamsChannelsPage, SalesTeamsPage, SalesTeamsReportsPage, SalesTeamsRuleBuilderPage, SalesTeamsRulesPage, SalesTeamsUsersPage } from '../../pages/sales-teams/SalesTeamsPages'
 import { DuplicateCustomersPage } from '../../pages/customers/pages/DuplicateCustomersPage'
 import { CustomerCustomizationPage } from '../../pages/customers/pages/customization/CustomerCustomizationPage'
 import { CustomerImportExportPage } from '../../pages/customers/pages/CustomerImportExportPage'
@@ -119,6 +119,8 @@ export const router = createBrowserRouter([
         element: <SalesTeamsLayout />,
         children: [
           { index: true, element: <SalesTeamsPage /> },
+          { path: 'users', element: <SalesTeamsUsersPage /> },
+          { path: 'channels', element: <SalesTeamsChannelsPage /> },
           { path: 'rules', element: <SalesTeamsRulesPage /> },
           { path: 'rules/new', element: <SalesTeamsRuleBuilderPage /> },
           { path: 'rules/:ruleId/edit', element: <SalesTeamsRuleBuilderPage /> },

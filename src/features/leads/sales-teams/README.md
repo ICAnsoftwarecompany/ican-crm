@@ -1,6 +1,7 @@
 # features/leads/sales-teams — فرق السيلز وتوزيع الليدز
 
-> **Documentation update:** 2026-10-16 00:45 (Africa/Cairo) — شروط القاعدة من حملات / إعلانات / نماذج ميتا والـ CRM (`utils/ruleSources.js`)، وفريق سريع واختيار موظف في صفحة القاعدة.
+> **Documentation update:** 2026-10-16 02:40 (Africa/Cairo) — صفحتين جداد: [مستخدمين السيلز](sales-users/README.md) و[توزيع المحادثات](channel-distribution/README.md).
+> 2026-10-16 00:45 (Africa/Cairo) — شروط القاعدة من حملات / إعلانات / نماذج ميتا والـ CRM (`utils/ruleSources.js`)، وفريق سريع واختيار موظف في صفحة القاعدة.
 > 2026-10-16 00:10 (Africa/Cairo) — بقى قسم لوحده بسايد بار خاص (الفرق، قواعد التوزيع، قاعدة جديدة، التقارير)، وإضافة القاعدة بقت صفحة خطوات في [`rule-builder/`](rule-builder/README.md).
 > 2026-10-15 23:40 (Africa/Cairo) — الفولدر اتعمل.
 
@@ -10,7 +11,9 @@
 |---|---|---|
 | الفرق | `/LeadsCenter/teams` | `TeamsView`: 3 أرقام، فلاتر، كروت الفرق، إنشاء / تعديل فريق (نافذة) |
 | قواعد التوزيع | `/LeadsCenter/teams/rules` | `RulesView`: شرح التوزيع، فلاتر، القواعد بالأولوية، تفعيل / إيقاف، تعديل ← صفحة الخطوات |
+| مستخدمين السيلز | `/LeadsCenter/teams/users` | `SalesUsersView`: الأولوية الفريدة، المدير، الدور، النوع، الحالة — [README](sales-users/README.md) |
 | ↳ قاعدة توزيع جديدة | `/LeadsCenter/teams/rules/new` | `RuleBuilder` — صفحة خطوات بشرح كل خطوة ([README](rule-builder/README.md)) |
+| توزيع المحادثات | `/LeadsCenter/teams/channels` | `ChannelDistributionView`: طريقة توزيع كل قناة (واتساب، ماسنجر) والمستخدمين المستلمين بالأولوية — [README](channel-distribution/README.md) |
 | التقارير والإحصائيات | `/LeadsCenter/teams/reports` | `SalesTeamsReportView` على `ReportsPage` |
 | (الفوتر) مركز العملاء المحتملين | `/LeadsCenter` | رجوع |
 
@@ -102,6 +105,8 @@ sales-teams/
 │   ├── useRuleToggle.js          تفعيل / إيقاف قاعدة من الكارت
 │   └── useRuleConditionOptions.js  خيارات الحملات / الإعلانات / النماذج + أسماءهم
 ├── rule-builder/                 صفحة إنشاء / تعديل قاعدة خطوة بخطوة (README خاص)
+├── sales-users/                  مستخدمين السيلز (README خاص)
+├── channel-distribution/         توزيع المحادثات حسب القناة (README خاص)
 ├── reports/                      salesTeamsReportModel.js (+ test) · useSalesTeamsReport.js · SalesTeamsReportView.jsx
 └── utils/
     ├── teamModel.js              قراءة الفريق بأي شكل، payloads، فرق الأعضاء، الفلاتر
