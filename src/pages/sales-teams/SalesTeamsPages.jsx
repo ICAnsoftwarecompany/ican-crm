@@ -1,5 +1,5 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { RuleBuilder, RulesView, SALES_TEAMS_ROUTES, SalesTeamsReportView, TeamsView } from '../../features/leads'
+import { ChannelDistributionView, RuleBuilder, RulesView, SALES_TEAMS_ROUTES, SalesTeamsReportView, SalesUsersView, TeamsView } from '../../features/leads'
 
 /** Route pages of the sales teams area (2026-10-16) — composition only, logic in features/leads/sales-teams. */
 export function SalesTeamsPage() {
@@ -19,4 +19,12 @@ export function SalesTeamsRuleBuilderPage() {
 
 export function SalesTeamsReportsPage() {
   return <SalesTeamsReportView />
+}
+
+export function SalesTeamsUsersPage() {
+  return <SalesUsersView />
+}
+
+export function SalesTeamsChannelsPage() {
+  return <ChannelDistributionView />
 }

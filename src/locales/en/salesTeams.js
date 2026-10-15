@@ -12,7 +12,9 @@ export default {
     "newRule": "New distribution rule",
     "insights": "Insights",
     "reports": "Reports & statistics",
-    "backToLeads": "Leads Center"
+    "backToLeads": "Leads Center",
+    "users": "Sales users",
+    "channels": "Chat distribution"
   },
   "kpis": {
     "teams": "Teams",
@@ -181,7 +183,10 @@ export default {
     "assignTypeRequired": "Choose the assign type",
     "teamRequired": "Choose the team",
     "userRequired": "Choose the user",
-    "priorityInvalid": "Priority must be a whole number, 0 or more"
+    "priorityInvalid": "Priority must be a whole number, 0 or more",
+    "channelPriorityInvalid": "Priority must be a whole number, 1 or more",
+    "priorityTaken": "Another user already has this priority in this channel",
+    "userHasRule": "This user is already in this channel's distribution"
   },
   "builder": {
     "newTitle": "New distribution rule",
@@ -413,5 +418,150 @@ export default {
   },
   "userChooser": {
     "noTeam": "No team"
+  },
+  "salesUsers": {
+    "title": "Sales users",
+    "description": "Every user of type sales, ordered by priority. Edit priority, manager, role, type and status right in the table; each change saves on its own. Priority is a unique rank (1 first).",
+    "scopes": {
+      "sales": "Sales",
+      "all": "All users"
+    },
+    "search": "Search by name, email or role",
+    "noSalesYet": "No users of type \"sales\" yet. Show all users and change the type of those who work in sales.",
+    "showAll": "Show all users",
+    "empty": "No matching users",
+    "salesBadge": "Sales",
+    "duplicateBadge": "Duplicate priority",
+    "duplicatesNotice": "Some priorities repeat and must be unique: {{list}}. Fix them or use \"Auto order\".",
+    "columns": {
+      "priority": "Priority",
+      "user": "User",
+      "manager": "Manager",
+      "role": "Role",
+      "type": "Type",
+      "status": "Status"
+    },
+    "kpis": {
+      "sales": "Sales users",
+      "ofUsers": "of {{count}} users",
+      "active": "Active sales",
+      "ranked": "Ranked",
+      "rankedHint": "Priority above 0",
+      "duplicates": "Duplicate priorities"
+    },
+    "noManager": "No manager",
+    "priorityOf": "Priority of {{name}}",
+    "managerOf": "Manager of {{name}}",
+    "roleOf": "Role of {{name}}",
+    "typeOf": "Type of {{name}}",
+    "activeOf": "Status of {{name}}",
+    "moveUp": "Move {{name}} up",
+    "moveDown": "Move {{name}} down",
+    "priorityInvalid": "A whole number, 0 or more",
+    "priorityTaken": "{{name}} has this number.",
+    "swapWith": "Swap with {{name}}",
+    "saved": "{{name}} saved",
+    "saveFailed": "Could not save the change",
+    "swapped": "Order swapped",
+    "renumber": "Auto order",
+    "renumberTitle": "Auto order priorities",
+    "renumberMessage": "The users shown get priorities 1, 2, 3… in their current order. This updates {{count}} users.",
+    "renumberConfirm": "Order",
+    "renumbered": "Priorities ordered",
+    "bulkProgress": "Saving… {{done}} of {{total}}"
+  },
+  "channels": {
+    "title": "Chat distribution",
+    "description": "Who receives new chats from WhatsApp and Messenger (Instagram, TikTok, Gmail and Snapchat coming soon).",
+    "howItWorks": "Per channel: (1) a distribution strategy set once, (2) the users who receive its chats, ordered by priority (1 first). The list can be specific to one page or number.",
+    "tabsLabel": "Channels",
+    "soon": "Soon",
+    "names": {
+      "whatsapp": "WhatsApp",
+      "messenger": "Messenger",
+      "instagram": "Instagram",
+      "tiktok": "TikTok",
+      "gmail": "Gmail",
+      "snapchat": "Snapchat"
+    },
+    "strategies": {
+      "round_robin_all": {
+        "label": "Round robin, everyone",
+        "description": "Chats rotate between every user in the list, online or not."
+      },
+      "round_robin_online": {
+        "label": "Round robin, online",
+        "description": "Rotate only between users online right now, for faster replies."
+      },
+      "working_hours": {
+        "label": "Working hours",
+        "description": "Chats go to users within their working hours right now."
+      }
+    },
+    "fallbacks": {
+      "round_robin_all": {
+        "label": "Round robin, everyone",
+        "description": "If the main strategy finds nobody, rotate between everyone."
+      },
+      "round_robin_online": {
+        "label": "Round robin, online",
+        "description": "If the main strategy finds nobody, rotate between online users."
+      },
+      "unassigned": {
+        "label": "Leave unassigned",
+        "description": "If nobody is available, the chat stays unassigned until someone picks it up."
+      }
+    },
+    "settings": {
+      "title": "{{channel}} distribution",
+      "description": "Set once per channel. The fallback runs when the main strategy finds no available user.",
+      "strategy": "Strategy",
+      "fallback": "If nobody is found",
+      "active": "Automatic distribution is on for this channel",
+      "notSet": "Not set",
+      "create": "Save setting",
+      "saved": "Channel setting saved",
+      "saveFailed": "Could not save the channel setting",
+      "delete": "Delete setting",
+      "deleted": "Channel setting deleted",
+      "deleteTitle": "Delete channel setting",
+      "deleteMessage": "The {{channel}} distribution setting will be deleted. The users list stays."
+    },
+    "identifier": {
+      "messenger": "Page",
+      "whatsapp": "WhatsApp number",
+      "default": "Page / number",
+      "all": "All pages / numbers",
+      "hint": "Keep \"All\" when the same order applies to every page or number."
+    },
+    "rules": {
+      "title": "Receiving users",
+      "description": "The users who receive this channel's chats, ordered by priority. Edit the number, move them up and down, or pause anyone.",
+      "add": "Add user",
+      "addTitle": "Add a user to {{channel}} distribution",
+      "addDescription": "Pick the page or number, the user, and their priority among the existing users.",
+      "alreadyIn": "already in",
+      "currentOrder": "Current order ({{count}})",
+      "noneYet": "Nobody yet; this user will be first.",
+      "freeNumbers": "Free numbers:",
+      "activeLabel": "Active and receives chats",
+      "usersCount": "{{count}} users",
+      "emptyTitle": "No users for this channel",
+      "emptyDescription": "Add the users who will receive its chats and order them by priority.",
+      "priorityOf": "Priority of {{name}}",
+      "priorityTakenBy": "Number {{value}} is already used here.",
+      "activeOf": "Status of {{name}}",
+      "moveUp": "Move {{name}} up",
+      "moveDown": "Move {{name}} down",
+      "deleteOf": "Remove {{name}}",
+      "delete": "Remove",
+      "deleteTitle": "Remove user from distribution",
+      "deleteMessage": "{{name}} will no longer receive this channel's chats.",
+      "created": "User added",
+      "saved": "Saved",
+      "reordered": "Order changed",
+      "deleted": "User removed",
+      "saveFailed": "Could not save"
+    }
   }
 }

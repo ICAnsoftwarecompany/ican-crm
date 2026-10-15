@@ -25,4 +25,4 @@ export { InterestCard, InterestLevelBadge, LeadInterestDialog, LeadInterestField
 // Won / lost outside a deal board (2026-10-15): dialogs, API and the row-action launcher.
 export { LeadLostDialog, LeadWonDialog, useLeadActionDialogs, useLeadOutcome } from './outcome'
 // Sales teams + lead distribution rules (2026-10-15; own area + rule builder page 2026-10-16): /LeadsCenter/teams/*.
-export { RuleBuilder, RulesView, SALES_TEAMS_BASE, SALES_TEAMS_ROUTES, SalesTeamsReportView, TeamsView, newRuleForTeam } from './sales-teams'
+export { ChannelDistributionView, RuleBuilder, RulesView, SALES_TEAMS_BASE, SALES_TEAMS_ROUTES, SalesTeamsReportView, SalesUsersView, TeamsView, newRuleForTeam } from './sales-teams'

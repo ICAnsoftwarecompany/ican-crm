@@ -1,9 +1,10 @@
-import { BarChart3, GitBranch, Plus, UserCheck, UsersRound } from 'lucide-react'
+import { BarChart3, GitBranch, MessagesSquare, Plus, UserCheck, UserCog, UsersRound } from 'lucide-react'
 import { SALES_TEAMS_ROUTES } from '../../features/leads'
 
 /**
- * Sales teams sub-sidebar (2026-10-16): Teams first (list + create team), then Distribution rules with
- * "New rule" (the step-by-step builder page) under it, then Reports. Footer: back to the Leads Center.
+ * Sales teams sub-sidebar (2026-10-16): Teams (list + create team), Sales users (rank, manager, role, type, active),
+ * Distribution rules with "New rule" (the step-by-step builder page), Chat distribution per channel, then Reports.
+ * Footer: back to the Leads Center.
  */
 export function getSalesTeamsSidebarConfig(t) {
   return {
@@ -21,6 +22,7 @@ export function getSalesTeamsSidebarConfig(t) {
         label: t('salesTeams.nav.manage'),
         items: [
           { id: 'teams', to: SALES_TEAMS_ROUTES.teams, label: t('salesTeams.nav.teams'), icon: UsersRound, end: true },
+          { id: 'users', to: SALES_TEAMS_ROUTES.users, label: t('salesTeams.nav.users'), icon: UserCog },
           {
             id: 'rules',
             to: SALES_TEAMS_ROUTES.rules,
@@ -29,6 +31,7 @@ export function getSalesTeamsSidebarConfig(t) {
             end: true,
             children: [{ id: 'new-rule', to: SALES_TEAMS_ROUTES.newRule, label: t('salesTeams.nav.newRule'), icon: Plus }],
           },
+          { id: 'channels', to: SALES_TEAMS_ROUTES.channels, label: t('salesTeams.nav.channels'), icon: MessagesSquare },
         ],
       },
       {
