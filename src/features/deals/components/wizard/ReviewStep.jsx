@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { CheckCircle2, Circle, Loader2, XCircle } from 'lucide-react'
 import { ModuleNotice } from '../../../../shared/components/module-pages'
 import { usePipelineTemplates } from '../../hooks/useDeals'
-import { buildWizardRequests, resolveTeamMembers } from '../../utils/dealWizard'
+import { buildWizardRequests, countTeam } from '../../utils/dealWizard'
 import { formatMoney } from '../../utils/dealMoney'
 
 const ICONS = { running: Loader2, done: CheckCircle2, error: XCircle }
@@ -26,14 +26,15 @@ export function ReviewStep({ state, created, progress, error, onEdit }) {
   const { templates } = usePipelineTemplates()
   const template = templates.find((item) => String(item.id) === String(state.pipeline.templateId))
   const stages = state.pipeline.mode === 'new' ? state.pipeline.stages.filter((stage) => stage.name.trim()) : template?.stages || []
-  const team = resolveTeamMembers(state)
+  const teamCount = countTeam(state)
+  const teamSize = teamCount.users + teamCount.teams
   const requests = buildWizardRequests(state)
   const basics = state.basics
 
   const steps = [
     ...(requests.template ? [{ id: 'template', label: t('dealWorkspace.wizard.review.requests.template'), done: Boolean(created.templateId) }] : []),
     { id: 'deal', label: t('dealWorkspace.wizard.review.requests.deal'), done: Boolean(created.dealId) },
-    ...team.map((member, index) => ({ id: `team-${index}`, label: t('dealWorkspace.wizard.review.requests.team', { kind: t(`dealWorkspace.team.add.kinds.${member.kind}`), role: t(`dealWorkspace.options.teamRole.${member.role}`) }), done: created.teamDone.includes(index) })),
+    ...(teamSize ? [{ id: 'team', label: t('dealWorkspace.wizard.review.requests.teamBatch', teamCount), done: created.teamDone === true }] : []),
     ...(requests.products(1) ? [{ id: 'products', label: t('dealWorkspace.wizard.review.requests.products', { count: state.products.ids.length }), done: created.productsDone }] : []),
   ]
 
@@ -58,7 +59,7 @@ export function ReviewStep({ state, created, progress, error, onEdit }) {
           <p className="text-sm text-[var(--text)]">{state.products.ids.length ? t('dealWorkspace.wizard.products.selected', { count: state.products.ids.length }) : t('dealWorkspace.wizard.products.none')}</p>
         </Section>
         <Section title={t('dealWorkspace.wizard.steps.team.title')} step="team" onEdit={onEdit}>
-          <p className="text-sm text-[var(--text)]">{team.length ? t('dealWorkspace.wizard.review.teamCount', { count: team.length }) : t('dealWorkspace.wizard.team.none')}</p>
+          <p className="text-sm text-[var(--text)]">{teamSize ? t('dealWorkspace.wizard.review.teamSummary', teamCount) : t('dealWorkspace.wizard.team.none')}</p>
         </Section>
       </div>
 

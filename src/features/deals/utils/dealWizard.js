@@ -5,7 +5,7 @@ import { buildTemplatePayload, validateStages } from './pipelineTemplate'
  * 1. pipeline  — choose an existing pipeline template or define a new one (stages)
  * 2. basics    — the deal's first data (name, type, status, dates, targets, owner)
  * 3. products  — the products the deal works on (decides the deal's product mode)
- * 4. team      — users or whole teams with a role
+ * 4. team      — ready teams and/or users picked one by one, each with a role (one request)
  * 5. review    — sends the requests in order (see `buildWizardRequests`)
  */
 export const WIZARD_STEPS = ['pipeline', 'basics', 'products', 'team', 'review']
@@ -81,10 +81,28 @@ export function resolveTeamMembers(state) {
 }
 
 /**
+ * One `POST /deals/team` body for the whole team (2026-10-16): users and ready teams in their own lists.
+ * Returns null when there is nobody to add.
+ */
+export function buildTeamPayload(members = [], dealId) {
+  const users = members.filter((member) => member.kind !== 'team').map((member) => ({ user_id: toNumber(member.refId) ?? member.refId, role: member.role }))
+  const teams = members.filter((member) => member.kind === 'team').map((member) => ({ team_id: toNumber(member.refId) ?? member.refId, role: member.role }))
+  if (!users.length && !teams.length) return null
+  return { deal_id: toNumber(dealId) ?? dealId, ...(users.length ? { users } : {}), ...(teams.length ? { teams } : {}) }
+}
+
+/** `{ users, teams }` counts of the team that will be sent (owner included when added). */
+export function countTeam(state) {
+  const members = resolveTeamMembers(state)
+  return { users: members.filter((member) => member.kind !== 'team').length, teams: members.filter((member) => member.kind === 'team').length }
+}
+
+/**
  * The requests the wizard sends, in order (Postman bodies):
  * 1. `POST /api/tenant/pipeline-templates` (only for a new pipeline)
  * 2. `POST /api/tenant/deals`
- * 3. `POST /api/tenant/deals/team` once per member (a user OR a team)
+ * 3. `POST /api/tenant/deals/team` once for the whole team: `{ deal_id, users: [{ user_id, role }], teams: [{ team_id, role }] }`
+ *    (empty lists are left out; skipped when nobody was chosen)
  * 4. `POST /api/tenant/deals/products` with `product_ids` (skipped without products)
  * `deal`, `team` and `products` take the ids created by the earlier requests.
  */
@@ -107,11 +125,7 @@ export function buildWizardRequests(state) {
       target_leads: toNumber(basics.target_leads),
       owner_id: toNumber(basics.owner_id),
     }).filter(([, value]) => value !== undefined && value !== '')),
-    team: (dealId) => resolveTeamMembers(state).map((member) => ({
-      deal_id: toNumber(dealId) ?? dealId,
-      [member.kind === 'team' ? 'team_id' : 'user_id']: toNumber(member.refId) ?? member.refId,
-      role: member.role,
-    })),
+    team: (dealId) => buildTeamPayload(resolveTeamMembers(state), dealId),
     products: (dealId) => (state.products.ids.length
       ? { deal_id: toNumber(dealId) ?? dealId, product_ids: state.products.ids.map((id) => toNumber(id) ?? id) }
       : null),

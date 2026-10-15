@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildWizardRequests, createWizardState, extractCreatedId, firstInvalidStepBefore, validateWizardStep } from './dealWizard'
+import { buildTeamPayload, buildWizardRequests, countTeam, createWizardState, extractCreatedId, firstInvalidStepBefore, validateWizardStep } from './dealWizard'
 import { validateStages } from './pipelineTemplate'
 
 function filledState() {
@@ -28,11 +28,12 @@ describe('deal wizard', () => {
       pipeline_template_id: 5, name: 'Q4 Sales Deal', description: 'Sales campaign for Q4', type: 'sales', status: 'active',
       start_date: '2026-10-01', end_date: '2026-12-31', target_revenue: 500000, target_leads: 1000, owner_id: 2,
     })
-    expect(requests.team(10)).toEqual([
-      { deal_id: 10, user_id: 2, role: 'manager' },
-      { deal_id: 10, team_id: 3, role: 'manager' },
-      { deal_id: 10, user_id: 1, role: 'sales_rep' },
-    ])
+    // One request for the whole team (Postman "deals/team" batch body): the owner as manager, then the chosen users and teams.
+    expect(requests.team(10)).toEqual({
+      deal_id: 10,
+      users: [{ user_id: 2, role: 'manager' }, { user_id: 1, role: 'sales_rep' }],
+      teams: [{ team_id: 3, role: 'manager' }],
+    })
     expect(requests.products(10)).toEqual({ deal_id: 10, product_ids: [1, 5, 8] })
   })
 
@@ -46,7 +47,15 @@ describe('deal wizard', () => {
     expect(requests.template).toBeNull()
     expect(requests.deal('7').pipeline_template_id).toBe(7)
     expect(requests.products(1)).toBeNull()
-    expect(requests.team(1)).toHaveLength(2)
+    expect(requests.team(1)).toEqual({ deal_id: 1, users: [{ user_id: 1, role: 'sales_rep' }], teams: [{ team_id: 3, role: 'manager' }] })
+    expect(countTeam(state)).toEqual({ users: 1, teams: 1 })
+  })
+
+  it('leaves out an empty list and sends nothing for an empty team', () => {
+    expect(buildTeamPayload([{ kind: 'user', refId: '2', role: 'manager' }, { kind: 'user', refId: '3', role: 'sales_rep' }], '1'))
+      .toEqual({ deal_id: 1, users: [{ user_id: 2, role: 'manager' }, { user_id: 3, role: 'sales_rep' }] })
+    expect(buildTeamPayload([{ kind: 'team', refId: '2', role: 'sales_rep' }], 1)).toEqual({ deal_id: 1, teams: [{ team_id: 2, role: 'sales_rep' }] })
+    expect(buildTeamPayload([], 1)).toBeNull()
   })
 
   it('validates each step', () => {

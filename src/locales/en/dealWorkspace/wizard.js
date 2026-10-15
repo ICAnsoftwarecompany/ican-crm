@@ -57,7 +57,9 @@ export default {
         "1": "Negotiation",
         "2": "Won",
         "3": "Lost"
-      }
+      },
+      "nameHint": "The pipeline name as it will show when picked for later deals.",
+      "typeHint": "The kind of deals this pipeline suits."
     },
     "basics": {
       "namePlaceholder": "e.g. Q4 Sales Deal",
@@ -66,6 +68,21 @@ export default {
         "sales": "Selling to leads over a period.",
         "campaign": "Leads coming from a marketing campaign.",
         "project": "A project with a defined scope."
+      },
+      "hints": {
+        "name": "A clear name that tells this deal apart; it shows in lists, the deals board and on leads.",
+        "description": "Optional: the goal of the deal and anything the team needs (project, offer, terms).",
+        "status": {
+          "draft": "Draft: still being set up; the team does not work on it yet.",
+          "active": "Active: the team works on it now and it counts in target tracking.",
+          "paused": "Paused: leads stay as they are, no new work.",
+          "completed": "Completed: the work on it is done.",
+          "cancelled": "Cancelled: it will not be worked on."
+        },
+        "startDate": "When work starts; shown on the calendar.",
+        "endDate": "When the deal ends; days left and delays are counted from it.",
+        "targetLeads": "How many leads you plan to bring into the deal.",
+        "targetRevenue": "Total value of target contracts; progress is measured against it."
       }
     },
     "products": {
@@ -75,24 +92,48 @@ export default {
     },
     "team": {
       "addOwner": "Add the owner ({{name}}) as manager",
-      "none": "No members yet. You can add them later from the deal."
+      "none": "No members yet. You can add them later from the deal.",
+      "search": "Search…",
+      "noMatch": "No results.",
+      "membersCount": "{{count}} members",
+      "ownerLocked": "Deal owner — added as manager",
+      "addOwnerHint": "The owner joins as manager automatically, even if not picked in the list.",
+      "teams": {
+        "title": "Pick a ready team",
+        "description": "Everyone in the team joins the deal with the role you set.",
+        "emptyTitle": "No teams",
+        "emptyDescription": "No teams are defined yet. Build the team from users next to this section."
+      },
+      "users": {
+        "title": "Build a team from users",
+        "description": "Pick people by name and set each one's role.",
+        "emptyTitle": "No users",
+        "emptyDescription": "There are no users to show."
+      },
+      "rolesTitle": "What each role means",
+      "roleHints": {
+        "manager": "Runs the deal: distributes leads, sees everything, edits settings.",
+        "sales_rep": "Works the leads assigned to them: contact, follow-up, win and loss.",
+        "viewer": "Sees the deal and its reports without editing."
+      },
+      "summary": "Sent in one request: {{users}} users and {{teams}} teams."
     },
     "review": {
       "edit": "Edit",
       "newTemplate": "new",
-      "teamCount": "{{count}} members",
       "requestsTitle": "What will be created",
       "requests": {
         "template": "Pipeline template",
         "deal": "Deal",
-        "team": "Team member: {{kind}} · {{role}}",
-        "products": "Products ({{count}})"
+        "products": "Products ({{count}})",
+        "teamBatch": "Team ({{users}} users, {{teams}} teams)"
       },
       "stoppedAt": "Stopped:",
       "failed": "The request failed.",
       "noTemplateId": "The pipeline was created but its id was not returned.",
       "noDealId": "The deal was created but its id was not returned.",
-      "resumeNote": "The deal exists. Retrying only sends what is left."
+      "resumeNote": "The deal exists. Retrying only sends what is left.",
+      "teamSummary": "{{users}} users and {{teams}} teams"
     },
     "errors": {
       "templateRequired": "Choose a pipeline.",
@@ -102,6 +143,137 @@ export default {
       "negative": "Cannot be negative.",
       "duplicateMember": "The same member is listed twice.",
       "incompleteMember": "Every member needs a person/team and a role."
+    },
+    "guide": {
+      "label": "About this step",
+      "toggle": "How does this step work?",
+      "exampleLabel": "Example:",
+      "pipeline": {
+        "title": "Deal stages: the path every lead follows",
+        "points": {
+          "what": {
+            "title": "What are stages?",
+            "text": "Every lead in the deal moves through the stages in order, from first contact to closing. They become the columns of the deal board."
+          },
+          "existing": {
+            "title": "Saved pipeline",
+            "text": "Pick it when the company already has stages that fit this kind of deal. The deal takes a copy of its stages."
+          },
+          "new": {
+            "title": "New stages",
+            "text": "Define them when this deal needs a different path. They are saved as a pipeline you can reuse for later deals."
+          },
+          "wonLost": {
+            "title": "Won and lost stages",
+            "text": "Mark one stage as won and one as lost. Moving a lead there opens the closing dialog; a win creates the contract and payment plan."
+          },
+          "later": {
+            "title": "Can I change them later?",
+            "text": "Yes, from the deal settings, but changing stages that already hold leads needs care, so it is best to set them right now."
+          }
+        },
+        "example": "A villas deal: New lead → Site visit → Negotiation → Reservation → Won / Lost."
+      },
+      "basics": {
+        "title": "First data: what the deal is and what it aims for",
+        "points": {
+          "what": {
+            "title": "Why this data?",
+            "text": "The name and description show wherever the deal or its leads appear; the targets are what reports measure the deal against."
+          },
+          "type": {
+            "title": "Type",
+            "text": "Sales: selling to leads over a period. Campaign: leads from a marketing campaign. Project: a defined scope such as a real-estate project. Used for filters and reports."
+          },
+          "period": {
+            "title": "Period",
+            "text": "Start and end show on the calendar, and tell whether the deal is on track or behind its target."
+          },
+          "targets": {
+            "title": "Targets",
+            "text": "Leads target: how many leads you plan to bring into the deal. Revenue target: the total value of expected contracts. Both are optional, but without them no progress is shown."
+          },
+          "owner": {
+            "title": "Owner",
+            "text": "The person accountable for the deal result. They can join the team as manager automatically in step 4."
+          }
+        },
+        "example": "Name \"Villa 12 — New Cairo\", type Project, 1 Nov to 31 Dec, 30 leads and 9M target."
+      },
+      "products": {
+        "title": "Products: what this deal sells",
+        "points": {
+          "what": {
+            "title": "Why products?",
+            "text": "Products decide how selling works in the deal: what the win dialog offers, the allowed quantities, and what goes into the contract."
+          },
+          "single": {
+            "title": "One piece",
+            "text": "A unique product such as a villa or a specific car: quantity is always 1 and the deal can be won once."
+          },
+          "units": {
+            "title": "One product in units",
+            "text": "One product with identical units, e.g. 5 cars of the same spec: only quantity and price change."
+          },
+          "multi": {
+            "title": "Several products",
+            "text": "Each lead can take any of the deal products with its own quantities."
+          },
+          "later": {
+            "title": "No products yet?",
+            "text": "You can skip and add products later from the deal products page."
+          }
+        },
+        "example": "A \"Sedan cars\" deal with the product \"Sedan X\" and 5 units available."
+      },
+      "team": {
+        "title": "Team: who works on the deal",
+        "points": {
+          "what": {
+            "title": "Why a team?",
+            "text": "Only team members get the deal leads distributed to them, see its workspace and appear in its performance reports."
+          },
+          "teams": {
+            "title": "A ready team",
+            "text": "If the company has a sales team defined, pick it: all its members join the deal with the role you set."
+          },
+          "users": {
+            "title": "Build a team from users",
+            "text": "If no team fits, pick people by name and set each one's role. You can combine both ways."
+          },
+          "roles": {
+            "title": "Roles",
+            "text": "Manager runs the deal and distributes leads. Sales rep works the leads assigned to them. Viewer can only look."
+          },
+          "notify": {
+            "title": "What happens on create?",
+            "text": "The whole team is sent in one request and each member is notified. You can change the team later from the team page."
+          }
+        },
+        "example": "Pick \"Team A\" as sales reps and add \"Karim\" by name as manager."
+      },
+      "review": {
+        "title": "Review and create",
+        "points": {
+          "what": {
+            "title": "Check before sending",
+            "text": "Each section shows your answers; \"Edit\" takes you back to the step without losing anything."
+          },
+          "order": {
+            "title": "Order of creation",
+            "text": "The pipeline (if new), then the deal, then the whole team in one request, then the products. The side list shows each request's state."
+          },
+          "retry": {
+            "title": "If a request fails",
+            "text": "Creation stops there and keeps what was done. \"Retry\" continues from the failed request and never creates a second deal."
+          },
+          "after": {
+            "title": "After creating",
+            "text": "The deal workspace opens right away so you can start adding leads."
+          }
+        },
+        "example": "If the team request fails, the deal stays created and the retry sends only the team and products."
+      }
     }
   },
   "productMode": {

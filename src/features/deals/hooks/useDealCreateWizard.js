@@ -9,7 +9,7 @@ import { dealKeys } from '../constants/dealQueryKeys'
 import { WIZARD_STEPS, buildWizardRequests, createWizardState, extractCreatedId, firstInvalidStepBefore } from '../utils/dealWizard'
 
 const DRAFT_KEY = 'deals:create-wizard:draft'
-const EMPTY_CREATED = { templateId: null, dealId: null, teamDone: [], productsDone: false }
+const EMPTY_CREATED = { templateId: null, dealId: null, teamDone: false, productsDone: false }
 
 /**
  * State + submission of the "new deal" wizard. The draft (answers + what was already created) lives in
@@ -80,19 +80,16 @@ export function useDealCreateWizard() {
       }
       mark('deal', 'done')
 
+      // The whole team in one request (users + ready teams). `teamDone === true` once it went through.
+      phase = 'team'
       const team = requests.team(done.dealId)
-      for (let index = 0; index < team.length; index += 1) {
-        phase = `team-${index}`
-        if (done.teamDone.includes(index)) {
-          mark(phase, 'done')
-          continue
-        }
-        mark(phase, 'running')
-        await dealResourcesApi.addTeamMember(team[index])
-        done.teamDone = [...done.teamDone, index]
+      if (team && done.teamDone !== true) {
+        mark('team', 'running')
+        await dealResourcesApi.addTeamMembers(team)
+        done.teamDone = true
         persist()
-        mark(phase, 'done')
       }
+      mark('team', 'done')
 
       phase = 'products'
       const products = requests.products(done.dealId)
