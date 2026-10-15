@@ -27,7 +27,7 @@ but disabled (see `constants/dealApiStatus.js`). Not verified against a running 
 
 | Path | Owns |
 |---|---|
-| `api/` | `dealsApi`, `dealLeadsApi` (leads, stage, products, won, lost, import*, distribute*, remove*, reopen*), `dealResourcesApi` (team, products), `pipelineTemplatesApi` (reads `/api/pipeline-templates`, writes `/api/tenant/pipeline-templates`), `contractsApi`, `dealAnalyticsApi`, `dealAiApi`*. `*` = planned. |
+| `api/` | `dealsApi`, `dealLeadsApi` (leads, stage, products, won, lost, import*, distribute*, remove*, reopen*), `dealResourcesApi` (team incl. `addTeamMembers` batch, products), `pipelineTemplatesApi` (reads `/api/pipeline-templates`, writes `/api/tenant/pipeline-templates`), `contractsApi`, `dealAnalyticsApi`, `dealAiApi`*. `*` = planned. |
 | `constants/dealApiStatus.js` | **`DEAL_API_STATUS`**: `live` (in the collection) or `planned` per capability; `isDealApiLive()`. Flip a value when the backend ships — nothing else changes. |
 | `constants/dealOptions.js` | Enum values (types, statuses, roles, lost reasons, payment types, frequencies…). Labels at `dealWorkspace.options.*`. |
 | `constants/dealQueryKeys.js` | `dealKeys` (root `['deals']`). |
@@ -45,7 +45,7 @@ but disabled (see `constants/dealApiStatus.js`). Not verified against a running 
 | `utils/dealBoardStats.js` *(2026-10-04 01:30 (Africa/Cairo))* | Hub board card numbers from the deal row + its normalized leads: `resolveDealTiming` (upcoming / running / ended, days, elapsed %), `resolveDealHealth` (on track / behind / at risk: revenue %, else won-leads %, vs elapsed %; active deals only), `buildDealCardStats` (lead counts, won revenue = won leads' estimated value, open pipeline, win rate, unassigned, stale), `summarizeDealColumn`, `sortDealsForBoard` (`?sort=` newest / endingSoon / revenue / progress). Tested. |
 | `hooks/useDealsQuickInfo.js` · `useDealsHubCalendarEvents.js` | Fetches only what the list row lacks (team, products, leads) for the newest `QUICK_INFO_LIMIT` (40) deals, on the workspace's query keys; events of every deal for the hub calendar (`buildDealsLinkIndex` in `dealLinks`). |
 | `hooks/useDealCreateWizard.js` · `useCatalogProducts.js` | Wizard draft in localStorage (`deals:create-wizard:draft`, incl. created ids → resumable, no duplicate deal), ordered submit with per-phase progress; active catalog products with full data. |
-| `components/wizard/` | `DealCreateWizard` (page `/deals/new`), `WizardStepper`, `PipelineStep`, `BasicsStep`, `ProductsStep`, `TeamStep`, `ReviewStep`. |
+| `components/wizard/` | `DealCreateWizard` (page `/deals/new`), `WizardStepper`, `PipelineStep`, `BasicsStep`, `ProductsStep`, `TeamStep` + `TeamPicker` (ready teams and/or users, one `POST /deals/team` batch: `{ deal_id, users[], teams[] }`, *2026-10-16 00:10 (Africa/Cairo)*), `ReviewStep`, `StepGuide` ("how this step works" panel per step, `WIZARD_GUIDE`). |
 | `reports/` | `dealReportModel` (tested), `useDealReport(range)`, `useDealsHubReport(range)` for the shared `ReportsPage`. |
 | `navigation/dealNavigation.js` | Sub-sidebar configs (workspace + hub). Tested. |
 | `workflow/dealWorkflowDefinition.js` | Workflow-engine module `deals` (8 triggers, 4 conditions, 5 actions, all `backendSupport: false`). Imported by `workflow-engine/config/registerBuiltinModules.js`. |

@@ -40,6 +40,7 @@ const routes = [
   [/\/api\/tenant\/deals\/1$/, { data: deal }],
   [/\/api\/tenant\/deals$/, { data: [deal] }],
   [/\/api\/tenant\/product\/data$/, { data: [{ id: 30, name: 'Villas', products: [{ id: 31, name: 'Villa 12', price: 9000000, category_id: 30, unit_mode: 'unique' }, { id: 32, name: 'Sedan X', price: 800000, category_id: 30, available_units: 5 }] }] }],
+  [/\/api\/tenant\/teams\/get$/, { data: [{ id: 3, name: 'Team A', users: [{ id: 4, name: 'Nour' }, { id: 6, name: 'Hany' }] }] }],
   [/\/api\/tenant\/users\/get$/, { data: [{ id: 2, name: 'Karim' }, { id: 4, name: 'Nour' }] }],
   [/\/api\/pipeline-templates$/, { data: [{ id: 5, name: 'Sales Pipeline', type: 'sales', stages }] }],
 ]
@@ -160,13 +161,13 @@ describe('deals area', () => {
     await waitFor(() => expect(post).toHaveBeenCalledWith('/api/tenant/deals/leads/102/lost', { reason: 'price' }))
   })
 
-  it('creates a deal through the wizard: stages → data → products → team, in that request order', async () => {
+  it('creates a deal through the wizard: stages → data → products → team (one batch request), in that request order', async () => {
     const router = renderAt('/deals/new')
     const next = () => fireEvent.click(screen.getByText('dealWorkspace.wizard.next'))
 
     // 1. Stages: define a new pipeline (default stages pre-filled).
     fireEvent.click(await screen.findByText('dealWorkspace.wizard.pipeline.new.title'))
-    fireEvent.change(screen.getByLabelText('dealWorkspace.pipelines.name'), { target: { value: 'Villas pipeline' } })
+    fireEvent.change(screen.getByLabelText(/^dealWorkspace.pipelines.name/), { target: { value: 'Villas pipeline' } })
     next()
     // 2. First data: the name is required.
     next()
@@ -177,10 +178,11 @@ describe('deals area', () => {
     fireEvent.click(await screen.findByText('Villa 12'))
     expect((await screen.findAllByText(/^dealWorkspace.productMode.deal.single_unit.title/)).length).toBeGreaterThan(0)
     next()
-    // 4. Team: one user as sales rep.
-    await waitFor(() => expect(screen.getAllByRole('option', { name: 'Nour' }).length).toBeGreaterThan(0))
-    fireEvent.change(screen.getByLabelText('dealWorkspace.team.add.kinds.user'), { target: { value: '4' } })
-    fireEvent.click(screen.getByText('dealWorkspace.team.add.submit'))
+    // 4. Team: a ready team as managers + one user picked by name as sales rep → ONE request.
+    fireEvent.click(await screen.findByRole('checkbox', { name: /^Team A/ }))
+    fireEvent.change(screen.getByLabelText('dealWorkspace.team.role — Team A'), { target: { value: 'manager' } })
+    fireEvent.click(await screen.findByRole('checkbox', { name: /^Nour/ }))
+    expect(screen.getByText('dealWorkspace.wizard.team.summary')).toBeTruthy()
     next()
     // 5. Review → create.
     fireEvent.click(await screen.findByText('dealWorkspace.wizard.create'))
@@ -192,7 +194,7 @@ describe('deals area', () => {
     expect(bodies[0]).toMatchObject({ name: 'Villas pipeline', type: 'sales', status: true })
     expect(bodies[0].stages.filter((stage) => stage.is_won_stage)).toHaveLength(1)
     expect(bodies[1]).toMatchObject({ pipeline_template_id: 77, name: 'Villa 12 sale' })
-    expect(bodies[2]).toEqual({ deal_id: 88, user_id: 4, role: 'sales_rep' })
+    expect(bodies[2]).toEqual({ deal_id: 88, users: [{ user_id: 4, role: 'sales_rep' }], teams: [{ team_id: 3, role: 'manager' }] })
     expect(bodies[3]).toEqual({ deal_id: 88, product_ids: [31] })
   })
 })

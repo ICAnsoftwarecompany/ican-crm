@@ -74,10 +74,10 @@ export function PipelineStep({ value, onChange, errors = {} }) {
       ) : (
         <div className="space-y-3">
           <div className="grid gap-3 sm:grid-cols-2">
-            <FieldLabel label={t('dealWorkspace.pipelines.name')} error={err('name')}>
+            <FieldLabel label={t('dealWorkspace.pipelines.name')} hint={t('dealWorkspace.wizard.pipeline.nameHint')} error={err('name')}>
               <input className={dealInputClass} value={value.name} onChange={(event) => onChange({ name: event.target.value })} />
             </FieldLabel>
-            <FieldLabel label={t('dealWorkspace.fields.type')}>
+            <FieldLabel label={t('dealWorkspace.fields.type')} hint={t('dealWorkspace.wizard.pipeline.typeHint')}>
               <select className={dealInputClass} value={value.type} onChange={(event) => onChange({ type: event.target.value })}>
                 {DEAL_TYPES.map((type) => <option key={type} value={type}>{t(`dealWorkspace.options.dealType.${type}`)}</option>)}
               </select>

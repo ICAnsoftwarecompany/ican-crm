@@ -1,74 +1,106 @@
-import { useState } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Plus, Trash2 } from 'lucide-react'
-import { Button } from '../../../../shared/components/ui/Button'
+import { Send, UsersRound } from 'lucide-react'
 import { useTeams } from '../../../teams'
 import { useUsers } from '../../../users'
 import { TEAM_ROLES } from '../../constants/dealOptions'
-import { FieldLabel, dealInputClass } from '../common/FieldLabel'
-import { PersonSelect } from '../common/PersonSelect'
+import { TeamPicker } from './TeamPicker'
 
-/** Step 4 — who works on the deal: users or whole teams, each with a role (a user OR a team per row). */
+const DEFAULT_ROLE = 'sales_rep'
+const teamMembersOf = (team) => [team?.members, team?.users].find(Array.isArray) || []
+
+/**
+ * Step 4 — who works on the deal (2026-10-16). Two ways, usable together, sent in ONE request
+ * (`POST /deals/team` with `users[]` and `teams[]`):
+ * - ready teams: pick existing teams (everyone in the team joins with the chosen role);
+ * - build the team: pick users one by one, each with a role.
+ * The owner (step 2) can be added as manager automatically.
+ */
 export function TeamStep({ value, onChange, ownerId, errors = {} }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const usersQuery = useUsers()
   const teamsQuery = useTeams()
-  const users = (usersQuery.data || []).map((user) => ({ id: String(user.id), name: user.name || user.email || '' }))
-  const teams = (teamsQuery.data || []).map((team) => ({ id: String(team.id), name: team.name || '' }))
-  const [row, setRow] = useState({ kind: 'user', refId: '', role: 'sales_rep' })
-  const nameOf = (member) => (member.kind === 'team' ? teams : users).find((item) => item.id === String(member.refId))?.name || `#${member.refId}`
-  const owner = users.find((user) => user.id === String(ownerId))
+  const users = useMemo(() => (usersQuery.data || []).map((user) => ({ id: String(user.id), name: user.name || user.email || `#${user.id}`, meta: user.email && user.name ? user.email : '' })), [usersQuery.data])
+  const teams = useMemo(() => (teamsQuery.data || []).map((team) => {
+    const members = teamMembersOf(team)
+    const count = Number(team.members_count ?? team.users_count ?? members.length) || 0
+    const names = new Intl.ListFormat(i18n.language, { type: 'unit' }).format(members.slice(0, 3).map((member) => member.name || member.user?.name).filter(Boolean))
+    return { id: String(team.id), name: team.name || `#${team.id}`, meta: [t('dealWorkspace.wizard.team.membersCount', { count }), names].filter(Boolean).join(' · ') }
+  }), [i18n.language, t, teamsQuery.data])
 
-  const add = () => {
-    if (!row.refId) return
-    onChange({ members: [...value.members, row] })
-    setRow({ ...row, refId: '' })
+  const selectedOf = (kind) => new Map(value.members.filter((member) => (member.kind === 'team') === (kind === 'team')).map((member) => [String(member.refId), member.role]))
+  const selectedTeams = selectedOf('team')
+  const selectedUsers = selectedOf('user')
+  const owner = users.find((user) => user.id === String(ownerId))
+  const lockedUsers = owner && value.addOwner ? new Map([[owner.id, t('dealWorkspace.wizard.team.ownerLocked')]]) : new Map()
+
+  const toggle = (kind) => (id) => {
+    const exists = value.members.some((member) => member.kind === kind && String(member.refId) === id)
+    onChange({ members: exists ? value.members.filter((member) => !(member.kind === kind && String(member.refId) === id)) : [...value.members, { kind, refId: id, role: DEFAULT_ROLE }] })
   }
-  const updateRole = (index, role) => onChange({ members: value.members.map((member, position) => (position === index ? { ...member, role } : member)) })
+  const setRole = (kind) => (id, role) => onChange({ members: value.members.map((member) => (member.kind === kind && String(member.refId) === id ? { ...member, role } : member)) })
+
+  const userCount = selectedUsers.size + (lockedUsers.size && !selectedUsers.has(owner.id) ? 1 : 0)
+  const teamCount = selectedTeams.size
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 sm:grid-cols-[8rem_minmax(0,1fr)_10rem_auto] sm:items-end">
-        <FieldLabel label={t('dealWorkspace.team.add.kind')}>
-          <select className={dealInputClass} value={row.kind} onChange={(event) => setRow({ ...row, kind: event.target.value, refId: '' })}>
-            {['user', 'team'].map((kind) => <option key={kind} value={kind}>{t(`dealWorkspace.team.add.kinds.${kind}`)}</option>)}
-          </select>
-        </FieldLabel>
-        <FieldLabel label={t(`dealWorkspace.team.add.kinds.${row.kind}`)}>
-          <PersonSelect people={row.kind === 'team' ? teams : users} value={row.refId} onChange={(refId) => setRow({ ...row, refId })} />
-        </FieldLabel>
-        <FieldLabel label={t('dealWorkspace.team.role')}>
-          <select className={dealInputClass} value={row.role} onChange={(event) => setRow({ ...row, role: event.target.value })}>
-            {TEAM_ROLES.map((role) => <option key={role} value={role}>{t(`dealWorkspace.options.teamRole.${role}`)}</option>)}
-          </select>
-        </FieldLabel>
-        <Button type="button" onClick={add} disabled={!row.refId}><Plus size={15} />{t('dealWorkspace.team.add.submit')}</Button>
+      <div className="grid gap-3 lg:grid-cols-2">
+        <TeamPicker
+          title={t('dealWorkspace.wizard.team.teams.title')}
+          description={t('dealWorkspace.wizard.team.teams.description')}
+          items={teams}
+          selected={selectedTeams}
+          onToggle={toggle('team')}
+          onRole={setRole('team')}
+          isLoading={teamsQuery.isLoading}
+          error={teamsQuery.error}
+          onRetry={teamsQuery.refetch}
+          emptyTitle={t('dealWorkspace.wizard.team.teams.emptyTitle')}
+          emptyDescription={t('dealWorkspace.wizard.team.teams.emptyDescription')}
+        />
+        <TeamPicker
+          title={t('dealWorkspace.wizard.team.users.title')}
+          description={t('dealWorkspace.wizard.team.users.description')}
+          items={users}
+          selected={selectedUsers}
+          locked={lockedUsers}
+          onToggle={toggle('user')}
+          onRole={setRole('user')}
+          isLoading={usersQuery.isLoading}
+          error={usersQuery.error}
+          onRetry={usersQuery.refetch}
+          emptyTitle={t('dealWorkspace.wizard.team.users.emptyTitle')}
+          emptyDescription={t('dealWorkspace.wizard.team.users.emptyDescription')}
+        />
       </div>
 
       {owner && (
-        <label className="flex items-center gap-2 text-sm text-[var(--text)]">
-          <input type="checkbox" checked={value.addOwner} onChange={(event) => onChange({ addOwner: event.target.checked })} />
-          {t('dealWorkspace.wizard.team.addOwner', { name: owner.name })}
+        <label className="flex items-start gap-2 text-sm text-[var(--text)]">
+          <input type="checkbox" className="mt-1" checked={value.addOwner} onChange={(event) => onChange({ addOwner: event.target.checked })} />
+          <span>
+            {t('dealWorkspace.wizard.team.addOwner', { name: owner.name })}
+            <span className="block text-xs text-[var(--text-muted)]">{t('dealWorkspace.wizard.team.addOwnerHint')}</span>
+          </span>
         </label>
       )}
 
-      {!value.members.length
-        ? <p className="rounded-lg border border-dashed border-[var(--border)] p-4 text-center text-sm text-[var(--text-muted)]">{t('dealWorkspace.wizard.team.none')}</p>
-        : (
-          <ul className="divide-y divide-[var(--border)] rounded-lg border border-[var(--border)] bg-[var(--surface)]">
-            {value.members.map((member, index) => (
-              <li key={`${member.kind}-${member.refId}-${index}`} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
-                <span className="min-w-0 text-sm text-[var(--text)]"><span className="text-xs text-[var(--text-muted)]">{t(`dealWorkspace.team.add.kinds.${member.kind}`)} · </span>{nameOf(member)}</span>
-                <span className="flex items-center gap-2">
-                  <select className={`${dealInputClass} h-8 w-36`} value={member.role} onChange={(event) => updateRole(index, event.target.value)} aria-label={t('dealWorkspace.team.role')}>
-                    {TEAM_ROLES.map((role) => <option key={role} value={role}>{t(`dealWorkspace.options.teamRole.${role}`)}</option>)}
-                  </select>
-                  <button type="button" onClick={() => onChange({ members: value.members.filter((_, position) => position !== index) })} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] hover:text-red-600" aria-label={t('dealWorkspace.team.remove')}><Trash2 size={15} /></button>
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
+      <section className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3">
+        <h3 className="mb-2 text-sm font-bold text-[var(--text)]">{t('dealWorkspace.wizard.team.rolesTitle')}</h3>
+        <dl className="grid gap-2 sm:grid-cols-3">
+          {TEAM_ROLES.map((role) => (
+            <div key={role} className="rounded-md bg-[var(--surface-2)] p-2">
+              <dt className="text-xs font-semibold text-[var(--text)]">{t(`dealWorkspace.options.teamRole.${role}`)}</dt>
+              <dd className="text-xs leading-5 text-[var(--text-muted)]">{t(`dealWorkspace.wizard.team.roleHints.${role}`)}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <div className="flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-[var(--border)] p-3 text-sm text-[var(--text)]" role="status">
+        {userCount || teamCount ? <Send size={15} className="text-[var(--brand-accent)]" /> : <UsersRound size={15} className="text-[var(--text-muted)]" />}
+        {userCount || teamCount ? t('dealWorkspace.wizard.team.summary', { users: userCount, teams: teamCount }) : t('dealWorkspace.wizard.team.none')}
+      </div>
       {errors.members && <p className="text-xs text-red-600 dark:text-red-400">{t(`dealWorkspace.wizard.errors.${errors.members}`)}</p>}
       <p className="text-xs text-[var(--text-muted)]">{t('dealWorkspace.team.add.notifyHint')}</p>
     </div>

@@ -11,6 +11,7 @@ import { BasicsStep } from './BasicsStep'
 import { PipelineStep } from './PipelineStep'
 import { ProductsStep } from './ProductsStep'
 import { ReviewStep } from './ReviewStep'
+import { StepGuide } from './StepGuide'
 import { TeamStep } from './TeamStep'
 import { WizardStepper } from './WizardStepper'
 
@@ -58,6 +59,12 @@ export function DealCreateWizard() {
           <h2 className="text-base font-bold text-[var(--text)]">{t(`dealWorkspace.wizard.steps.${step}.title`)}</h2>
           <p className="text-sm text-[var(--text-muted)]">{t(`dealWorkspace.wizard.steps.${step}.description`)}</p>
         </header>
+        {/* Small screens: the step guide folds above the form; wide screens: it sits beside it. */}
+        <details className="mb-4 xl:hidden">
+          <summary className="cursor-pointer text-sm font-semibold text-[var(--brand-accent)]">{t('dealWorkspace.wizard.guide.toggle')}</summary>
+          <div className="mt-2"><StepGuide step={step} /></div>
+        </details>
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_19rem]">
         <fieldset disabled={locked && step !== 'review'} className="min-w-0">
           {step === 'pipeline' && <PipelineStep value={state.pipeline} onChange={(patch) => update('pipeline', patch)} errors={errors} />}
           {step === 'basics' && <BasicsStep value={state.basics} onChange={(patch) => update('basics', patch)} errors={errors} />}
@@ -65,6 +72,8 @@ export function DealCreateWizard() {
           {step === 'team' && <TeamStep value={state.team} ownerId={state.basics.owner_id} onChange={(patch) => update('team', patch)} errors={errors} />}
           {step === 'review' && <ReviewStep state={state} created={wizard.created} progress={wizard.progress} error={wizard.error} onEdit={goTo} />}
         </fieldset>
+        <div className="hidden xl:block"><StepGuide step={step} /></div>
+        </div>
         {locked && step !== 'review' && <p className="mt-3 text-xs text-[var(--text-muted)]">{t('dealWorkspace.wizard.lockedNote')}</p>}
       </section>
 
