@@ -135,14 +135,16 @@ function HeaderActions({ onOpenPage, onClose }) {
   )
 }
 
-export function MessengerSidebarPanel({ open, onClose, initialTarget = {} }) {
+export function MessengerSidebarPanel({ open, onClose, initialTarget = {}, conversationFilter = null }) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { highlightedMessageId, highlightMessage } = useRealtimeMessageHighlight()
   const isRtl = typeof document !== 'undefined' && document.documentElement.dir === 'rtl'
   const markAllRead = useMessengerNotificationsStore((state) => state.markAllRead)
   const conversationsQuery = useMessengerConversations({ per_page: 30 })
-  const conversations = conversationsQuery.data || []
+  const allConversations = conversationsQuery.data || []
+  // Optional scope (e.g. a deal's customers, 2026-10-16): the list, counts and selection only see these.
+  const conversations = useMemo(() => (conversationFilter ? allConversations.filter(conversationFilter) : allConversations), [allConversations, conversationFilter])
   const [selectedId, setSelectedId] = useState('')
   const [query, setQuery] = useState('')
   const [mode, setMode] = useState('list')

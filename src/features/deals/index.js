@@ -38,6 +38,9 @@ export { WIZARD_STEPS, buildWizardRequests, createWizardState, validateWizardSte
 export { buildTemplatePayload, validateStages } from './utils/pipelineTemplate'
 export { useCatalogProducts } from './hooks/useCatalogProducts'
 export { useDealCreateWizard } from './hooks/useDealCreateWizard'
+export { useDealGroups, useDealConversationFilter } from './hooks/useDealChat'
+export { dealGroupNumber, filterDealGroups, nextDealGroupName, collectTeamUserIds } from './utils/dealGroups'
+export { buildDealContactIndex, matchesDealContact } from './utils/dealConversations'
 
 export { useDealReport, useDealsHubReport } from './reports'
 

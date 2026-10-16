@@ -4,6 +4,7 @@ import { ResourceState } from '../../../../shared/components/data/ResourceState'
 import { SubSidebarLayout } from '../../../../shared/components/sub-sidebar'
 import { DealWorkspaceProvider, useDealWorkspace } from '../../hooks/useDealWorkspace'
 import { getDealWorkspaceSidebarConfig } from '../../navigation/dealNavigation'
+import { DealChatDock } from '../chat/DealChatDock'
 import { DealWorkspaceHeader } from './DealWorkspaceHeader'
 
 function DealWorkspaceShell() {
@@ -27,6 +28,7 @@ function DealWorkspaceShell() {
       >
         <DealWorkspaceHeader />
         <Outlet />
+        {deal && <DealChatDock />}
       </ResourceState>
     </SubSidebarLayout>
   )

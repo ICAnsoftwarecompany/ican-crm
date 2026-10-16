@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Bot, CalendarDays, Settings, Workflow } from 'lucide-react'
 import { AiSetupPage } from '../../shared/components/ai-setup'
-import { ModulePageHeader, ModuleSettingsPage } from '../../shared/components/module-pages'
+import { ModuleNotice, ModulePageHeader, ModuleSettingsPage } from '../../shared/components/module-pages'
 import { ReportsPage, useReportRange } from '../../shared/components/reports'
 import { WorkflowModuleWorkspace } from '../../features/workflow-engine'
 import {
@@ -13,6 +13,7 @@ import {
   DealContractsTable,
   DealDangerZone,
   DealGeneralSettings,
+  DealGroupsView,
   DealLostReasonsSettings,
   DealOverview,
   DealPipelineView,
@@ -21,9 +22,11 @@ import {
   DealStagesSettings,
   DealTasksPanel,
   DealTeamPanel,
+  useDealConversationFilter,
   useDealReport,
   useDealWorkspace,
 } from '../../features/deals'
+import { ConversationsPage } from '../conversations/ConversationsPage'
 import { getSettingsSections } from '../settings/registry/settingsSections'
 
 /**
@@ -136,4 +139,25 @@ export function DealSettingsPage() {
     { id: 'danger', label: t('dealWorkspace.settings.sections.danger'), description: t('dealWorkspace.settings.sections.dangerHint'), element: <DealDangerZone /> },
   ]
   return <ModuleSettingsPage icon={Settings} title={t('dealWorkspace.pages.settings')} description={t('dealWorkspace.pageDescriptions.settings')} sections={sections} fullSettingsPath="/settings" />
+}
+
+/** `/deals/:dealId/groups` — the deal's internal groups in the team chat (2026-10-16). */
+export function DealGroupsPage() {
+  return <PageShell pageId="groups"><DealGroupsView /></PageShell>
+}
+
+/** `/deals/:dealId/conversations` — the /conversations inbox (every channel) narrowed to the deal's customers. */
+export function DealConversationsPage() {
+  const { t } = useTranslation()
+  const { leads } = useDealWorkspace()
+  const scope = useDealConversationFilter(leads)
+  return (
+    <PageShell pageId="conversations">
+      <ConversationsPage
+        conversationFilter={scope.filter}
+        setPageHeader={false}
+        beforeChannels={<ModuleNotice tone={scope.isEmpty ? 'warning' : 'info'}>{scope.isEmpty ? t('dealWorkspace.dealConversations.noCustomers') : t('dealWorkspace.dealConversations.scopeNote', { count: scope.contacts })}</ModuleNotice>}
+      />
+    </PageShell>
+  )
 }

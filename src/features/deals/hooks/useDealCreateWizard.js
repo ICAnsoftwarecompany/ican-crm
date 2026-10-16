@@ -4,13 +4,16 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useLocalStorage } from '../../../shared/components/data-table/hooks/useLocalStorage'
 import { extractMessage } from '../../../shared/utils/apiResponse'
+import { internalChatApi } from '../../internal-chat'
 import { dealCampaignsApi, dealLeadsApi, dealResourcesApi, dealsApi, pipelineTemplatesApi } from '../api'
 import { dealKeys } from '../constants/dealQueryKeys'
 import { WIZARD_STEPS, buildWizardRequests, extractCreatedId, firstInvalidStepBefore, withWizardDefaults } from '../utils/dealWizard'
 import { buildNewLeadPayload } from '../utils/leadSource'
+import { nextDealGroupName } from '../utils/dealGroups'
+import { unwrapList } from './dealResponse'
 
 const DRAFT_KEY = 'deals:create-wizard:draft'
-const EMPTY_CREATED = { templateId: null, dealId: null, teamDone: false, productsDone: false, campaignsDone: false, existingLeadsDone: false, newLeadKeys: [] }
+const EMPTY_CREATED = { templateId: null, dealId: null, teamDone: false, productsDone: false, chatGroupDone: false, chatGroupName: '', campaignsDone: false, existingLeadsDone: false, newLeadKeys: [] }
 
 /**
  * State + submission of the "new deal" wizard. The draft (answers + what was already created) lives in
@@ -93,6 +96,24 @@ export function useDealCreateWizard() {
         persist()
       }
       mark('team', 'done')
+
+      // Internal chat group of the sales team: '<deal name> G<n>' (next free number) or the team added to a group.
+      phase = 'chatGroup'
+      const chatGroup = requests.chatGroup
+      if (chatGroup && !done.chatGroupDone) {
+        mark('chatGroup', 'running')
+        if (chatGroup.mode === 'new') {
+          const chats = unwrapList(await internalChatApi.getConversations({ per_page: 200 }), ['chats', 'conversations'])
+          const name = nextDealGroupName(chatGroup.dealName, chats)
+          await internalChatApi.createConversation({ type: 'group', name, user_ids: chatGroup.userIds })
+          done.chatGroupName = name
+        } else {
+          await internalChatApi.addMembers(chatGroup.groupId, chatGroup.userIds)
+        }
+        done.chatGroupDone = true
+        persist()
+      }
+      mark('chatGroup', 'done')
 
       phase = 'products'
       const products = requests.products(done.dealId)

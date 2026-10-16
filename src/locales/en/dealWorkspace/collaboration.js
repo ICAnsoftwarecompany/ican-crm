@@ -65,5 +65,44 @@ export default {
       "installments": "Installments",
       "milestones": "Deal dates"
     }
+  },
+  "dealGroups": {
+    "new": "New group",
+    "newTitle": "New deal group",
+    "newDescription": "An internal chat group for the deal team; it shows in the deal groups because its name is built from the deal name.",
+    "create": "Create group",
+    "nameLabel": "Group name:",
+    "nameHint": "Fixed name: the deal name + the next group number. The deal finds its groups by it.",
+    "members": "Members ({{count}})",
+    "inTeam": "In the deal team",
+    "membersRequired": "Pick at least one member.",
+    "created": "\"{{name}}\" created",
+    "createFailed": "Could not create the group",
+    "linkNote": "Groups named \"{{name}} G\" + a number show here. Renaming the deal or the group unlinks it.",
+    "title": "Deal groups ({{count}})",
+    "panelTitle": "Deal groups ({{count}})",
+    "emptyTitle": "No groups for this deal",
+    "emptyDescription": "Create \"{{name}}\" for the deal team."
+  },
+  "chatDock": {
+    "conversations": "Customer conversations",
+    "groups": "Deal groups and team chat",
+    "scope": "Conversations scope",
+    "scopes": {
+      "deal": "Deal customers",
+      "all": "All conversations"
+    },
+    "scopeHint": "Conversations of the deal's {{count}} customers (by linked lead or customer, phone or email).",
+    "noCustomers": "The deal has no customers yet, so no conversations show.",
+    "channels": {
+      "whatsapp": "WhatsApp",
+      "messenger": "Messenger",
+      "gmail": "Gmail"
+    },
+    "openPage": "Open the deal conversations page"
+  },
+  "dealConversations": {
+    "scopeNote": "Only conversations of the deal's customers show here ({{count}}): linked to a lead or customer of the deal, or to their phone or email. The latest loaded conversations of each channel are searched.",
+    "noCustomers": "This deal has no customers yet; add leads to see their conversations here."
   }
 }

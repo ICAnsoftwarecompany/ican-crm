@@ -34,7 +34,9 @@ export default {
     "automation": "Automation",
     "assistant": "Deal assistant",
     "ai": "AI setup",
-    "settings": "Settings"
+    "settings": "Settings",
+    "groups": "Deal groups",
+    "conversations": "Customer conversations"
   },
   "pageDescriptions": {
     "overview": "Headline numbers, pace against the target and what needs attention.",
@@ -50,7 +52,9 @@ export default {
     "automation": "Automations that run on this deal's events.",
     "assistant": "Hints about the deal and questions to the AI assistant.",
     "ai": "How the AI assistant behaves in every deal workspace.",
-    "settings": "Deal details, stages, preferences and deletion."
+    "settings": "Deal details, stages, preferences and deletion.",
+    "groups": "Internal chat groups of the deal team — named \"<deal name> G1\", \"G2\"… with every team chat feature.",
+    "conversations": "WhatsApp, Messenger and Gmail conversations of this deal's customers only."
   },
   "workspace": {
     "description": "Deal workspace",

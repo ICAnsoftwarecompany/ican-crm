@@ -142,6 +142,33 @@ export default {
         "created": "\"{{name}}\" created and added to the deal",
         "failed": "Could not create the team",
         "noId": "The team was created but its id was not returned. Pick it from the list once it refreshes."
+      },
+      "chat": {
+        "title": "Internal group for the deal team",
+        "description": "A team chat group with the picked sales people; it then shows on the \"Deal groups\" page.",
+        "modes": {
+          "new": {
+            "title": "Create a new group",
+            "text": "Named after the deal + G1 (or the next number)."
+          },
+          "existing": {
+            "title": "Add to an existing group",
+            "text": "The team joins an existing group; it is not linked to the deal."
+          },
+          "none": {
+            "title": "No group",
+            "text": "You can create one later from the deal page."
+          }
+        },
+        "nameLabel": "Group name:",
+        "nameMissing": "Enter the deal name in the first data step",
+        "nameHint": "The deal finds its groups by this name, so do not change it.",
+        "pickGroup": "Group",
+        "noGroups": "No groups",
+        "existingHint": "The team members are added to this group. It will not show in the deal groups because it is not named after the deal.",
+        "members": "Added ({{count}}): {{names}}",
+        "noMembers": "No users or teams picked yet, so no group is created.",
+        "loadFailed": "Could not load the existing groups."
       }
     },
     "review": {
@@ -155,7 +182,9 @@ export default {
         "teamBatch": "Team ({{users}} users, {{teams}} teams)",
         "campaigns": "Link campaigns ({{count}})",
         "existingLeads": "CRM leads ({{count}})",
-        "newLeads": "New leads ({{sent}}/{{count}})"
+        "newLeads": "New leads ({{sent}}/{{count}})",
+        "chatGroupNew": "Group \"{{name}}\" ({{count}} members)",
+        "chatGroupExisting": "Add {{count}} members to an existing group"
       },
       "stoppedAt": "Stopped:",
       "failed": "The request failed.",
@@ -170,7 +199,12 @@ export default {
       },
       "leadsFailed": "{{count}} leads were not added:",
       "leadsFailedHint": "\"Retry\" sends only these leads.",
-      "finishWithoutFailed": "Open the deal without them"
+      "finishWithoutFailed": "Open the deal without them",
+      "chatGroup": {
+        "new": "An internal group named after the deal will be created.",
+        "existing": "The team will be added to an existing group.",
+        "none": "No internal group."
+      }
     },
     "errors": {
       "templateRequired": "Choose a pipeline.",
@@ -191,7 +225,8 @@ export default {
       "leadPhoneRequired": "Phone required",
       "leadPhoneInvalid": "Invalid number",
       "leadPhoneDuplicate": "Duplicate number",
-      "leadEmailInvalid": "Invalid email"
+      "leadEmailInvalid": "Invalid email",
+      "chatGroupRequired": "Pick the group the team joins."
     },
     "guide": {
       "label": "About this step",
@@ -301,6 +336,10 @@ export default {
           "notify": {
             "title": "What happens on create?",
             "text": "The whole team is sent in one request and each member is notified. You can change the team later from the team page."
+          },
+          "chat": {
+            "title": "Team internal group",
+            "text": "Create a chat group named after the deal + G1 with the picked sales people, or add them to an existing group. Deal groups show on its page and in the side icon."
           }
         },
         "example": "Pick \"Team A\" as sales reps and add \"Karim\" by name as manager."

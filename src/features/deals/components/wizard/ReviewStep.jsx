@@ -38,6 +38,13 @@ export function ReviewStep({ state, created, progress, error, onEdit, onFinishWi
     ...(requests.template ? [{ id: 'template', label: t('dealWorkspace.wizard.review.requests.template'), done: Boolean(created.templateId) }] : []),
     { id: 'deal', label: t('dealWorkspace.wizard.review.requests.deal'), done: Boolean(created.dealId) },
     ...(teamSize ? [{ id: 'team', label: t('dealWorkspace.wizard.review.requests.teamBatch', teamCount), done: created.teamDone === true }] : []),
+    ...(requests.chatGroup ? [{
+      id: 'chatGroup',
+      label: requests.chatGroup.mode === 'new'
+        ? t('dealWorkspace.wizard.review.requests.chatGroupNew', { name: created.chatGroupName || `${requests.chatGroup.dealName} G…`, count: requests.chatGroup.userIds.length })
+        : t('dealWorkspace.wizard.review.requests.chatGroupExisting', { count: requests.chatGroup.userIds.length }),
+      done: created.chatGroupDone,
+    }] : []),
     ...(requests.products(1) ? [{ id: 'products', label: t('dealWorkspace.wizard.review.requests.products', { count: state.products.ids.length }), done: created.productsDone }] : []),
     ...(source.campaigns ? [{ id: 'campaigns', label: t('dealWorkspace.wizard.review.requests.campaigns', { count: source.campaigns }), done: created.campaignsDone }] : []),
     ...(source.existing ? [{ id: 'existingLeads', label: t('dealWorkspace.wizard.review.requests.existingLeads', { count: source.existing }), done: created.existingLeadsDone }] : []),
@@ -71,6 +78,7 @@ export function ReviewStep({ state, created, progress, error, onEdit, onFinishWi
         </Section>
         <Section title={t('dealWorkspace.wizard.steps.team.title')} step="team" onEdit={onEdit}>
           <p className="text-sm text-[var(--text)]">{teamSize ? t('dealWorkspace.wizard.review.teamSummary', teamCount) : t('dealWorkspace.wizard.team.none')}</p>
+          <p className="text-xs text-[var(--text-muted)]">{t(`dealWorkspace.wizard.review.chatGroup.${requests.chatGroup ? requests.chatGroup.mode : 'none'}`)}</p>
         </Section>
         <Section title={t('dealWorkspace.wizard.steps.source.title')} step="source" onEdit={onEdit}>
           <p className="text-sm text-[var(--text)]">{sourceText}</p>

@@ -124,10 +124,16 @@ function ConversationChannelTabs({ activeChannel, onChange, unreadCounts = {} })
   )
 }
 
-export function ConversationsPage() {
+/**
+ * `/conversations` — every channel's inbox. `conversationFilter(raw, channel)` narrows every channel (e.g. a deal's
+ * customers, 2026-10-16); `setPageHeader={false}` when embedded in another page that owns the header.
+ */
+export function ConversationsPage({ conversationFilter = null, setPageHeader = true, beforeChannels = null } = {}) {
   const [searchParams, setSearchParams] = useSearchParams()
   const channelParam = searchParams.get('channel')
   const activeChannel = channelParam === 'gmail' || channelParam === 'whatsapp' ? channelParam : 'messenger'
+  const filterFor = (channel) => (conversationFilter ? (raw) => conversationFilter(raw, channel) : null)
+  const scoped = (channel, list) => (conversationFilter ? list.filter((raw) => conversationFilter(raw, channel)) : list)
   const messengerUnreadQuery = useMessengerConversations({ per_page: 30 })
   const gmailMailboxesQuery = useGmailMailboxes(undefined, { staleTime: 60 * 1000 })
   const gmailMailboxes = gmailMailboxesQuery.data || []
@@ -137,10 +143,11 @@ export function ConversationsPage() {
   })
   const whatsappUnreadQuery = useWhatsappConversations({ per_page: 30 }, { staleTime: 30 * 1000 })
   const unreadCounts = useMemo(() => ({
-    messenger: getUnreadTotal(messengerUnreadQuery.data || []),
-    gmail: getUnreadTotal(gmailUnreadQuery.data || []),
-    whatsapp: getUnreadTotal(whatsappUnreadQuery.data || []),
-  }), [gmailUnreadQuery.data, messengerUnreadQuery.data, whatsappUnreadQuery.data])
+    messenger: getUnreadTotal(scoped('messenger', messengerUnreadQuery.data || [])),
+    gmail: getUnreadTotal(scoped('gmail', gmailUnreadQuery.data || [])),
+    whatsapp: getUnreadTotal(scoped('whatsapp', whatsappUnreadQuery.data || [])),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [conversationFilter, gmailUnreadQuery.data, messengerUnreadQuery.data, whatsappUnreadQuery.data])
   const HeaderChannelIcon = activeChannel === 'gmail'
     ? GmailLogoIcon
     : activeChannel === 'whatsapp'
@@ -153,8 +160,8 @@ export function ConversationsPage() {
       : '\u0645\u062d\u0627\u062f\u062b\u0627\u062a \u0645\u0627\u0633\u0646\u062c\u0631'
 
   usePageHeader({
-    title: pageTitle,
-    icon: HeaderChannelIcon,
+    title: setPageHeader ? pageTitle : undefined,
+    icon: setPageHeader ? HeaderChannelIcon : undefined,
   })
 
   const setChannel = (channel) => {
@@ -179,12 +186,13 @@ export function ConversationsPage() {
 
   return (
     <div className="space-y-4">
+      {beforeChannels}
       <ConversationChannelTabs activeChannel={activeChannel} onChange={setChannel} unreadCounts={unreadCounts} />
       {activeChannel === 'gmail'
-        ? <GmailConversationsWorkspace threadHeaderActions={renderThreadHeaderActions} />
+        ? <GmailConversationsWorkspace threadHeaderActions={renderThreadHeaderActions} conversationFilter={filterFor('gmail')} />
         : activeChannel === 'whatsapp'
-          ? <WhatsappConversationsWorkspace threadHeaderActions={renderThreadHeaderActions} />
-          : <MessengerConversationsWorkspace threadHeaderActions={renderThreadHeaderActions} />}
+          ? <WhatsappConversationsWorkspace threadHeaderActions={renderThreadHeaderActions} conversationFilter={filterFor('whatsapp')} />
+          : <MessengerConversationsWorkspace threadHeaderActions={renderThreadHeaderActions} conversationFilter={filterFor('messenger')} />}
     </div>
   )
 }

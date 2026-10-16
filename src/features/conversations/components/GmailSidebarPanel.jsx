@@ -1,6 +1,6 @@
 import { GmailConversationsWorkspace } from './GmailConversationsWorkspace'
 
-export function GmailSidebarPanel({ open, onClose, initialTarget = {} }) {
+export function GmailSidebarPanel({ open, onClose, initialTarget = {}, conversationFilter = null }) {
   const isRtl = typeof document !== 'undefined' && document.documentElement.dir === 'rtl'
 
   return (
@@ -16,6 +16,7 @@ export function GmailSidebarPanel({ open, onClose, initialTarget = {} }) {
         open={open}
         onClose={onClose}
         initialTarget={initialTarget}
+        conversationFilter={conversationFilter}
       />
     </aside>
   )

@@ -131,6 +131,7 @@ export function WhatsappConversationsWorkspace({
   onClose,
   initialTarget = {},
   threadHeaderActions = null,
+  conversationFilter = null,
 }) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -144,7 +145,9 @@ export function WhatsappConversationsWorkspace({
     enabled: open,
     refetchInterval: panel ? 60000 : false,
   })
-  const conversations = conversationsQuery.data || []
+  const allConversations = conversationsQuery.data || []
+  // Optional scope (e.g. a deal's customers, 2026-10-16): the list, counts and selection only see these.
+  const conversations = useMemo(() => (conversationFilter ? allConversations.filter(conversationFilter) : allConversations), [allConversations, conversationFilter])
   const [selectedId, setSelectedId] = useState(() => panel ? '' : window.localStorage.getItem(LAST_WHATSAPP_CONVERSATION_KEY) || '')
   const [isComposing, setIsComposing] = useState(false)
   const [listCollapsed, setListCollapsed] = useConversationListCollapsed('whatsapp')

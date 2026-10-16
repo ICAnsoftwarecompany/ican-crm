@@ -24,16 +24,22 @@ function mapMessage(message) {
   }
 }
 
-export function InternalChatWorkspace() {
+/**
+ * Team chat: conversations list, thread, details. Optional scope (2026-10-16, deal groups): `conversationFilter`
+ * narrows the list (and the selection), `title` / `headerAction` / `emptyList` replace the list header and empty state.
+ */
+export function InternalChatWorkspace({ conversationFilter = null, title = null, headerAction = null, emptyList = null } = {}) {
   const [query, setQuery] = useState('')
   const activeConversationId = useInternalChatUiStore((state) => state.activeConversationId)
   const setActiveConversationId = useInternalChatUiStore((state) => state.setActiveConversationId)
 
   const conversationsQuery = useChatConversations({ per_page: 50 })
-  const conversations = Array.isArray(conversationsQuery.data) ? conversationsQuery.data : []
+  const allConversations = Array.isArray(conversationsQuery.data) ? conversationsQuery.data : []
+  const conversations = useMemo(() => (conversationFilter ? allConversations.filter(conversationFilter) : allConversations), [allConversations, conversationFilter])
 
   useEffect(() => {
-    if (activeConversationId) return
+    // Keep the selection inside the (possibly scoped) list.
+    if (conversations.some((conversation) => String(getConversationId(conversation)) === String(activeConversationId || ''))) return
     const firstId = getConversationId(conversations[0])
     if (firstId) setActiveConversationId(firstId)
   }, [activeConversationId, conversations, setActiveConversationId])
@@ -98,9 +104,10 @@ export function InternalChatWorkspace() {
               <MessagesSquare size={18} />
             </span>
             <div>
-              <h2 className="text-sm font-black text-[var(--text)]">محادثات الفريق</h2>
+              <h2 className="text-sm font-black text-[var(--text)]">{title || 'محادثات الفريق'}</h2>
               <p className="text-xs font-semibold text-[var(--text-muted)]">{conversations.length} محادثة</p>
             </div>
+            {headerAction ? <div className="ms-auto">{headerAction}</div> : null}
           </div>
 
           <label className="relative mt-3 block">
@@ -115,6 +122,7 @@ export function InternalChatWorkspace() {
         </header>
 
         <div className="max-h-[calc(100vh-240px)] overflow-y-auto p-2">
+          {!conversations.length && !conversationsQuery.isLoading && emptyList}
           {filtered.map((conversation) => {
             const id = getConversationId(conversation)
             const active = String(id || '') === String(getConversationId(activeConversation) || '')

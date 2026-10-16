@@ -7,6 +7,7 @@ import { useUsers } from '../../../users'
 import { TEAM_ROLES } from '../../constants/dealOptions'
 import { addQuickTeamToMembers } from '../../utils/quickTeam'
 import { QuickTeamDialog } from './QuickTeamDialog'
+import { TeamChatGroupSection } from './TeamChatGroupSection'
 import { TeamPicker } from './TeamPicker'
 
 const DEFAULT_ROLE = 'sales_rep'
@@ -20,7 +21,7 @@ const teamMembersOf = (team) => [team?.members, team?.users].find(Array.isArray)
  * The owner (step 2) can be added as manager automatically. No fitting team? "Quick team" creates one
  * (`POST /teams/create`, QuickTeamDialog) and adds it to the deal right away.
  */
-export function TeamStep({ value, onChange, ownerId, errors = {} }) {
+export function TeamStep({ value, onChange, ownerId, dealName = '', errors = {} }) {
   const { t, i18n } = useTranslation()
   const usersQuery = useUsers()
   const teamsQuery = useTeams()
@@ -117,6 +118,16 @@ export function TeamStep({ value, onChange, ownerId, errors = {} }) {
         {userCount || teamCount ? <Send size={15} className="text-[var(--brand-accent)]" /> : <UsersRound size={15} className="text-[var(--text-muted)]" />}
         {userCount || teamCount ? t('dealWorkspace.wizard.team.summary', { users: userCount, teams: teamCount }) : t('dealWorkspace.wizard.team.none')}
       </div>
+      <TeamChatGroupSection
+        value={value.chat}
+        team={value}
+        ownerId={ownerId}
+        dealName={dealName}
+        teamsData={teamsQuery.data || []}
+        users={users}
+        onChange={(patch) => onChange({ chat: { ...value.chat, ...patch } })}
+        error={errors.chatGroup ? t(`dealWorkspace.wizard.errors.${errors.chatGroup}`) : null}
+      />
       <QuickTeamDialog open={quickOpen} users={users} initialMemberIds={pickedUserIds} onClose={() => setQuickOpen(false)} onCreated={onQuickCreated} />
       {errors.members && <p className="text-xs text-red-600 dark:text-red-400">{t(`dealWorkspace.wizard.errors.${errors.members}`)}</p>}
       <p className="text-xs text-[var(--text-muted)]">{t('dealWorkspace.team.add.notifyHint')}</p>

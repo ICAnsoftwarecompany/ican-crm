@@ -6,6 +6,8 @@ import {
   KanbanSquare,
   LayoutDashboard,
   ListTodo,
+  MessageCircle,
+  MessagesSquare,
   Package,
   PhoneCall,
   Presentation,
@@ -24,6 +26,9 @@ export const DEAL_WORKSPACE_PAGES = [
   { id: 'pipeline', path: 'pipeline', icon: KanbanSquare, group: 'work' },
   { id: 'contracts', path: 'contracts', icon: FileSignature, group: 'work' },
   { id: 'team', path: 'team', icon: Users, group: 'collaboration' },
+  // 2026-10-16: the deal's internal groups ("<name> G<n>") and its customers' conversations (every channel).
+  { id: 'groups', path: 'groups', icon: MessagesSquare, group: 'collaboration' },
+  { id: 'conversations', path: 'conversations', icon: MessageCircle, group: 'collaboration' },
   { id: 'meetings', path: 'meetings', icon: Presentation, group: 'collaboration' },
   { id: 'calls', path: 'calls', icon: PhoneCall, group: 'collaboration' },
   { id: 'tasks', path: 'tasks', icon: ListTodo, group: 'collaboration' },

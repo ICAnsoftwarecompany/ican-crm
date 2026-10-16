@@ -46,18 +46,23 @@ function toComposerMessage(message) {
   }
 }
 
-export function InternalChatSidebarPanel({ open, onClose }) {
+/**
+ * Internal chat side panel. Optional scope (2026-10-16, deal groups): `conversationFilter`, `title`, `headerExtra`
+ * (a node under the search), `emptyList`, `openPagePath` (the "open" button; default /team-chat).
+ */
+export function InternalChatSidebarPanel({ open, onClose, conversationFilter = null, title = null, headerExtra = null, emptyList = null, openPagePath = '/team-chat' }) {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const selectedConversationId = useInternalChatUiStore((state) => state.activeConversationId)
   const setSelectedConversationId = useInternalChatUiStore((state) => state.setActiveConversationId)
 
   const conversationsQuery = useChatConversations({ per_page: 30 }, { enabled: open })
-  const conversations = Array.isArray(conversationsQuery.data) ? conversationsQuery.data : []
+  const allConversations = Array.isArray(conversationsQuery.data) ? conversationsQuery.data : []
+  const conversations = useMemo(() => (conversationFilter ? allConversations.filter(conversationFilter) : allConversations), [allConversations, conversationFilter])
 
   useEffect(() => {
     if (!open) return
-    if (selectedConversationId) return
+    if (conversations.some((item) => String(getConversationId(item)) === String(selectedConversationId || ''))) return
     const firstId = getConversationId(conversations[0])
     if (firstId) setSelectedConversationId(firstId)
   }, [conversations, open, selectedConversationId, setSelectedConversationId])
@@ -129,11 +134,11 @@ export function InternalChatSidebarPanel({ open, onClose }) {
                   <MessagesSquare size={18} />
                 </span>
                 <div className="min-w-0">
-                  <h2 className="truncate text-sm font-black text-[var(--text)]">الشات الداخلي</h2>
+                  <h2 className="truncate text-sm font-black text-[var(--text)]">{title || 'الشات الداخلي'}</h2>
                   <p className="truncate text-xs font-semibold text-[var(--text-muted)]">{conversations.length} محادثة</p>
                 </div>
               </div>
-              <HeaderActions onOpenPage={() => { navigate('/team-chat'); onClose?.() }} onClose={onClose} />
+              <HeaderActions onOpenPage={() => { navigate(openPagePath); onClose?.() }} onClose={onClose} />
             </div>
 
             <label className="relative mt-3 block">
@@ -145,9 +150,11 @@ export function InternalChatSidebarPanel({ open, onClose }) {
                 className="h-9 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] ps-8 pe-3 text-xs font-semibold text-[var(--text)] outline-none focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]"
               />
             </label>
+            {headerExtra}
           </header>
 
           <div className="min-h-0 overflow-y-auto p-2">
+            {!conversations.length && !conversationsQuery.isLoading && emptyList}
             {filteredConversations.map((conversation) => {
               const id = getConversationId(conversation)
               const isActive = String(id || '') === String(getConversationId(selectedConversation) || '')
