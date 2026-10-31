@@ -52,15 +52,13 @@ function getConversationContact(conversation) {
   )
 }
 
-export function MessengerConversationsWorkspace({ threadHeaderActions = null } = {}) {
+export function MessengerConversationsWorkspace({ threadHeaderActions = null, conversationFilter = null } = {}) {
   const queryClient = useQueryClient()
   const [searchParams, setSearchParams] = useSearchParams()
   const { highlightedMessageId, highlightMessage } = useRealtimeMessageHighlight()
   const markAllRead = useMessengerNotificationsStore((state) => state.markAllRead)
   const conversationsQuery = useMessengerConversations({ per_page: 30 })
   const conversations = conversationsQuery.data || []
-  const usersQuery = useUsers(undefined, { staleTime: 30000 })
-  const onlineUsersQuery = useOnlineUsers(undefined, { refetchInterval: 30000 })
   const [selectedId, setSelectedId] = useState(() => window.localStorage.getItem(LAST_MESSENGER_CONVERSATION_KEY) || '')
   const [isComposing, setIsComposing] = useState(false)
   const [listCollapsed, setListCollapsed] = useConversationListCollapsed('messenger')

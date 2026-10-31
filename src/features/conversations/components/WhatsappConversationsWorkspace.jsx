@@ -133,6 +133,7 @@ export function WhatsappConversationsWorkspace({
   onClose,
   initialTarget = {},
   threadHeaderActions = null,
+  conversationFilter = null,
 }) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -147,11 +148,6 @@ export function WhatsappConversationsWorkspace({
     refetchInterval: panel ? 60000 : false,
   })
   const conversations = conversationsQuery.data || []
-  const usersQuery = useUsers(undefined, { enabled: open, staleTime: 30000 })
-  const onlineUsersQuery = useOnlineUsers(undefined, {
-    enabled: open,
-    refetchInterval: open ? 30000 : false,
-  })
   const [selectedId, setSelectedId] = useState(() => panel ? '' : window.localStorage.getItem(LAST_WHATSAPP_CONVERSATION_KEY) || '')
   const [isComposing, setIsComposing] = useState(false)
   const [listCollapsed, setListCollapsed] = useConversationListCollapsed('whatsapp')

@@ -131,8 +131,16 @@ function mapMessage(message) {
   }
 }
 
+<<<<<<< HEAD
 export function InternalChatWorkspace({ conversations: scopedConversations, scopeKey }) {
   const { t } = useTranslation()
+=======
+/**
+ * Team chat: conversations list, thread, details. Optional scope (2026-10-16, deal groups): `conversationFilter`
+ * narrows the list (and the selection), `title` / `headerAction` / `emptyList` replace the list header and empty state.
+ */
+export function InternalChatWorkspace({ conversationFilter = null, title = null, headerAction = null, emptyList = null } = {}) {
+>>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
   const [query, setQuery] = useState('')
   const [conversationFilter, setConversationFilter] = useState('all')
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -150,6 +158,7 @@ export function InternalChatWorkspace({ conversations: scopedConversations, scop
   const currentUser = useAuthStore((state) => state.user)
   const currentUserId = String(currentUser?.id ?? currentUser?.user_id ?? currentUser?.userId ?? '')
 
+<<<<<<< HEAD
   const conversationsQuery = useChatConversations({ per_page: 50 }, { enabled: scopedConversations === undefined })
   const conversations = scopedConversations ?? (Array.isArray(conversationsQuery.data) ? conversationsQuery.data : [])
   const usersQuery = useUsers()
@@ -243,6 +252,15 @@ export function InternalChatWorkspace({ conversations: scopedConversations, scop
 
   useEffect(() => {
     if (activeConversationId && conversations.some((item) => String(getConversationId(item)) === String(activeConversationId))) return
+=======
+  const conversationsQuery = useChatConversations({ per_page: 50 })
+  const allConversations = Array.isArray(conversationsQuery.data) ? conversationsQuery.data : []
+  const conversations = useMemo(() => (conversationFilter ? allConversations.filter(conversationFilter) : allConversations), [allConversations, conversationFilter])
+
+  useEffect(() => {
+    // Keep the selection inside the (possibly scoped) list.
+    if (conversations.some((conversation) => String(getConversationId(conversation)) === String(activeConversationId || ''))) return
+>>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
     const firstId = getConversationId(conversations[0])
     if (firstId) setActiveConversationId(firstId)
   }, [activeConversationId, conversations, setActiveConversationId])
@@ -471,6 +489,7 @@ export function InternalChatWorkspace({ conversations: scopedConversations, scop
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]">
               <MessagesSquare size={18} />
             </span>
+<<<<<<< HEAD
             {!sidebarCollapsed ? (
               <div className="min-w-0 flex-1">
                 <h2 className="truncate text-sm font-black text-[var(--text)]">محادثات الفريق</h2>
@@ -497,7 +516,13 @@ export function InternalChatWorkspace({ conversations: scopedConversations, scop
               >
                 {sidebarCollapsed ? <ChevronsRight size={15} /> : <ChevronsLeft size={15} />}
               </button>
+=======
+            <div>
+              <h2 className="text-sm font-black text-[var(--text)]">{title || 'محادثات الفريق'}</h2>
+              <p className="text-xs font-semibold text-[var(--text-muted)]">{conversations.length} محادثة</p>
+>>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
             </div>
+            {headerAction ? <div className="ms-auto">{headerAction}</div> : null}
           </div>
 
           {!sidebarCollapsed ? (
@@ -541,6 +566,7 @@ export function InternalChatWorkspace({ conversations: scopedConversations, scop
           ) : null}
         </header>
 
+<<<<<<< HEAD
         {!sidebarCollapsed ? (
           <div className="max-h-[calc(100vh-240px)] overflow-y-auto p-2">
             {filtered.map((conversation) => {
@@ -620,6 +646,25 @@ export function InternalChatWorkspace({ conversations: scopedConversations, scop
                 >
                   {isDirect ? <UserRound size={16} className="text-[var(--text)]" /> : <UsersRound size={16} className="text-[var(--text)]" />}
                   <span className={cn('absolute bottom-1 start-1 h-2.5 w-2.5 rounded-full border border-white', presence.isOnline ? 'bg-[#22C55E]' : 'bg-[#94A3B8]')} />
+=======
+        <div className="max-h-[calc(100vh-240px)] overflow-y-auto p-2">
+          {!conversations.length && !conversationsQuery.isLoading && emptyList}
+          {filtered.map((conversation) => {
+            const id = getConversationId(conversation)
+            const active = String(id || '') === String(getConversationId(activeConversation) || '')
+            return (
+              <button
+                key={id || conversation?.name}
+                type="button"
+                onClick={() => setActiveConversationId(id)}
+                className={[
+                  'mb-2 w-full rounded-xl border p-3 text-start transition-colors',
+                  active ? 'border-[#00C2CB] bg-[var(--brand-accent-soft)]' : 'border-[var(--border)] bg-[var(--surface-2)] hover:border-[#B8EFF2]',
+                ].join(' ')}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="truncate text-sm font-black text-[var(--text)]">{conversation?.display_name || conversation?.name || 'Conversation'}</span>
+>>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
                   {conversation?.unread_count > 0 ? (
                     <span className="absolute -top-1 -end-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[9px] font-black text-white">
                       {conversation.unread_count > 9 ? '9+' : conversation.unread_count}

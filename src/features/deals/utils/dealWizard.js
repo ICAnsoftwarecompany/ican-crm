@@ -30,8 +30,13 @@ export function createWizardState(stageNames = []) {
       stages: DEFAULT_WIZARD_STAGES.map((stage, index) => ({ ...stage, name: stageNames[index] || '' })),
     },
     basics: { name: '', description: '', type: 'sales', status: 'active', start_date: '', end_date: '', target_revenue: '', target_leads: '', owner_id: '' },
+<<<<<<< HEAD
     products: { ids: [], details: {} },
     team: { members: [], addOwner: true, createChat: false },
+=======
+    products: { ids: [] },
+    team: { members: [], addOwner: true, chat: { mode: 'new', groupId: '', userIds: [] } },
+>>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
     source: createLeadSourceState(),
   }
 }
@@ -39,7 +44,13 @@ export function createWizardState(stageNames = []) {
 /** A saved draft from before a step existed gets that step's defaults. */
 export function withWizardDefaults(state, stageNames) {
   const defaults = createWizardState(stageNames)
+<<<<<<< HEAD
   return state ? { ...defaults, ...state, team: { ...defaults.team, ...(state.team || {}) }, products: { ...defaults.products, ...(state.products || {}) }, source: { ...defaults.source, ...(state.source || {}) } } : defaults
+=======
+  if (!state) return defaults
+  const team = { ...defaults.team, ...(state.team || {}) }
+  return { ...defaults, ...state, team: { ...team, chat: { ...defaults.team.chat, ...(team.chat || {}) } }, source: { ...defaults.source, ...(state.source || {}) } }
+>>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
 }
 
 /** Errors of one step as i18n keys (`dealWorkspace.wizard.errors.*`); empty object = step is valid. */
@@ -64,6 +75,9 @@ export function validateWizardStep(step, state) {
     const keys = state.team.members.map((member) => `${member.kind}:${member.refId}`)
     if (new Set(keys).size !== keys.length) errors.members = 'duplicateMember'
     if (state.team.members.some((member) => !member.refId || !member.role)) errors.members = 'incompleteMember'
+    const chat = state.team.chat || {}
+    // No users → no group is sent (buildChatGroupRequest); only an existing group without a pick blocks the step.
+    if (chat.mode === 'existing' && !chat.groupId) errors.chatGroup = 'chatGroupRequired'
   }
   if (step === 'products' && state.products.ids.some((id) => !validProductDetails(state.products.details?.[id]))) errors.details = 'invalidProductDetails'
   if (step === 'source') Object.assign(errors, validateLeadSource(state.source))
@@ -143,10 +157,21 @@ export function buildWizardRequests(state) {
     products: () => (state.products.ids.length
       ? buildDealProductsPayload(state.products.ids, state.products.details)
       : null),
+    // Internal chat group of the team: create '<name> G<n>' or add the users to an existing group (useDealCreateWizard).
+    chatGroup: buildChatGroupRequest(state),
     campaigns: () => buildCampaignsPayload(state.source),
     existingLeads: (dealId) => buildExistingLeadsPayload(state.source, dealId),
     newLeads: newLeadRows(state.source),
   }
+}
+
+/** `{ mode: 'new' | 'existing', groupId, userIds, dealName }` or null (no group, or nobody to add). */
+export function buildChatGroupRequest(state) {
+  const chat = state.team?.chat || {}
+  const userIds = (chat.userIds || []).map((id) => toNumber(id) ?? id)
+  if ((chat.mode !== 'new' && chat.mode !== 'existing') || !userIds.length) return null
+  if (chat.mode === 'existing' && !chat.groupId) return null
+  return { mode: chat.mode, groupId: chat.groupId || '', userIds, dealName: String(state.basics.name || '').trim() }
 }
 
 /** Id from a create response (`{ data: { id } }`, `{ data: { deal: { id } } }`, `{ id }`). */

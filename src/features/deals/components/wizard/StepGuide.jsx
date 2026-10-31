@@ -9,7 +9,7 @@ export const WIZARD_GUIDE = {
   pipeline: ['what', 'existing', 'new', 'wonLost', 'lostReasons', 'later'],
   basics: ['what', 'type', 'period', 'targets', 'owner'],
   products: ['what', 'single', 'units', 'multi', 'later'],
-  team: ['what', 'teams', 'users', 'roles', 'notify'],
+  team: ['what', 'teams', 'users', 'roles', 'chat', 'notify'],
   source: ['what', 'campaigns', 'free', 'newLeads', 'owner', 'later'],
   review: ['what', 'order', 'retry', 'after'],
 }

@@ -72,7 +72,11 @@ export function DealCreateWizard() {
           {/* Lost reasons are company definitions saved at once (not part of the deal requests). */}
           {step === 'pipeline' && <div className="mt-4"><DealLostReasonsSettings compact /></div>}
           {step === 'basics' && <BasicsStep value={state.basics} onChange={(patch) => update('basics', patch)} errors={errors} />}
+<<<<<<< HEAD
           {step === 'products' && <ProductsStep value={state.products} onChange={(patch) => update('products', patch)} errors={errors} />}
+=======
+          {step === 'products' && <ProductsStep value={state.products} onChange={(patch) => update('products', patch)} />}
+>>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
           {step === 'team' && <TeamStep value={state.team} ownerId={state.basics.owner_id} dealName={state.basics.name} onChange={(patch) => update('team', patch)} errors={errors} />}
           {step === 'source' && <LeadSourceStep value={state.source} pipeline={state.pipeline} ownerId={state.basics.owner_id} onChange={(patch) => update('source', patch)} errors={errors} />}
           {step === 'review' && <ReviewStep state={state} created={wizard.created} progress={wizard.progress} error={wizard.error} onEdit={goTo} onFinishWithoutFailed={wizard.finishWithoutFailed} />}
