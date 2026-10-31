@@ -234,8 +234,8 @@ export function DataTableBody({
   const getSafeRowMenuPosition = (x, y) => {
     if (typeof window === 'undefined') return { x, y }
 
-    const menuWidth = 280
-    const menuHeight = 300
+    const menuWidth = 288
+    const menuHeight = 400
     const margin = 8
 
     return {
@@ -589,6 +589,12 @@ export function DataTableBody({
           border-end-end-radius: 8px;
         }
       `}</style>
+      <style>{`
+        .dt-context-row > td {
+          background-color: var(--brand-accent-soft) !important;
+          box-shadow: inset 0 1px 0 var(--brand-accent), inset 0 -1px 0 var(--brand-accent);
+        }
+      `}</style>
       <tbody className="bg-[var(--surface)] text-[var(--text)]">
       {rows.map((row, rowIndex) => {
           const rowKey = row.__rowKey || String(row.id || rowIndex)
@@ -611,7 +617,8 @@ export function DataTableBody({
                     'dt-split-record-main border-b-0 bg-[var(--surface)] text-[var(--text)] transition-colors hover:bg-[var(--surface-2)]',
                     isSelected && 'bg-[var(--brand-accent-soft)]',
                     (onRowClick || onRowDoubleClick) && 'cursor-pointer',
-                    rowClassName?.(row)
+                    rowClassName?.(row),
+                    rowContextMenu?.rowKey === rowKey && 'dt-context-row'
                   )}
                   style={{
                     backgroundColor: resolveThemeBackground(
@@ -649,7 +656,8 @@ export function DataTableBody({
                     'dt-split-record-sub bg-[var(--surface-2)] text-[var(--text)] transition-colors hover:bg-[var(--surface)]',
                     isSelected && 'bg-[var(--brand-accent-soft)]',
                     (onRowClick || onRowDoubleClick) && 'cursor-pointer',
-                    rowClassName?.(row)
+                    rowClassName?.(row),
+                    rowContextMenu?.rowKey === rowKey && 'dt-context-row'
                   )}
                   style={{
                     backgroundColor: resolveThemeBackground(
@@ -684,7 +692,8 @@ export function DataTableBody({
                 'border-b border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors',
                 isSelected && 'bg-[var(--brand-accent-soft)]',
                 (onRowClick || onRowDoubleClick) && 'cursor-pointer',
-                rowClassName?.(row)
+                rowClassName?.(row),
+                rowContextMenu?.rowKey === rowKey && 'dt-context-row'
               )}
               style={{
                 backgroundColor: resolveThemeBackground(
@@ -933,9 +942,10 @@ export function DataTableBody({
       {rowContextMenu && typeof document !== 'undefined' && createPortal(
         <div
           className="fixed z-[110] max-h-[min(520px,calc(100vh-1rem))] w-72 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 text-[var(--text)] shadow-2xl"
-          style={{ left: rowContextMenu.x, top: rowContextMenu.y }}
+          style={{ left: rowContextMenu.x, top: rowContextMenu.y, maxHeight: `calc(100dvh - ${rowContextMenu.y + 8}px)` }}
           onClick={(e) => e.stopPropagation()}
         >
+          {rowContextMenu.actions.find((action) => action.contextTitle)?.contextTitle && <div className="mb-2 border-b border-[var(--border)] px-2 pb-2 text-sm font-bold break-words">{rowContextMenu.actions.find((action) => action.contextTitle).contextTitle}</div>}
           <div className="mb-2 flex gap-1 rounded-lg bg-[var(--surface-2)] p-1">
             <button
               type="button"
@@ -964,7 +974,17 @@ export function DataTableBody({
           </div>
 
           {rowContextMenu.activeTab === 'actions' ? (
-            rowContextMenu.actions.length ? rowContextMenu.actions.map((action, index) => {
+            rowContextMenu.actions.some((action) => action.layout === 'tiles') ? (
+              <div className="grid grid-cols-3 gap-1.5">
+                {rowContextMenu.actions.map((action) => {
+                  const Icon = action.icon
+                  return <button key={action.id || action.label} type="button" disabled={Boolean(action.disabled)} title={action.label} aria-label={action.label} onClick={() => runRowContextAction(action)} className={cn('flex aspect-square min-w-0 flex-col items-center justify-center gap-2 rounded-lg border border-[var(--border)] p-1.5 text-center transition-colors disabled:cursor-not-allowed disabled:opacity-40', action.variant === 'danger' ? 'bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-950' : action.variant === 'success' ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-950' : 'bg-[var(--surface)] text-[var(--text)] hover:border-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)]')}>
+                    {Icon && <Icon size={21} className="shrink-0" aria-hidden="true" />}
+                    <span className="max-w-full break-words text-[11px] font-semibold leading-4">{action.shortLabel || action.label}</span>
+                  </button>
+                })}
+              </div>
+            ) : rowContextMenu.actions.length ? rowContextMenu.actions.map((action, index) => {
               const sectionLabel = String(action.section || '').trim()
               const prevSectionLabel = String(rowContextMenu.actions[index - 1]?.section || '').trim()
               const nextSectionLabel = String(rowContextMenu.actions[index + 1]?.section || '').trim()

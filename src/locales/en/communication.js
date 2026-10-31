@@ -240,6 +240,34 @@ export default {
       "create": {
         "title": "New chat or group",
         "description": "Start a chat with a colleague or create a team group.",
+        "form": {
+          "shortcutTitle": "Create chat or group",
+          "shortcutDescription": "Choose the chat type and add members.",
+          "shortcutLabel": "New",
+          "mode": {
+            "group": "Create group",
+            "direct": "New direct chat"
+          },
+          "groupName": "Group name",
+          "groupNamePlaceholder": "Enter group name",
+          "searchUsersPlaceholder": "Search users...",
+          "sharedGroups": "{{count}} shared groups",
+          "startDirect": "Start chat",
+          "creatingDirect": "Creating...",
+          "createGroup": "Create group",
+          "creatingGroup": "Creating group...",
+          "noUsers": "No users available.",
+          "userFallback": "User",
+          "errors": {
+            "groupNameRequired": "Please enter a group name",
+            "groupMembersRequired": "Please select at least one member",
+            "createFailed": "Unable to create conversation"
+          },
+          "messages": {
+            "groupCreated": "Group created successfully",
+            "directCreated": "Conversation created successfully"
+          }
+        },
         "items": {
           "direct": "Direct chat with a colleague",
           "group": "Group with a name and members",

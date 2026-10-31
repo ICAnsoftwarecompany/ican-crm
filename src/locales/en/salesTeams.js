@@ -1,5 +1,12 @@
 // Sales teams area (/LeadsCenter/teams/*, features/leads/sales-teams): teams, distribution rules, rule builder, reports. 2026-10-15, area + builder 2026-10-16.
 export default {
+  manual: {
+    title: 'Manual distribution',
+    distribute: 'Distribute selected ({{count}})',
+    success: 'Selected leads distributed successfully',
+    failed: 'Could not distribute the selected leads',
+    invalidSelection: 'Each selected customer must have a valid linked lead ID',
+  },
   "nav": {
     "title": "Sales teams",
     "description": "Teams and lead distribution",

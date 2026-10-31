@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { useOnlineUsers, useUsers } from '../../users/hooks/useUsers'
 import {
   useMessengerConversationInfo,
   useMessengerConversationMutations,
@@ -35,6 +36,7 @@ import { NewConversationComposer } from './shared/NewConversationComposer'
 import { messengerApi } from '../api/messengerApi'
 import { ConversationListToggle } from './shared/ConversationListToggle'
 import { useConversationListCollapsed } from './shared/useConversationListCollapsed'
+import { buildPresenceIndex, getPresenceForEntity, mergeUsersWithPresence } from '../utils/presenceStatus'
 
 const LAST_MESSENGER_CONVERSATION_KEY = 'conversations:last:messenger'
 
@@ -57,6 +59,8 @@ export function MessengerConversationsWorkspace({ threadHeaderActions = null } =
   const markAllRead = useMessengerNotificationsStore((state) => state.markAllRead)
   const conversationsQuery = useMessengerConversations({ per_page: 30 })
   const conversations = conversationsQuery.data || []
+  const usersQuery = useUsers(undefined, { staleTime: 30000 })
+  const onlineUsersQuery = useOnlineUsers(undefined, { refetchInterval: 30000 })
   const [selectedId, setSelectedId] = useState(() => window.localStorage.getItem(LAST_MESSENGER_CONVERSATION_KEY) || '')
   const [isComposing, setIsComposing] = useState(false)
   const [listCollapsed, setListCollapsed] = useConversationListCollapsed('messenger')
@@ -64,11 +68,28 @@ export function MessengerConversationsWorkspace({ threadHeaderActions = null } =
   const [conversationFilters, setConversationFilters] = useState(DEFAULT_MESSENGER_CONVERSATION_FILTERS)
   const requestedConversationId = searchParams.get('conversation') || ''
 
+  const presenceIndex = useMemo(() => (
+    buildPresenceIndex(usersQuery.data || [], onlineUsersQuery.data || [])
+  ), [onlineUsersQuery.data, usersQuery.data])
+
+  const conversationsWithPresence = useMemo(() => (
+    conversations.map((conversation) => {
+      const entity = conversation?.contact || conversation?.customer || conversation?.lead || conversation
+      const users = mergeUsersWithPresence(conversation?.users || [], presenceIndex)
+
+      return {
+        ...conversation,
+        users,
+        _presence: getPresenceForEntity(entity, presenceIndex),
+      }
+    })
+  ), [conversations, presenceIndex])
+
   const selectedConversation = useMemo(() => (
-    conversations.find((conversation) => (
+    conversationsWithPresence.find((conversation) => (
       String(getMessengerConversationId(conversation)) === String(selectedId)
     )) || null
-  ), [conversations, selectedId])
+  ), [conversationsWithPresence, selectedId])
 
   const conversationInfoQuery = useMessengerConversationInfo(selectedId)
   const conversationInfo = conversationInfoQuery.data || selectedConversation
@@ -84,8 +105,20 @@ export function MessengerConversationsWorkspace({ threadHeaderActions = null } =
   ), [conversationInfo, messagesQuery.data])
 
   const filteredConversations = useMemo(() => (
-    filterMessengerConversations(conversations, '', conversationFilters)
-  ), [conversationFilters, conversations])
+    filterMessengerConversations(conversationsWithPresence, '', conversationFilters)
+  ), [conversationFilters, conversationsWithPresence])
+
+  const selectedConversationPresence = useMemo(() => {
+    if (!selectedId) return null
+    const source = conversationInfo || selectedConversation
+    if (!source) return null
+    const entity = source?.contact || source?.customer || source?.lead || source
+    return getPresenceForEntity(entity, presenceIndex)
+  }, [conversationInfo, presenceIndex, selectedConversation, selectedId])
+
+  const selectedConversationUsers = useMemo(() => (
+    mergeUsersWithPresence(conversationInfo?.users ?? selectedConversation?.users ?? [], presenceIndex)
+  ), [conversationInfo?.users, presenceIndex, selectedConversation?.users])
 
   useEffect(() => {
     if (requestedConversationId && String(selectedId) !== String(requestedConversationId)) {
@@ -261,7 +294,7 @@ export function MessengerConversationsWorkspace({ threadHeaderActions = null } =
 
       <div className={`grid min-h-[calc(100vh-170px)] grid-cols-1 gap-4 xl:items-start ${listCollapsed ? 'xl:grid-cols-[48px_minmax(0,1fr)]' : 'xl:grid-cols-[360px_minmax(0,1fr)]'}`}>
         {listCollapsed ? <aside className="hidden min-h-[520px] items-start justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] pt-3 xl:flex"><ConversationListToggle collapsed onToggle={() => setListCollapsed(false)} /></aside> : <div className="relative"><ConversationListToggle floating collapsed={false} onToggle={() => setListCollapsed(true)} /><MessengerConversationListPanel
-          conversations={conversations}
+          conversations={conversationsWithPresence}
           filteredConversations={filteredConversations}
           conversationsQuery={conversationsQuery}
           filters={conversationFilters}
@@ -285,10 +318,11 @@ export function MessengerConversationsWorkspace({ threadHeaderActions = null } =
               email: conversationInfo?.contact?.email || selectedConversation?.contact?.email || selectedConversation?.customer?.email || '',
               channel: 'Messenger',
               conversationId: selectedId,
+              presence: selectedConversationPresence,
               status: conversationInfo?.status ?? selectedConversation?.status ?? '',
               customer: conversationInfo?.customer ?? selectedConversation?.customer ?? null,
               assignedUser: conversationInfo?.assigned_user ?? selectedConversation?.assigned_user ?? null,
-              users: conversationInfo?.users ?? selectedConversation?.users ?? [],
+              users: selectedConversationUsers,
             }}
             messages={messages}
             isLoadingMessages={messagesQuery.isLoading || conversationInfoQuery.isLoading}

@@ -12,6 +12,7 @@ export function QuickActionButton({
   onClick,
   badgeContent = null,
   hideLabel = false,
+  disabled = false,
 }) {
   const { t } = useTranslation()
   const hint = t('customers.quickActions.reorderHint', { label })
@@ -23,11 +24,13 @@ export function QuickActionButton({
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       title={alertTitle || hint}
       aria-label={alertTitle || hint}
       className={cn(
         'relative inline-flex h-8 min-w-0 items-center justify-center gap-1 rounded-lg border border-[#D9EEF0] bg-white px-2 text-[10px] font-black text-[var(--text)] shadow-sm transition-colors hover:border-[#00C2CB] hover:bg-[#F8FEFF]',
         accentClassName,
+        disabled && 'cursor-not-allowed opacity-40',
         alert && 'border-red-300 bg-red-50 text-red-700 hover:border-red-500 hover:bg-red-100'
       )}
     >

@@ -63,6 +63,7 @@ export default {
     meetingReminder: 'Meeting reminder',
     callReminder: 'Call reminder',
     messageReceived: 'New message',
+    teamChatMessageReceived: 'New message in team chat',
     campaignFinished: 'Campaign completed',
     campaignFailed: 'Campaign failed',
     workflowFailed: 'Workflow failed',

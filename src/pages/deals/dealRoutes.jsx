@@ -1,4 +1,5 @@
-import { DealWorkspaceLayout, DealsHubLayout } from '../../features/deals'
+import { DealsHubLayout } from '../../features/deals'
+import { DealCustomerDrawerLayout } from './DealCustomerDrawer'
 import { DealsCalendarPage, DealsContractsPage, DealsCreatePage, DealsListPage, DealsOverviewPage, DealsPipelinesPage, DealsReportsPage } from './DealsHubPages'
 import {
   DealAiSetupPage,
@@ -15,6 +16,8 @@ import {
   DealSettingsPage,
   DealTasksPage,
   DealTeamPage,
+  DealChatsPage,
+  DealLeadPage,
 } from './DealWorkspacePages'
 
 /**
@@ -38,12 +41,14 @@ export const dealRoutes = [
   },
   {
     path: 'deals/:dealId',
-    element: <DealWorkspaceLayout />,
+    element: <DealCustomerDrawerLayout />,
     children: [
       { index: true, element: <DealOverviewPage /> },
       { path: 'pipeline', element: <DealPipelinePage /> },
+      { path: 'leads/:dealLeadId', element: <DealLeadPage /> },
       { path: 'contracts', element: <DealContractsPage /> },
       { path: 'team', element: <DealTeamPage /> },
+      { path: 'chats', element: <DealChatsPage /> },
       { path: 'meetings', element: <DealMeetingsPage /> },
       { path: 'calls', element: <DealCallsPage /> },
       { path: 'tasks', element: <DealTasksPage /> },

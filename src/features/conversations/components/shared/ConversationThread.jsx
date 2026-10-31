@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowRight,
   CalendarDays,
+  Circle,
   ExternalLink,
   FileText,
   Filter,
@@ -134,6 +135,8 @@ export function ConversationThread({
   onToggleConversationStatus,
   onClose,
   isTogglingConversationStatus = false,
+  showConversationStatusControl = true,
+  showCrmControls = true,
   emptyMessage = 'لا توجد رسائل بعد.',
   emptyDescription = '',
 }) {
@@ -237,8 +240,12 @@ export function ConversationThread({
   const linkedCustomer = detailsSource.customer || null
   const assignedUser = detailsSource.assignedUser || detailsSource.assigned_user || null
   const conversationUsers = Array.isArray(detailsSource.users) ? detailsSource.users : []
+  const contactPresence = detailsSource.presence && typeof detailsSource.presence === 'object' ? detailsSource.presence : null
   const conversationStatus = String(detailsSource.status || '').toLowerCase()
   const isConversationClosed = conversationStatus === 'closed'
+  const hasPresence = Boolean(contactPresence && typeof contactPresence?.isOnline === 'boolean')
+  const onlineMembersCount = conversationUsers.filter((user) => Boolean(user?.is_online)).length
+  const isGroupPresence = conversationUsers.length > 1
 
   const mediaGroups = useMemo(() => {
     const groups = {
@@ -321,7 +328,7 @@ export function ConversationThread({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[var(--surface-2)]">
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[var(--surface-2)]">
       <div className="border-b border-[var(--border)] bg-[var(--surface-2)] px-3 py-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <button
@@ -336,6 +343,19 @@ export function ConversationThread({
             <span className="min-w-0">
               <span className="block truncate text-xs font-black text-[var(--text)] group-hover:text-[#0369A1]">{title || 'جهة الاتصال'}</span>
               <span className="block truncate text-[10px] font-semibold text-[var(--text-muted)]">{contactText}</span>
+              {hasPresence ? (
+                <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[10px] font-black">
+                  <Circle size={8} className={contactPresence.isOnline ? 'fill-[#22C55E] text-[#22C55E]' : 'fill-[#94A3B8] text-[#94A3B8]'} />
+                  <span className={contactPresence.isOnline ? 'text-[#15803D]' : 'text-[var(--text-muted)]'}>
+                    {isGroupPresence
+                      ? `Online ${onlineMembersCount}/${conversationUsers.length}`
+                      : (contactPresence.isOnline ? 'Online' : 'Offline')}
+                  </span>
+                  {!contactPresence.isOnline && !isGroupPresence && contactPresence.lastSeenAt ? (
+                    <span className="truncate text-[var(--text-muted)]">• آخر تواجد: {formatDisplayDateTime(contactPresence.lastSeenAt)}</span>
+                  ) : null}
+                </span>
+              ) : null}
               {assignedUser?.name ? (
                 <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
                   <UserRound size={11} />
@@ -357,7 +377,7 @@ export function ConversationThread({
                 <X size={13} />
               </button>
             ) : null}
-            {detailsSource.conversationId ? (
+            {showConversationStatusControl && detailsSource.conversationId ? (
               <button
                 type="button"
                 onClick={() => onToggleConversationStatus?.(detailsSource)}
@@ -379,7 +399,7 @@ export function ConversationThread({
                 {isConversationClosed ? 'فتح' : 'إنهاء المحادثة'}
               </button>
             ) : null}
-            {!linkedCustomer && detailsSource.conversationId ? (
+            {showCrmControls && !linkedCustomer && detailsSource.conversationId ? (
               <button
                 type="button"
                 onClick={() => onConvertToLead?.(detailsSource)}
@@ -390,7 +410,7 @@ export function ConversationThread({
                 تحويل
               </button>
             ) : null}
-            {linkedCustomer ? (
+            {showCrmControls && linkedCustomer ? (
               // Follow-up task linked to the conversation's customer (tasks F2, 2026-10-02).
               <CreateTaskButton taskable={taskableFromCrmRecord(linkedCustomer)} action="follow_up" compact />
             ) : null}
@@ -556,51 +576,63 @@ export function ConversationThread({
             </div>
 
             <div className="mt-3 space-y-2">
-              {linkedCustomer ? (
-                <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2">
-                  <div className="mb-2 flex items-center justify-between gap-2">
-                    <div className="text-xs font-black text-[var(--text)]">{'\u0627\u0644\u0639\u0645\u064a\u0644 \u0627\u0644\u0645\u0631\u062a\u0628\u0637'}</div>
-                    <span className="rounded-full bg-[#ECFDF5] dark:bg-[#052e16] px-2 py-0.5 text-[10px] font-black text-[#047857]">
-                      {linkedCustomer.type || 'customer'}
-                    </span>
+              {showCrmControls ? (
+                linkedCustomer ? (
+                  <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2">
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <div className="text-xs font-black text-[var(--text)]">{'\u0627\u0644\u0639\u0645\u064a\u0644 \u0627\u0644\u0645\u0631\u062a\u0628\u0637'}</div>
+                      <span className="rounded-full bg-[#ECFDF5] dark:bg-[#052e16] px-2 py-0.5 text-[10px] font-black text-[#047857]">
+                        {linkedCustomer.type || 'customer'}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 gap-2 text-xs md:grid-cols-2">
+                      <div>
+                        <div className="text-[10px] font-black text-[var(--text-muted)]">الاسم</div>
+                        <div className="font-bold text-[var(--text)]">{linkedCustomer.name || '-'}</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-black text-[var(--text-muted)]">الشركة</div>
+                        <div className="font-bold text-[var(--text)]">{linkedCustomer.company || '-'}</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-black text-[var(--text-muted)]">الهاتف</div>
+                        <div className="break-all font-bold text-[var(--text)]">{linkedCustomer.phone || '-'}</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-black text-[var(--text-muted)]">البريد</div>
+                        <div className="break-all font-bold text-[var(--text)]">{linkedCustomer.email || '-'}</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 gap-2 text-xs md:grid-cols-2">
-                    <div>
-                      <div className="text-[10px] font-black text-[var(--text-muted)]">الاسم</div>
-                      <div className="font-bold text-[var(--text)]">{linkedCustomer.name || '-'}</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] font-black text-[var(--text-muted)]">الشركة</div>
-                      <div className="font-bold text-[var(--text)]">{linkedCustomer.company || '-'}</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] font-black text-[var(--text-muted)]">الهاتف</div>
-                      <div className="break-all font-bold text-[var(--text)]">{linkedCustomer.phone || '-'}</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] font-black text-[var(--text-muted)]">البريد</div>
-                      <div className="break-all font-bold text-[var(--text)]">{linkedCustomer.email || '-'}</div>
-                    </div>
+                ) : (
+                  <div className="rounded-lg border border-dashed border-[var(--brand-accent)] bg-[var(--surface-2)] px-3 py-3">
+                    <div className="mb-2 text-xs font-black text-[var(--text)]">{'\u0644\u0627 \u064a\u0648\u062c\u062f \u0639\u0645\u064a\u0644 \u0645\u0631\u062a\u0628\u0637 \u0628\u0647\u0630\u0647 \u0627\u0644\u0645\u062d\u0627\u062f\u062b\u0629'}</div>
+                    <button
+                      type="button"
+                      onClick={() => onConvertToLead?.(detailsSource)}
+                      className="inline-flex h-9 items-center justify-center rounded-lg bg-[#00A8B0] px-3 text-xs font-black text-white shadow-sm transition hover:bg-[#008E96]"
+                    >
+                      تحويل عميل محتمل
+                    </button>
                   </div>
-                </div>
-              ) : (
-                <div className="rounded-lg border border-dashed border-[var(--brand-accent)] bg-[var(--surface-2)] px-3 py-3">
-                  <div className="mb-2 text-xs font-black text-[var(--text)]">{'\u0644\u0627 \u064a\u0648\u062c\u062f \u0639\u0645\u064a\u0644 \u0645\u0631\u062a\u0628\u0637 \u0628\u0647\u0630\u0647 \u0627\u0644\u0645\u062d\u0627\u062f\u062b\u0629'}</div>
-                  <button
-                    type="button"
-                    onClick={() => onConvertToLead?.(detailsSource)}
-                    className="inline-flex h-9 items-center justify-center rounded-lg bg-[#00A8B0] px-3 text-xs font-black text-white shadow-sm transition hover:bg-[#008E96]"
-                  >
-                    تحويل عميل محتمل
-                  </button>
-                </div>
-              )}
+                )
+              ) : null}
 
               {assignedUser ? (
                 <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2">
                   <div className="text-[10px] font-black text-[var(--text-muted)]">المستخدم المسؤول</div>
                   <div className="mt-1 text-xs font-black text-[var(--text)]">{assignedUser.name || '-'}</div>
                   {assignedUser.email ? <div className="mt-0.5 break-all text-[11px] font-semibold text-[var(--text-muted)]">{assignedUser.email}</div> : null}
+                </div>
+              ) : null}
+
+              {contactPresence && typeof contactPresence.isOnline === 'boolean' ? (
+                <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2">
+                  <div className="text-[10px] font-black text-[var(--text-muted)]">حالة العميل</div>
+                  <div className="mt-1 text-xs font-black text-[var(--text)]">{contactPresence.isOnline ? 'Online' : 'Offline'}</div>
+                  {!contactPresence.isOnline && contactPresence.lastSeenAt ? (
+                    <div className="mt-0.5 text-[11px] font-semibold text-[var(--text-muted)]">آخر تواجد: {formatDisplayDateTime(contactPresence.lastSeenAt)}</div>
+                  ) : null}
                 </div>
               ) : null}
 
@@ -618,15 +650,28 @@ export function ConversationThread({
                             <div className="truncate text-xs font-black text-[var(--text)]">{user.name || '-'}</div>
                             {user.email ? <div className="truncate text-[11px] font-semibold text-[var(--text-muted)]">{user.email}</div> : null}
                           </div>
-                          {user.is_current ? (
-                            <span className="shrink-0 rounded-full bg-[var(--brand-accent-soft)] px-2 py-0.5 text-[10px] font-black text-[var(--brand-accent)]">حالي</span>
-                          ) : null}
+                          <div className="flex items-center gap-1">
+                            {typeof user?.is_online === 'boolean' ? (
+                              <span className={[
+                                'shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black',
+                                user.is_online ? 'bg-[#ECFDF5] text-[#047857]' : 'bg-[#F1F5F9] text-[#475569]',
+                              ].join(' ')}>
+                                {user.is_online ? 'Online' : 'Offline'}
+                              </span>
+                            ) : null}
+                            {user.is_current ? (
+                              <span className="shrink-0 rounded-full bg-[var(--brand-accent-soft)] px-2 py-0.5 text-[10px] font-black text-[var(--brand-accent)]">حالي</span>
+                            ) : null}
+                          </div>
                         </div>
                         {(user.started_at || user.last_activity_at) ? (
                           <div className="mt-1 grid grid-cols-1 gap-1 text-[10px] font-semibold text-[var(--text-muted)] md:grid-cols-2">
                             {user.started_at ? <span>بدأ: {formatDisplayDateTime(user.started_at)}</span> : null}
                             {user.last_activity_at ? <span>{'\u0622\u062e\u0631 \u0646\u0634\u0627\u0637'}: {formatDisplayDateTime(user.last_activity_at)}</span> : null}
                           </div>
+                        ) : null}
+                        {!user?.is_online && user?.last_seen_at ? (
+                          <div className="mt-1 text-[10px] font-semibold text-[var(--text-muted)]">آخر تواجد: {formatDisplayDateTime(user.last_seen_at)}</div>
                         ) : null}
                       </div>
                     ))}

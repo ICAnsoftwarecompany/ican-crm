@@ -12,6 +12,7 @@ import {
   CommunicationCalendar,
   getCommunicationModule,
 } from '../../features/communication'
+import { InternalChatCreatePanel } from '../../features/internal-chat'
 import { ScheduleActivityDialog } from '../../features/activities'
 import { getSettingsSections } from '../settings/registry/settingsSections'
 
@@ -40,6 +41,15 @@ export function CommunicationCreatePage({ moduleId }) {
   const text = useModuleText(moduleId)
   const planned = usePlannedList(`communication.modules.${moduleId}.create.items`)
   const activityType = ACTIVITY_TYPE[moduleId]
+
+  if (moduleId === 'team-chat') {
+    return (
+      <div className="space-y-4">
+        <ModulePageHeader icon={Plus} title={text('create.title')} description={text('create.description')} />
+        <InternalChatCreatePanel />
+      </div>
+    )
+  }
 
   if (!activityType) {
     return (

@@ -1,23 +1,27 @@
 import { describe, expect, it, vi } from 'vitest'
-import { buildCustomerRowContextActions } from './customerRowContextActions'
+import { buildCustomerRowContextActions } from '../../../features/customers/utils/customerRowContextActions'
 
 const t = (key) => key
 
 describe('buildCustomerRowContextActions', () => {
-  it('offers add interest next to the other customer actions and calls it with the row', () => {
+  it('offers add interest and assign owner next to the other customer actions and calls them with the row', () => {
     const onAddInterest = vi.fn()
+    const onAssignOwner = vi.fn()
     const row = { id: 1, lead: { name: 'Ahmed' } }
-    const actions = buildCustomerRowContextActions({ row, t, showTrash: false, onCustomizeTable: vi.fn(), onSchedule: vi.fn(), onAddFollowUp: vi.fn(), onAddInterest })
+    const actions = buildCustomerRowContextActions({ row, t, showTrash: false, onCustomizeTable: vi.fn(), onSchedule: vi.fn(), onAddFollowUp: vi.fn(), onAddInterest, onAssignOwner })
     expect(actions.map((action) => action.id)).toEqual([
       'customers-page-table-customization',
       'customers-row-add-meeting',
       'customers-row-add-call',
       'customers-row-add-follow-up',
       'customers-row-add-interest',
+      'customers-row-assign-owner',
       'customers-row-toggle-selection',
     ])
     actions.find((action) => action.id === 'customers-row-add-interest').onClick()
     expect(onAddInterest).toHaveBeenCalledWith(row)
+    actions.find((action) => action.id === 'customers-row-assign-owner').onClick()
+    expect(onAssignOwner).toHaveBeenCalledWith(row)
   })
 
   it('has no actions in the trash', () => {

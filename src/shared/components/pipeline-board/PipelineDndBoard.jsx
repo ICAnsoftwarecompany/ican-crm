@@ -52,6 +52,7 @@ function DraggableItem({ id, itemId, stageId, disabled, lastDropRef, children })
       ref={setNodeRef}
       {...attributes}
       {...listeners}
+      data-pipeline-item="true"
       onClickCapture={(event) => {
         // The pointer-up that ends a drag must not also open the card.
         if (Date.now() - lastDropRef.current < CLICK_SUPPRESS_MS) {

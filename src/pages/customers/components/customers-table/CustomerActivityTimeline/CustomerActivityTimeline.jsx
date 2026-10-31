@@ -29,6 +29,7 @@ function getActivitySearchText(activity) {
     activity?.newStatus,
     activity?.userName,
     activity?.user?.name,
+    activity?.contextDeal?.deal_name,
     ...productText,
   ].map((value) => String(value || '').toLowerCase()).join(' ')
 }

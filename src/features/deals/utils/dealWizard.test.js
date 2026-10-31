@@ -34,7 +34,7 @@ describe('deal wizard', () => {
       users: [{ user_id: 2, role: 'manager' }, { user_id: 1, role: 'sales_rep' }],
       teams: [{ team_id: 3, role: 'manager' }],
     })
-    expect(requests.products(10)).toEqual({ deal_id: 10, product_ids: [1, 5, 8] })
+    expect(requests.products(10)).toEqual({ products: [{ product_id: 1, details: {} }, { product_id: 5, details: {} }, { product_id: 8, details: {} }] })
   })
 
   it('uses an existing template and skips empty products', () => {

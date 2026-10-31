@@ -1,5 +1,7 @@
 import {
   ArrowLeftRight,
+  BadgeCheck,
+  Target,
   BarChart3,
   BellRing,
   Bot,
@@ -39,6 +41,8 @@ export function getCustomerNavigationGroups(t) {
         { to: `${LEADS_CENTER_ROUTE}/new`, label: t('customers.nav.newLeads'), icon: UserPlus },
         { to: `${LEADS_CENTER_ROUTE}/follow-up`, label: t('customers.nav.needsFollowUp'), icon: BellRing },
         { to: `${LEADS_CENTER_ROUTE}/inactive`, label: t('customers.nav.inactive'), icon: UserRoundX },
+        { to: `${LEADS_CENTER_ROUTE}/done`, label: t('customers.customerSegments.done'), icon: BadgeCheck },
+        { to: `${LEADS_CENTER_ROUTE}/retargeting`, label: t('customers.customerSegments.retargeting'), icon: Target },
         { to: `${LEADS_CENTER_ROUTE}/activities`, label: t('customers.nav.activitiesAndAppointments'), icon: CalendarClock },
       ],
     },

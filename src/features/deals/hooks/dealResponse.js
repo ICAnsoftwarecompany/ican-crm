@@ -17,3 +17,17 @@ export function unwrapEntity(response, key) {
   if (data && typeof data === 'object' && !Array.isArray(data) && data.data && typeof data.data === 'object' && !Array.isArray(data.data)) return data.data
   return data && typeof data === 'object' && !Array.isArray(data) ? data : null
 }
+
+/** Detail responses may keep stages/stats beside `deal`, rather than inside it. */
+export function normalizeDealDetail(response, dealId) {
+  const envelope = unwrapEntity(response)
+  const deal = unwrapEntity(response, 'deal')
+  if (!deal) return null
+  return {
+    ...deal,
+    id: deal.id ?? dealId,
+    stages: deal.stages ?? envelope?.stages,
+    stages_summary: deal.stages_summary ?? envelope?.stages_summary,
+    stats: deal.stats ?? envelope?.stats,
+  }
+}

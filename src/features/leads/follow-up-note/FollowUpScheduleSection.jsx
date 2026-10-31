@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Input } from '../../../../shared/components/ui/Input'
+import { Input } from '../../../shared/components/ui/Input'
 
 export function FollowUpScheduleSection({ form, updateForm }) {
   const { t } = useTranslation()

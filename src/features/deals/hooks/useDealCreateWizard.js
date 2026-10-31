@@ -8,9 +8,11 @@ import { dealCampaignsApi, dealLeadsApi, dealResourcesApi, dealsApi, pipelineTem
 import { dealKeys } from '../constants/dealQueryKeys'
 import { WIZARD_STEPS, buildWizardRequests, extractCreatedId, firstInvalidStepBefore, withWizardDefaults } from '../utils/dealWizard'
 import { buildNewLeadPayload } from '../utils/leadSource'
+import { canOfferDealChat, createDealChat, nextDealGroupName, resolveWizardChatUsers } from '../utils/dealChat'
+import { chatKeys, getAllChatConversations } from '../../internal-chat'
 
 const DRAFT_KEY = 'deals:create-wizard:draft'
-const EMPTY_CREATED = { templateId: null, dealId: null, teamDone: false, productsDone: false, campaignsDone: false, existingLeadsDone: false, newLeadKeys: [] }
+const EMPTY_CREATED = { templateId: null, dealId: null, teamDone: false, chatDone: false, chatName: null, productsDone: false, campaignsDone: false, existingLeadsDone: false, newLeadKeys: [] }
 
 /**
  * State + submission of the "new deal" wizard. The draft (answers + what was already created) lives in
@@ -94,11 +96,27 @@ export function useDealCreateWizard() {
       }
       mark('team', 'done')
 
+      phase = 'chat'
+      if (state.team.createChat && canOfferDealChat(state.team, state.basics.owner_id) && !done.chatDone) {
+        mark('chat', 'running')
+        const conversations = await getAllChatConversations()
+        const existing = done.chatName && conversations.find((item) => item.type === 'group' && item.name === done.chatName)
+        if (!done.chatName) {
+          done.chatName = nextDealGroupName(state.basics.name, conversations)
+          persist()
+        }
+        if (!existing) await createDealChat(state.basics.name, await resolveWizardChatUsers(state), done.chatName)
+        done.chatDone = true
+        persist()
+        await client.invalidateQueries({ queryKey: chatKeys.all })
+      }
+      mark('chat', 'done')
+
       phase = 'products'
       const products = requests.products(done.dealId)
       if (products && !done.productsDone) {
         mark('products', 'running')
-        await dealResourcesApi.addProducts(products)
+        await dealResourcesApi.addProducts(done.dealId, products)
         done.productsDone = true
         persist()
       }
@@ -154,7 +172,7 @@ export function useDealCreateWizard() {
       navigate(`/deals/${done.dealId}`)
     } catch (requestError) {
       mark(phase, 'error')
-      setError({ phase, message: extractMessage(requestError, t('dealWorkspace.wizard.review.failed')) })
+      setError({ phase, message: requestError.message?.startsWith('dealWorkspace.') ? t(requestError.message, { name: requestError.teamName }) : extractMessage(requestError, t('dealWorkspace.wizard.review.failed')) })
     } finally {
       setSubmitting(false)
     }

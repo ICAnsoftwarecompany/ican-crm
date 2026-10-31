@@ -1,4 +1,8 @@
 export default {
+  "headerPanel": {
+    "openPage": "Open settings page",
+    "back": "All settings sections"
+  },
   "nav": {
     "title": "System settings",
     "subtitle": "Definitions, users, integrations and areas",

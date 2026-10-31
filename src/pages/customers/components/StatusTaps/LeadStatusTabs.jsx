@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { definitionsApi } from '../../../../features/definitions/api/definitionsApi'
-import { countCustomersByStatus, extractLeadStatuses } from '../../utils/customerStatus'
+import { countCustomersByStatus, extractLeadStatuses, filterCustomersByStatusId, NO_CUSTOMER_STATUS_ID } from '../../utils/customerStatus'
 import { useTranslation } from 'react-i18next'
 
 function CountBadge({ count, active }) {
@@ -55,10 +55,6 @@ export function LeadStatusTabs({
     )
   }
 
-  if (statusesQuery.isError || statuses.length === 0) {
-    return null
-  }
-
   return (
     <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2">
       <style>{`
@@ -87,7 +83,7 @@ export function LeadStatusTabs({
           <span className="absolute inset-x-5 bottom-1 h-1 rounded-full bg-slate-300" />
         </button>
 
-        {statuses.map((status) => {
+        {[{ id: NO_CUSTOMER_STATUS_ID, status: t('customers.page.noStatus'), color: '#94A3B8' }, ...statuses].map((status) => {
           const isSelected = String(selectedStatusId) === String(status.id)
           const color = status.color || '#64748B'
 
@@ -105,7 +101,7 @@ export function LeadStatusTabs({
             >
               <span className="inline-flex items-center">
                 {status.status}
-                <CountBadge count={countByStatusId[String(status.id)] || 0} active={isSelected} />
+                <CountBadge count={status.id === NO_CUSTOMER_STATUS_ID ? filterCustomersByStatusId(customers, NO_CUSTOMER_STATUS_ID).length : countByStatusId[String(status.id)] || 0} active={isSelected} />
               </span>
               <span
                 className="absolute inset-x-5 bottom-1 h-1 rounded-full"

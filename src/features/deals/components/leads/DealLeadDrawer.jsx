@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { CalendarClock, CircleCheckBig, CircleX, ExternalLink, Mail, Phone, PhoneCall } from 'lucide-react'
+import { ExternalLink, Mail, Phone } from 'lucide-react'
 import { toast } from 'sonner'
 import { AppDrawer } from '../../../../shared/components/overlays/AppDrawer'
-import { Button } from '../../../../shared/components/ui/Button'
 import { extractMessage } from '../../../../shared/utils/apiResponse'
 import { EntityTasksPanel } from '../../../tasks'
 import { useDealLeadMutations } from '../../hooks/useDealLeads'
@@ -13,6 +12,8 @@ import { LeadStatusBadge } from '../common/DealStatusBadge'
 import { FieldLabel, dealInputClass } from '../common/FieldLabel'
 import { PersonSelect } from '../common/PersonSelect'
 import { DealLeadProductsSection } from './DealLeadProductsSection'
+import { DealLeadActions } from './DealLeadActions'
+import { dealLeadPath } from '../../utils/dealLeadActions'
 
 function InfoLine({ icon: Icon, children, ltr }) {
   if (!children) return null
@@ -23,7 +24,7 @@ function InfoLine({ icon: Icon, children, ltr }) {
  * Everything about one deal lead without leaving the board: contact, stage, owner, products, won/lost,
  * quick call/meeting, and its tasks (shared EntityTasksPanel on the CRM lead).
  */
-export function DealLeadDrawer({ dealId, lead, stages, people, open, onClose, actions }) {
+export function DealLeadDrawer({ dealId, lead, stages, people, open, onClose, actions, inline = false }) {
   const { t, i18n } = useTranslation()
   const { changeStage, bulkAssign } = useDealLeadMutations(dealId)
   const [busy, setBusy] = useState(false)
@@ -44,14 +45,13 @@ export function DealLeadDrawer({ dealId, lead, stages, people, open, onClose, ac
 
   const openStages = stages.filter((stage) => !stage.is_won_stage && !stage.is_lost_stage)
 
-  return (
-    <AppDrawer open={open} onClose={onClose} size="lg" drawerKey="deal-lead" title={lead.name || `#${lead.id}`} description={t('dealWorkspace.leads.drawer.description')}>
+  const content = (
       <div className="space-y-5">
         <section className="space-y-2 rounded-lg border border-[var(--border)] p-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <LeadStatusBadge status={lead.status} />
-            {lead.customerId && (
-              <Link to={`/leads/${lead.customerId}`} className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--brand-accent)] hover:underline">
+            {!inline && (
+              <Link to={dealLeadPath(dealId, lead.id)} className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--brand-accent)] hover:underline">
                 <ExternalLink size={13} />{t('dealWorkspace.leads.drawer.openRecord')}
               </Link>
             )}
@@ -84,17 +84,12 @@ export function DealLeadDrawer({ dealId, lead, stages, people, open, onClose, ac
           </FieldLabel>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <Button size="sm" variant="outline" onClick={() => actions.onSchedule(lead, 'call')}><PhoneCall size={14} />{t('dealWorkspace.leads.actions.call')}</Button>
-          <Button size="sm" variant="outline" onClick={() => actions.onSchedule(lead, 'meeting')}><CalendarClock size={14} />{t('dealWorkspace.leads.actions.meeting')}</Button>
-          <Button size="sm" variant="accent" disabled={!isOpen} onClick={() => actions.onWon(lead)}><CircleCheckBig size={14} />{t('dealWorkspace.leads.actions.won')}</Button>
-          <Button size="sm" variant="danger" disabled={!isOpen} onClick={() => actions.onLost(lead)}><CircleX size={14} />{t('dealWorkspace.leads.actions.lost')}</Button>
-        </div>
+        <DealLeadActions lead={lead} actions={actions} />
 
         <DealLeadProductsSection dealId={dealId} lead={lead} />
 
         {lead.leadId && <EntityTasksPanel taskable={{ type: 'lead', id: lead.leadId, name: lead.name }} />}
       </div>
-    </AppDrawer>
   )
+  return inline ? content : <AppDrawer open={open} onClose={onClose} size="lg" drawerKey="deal-lead" title={lead.name || `#${lead.id}`} description={t('dealWorkspace.leads.drawer.description')}>{content}</AppDrawer>
 }

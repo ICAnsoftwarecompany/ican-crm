@@ -207,6 +207,7 @@ export function CustomersPipelineView({
         )}
         onItemMove={handleItemMove}
         dragMode="longPress"
+        longPressPan
         columnWidth={COLUMN_WIDTH}
         columnBodyClassName={COLUMN_BODY_CLASS}
       />

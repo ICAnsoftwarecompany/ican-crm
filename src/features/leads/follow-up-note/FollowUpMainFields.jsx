@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { CalendarClock, CheckCircle2, ChevronDown } from 'lucide-react'
-import { isClosingStatus } from '../../../../features/leads'
-import { Input } from '../../../../shared/components/ui/Input'
+import { isClosingStatus } from '../close/leadClose'
+import { Input } from '../../../shared/components/ui/Input'
 
 export function getStatusLabel(status) {
   return status?.status || status?.name || status?.title || ''

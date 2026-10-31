@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { LeadInterestFields } from '../../../../features/leads'
+import { LeadInterestFields } from '../interests'
 
 /**
  * "Link a product / service" side of the follow-up dialog. Since 2026-10-15 it embeds the catalog interest form

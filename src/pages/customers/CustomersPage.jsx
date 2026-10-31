@@ -7,28 +7,33 @@ import { ArchiveRestore, Trash2 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { DataTable } from '../../shared/components/data-table'
 import { useLocalStorage } from '../../shared/components/data-table/hooks/useLocalStorage'
-import { NewCustomerDialog } from '../../features/customers/components/NewCustomerDialog'
+import { LeadCreateDrawer } from '../../features/customers'
+import { useLeadTaskAction, useLeadTasksColumn } from '../../features/lead-tasks'
+import { Button } from '../../shared/components/ui/Button'
+import { ListTodo } from 'lucide-react'
 import { useCustomerMutations, useCustomers, useDeletedCustomers } from '../../features/customers/hooks/useCustomers'
 import { CustomersPageHeader } from './components/CustomersPageHeader'
 import { CustomerDetailsDrawer } from './components/CustomerDetailsDrawer/CustomerDetailsDrawer'
 import { LeadStatusTabs } from './components/StatusTaps/LeadStatusTabs'
 import { CustomersHeaderTools } from './components/CustomersHeaderTools'
+import { AppModal } from '../../shared/components/overlays/AppModal'
 import { TableSettingsDrawer } from './components/TableSettingsDrawer'
 import { useCustomersTableColumns } from './components/CustomersTableColumns'
 import { CustomersBulkActions } from './components/CustomersBulkActions'
 import { enrichCustomerMarketingRow } from './components/customers-table'
-import { filterCustomersByStatusId } from './utils/customerStatus'
+import { filterCustomersByStatusId, NO_CUSTOMER_STATUS_ID } from './utils/customerStatus'
 import { useCustomersTableRealtime } from '../../realtime'
 import { useMessengerConversations } from '../../features/conversations/hooks/useConversations'
 import { getMessengerConversationId } from '../../features/conversations/utils/messengerConversations'
 import { useGmailConversations } from '../../features/conversations/hooks/useGmailConversations'
 import { getGmailConversationId } from '../../features/conversations/utils/gmailConversations'
 import { useLeadLogs } from '../../features/leads/hooks/useLeads'
+import { useUsers } from '../../features/users/hooks/useUsers'
 import { definitionsApi } from '../../features/definitions/api/definitionsApi'
 import { requestOpenMessengerSidebar } from '../../features/conversations/constants/messengerSidebarEvents'
 import { extractLeadStatuses } from './utils/customerStatus'
-import { FollowUpNoteDialog } from './components/follow-up-note'
-import { buildCustomerRowContextActions } from './utils/customerRowContextActions'
+import { FollowUpNoteDialog } from '../../features/leads'
+import { buildCustomerRowContextActions } from '../../features/customers'
 import { useLeadActionDialogs } from '../../features/leads'
 import { MeetingDataDrawer, ScheduleActivityDialog } from '../../features/call-meetings'
 import { buildAfterMeetingReportUrl, buildScheduleStatusPayload } from '../../features/call-meetings/utils/scheduleUiUtils'
@@ -574,12 +579,19 @@ function getUpcomingActivityAlertClass(row, nowTimestamp) {
   return getPriorityRowClass(activeAlerts[0].priority, true)
 }
 
-export function CustomersPage({ defaultShowTrash = false }) {
+export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionToolbar, tableOnly = false, tableIdOverride }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const usersQuery = useUsers()
+  const ownerOptions = useMemo(() => (usersQuery.data || []).map((user) => ({
+    id: String(user.id),
+    label: user.name || user.username || user.email || `#${user.id}`,
+  })), [usersQuery.data])
   const [showTrash] = useState(defaultShowTrash)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedCustomer, setSelectedCustomer] = useState(null)
+  const [assignOwnerCustomer, setAssignOwnerCustomer] = useState(null)
+  const [assignOwnerUserId, setAssignOwnerUserId] = useState('')
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
   const [detailsInitialTab, setDetailsInitialTab] = useState('timeline')
   const [isTableSettingsOpen, setIsTableSettingsOpen] = useState(false)
@@ -597,7 +609,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
   const [leadNoteDialogRow, setLeadNoteDialogRow] = useState(null)
   const [scheduleDialog, setScheduleDialog] = useState(null)
   const [viewMode, setViewMode] = useCustomersViewMode()
-  const isPipelineView = !showTrash && viewMode === CUSTOMERS_VIEW_MODES.PIPELINE
+  const isPipelineView = !tableOnly && !showTrash && viewMode === CUSTOMERS_VIEW_MODES.PIPELINE
   const customersQuery = useCustomers()
   const deletedQuery = useDeletedCustomers(showTrash)
   const mutations = useCustomerMutations()
@@ -667,6 +679,8 @@ export function CustomersPage({ defaultShowTrash = false }) {
   const error = showTrash ? deletedQuery.error : customersQuery.error
   const refetch = () => (showTrash ? deletedQuery.refetch() : customersQuery.refetch())
   const leadActions = useLeadActionDialogs({ onDone: refetch })
+  const taskAction = useLeadTaskAction({ onSaved: refetch })
+  const tasksColumn = useLeadTasksColumn({ enabled: !showTrash })
 
   useEffect(() => {
     if (showTrash || isLoading) return undefined
@@ -1014,7 +1028,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
         return
       }
 
-      const tabs = [null, ...leadStatusTabs]
+      const tabs = [null, { id: NO_CUSTOMER_STATUS_ID }, ...leadStatusTabs]
       if (tabs.length <= 1) return
 
       event.preventDefault()
@@ -1168,6 +1182,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
     }
 
     return [
+      { id: 'task-selected-leads', label: t('customers.leadTasks.add'), icon: ListTodo, onClick: () => taskAction.open(selectedRows) },
       {
         id: 'delete-selected-customers',
         label: t('customers.page.actions.deleteSelected', { count: selectedCount }),
@@ -1187,9 +1202,34 @@ export function CustomersPage({ defaultShowTrash = false }) {
     onSchedule: handleOpenScheduledActivityDialog,
     onAddFollowUp: handleOpenLeadNoteDialog,
     onAddInterest: leadActions.openInterest,
+    onAssignOwner: (customer) => {
+      const ownerId = String(customer?.agent_id ?? customer?.lead?.assigned_to ?? customer?.lead?.owner_id ?? '')
+      setAssignOwnerCustomer(customer)
+      setAssignOwnerUserId(ownerId)
+    },
     onMarkWon: leadActions.openWon,
     onMarkLost: leadActions.openLost,
-  }), [handleOpenLeadNoteDialog, handleOpenScheduledActivityDialog, leadActions, setIsTableSettingsOpen, showTrash, t])
+    onAddTask: taskAction.open,
+  }), [handleOpenLeadNoteDialog, handleOpenScheduledActivityDialog, leadActions, taskAction.open, setIsTableSettingsOpen, showTrash, t])
+
+  const submitAssignOwner = useCallback(async () => {
+    if (!assignOwnerCustomer || !assignOwnerUserId) return
+
+    const customerId = assignOwnerCustomer?.id ?? assignOwnerCustomer?.customer_id
+    if (!customerId) return
+
+    await mutations.update.mutateAsync({
+      id: customerId,
+      payload: {
+        agent_id: assignOwnerUserId,
+        assigned_to: assignOwnerUserId,
+      },
+    })
+
+    toast.success(t('customers.page.toasts.ownerAssigned', { name: assignOwnerCustomer?.lead?.name || assignOwnerCustomer?.name || assignOwnerCustomer?.email || t('customers.table.theCustomer') }))
+    setAssignOwnerCustomer(null)
+    setAssignOwnerUserId('')
+  }, [assignOwnerCustomer, assignOwnerUserId, mutations.update, t])
 
   const { columns, serialColumnRender } = useCustomersTableColumns({
     t,
@@ -1244,18 +1284,50 @@ export function CustomersPage({ defaultShowTrash = false }) {
           box-shadow: inset 4px 0 0 #22C55E;
         }
       `}</style>
+      <AppModal
+        isOpen={Boolean(assignOwnerCustomer)}
+        onClose={() => {
+          setAssignOwnerCustomer(null)
+          setAssignOwnerUserId('')
+        }}
+        title={t('customers.page.actions.assignOwner')}
+        description={t('customers.page.actions.assignOwnerDesc', { name: assignOwnerCustomer?.lead?.name || assignOwnerCustomer?.name || assignOwnerCustomer?.email || t('customers.table.theCustomer') })}
+        size="sm"
+      >
+        <div className="space-y-4">
+          <label className="grid gap-1 text-sm font-medium text-[var(--text)]">
+            {t('customers.table.assignedTo')}
+            <select
+              className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none ring-0 focus:border-[var(--brand-accent)]"
+              value={assignOwnerUserId}
+              onChange={(event) => setAssignOwnerUserId(event.target.value)}
+            >
+              <option value="">{t('customers.leadCreate.none')}</option>
+              {ownerOptions.map((user) => (
+                <option key={user.id} value={user.id}>{user.label}</option>
+              ))}
+            </select>
+          </label>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => {
+              setAssignOwnerCustomer(null)
+              setAssignOwnerUserId('')
+            }}>{t('customers.page.close')}</Button>
+            <Button onClick={submitAssignOwner} disabled={!assignOwnerUserId || mutations.update.isPending}>{t('customers.page.actions.assignOwner')}</Button>
+          </div>
+        </div>
+      </AppModal>
+
       <CustomersPageHeader
-        title={showTrash ? t('customers.page.deletedRecordsTitle') : t('customers.title')}
+        title={pageTitle || (showTrash ? t('customers.page.deletedRecordsTitle') : t('customers.title'))}
         onAdd={!showTrash ? () => setIsDialogOpen(true) : undefined}
         onImport={!showTrash ? () => navigate('/LeadsCenter/import-export') : undefined}
         onExport={() => navigate('/LeadsCenter/import-export')}
-        onTrash={() => navigate(showTrash ? '/LeadsCenter' : '/LeadsCenter/trash')}
-        trashActive={showTrash}
         onTableSettings={!isPipelineView ? () => setIsTableSettingsOpen(true) : undefined}
-        viewToggle={!showTrash ? (
+        viewToggle={!showTrash && !tableOnly ? (
           <>
             <CustomersViewModeToggle value={viewMode} onChange={setViewMode} />
-            <CustomersHeaderTools multiViewStatusId={selectedLeadStatusId} showActivities={!isPipelineView} activeActivityDrawerType={activeActivityDrawerType}
+            <CustomersHeaderTools multiViewStatusId={selectedLeadStatusId === NO_CUSTOMER_STATUS_ID ? null : selectedLeadStatusId} showActivities={!isPipelineView} activeActivityDrawerType={activeActivityDrawerType}
               onToggleActivityDrawer={handleToggleActivityDrawer} meetingsTodayCount={todayMeetings.length} callsTodayCount={todayCalls.length} />
           </>
         ) : null}
@@ -1300,6 +1372,11 @@ export function CustomersPage({ defaultShowTrash = false }) {
                 onAddCall: (row) => handleOpenScheduledActivityDialog(row, 'call'),
                 onAddFollowUp: handleOpenLeadNoteDialog,
                 onAddInterest: leadActions.openInterest,
+                onAssignOwner: (row) => {
+                  const ownerId = String(row?.agent_id ?? row?.lead?.assigned_to ?? row?.lead?.owner_id ?? '')
+                  setAssignOwnerCustomer(row)
+                  setAssignOwnerUserId(ownerId)
+                },
                 onMarkWon: leadActions.openWon,
                 onMarkLost: leadActions.openLost,
                 onOpenMessenger: handleOpenMessengerFromChannel,
@@ -1309,8 +1386,8 @@ export function CustomersPage({ defaultShowTrash = false }) {
           ) : (
           <DataTable
             data={filteredRows}
-            columns={columns}
-            tableId={showTrash ? 'customers-trash' : 'customers'}
+            columns={showTrash ? columns : [...columns, tasksColumn]}
+            tableId={tableIdOverride || (showTrash ? 'customers-trash' : 'customers')}
             isLoading={isLoading}
             error={error}
             onRetry={refetch}
@@ -1322,7 +1399,9 @@ export function CustomersPage({ defaultShowTrash = false }) {
             selectionContextActions={getSelectionContextActions}
             rowContextActions={getRowContextActions}
             serialColumnRender={serialColumnRender}
-            toolbarActions={!showTrash ? ({ selectedRows, selectedCount, clearSelection }) => (
+            toolbarActions={selectionToolbar || (!showTrash ? ({ selectedRows, selectedCount, clearSelection }) => (
+              <div className="flex flex-wrap items-center gap-2">
+              {selectedRows.length > 0 && <Button size="sm" variant="outline" onClick={() => taskAction.open(selectedRows)}><ListTodo size={14} />{t('customers.leadTasks.add')}</Button>}
               <CustomersBulkActions
                 selectedRows={selectedRows}
                 selectedCount={selectedCount}
@@ -1330,7 +1409,8 @@ export function CustomersPage({ defaultShowTrash = false }) {
                 onDone={refetch}
                 onAddLeadNote={handleOpenLeadNoteDialog}
               />
-            ) : null}
+              </div>
+            ) : null)}
             emptyMessage={
               showTrash
                 ? t('customers.page.emptyTrash')
@@ -1362,12 +1442,10 @@ export function CustomersPage({ defaultShowTrash = false }) {
         ) : null}
       </div>
 
-      <NewCustomerDialog
-        isOpen={isDialogOpen}
+      {isDialogOpen && <LeadCreateDrawer
+        open={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
-        onSubmit={mutations.create.mutateAsync}
-        isLoading={mutations.create.isPending}
-      />
+      />}
 
       {selectedActivityItem ? (
         <MeetingDataDrawer
@@ -1392,6 +1470,7 @@ export function CustomersPage({ defaultShowTrash = false }) {
       />
 
       {leadActions.dialogs}
+      {taskAction.dialog}
 
       <TableSettingsDrawer
         open={isTableSettingsOpen}

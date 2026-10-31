@@ -1,11 +1,10 @@
 import { useTranslation } from 'react-i18next'
-import { Hourglass, Plus, Rows3, Search, UserRoundX, X } from 'lucide-react'
+import { Hourglass, Rows3, Search, UserRoundX, X } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
 import { cn } from '../../../../shared/utils/cn'
 import { DEAL_LEAD_STATUSES } from '../../constants/dealOptions'
 import { dealInputClass } from '../common/FieldLabel'
 import { PersonSelect } from '../common/PersonSelect'
-import { ViewToggle } from '../common/ViewToggle'
 
 function ToggleChip({ active, onClick, icon: Icon, children }) {
   return (
@@ -23,16 +22,15 @@ function ToggleChip({ active, onClick, icon: Icon, children }) {
   )
 }
 
-/** View switch (board / table), filters and "add leads" for the pipeline page. */
-export function DealPipelineToolbar({ state, people, hasTeams, onAdd }) {
+/** Search, status and owner filters; the view switch lives in the workspace header. */
+export function DealPipelineToolbar({ state, people, hasTeams }) {
   const { t } = useTranslation()
-  const { view, status, ownerId, search, filter, lanes, setParam, setView } = state
+  const { view, status, ownerId, search, filter, lanes, setParam } = state
 
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2">
-      <ViewToggle value={view} onChange={setView} label={t('dealWorkspace.pipeline.viewLabel')} />
-
-      <div className="relative min-w-[180px] flex-1">
+      <div className="grid w-full min-w-0 grid-cols-1 items-center gap-2 sm:grid-cols-[minmax(0,1fr)_10rem_11rem]">
+      <div className="relative min-w-0">
         <Search size={14} className="pointer-events-none absolute start-3 top-3 text-[var(--text-muted)]" />
         <input
           className={`${dealInputClass} ps-8`}
@@ -43,12 +41,13 @@ export function DealPipelineToolbar({ state, people, hasTeams, onAdd }) {
         />
       </div>
 
-      <select className={`${dealInputClass} w-auto`} value={status} aria-label={t('dealWorkspace.pipeline.statusFilter')} onChange={(event) => setParam('status', event.target.value)}>
+      <select className={dealInputClass} value={status} aria-label={t('dealWorkspace.pipeline.statusFilter')} onChange={(event) => setParam('status', event.target.value)}>
         <option value="all">{t('dealWorkspace.pipeline.allStatuses')}</option>
         {DEAL_LEAD_STATUSES.map((value) => <option key={value} value={value}>{t(`dealWorkspace.options.leadStatus.${value}`)}</option>)}
       </select>
-      <div className="w-44">
+      <div className="min-w-0">
         <PersonSelect people={people} value={ownerId} onChange={(value) => setParam('owner', value)} placeholder={t('dealWorkspace.pipeline.allOwners')} />
+      </div>
       </div>
       <ToggleChip active={filter === 'unassigned'} icon={UserRoundX} onClick={() => setParam('filter', filter === 'unassigned' ? '' : 'unassigned')}>{t('dealWorkspace.pipeline.unassigned')}</ToggleChip>
       <ToggleChip active={filter === 'stale'} icon={Hourglass} onClick={() => setParam('filter', filter === 'stale' ? '' : 'stale')}>{t('dealWorkspace.pipeline.stale')}</ToggleChip>
@@ -58,7 +57,6 @@ export function DealPipelineToolbar({ state, people, hasTeams, onAdd }) {
       {(search || ownerId || filter || status !== 'open') && (
         <Button size="sm" variant="ghost" onClick={() => ['q', 'owner', 'filter', 'status'].forEach((key) => setParam(key, ''))}><X size={14} />{t('dealWorkspace.pipeline.clear')}</Button>
       )}
-      <Button size="sm" className="ms-auto" onClick={onAdd}><Plus size={15} />{t('dealWorkspace.leads.add')}</Button>
     </div>
   )
 }

@@ -1,9 +1,11 @@
 import { MessagesSquare } from 'lucide-react'
 
 import { cn } from '../../../shared/utils/cn'
+import { useChatRealtime } from '../hooks/useChatRealtime'
 import { useChatUnreadCount } from '../hooks/useChatUnreadCount'
 
 export function InternalChatNavbarButton({ active = false, onClick }) {
+  useChatRealtime({ enabled: true })
   const unreadQuery = useChatUnreadCount({ per_page: 30 })
   const unreadCount = Number(unreadQuery.unreadCount || 0)
 

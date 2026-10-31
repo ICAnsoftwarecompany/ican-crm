@@ -48,5 +48,17 @@ export function useChatConversationMutations() {
       mutationFn: (conversationId) => internalChatApi.unmuteConversation(conversationId),
       onSuccess: invalidateConversations,
     }),
+    addMembers: useMutation({
+      mutationFn: ({ conversationId, userIds }) => internalChatApi.addMembers(conversationId, userIds),
+      onSuccess: invalidateConversations,
+    }),
+    removeMember: useMutation({
+      mutationFn: ({ conversationId, userId }) => internalChatApi.removeMember(conversationId, userId),
+      onSuccess: invalidateConversations,
+    }),
+    updateMemberRole: useMutation({
+      mutationFn: ({ conversationId, userId, role }) => internalChatApi.updateMemberRole(conversationId, userId, role),
+      onSuccess: invalidateConversations,
+    }),
   }
 }

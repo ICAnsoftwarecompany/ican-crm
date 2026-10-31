@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, CalendarRange, Plus, Sparkles, UserRound } from 'lucide-react'
 import { Button } from '../../../../shared/components/ui/Button'
@@ -8,6 +8,11 @@ import { useDealWorkspace } from '../../hooks/useDealWorkspace'
 import { formatMoney, progressPercent } from '../../utils/dealMoney'
 import { DealStatusBadge } from '../common/DealStatusBadge'
 import { ProgressBar } from '../common/ProgressBar'
+import { ViewToggle } from '../common/ViewToggle'
+import { useDealPipelineState } from '../pipeline/useDealPipelineState'
+import { DealProductsShortcut } from '../products/DealProductsShortcut'
+import { DealSingleProductSummary } from '../products/DealSingleProductSummary'
+import { useDealProducts } from '../../hooks/useDealResources'
 
 /**
  * Top strip of every deal page: which deal, its status and dates, target progress, and the actions used from
@@ -16,7 +21,10 @@ import { ProgressBar } from '../common/ProgressBar'
 export function DealWorkspaceHeader() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
+  const location = useLocation()
+  const pipelineState = useDealPipelineState()
   const { deal, dealId, summary } = useDealWorkspace()
+  const productsQuery = useDealProducts(dealId)
   if (!deal) return null
 
   const leadsProgress = progressPercent(summary.total, deal.target_leads)
@@ -26,13 +34,13 @@ export function DealWorkspaceHeader() {
   return (
     <header className="mb-4 space-y-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0 space-y-1">
+        <div className="min-w-0 max-w-full space-y-1">
           <Link to="/deals" className="inline-flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-[var(--text)]">
             <ArrowLeft size={13} className="rtl:rotate-180" />
             {t('dealWorkspace.back')}
           </Link>
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="truncate text-xl font-bold text-[var(--text)]">{deal.name}</h1>
+            <h1 className="min-w-0 max-w-full break-words text-xl font-bold text-[var(--text)]">{deal.name}</h1>
             <DealStatusBadge status={deal.status} />
             {deal.type && <span className="text-xs text-[var(--text-muted)]">{t(`dealWorkspace.options.dealType.${deal.type}`, deal.type)}</span>}
           </div>
@@ -43,7 +51,11 @@ export function DealWorkspaceHeader() {
             {owner && <span className="inline-flex items-center gap-1"><UserRound size={13} />{owner}</span>}
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex max-w-full flex-wrap items-center gap-2">
+          <DealProductsShortcut key={dealId} />
+          {location.pathname === getDealPagePath(dealId, 'pipeline') && (
+            <ViewToggle value={pipelineState.view} onChange={pipelineState.setView} label={t('dealWorkspace.pipeline.viewLabel')} />
+          )}
           <Button size="sm" onClick={() => navigate(`${getDealPagePath(dealId, 'pipeline')}?add=1`)}><Plus size={15} />{t('dealWorkspace.leads.add')}</Button>
           <WorkflowLauncher context={{ module: 'deals', entity: 'deal', entityId: dealId }} variant="outline" size="sm">
             <span>{t('dealWorkspace.actions.workflow')}</span>
@@ -51,6 +63,7 @@ export function DealWorkspaceHeader() {
           <Button variant="ai" size="sm" onClick={() => navigate(getDealPagePath(dealId, 'assistant'))}><Sparkles size={15} />{t('dealWorkspace.actions.ai')}</Button>
         </div>
       </div>
+      {!productsQuery.isLoading && !productsQuery.error && productsQuery.products.length === 1 && <DealSingleProductSummary key={`${dealId}-${productsQuery.products[0].id}`} product={productsQuery.products[0]} deal={deal} />}
       <div className="grid gap-3 sm:grid-cols-2">
         <ProgressBar
           value={leadsProgress}

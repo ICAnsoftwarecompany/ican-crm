@@ -15,6 +15,8 @@ import {
 import { FieldRow, RelatedCard, Section } from '../CustomerDetailsTabPrimitives'
 import { fieldValue, formatDateTime } from '../customerDetailsUtils'
 import { useTranslation } from 'react-i18next'
+import { CustomerDealBadge } from '../../../../../features/customers/components/CustomerDealBadge'
+import { CustomerDealsDrawerSection } from '../../../../../features/customers'
 
 export function HomeTab({ customer, layoutMode = 'compact' }) {
   const { t } = useTranslation()
@@ -24,10 +26,12 @@ export function HomeTab({ customer, layoutMode = 'compact' }) {
 
   return (
     <div className="min-w-0 space-y-4 py-4">
+      {customer.id != null && <CustomerDealsDrawerSection customerId={customer.id} />}
       <div className="min-w-0">
         <h3 className="mb-3 text-base font-black text-[var(--text)]">{t('customers.homeTab.fields')}</h3>
         <div className={isWide ? 'grid min-w-0 grid-cols-2 gap-3' : 'min-w-0 space-y-3'}>
           <Section title={t('customers.homeTab.general')}>
+            {(customer?.lead?.deal || customer?.deal) && <CustomerDealBadge customer={customer} expanded />}
             <FieldRow icon={Mail} label={t('customers.homeTab.emails')} value={customer.email} />
             <FieldRow icon={Phone} label={t('customers.homeTab.phones')} value={customer.phone} />
             <FieldRow icon={User} label={t('customers.homeTab.type')} value={customer.type} />

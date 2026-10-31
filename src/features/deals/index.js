@@ -1,4 +1,6 @@
 // Public API of the deals feature (Deals hub + Deal Workspace). See ./README.md.
+export { DealChatWorkspace } from './components/DealChatWorkspace'
+export { DealLeadDetail } from './components/leads/DealLeadDetail'
 export * from './api'
 export { DEAL_API_STATUS, isDealApiLive, getPlannedDealCapabilities } from './constants/dealApiStatus'
 export * from './constants/dealOptions'

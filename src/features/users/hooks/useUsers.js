@@ -26,15 +26,16 @@ function extractUsersList(response) {
   return findUsersArray(response?.data ?? response)
 }
 
-export function useUsers(params) {
+export function useUsers(params, options = {}) {
   return useQuery({
     queryKey: params ? [...QUERY_KEYS.users.list, params] : QUERY_KEYS.users.list,
     queryFn: () => usersApi.getUsers(params),
     select: extractUsersList,
+    ...options,
   })
 }
 
-export function useOnlineUsers(params) {
+export function useOnlineUsers(params, options = {}) {
   return useQuery({
     queryKey: ['users', 'online', params || {}],
     queryFn: () => usersApi.getOnlineUsers(params),
@@ -52,6 +53,7 @@ export function useOnlineUsers(params) {
 
       return []
     },
+    ...options,
   })
 }
 

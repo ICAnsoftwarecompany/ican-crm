@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Search, Plus, MoreHorizontal, Command, PanelLeft, Users, Moon, Sun } from 'lucide-react'
@@ -15,6 +16,9 @@ import { NotificationCenterButton } from '../../../features/notifications'
 import { LiveMeetingIndicator } from '../../../features/call-meetings'
 import { HeaderProfileMenu } from './HeaderProfileMenu'
 import { AlertsIndicator } from '../../../features/alerts'
+import { HeaderSettingsButton } from '../../../pages/settings/components/HeaderSettingsButton'
+import { useOnlineUsers, useUsers } from '../../../features/users/hooks/useUsers'
+import { buildPresenceIndex, getPresenceForEntity } from '../../../features/conversations/utils/presenceStatus'
 
 const PAGE_CHANNEL_ICONS = [
   {
@@ -46,6 +50,31 @@ export function Header({
   const { isDark, toggleTheme } = useThemeStore()
   const { title: customTitle, icon: customIcon, actions } = usePageHeaderStore()
   const { activeItem } = useNavigation()
+  const usersQuery = useUsers(undefined, { staleTime: 30000 })
+  const onlineUsersQuery = useOnlineUsers(undefined, { refetchInterval: 30000 })
+  const presenceIndex = useMemo(
+    () => buildPresenceIndex(usersQuery.data || [], onlineUsersQuery.data || []),
+    [onlineUsersQuery.data, usersQuery.data]
+  )
+
+  const activeUsersCount = useMemo(() => {
+    const candidates = [...(usersQuery.data || []), ...(onlineUsersQuery.data || [])]
+    const uniqueUsers = new Map()
+
+    candidates.forEach((user) => {
+      const id = user?.id ?? user?.user_id ?? user?.userId ?? user?.email ?? user?.username ?? user?.login
+      if (!id) return
+      uniqueUsers.set(String(id), user)
+    })
+
+    let count = 0
+    uniqueUsers.forEach((user) => {
+      const presence = getPresenceForEntity(user, presenceIndex)
+      if (presence?.isOnline) count += 1
+    })
+
+    return count
+  }, [onlineUsersQuery.data, presenceIndex, usersQuery.data])
 
   // Fall back to the resolved navigation item so every page gets a
   // title/icon for free; a page can still override both via usePageHeader().
@@ -141,6 +170,9 @@ export function Header({
         >
           <Users size={14} />
           <span className="hidden md:inline">{t('app.active')}</span>
+          <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--brand-accent-soft)] px-1.5 py-0.5 text-[10px] font-black leading-none text-[var(--brand-accent)]">
+            {activeUsersCount}
+          </span>
         </button>
 
         <IconButton onClick={() => {}} aria-label={t('actions.search')}>
@@ -164,6 +196,7 @@ export function Header({
           {isDark ? <Sun size={16} /> : <Moon size={16} />}
         </IconButton>
 
+        <HeaderSettingsButton />
         <HeaderProfileMenu />
       </div>
     </header>

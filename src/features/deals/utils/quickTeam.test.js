@@ -4,13 +4,14 @@ import { addQuickTeamToMembers, buildQuickTeamPayload, validateQuickTeam } from 
 describe('quick team', () => {
   it('builds the Postman "teams/create" body with the leader always a member', () => {
     expect(buildQuickTeamPayload({ name: ' Villas team ', leaderId: '2', memberIds: ['4', '6', '2'] }))
-      .toEqual({ name: 'Villas team', team_leader_id: 2, active: true, type: 'sales', members: [2, 4, 6] })
+      .toEqual({ name: 'Villas team', team_leader_id: '2', active: true, type: 'sales', members: [2, 4, 6] })
+    expect(buildQuickTeamPayload({ name: ' Team ', dealName: ' Deal ', leaderId: '1', memberIds: ['2', '1'] })).toEqual({ name: 'Deal - Team', team_leader_id: '1', active: true, type: 'sales', members: [1, 2] })
     expect(buildQuickTeamPayload({ name: 'A', memberIds: ['4'] })).toEqual({ name: 'A', active: true, type: 'sales', members: [4] })
   })
 
   it('needs a name and at least one member', () => {
-    expect(validateQuickTeam({ name: '', memberIds: [] })).toEqual({ name: 'quickTeamNameRequired', members: 'quickTeamMembersRequired' })
-    expect(validateQuickTeam({ name: 'A', memberIds: ['1'] })).toEqual({})
+    expect(validateQuickTeam({ name: '', memberIds: [] })).toEqual({ name: 'quickTeamNameRequired', leaderId: 'quickTeamLeaderRequired', members: 'quickTeamMembersRequired' })
+    expect(validateQuickTeam({ name: 'A', leaderId: '1', memberIds: ['1'] })).toEqual({})
   })
 
   it('adds the new team to the deal and can replace the users it now contains', () => {

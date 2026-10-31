@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { CalendarClock, CircleCheckBig, CircleX, Clock, MoreVertical, PanelRightOpen, Phone, PhoneCall, UserRound } from 'lucide-react'
+import { Clock, MoreVertical, Phone, UserRound } from 'lucide-react'
 import { DropdownMenu } from '../../../../shared/components/overlays/DropdownMenu'
 import { PipelineCard } from '../../../../shared/components/pipeline-board'
 import { TruncatedText } from '../../../../shared/components/ui/TruncatedText'
@@ -7,6 +7,7 @@ import { formatRelativeTime } from '../../../../shared/utils/dateTime'
 import { isDealLeadStale } from '../../utils/dealLeads'
 import { formatMoney } from '../../utils/dealMoney'
 import { LeadStatusBadge } from '../common/DealStatusBadge'
+import { buildDealLeadActions } from '../../utils/dealLeadActions'
 
 /**
  * One deal lead on the board. Click = details drawer. Won / lost are explicit actions (never inferred from
@@ -16,14 +17,10 @@ export function DealLeadCard({ lead, ownerName, actions }) {
   const { t, i18n } = useTranslation()
   const open = lead.status === 'open'
   const stale = isDealLeadStale(lead)
-  const menuItems = [
-    { id: 'open', label: t('dealWorkspace.leads.actions.open'), icon: <PanelRightOpen size={14} />, onSelect: () => actions.onOpen(lead) },
-    { id: 'call', label: t('dealWorkspace.leads.actions.call'), icon: <PhoneCall size={14} />, onSelect: () => actions.onSchedule(lead, 'call') },
-    { id: 'meeting', label: t('dealWorkspace.leads.actions.meeting'), icon: <CalendarClock size={14} />, onSelect: () => actions.onSchedule(lead, 'meeting') },
-    { separator: true },
-    { id: 'won', label: t('dealWorkspace.leads.actions.won'), icon: <CircleCheckBig size={14} />, disabled: !open, onSelect: () => actions.onWon(lead) },
-    { id: 'lost', label: t('dealWorkspace.leads.actions.lost'), icon: <CircleX size={14} />, disabled: !open, onSelect: () => actions.onLost(lead) },
-  ]
+  const menuItems = buildDealLeadActions(lead, actions, t).map((item) => {
+    const Icon = item.icon
+    return { id: item.id, label: item.label, icon: <Icon size={14} />, disabled: item.disabled, onSelect: item.onClick }
+  })
 
   return (
     <PipelineCard className="space-y-2" onClick={() => actions.onOpen(lead)}>

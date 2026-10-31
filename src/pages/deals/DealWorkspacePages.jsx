@@ -21,6 +21,8 @@ import {
   DealStagesSettings,
   DealTasksPanel,
   DealTeamPanel,
+  DealChatWorkspace,
+  DealLeadDetail,
   useDealReport,
   useDealWorkspace,
 } from '../../features/deals'
@@ -50,6 +52,10 @@ export function DealPipelinePage() {
   return <DealPipelineView />
 }
 
+export function DealLeadPage() {
+  return <DealLeadDetail />
+}
+
 export function DealContractsPage() {
   const { dealId } = useDealWorkspace()
   return <PageShell pageId="contracts"><DealContractsTable dealId={dealId} /></PageShell>
@@ -57,6 +63,10 @@ export function DealContractsPage() {
 
 export function DealTeamPage() {
   return <PageShell pageId="team"><DealTeamPanel /></PageShell>
+}
+
+export function DealChatsPage() {
+  return <DealChatWorkspace />
 }
 
 export function DealMeetingsPage() {

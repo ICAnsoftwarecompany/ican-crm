@@ -21,6 +21,8 @@ const t = (key, options) => (options?.count !== undefined ? `${key}:${options.co
 const i18n = { language: 'en', dir: () => 'ltr', changeLanguage: async () => {}, on() {}, off() {} }
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t, i18n }), Trans: ({ children }) => children, initReactI18next: { type: '3rdParty', init() {} } }))
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn(), info: vi.fn() } }))
+vi.mock('../outcome/components/LeadWonDialog', () => ({ LeadWonDialog: ({ customer, initialSaleStatusId, onDone, onClose }) => <div data-testid="sale-wizard">{customer.lead_id}:{initialSaleStatusId}<button onClick={() => { onDone({ status: { id: initialSaleStatusId } }); onClose() }}>complete sale</button><button onClick={onClose}>close sale</button></div> }))
+vi.mock('../outcome/components/LeadLostDialog', () => ({ LeadLostDialog: ({ customers, initialLostStatusId, onDone, onClose }) => <div data-testid="loss-dialog">{customers.length}:{initialLostStatusId}<button onClick={() => { onDone({ status: { id: initialLostStatusId }, done: customers.length }); onClose() }}>complete loss</button><button onClick={onClose}>close loss</button></div> }))
 
 const { useLeadCloseRequest } = await import('./useLeadCloseRequest')
 
@@ -33,11 +35,11 @@ const statuses = [open, won, lost, retarget]
 const byId = new Map(statuses.map((status) => [String(status.id), status]))
 const row = { id: 50, lead_id: 5, lead: { id: 5, name: 'Ahmed', status_type_id: 1, assigned_to: 3 } }
 
-function Harness({ target, rows = [row], onPlain, list = statuses }) {
+function Harness({ target, rows = [row], onPlain, onDone, list = statuses }) {
   const close = useLeadCloseRequest({ statuses: list, getOldStatus: (item) => byId.get(String(item.lead?.status_type_id)) })
   return (
     <>
-      <button type="button" onClick={() => { if (!close.interceptStatusChange({ rows, status: target })) onPlain?.() }}>move</button>
+      <button type="button" onClick={() => { if (!close.interceptStatusChange({ rows, status: target, onDone })) onPlain?.() }}>move</button>
       {close.dialog}
     </>
   )
@@ -59,32 +61,25 @@ describe('lead close flow', () => {
     expect(onPlain).toHaveBeenCalled()
   })
 
-  it('lost: requires a reason, then sends the body and creates the follow-up task', async () => {
-    renderHarness({ target: lost })
-    expect((await screen.findAllByText('customers.leadClose.titles.lost')).length).toBeGreaterThan(0)
-    fireEvent.click(submitButton('customers.leadClose.submit.lost'))
-    expect(await screen.findByText('customers.leadClose.errors.reasonRequired')).toBeTruthy()
+  it('lost: opens the customer loss dialog with the selected status and cancels without changing it', () => {
+    const onDone = vi.fn()
+    renderHarness({ target: lost, onDone })
+    expect(screen.getByTestId('loss-dialog').textContent).toContain('1:3')
+    expect(screen.queryByText('customers.leadClose.titles.lost')).toBeNull()
+    fireEvent.click(screen.getByText('close loss'))
+    expect(screen.queryByTestId('loss-dialog')).toBeNull()
     expect(post).not.toHaveBeenCalled()
-
-    fireEvent.click(screen.getByRole('radio', { name: 'customers.leadClose.reasons.price' }))
-    fireEvent.change(screen.getByLabelText(/^customers.leadClose.fields.followUp/), { target: { value: '30' } })
-    fireEvent.click(submitButton('customers.leadClose.submit.lost'))
-
-    await waitFor(() => expect(post).toHaveBeenCalledTimes(2))
-    const [url, body] = post.mock.calls[0]
-    expect(url).toBe('/api/tenant/leads/save/action')
-    expect(body).toMatchObject({ lead_id: 5, new_status_id: 3, old_status_title: 'status1', data: { close_type: 'lost', reason_key: 'price', lost_reason_key: 'price' } })
-    expect(post.mock.calls[1][0]).toBe('/api/tenant/tasks')
+    expect(onDone).not.toHaveBeenCalled()
   })
 
-  it('lost: offers the status own reasons when the backend sends them', async () => {
-    const withReasons = { ...lost, reasons: [{ id: 31, key: 'budget', label: 'Budget', active: 1 }] }
-    renderHarness({ target: withReasons, list: [open, won, withReasons] })
-    fireEvent.click(await screen.findByRole('radio', { name: 'Budget' }))
-    expect(screen.queryByRole('radio', { name: 'customers.leadClose.reasons.price' })).toBeNull()
-    fireEvent.click(submitButton('customers.leadClose.submit.lost'))
-    await waitFor(() => expect(post).toHaveBeenCalledTimes(1))
-    expect(post.mock.calls[0][1].data).toMatchObject({ reason_key: 'budget', reason_id: 31 })
+  it('lost: sends every selected customer to the loss dialog and reports completion only on success', () => {
+    const onDone = vi.fn()
+    renderHarness({ target: lost, onDone, rows: [row, { ...row, lead_id: 6 }] })
+    expect(screen.getByTestId('loss-dialog').textContent).toContain('2:3')
+    fireEvent.click(screen.getByText('complete loss'))
+    expect(onDone).toHaveBeenCalledWith({ status: { id: 3 }, mode: 'lost', done: 2 })
+    expect(screen.queryByTestId('loss-dialog')).toBeNull()
+    expect(post).not.toHaveBeenCalled()
   })
 
   it('retarget: closes with a required follow-up (30 days by default) and creates the task', async () => {
@@ -96,25 +91,24 @@ describe('lead close flow', () => {
     expect(post.mock.calls[0][1].data.follow_up_at).toMatch(/^\d{4}-\d{2}-\d{2}$/)
   })
 
-  it('sale: blocked for a lead in an open deal, with a link to the deal', async () => {
+  it('sale: opens the transaction wizard and passes the selected sale status', async () => {
     renderHarness({ target: won, rows: [{ ...row, lead: { ...row.lead, deals: [{ deal_id: 4, deal_name: 'Villas', status: 'open' }] } }] })
-    expect(await screen.findByText('customers.leadClose.openDeal')).toBeTruthy()
-    expect(screen.getByText('customers.leadClose.openDeal').closest('a').getAttribute('href')).toBe('/deals/4/pipeline')
-    fireEvent.click(submitButton('customers.leadClose.submit.won'))
+    expect(screen.getByTestId('sale-wizard').textContent).toContain('5:2')
+    expect(screen.queryByText('customers.leadClose.titles.won')).toBeNull()
     expect(post).not.toHaveBeenCalled()
   })
 
-  it('bulk sale: adds the leads to a deal on its first open stage instead', async () => {
-    renderHarness({ target: won, rows: [row, { ...row, lead_id: 6, lead: { ...row.lead, id: 6 } }] })
-    const picker = await screen.findByLabelText(/^customers.leadClose.fields.deal/)
-    await waitFor(() => expect(screen.getByRole('option', { name: 'Villas' })).toBeTruthy())
-    fireEvent.change(picker, { target: { value: '4' } })
-    await waitFor(() => expect(get).toHaveBeenCalledWith('/api/tenant/deals/4', expect.anything()))
-    // The button waits for the deal's first stage.
-    await waitFor(() => expect(submitButton('customers.leadClose.submit.deal').closest('button').disabled).toBe(false))
-    fireEvent.click(submitButton('customers.leadClose.submit.deal'))
-    await waitFor(() => expect(post).toHaveBeenCalledTimes(1))
-    expect(post.mock.calls[0]).toEqual(['/api/tenant/deals/leads/add-existing', { deal_id: 4, lead_ids: [5, 6], stage_id: 40 }])
+  it('bulk sale: records each customer through the wizard sequentially, never through the legacy close API', async () => {
+    const onDone = vi.fn()
+    renderHarness({ target: won, onDone, rows: [row, { ...row, lead_id: 6, lead: { ...row.lead, id: 6 } }] })
+    expect(screen.getByTestId('sale-wizard').textContent).toContain('5:2')
+    fireEvent.click(screen.getByText('complete sale'))
+    expect(screen.getByTestId('sale-wizard').textContent).toContain('6:2')
+    expect(onDone).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByText('close sale'))
+    expect(screen.queryByTestId('sale-wizard')).toBeNull()
+    expect(onDone).toHaveBeenCalledWith(expect.objectContaining({ mode: 'won', done: 1 }))
+    expect(post).not.toHaveBeenCalled()
   })
 
   it('reopen needs a note', async () => {

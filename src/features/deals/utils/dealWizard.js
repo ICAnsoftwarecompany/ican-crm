@@ -1,5 +1,6 @@
 import { buildCampaignsPayload, buildExistingLeadsPayload, createLeadSourceState, newLeadRows, validateLeadSource } from './leadSource'
 import { buildTemplatePayload, validateStages } from './pipelineTemplate'
+import { buildDealProductsPayload, validProductDetails } from './dealProducts'
 
 /**
  * Pure model of the "new deal" wizard (`/deals/new`). Steps, in order:
@@ -29,8 +30,8 @@ export function createWizardState(stageNames = []) {
       stages: DEFAULT_WIZARD_STAGES.map((stage, index) => ({ ...stage, name: stageNames[index] || '' })),
     },
     basics: { name: '', description: '', type: 'sales', status: 'active', start_date: '', end_date: '', target_revenue: '', target_leads: '', owner_id: '' },
-    products: { ids: [] },
-    team: { members: [], addOwner: true },
+    products: { ids: [], details: {} },
+    team: { members: [], addOwner: true, createChat: false },
     source: createLeadSourceState(),
   }
 }
@@ -38,7 +39,7 @@ export function createWizardState(stageNames = []) {
 /** A saved draft from before a step existed gets that step's defaults. */
 export function withWizardDefaults(state, stageNames) {
   const defaults = createWizardState(stageNames)
-  return state ? { ...defaults, ...state, source: { ...defaults.source, ...(state.source || {}) } } : defaults
+  return state ? { ...defaults, ...state, team: { ...defaults.team, ...(state.team || {}) }, products: { ...defaults.products, ...(state.products || {}) }, source: { ...defaults.source, ...(state.source || {}) } } : defaults
 }
 
 /** Errors of one step as i18n keys (`dealWorkspace.wizard.errors.*`); empty object = step is valid. */
@@ -64,6 +65,7 @@ export function validateWizardStep(step, state) {
     if (new Set(keys).size !== keys.length) errors.members = 'duplicateMember'
     if (state.team.members.some((member) => !member.refId || !member.role)) errors.members = 'incompleteMember'
   }
+  if (step === 'products' && state.products.ids.some((id) => !validProductDetails(state.products.details?.[id]))) errors.details = 'invalidProductDetails'
   if (step === 'source') Object.assign(errors, validateLeadSource(state.source))
   return errors
 }
@@ -113,7 +115,7 @@ export function countTeam(state) {
  * 2. `POST /api/tenant/deals`
  * 3. `POST /api/tenant/deals/team` once for the whole team: `{ deal_id, users: [{ user_id, role }], teams: [{ team_id, role }] }`
  *    (empty lists are left out; skipped when nobody was chosen)
- * 4. `POST /api/tenant/deals/products` with `product_ids` (skipped without products)
+ * 4. `POST /api/tenant/deals/{dealId}/products` with `products[].details` (skipped without products)
  * 5. source: `POST /api/tenant/deals/{id}/campaigns` `{ campaign_ids, is_active }` (campaigns mode), or
  *    `POST /api/tenant/deals/leads/add-existing` once + `POST /api/tenant/deals/leads/create` per new lead (leads mode)
  * `deal`, `team`, `products` and the source requests take the ids created by the earlier requests.
@@ -138,8 +140,8 @@ export function buildWizardRequests(state) {
       owner_id: toNumber(basics.owner_id),
     }).filter(([, value]) => value !== undefined && value !== '')),
     team: (dealId) => buildTeamPayload(resolveTeamMembers(state), dealId),
-    products: (dealId) => (state.products.ids.length
-      ? { deal_id: toNumber(dealId) ?? dealId, product_ids: state.products.ids.map((id) => toNumber(id) ?? id) }
+    products: () => (state.products.ids.length
+      ? buildDealProductsPayload(state.products.ids, state.products.details)
       : null),
     campaigns: () => buildCampaignsPayload(state.source),
     existingLeads: (dealId) => buildExistingLeadsPayload(state.source, dealId),

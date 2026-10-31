@@ -240,6 +240,34 @@ export default {
       "create": {
         "title": "محادثة أو مجموعة جديدة",
         "description": "بدء محادثة مع زميل أو إنشاء مجموعة للفريق.",
+        "form": {
+          "shortcutTitle": "إنشاء محادثة أو مجموعة",
+          "shortcutDescription": "اختر نوع المحادثة ثم أضف المستخدمين.",
+          "shortcutLabel": "جديد",
+          "mode": {
+            "group": "إنشاء مجموعة",
+            "direct": "محادثة مباشرة جديدة"
+          },
+          "groupName": "اسم المجموعة",
+          "groupNamePlaceholder": "اكتب اسم المجموعة",
+          "searchUsersPlaceholder": "ابحث عن مستخدم...",
+          "sharedGroups": "{{count}} مجموعات مشتركة",
+          "startDirect": "ابدأ محادثة",
+          "creatingDirect": "جاري الإنشاء...",
+          "createGroup": "إنشاء المجموعة",
+          "creatingGroup": "جاري إنشاء المجموعة...",
+          "noUsers": "لا يوجد مستخدمون متاحون.",
+          "userFallback": "مستخدم",
+          "errors": {
+            "groupNameRequired": "يرجى إدخال اسم المجموعة",
+            "groupMembersRequired": "يرجى اختيار عضو واحد على الأقل",
+            "createFailed": "تعذر إنشاء المحادثة"
+          },
+          "messages": {
+            "groupCreated": "تم إنشاء المجموعة بنجاح",
+            "directCreated": "تم إنشاء المحادثة بنجاح"
+          }
+        },
         "items": {
           "direct": "محادثة فردية مع زميل",
           "group": "مجموعة باسم وأعضاء",

@@ -21,6 +21,7 @@ export default {
     "setup": "Setup"
   },
   "pages": {
+    "chats": "Conversations",
     "overview": "Overview",
     "pipeline": "Pipeline",
     "contracts": "Contracts",
@@ -37,6 +38,7 @@ export default {
     "settings": "Settings"
   },
   "pageDescriptions": {
+    "chats": "Internal groups for this deal.",
     "overview": "Headline numbers, pace against the target and what needs attention.",
     "pipeline": "The deal's leads by stage, as a board or a table.",
     "contracts": "Contracts created when a lead is won, with their payment plans and installments.",

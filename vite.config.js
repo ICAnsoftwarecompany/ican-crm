@@ -35,7 +35,7 @@ function resolveTenantFromDevHost(host = '', rootDomain = '') {
 
 function resolveDevProxyTarget(req, env) {
   const configuredTarget = String(env.VITE_API_DEV_PROXY_TARGET || '').trim()
-  const rootDomain = trimDomain(env.VITE_API_ROOT_DOMAIN || '3s-export.com')
+  const rootDomain = trimDomain(env.VITE_API_ROOT_DOMAIN || 'app.main.alameer-realestate.com')
   const scheme = normalizeScheme(env.VITE_API_SCHEME || 'https')
   const tenant = resolveTenantFromDevHost(req.headers.host, rootDomain)
 

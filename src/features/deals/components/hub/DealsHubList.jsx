@@ -32,6 +32,7 @@ export function DealsHubList() {
 
   // Newest first, so the quick-info limit keeps the deals people work on now.
   const deals = useMemo(() => [...query.deals]
+    .filter((deal) => !String(deal.description ?? '').toLowerCase().includes('lead-cente'))
     .sort((left, right) => String(right.created_at || '').localeCompare(String(left.created_at || '')) || Number(right.id) - Number(left.id))
     .map((deal) => ({ ...deal, statusValue: getDealStatusValue(deal.status), leadsCount: Number(deal.leads_count ?? deal.deal_leads_count ?? 0) })), [query.deals])
   const quick = useDealsQuickInfo(deals)

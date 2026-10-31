@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import { CustomerActivityLinkBadge } from '../../../../features/customers/components/CustomerActivityLinkBadge'
 import {
   CalendarDays,
   CalendarPlus,
@@ -49,6 +50,7 @@ import { CalendarTab } from './tabs/CalendarTab'
 import { EmailsTab } from './tabs/EmailsTab'
 import { FilesTab } from './tabs/FilesTab'
 import { HomeTab } from './tabs/HomeTab'
+import { CustomerDealsDrawerSection, CustomerDealsCount } from '../../../../features/customers'
 import { InterestsTab } from './tabs/InterestsTab'
 import { NotesTab } from './tabs/NotesTab'
 import { TasksTab } from './tabs/TasksTab'
@@ -841,6 +843,7 @@ function CustomerHeaderModern({
   isLoadingDetails,
   onStatusChanged,
   onTagChanged,
+  hideOutcomeActions = false,
 }) {
   const { t } = useTranslation()
   const source = customer.source || customer.lead?.source || customer.linked_type || customer.lead?.linked_type
@@ -879,6 +882,8 @@ function CustomerHeaderModern({
             >
               {customerName}
             </h3>
+            <CustomerActivityLinkBadge customer={customer} />
+            <CustomerDealsCount customerId={customer.id} />
             <CustomerSourceBadge source={source} iconOnly title={source ? t('customers.drawer.sourceTitle', { source }) : undefined} />
             {freshLead ? (
               <span
@@ -982,7 +987,7 @@ function CustomerHeaderModern({
               </span>
             )}
           </div>
-          <CustomerOutcomeButtons customer={customer} onDone={() => onStatusChanged?.()} />
+          {!hideOutcomeActions && <CustomerOutcomeButtons customer={customer} onDone={() => onStatusChanged?.()} />}
         </div>
       </div>
     </div>
@@ -1311,6 +1316,9 @@ export function CustomerDetailsContent({
   showOpenPageButton = false,
   mode = 'drawer',
   initialTab = 'timeline',
+  showCustomerDeals = false,
+  renderQuickActions,
+  quickActionOverrides,
 }) {
   const { t } = useTranslation()
   const contentRef = useRef(null)
@@ -1463,6 +1471,7 @@ export function CustomerDetailsContent({
         <div className="grid min-w-0 gap-4 xl:h-full xl:min-h-0 xl:grid-cols-[390px_minmax(0,1fr)]">
           <aside className="min-w-0 space-y-3 xl:h-full xl:min-h-0 xl:overflow-y-auto xl:overscroll-contain xl:pe-1">
             <CustomerHeaderModern
+              hideOutcomeActions={Boolean(renderQuickActions || quickActionOverrides)}
               customer={detailedCustomer}
               currentStatus={currentStatus}
               currentTag={currentTag}
@@ -1475,7 +1484,8 @@ export function CustomerDetailsContent({
               detailsPageId={detailsPageId}
             />
             <div className="mt-3 flex min-w-0 flex-wrap items-start gap-2">
-              <CustomerQuickActions
+              {renderQuickActions ? renderQuickActions() : <CustomerQuickActions
+                actionOverrides={quickActionOverrides}
                 customer={detailedCustomer}
                 currentStatus={currentStatus}
                 statuses={leadStatuses}
@@ -1485,7 +1495,8 @@ export function CustomerDetailsContent({
                 onStatusChanged={refreshCustomerDetails}
                 onInterestChanged={refreshCustomerDetails}
                 className="mt-0 min-w-0 flex-1"
-              />
+              />}
+              {renderQuickActions && <CustomerQuickActions customer={detailedCustomer} onOpenChat={openFloatingChat} onlyIds={['sms', 'whatsapp', 'messenger', 'email']} />}
             </div>
             <section className="min-w-0 rounded-2xl border border-[#BEEFF2] bg-white p-4 shadow-sm">
               <HomeTab customer={detailedCustomer} layoutMode="compact" />
@@ -1526,6 +1537,7 @@ export function CustomerDetailsContent({
   return (
     <div ref={contentRef} className={wrapperClassName} data-customer-details-layout={layoutMode}>
       <CustomerHeaderModern
+        hideOutcomeActions={Boolean(renderQuickActions || quickActionOverrides)}
         customer={detailedCustomer}
         currentStatus={currentStatus}
         currentTag={currentTag}
@@ -1538,7 +1550,8 @@ export function CustomerDetailsContent({
         detailsPageId={detailsPageId}
       />
       <div className="mt-3 flex min-w-0 flex-wrap items-start gap-2">
-        <CustomerQuickActions
+        {renderQuickActions ? renderQuickActions() : <CustomerQuickActions
+          actionOverrides={quickActionOverrides}
           customer={detailedCustomer}
           currentStatus={currentStatus}
           statuses={leadStatuses}
@@ -1548,7 +1561,8 @@ export function CustomerDetailsContent({
           onStatusChanged={refreshCustomerDetails}
           onInterestChanged={refreshCustomerDetails}
           className="mt-0 min-w-0 flex-1"
-        />
+        />}
+        {renderQuickActions && <CustomerQuickActions customer={detailedCustomer} onOpenChat={openFloatingChat} onlyIds={['sms', 'whatsapp', 'messenger', 'email']} />}
       </div>
       <DrawerTabs
         activeTab={activeTab}
@@ -1557,6 +1571,7 @@ export function CustomerDetailsContent({
         onTabOrderChange={setDrawerTabOrder}
         containerWidth={contentWidth}
       />
+      {enabled && showCustomerDeals && ['timeline', 'home'].includes(activeTab) && customer?.id != null && <CustomerDealsDrawerSection key={customer.id} customerId={customer.id} />}
       <ActiveTabContent
         activeTab={activeTab}
         customer={detailedCustomer}
@@ -1572,7 +1587,7 @@ export function CustomerDetailsContent({
   )
 }
 
-export function CustomerDetailsDrawer({ customer, open, onClose, onStatusChanged, initialTab = 'timeline' }) {
+export function CustomerDetailsDrawer({ customer, open, onClose, onStatusChanged, initialTab = 'timeline', showCustomerDeals = false, detailsPagePath, renderQuickActions, quickActionOverrides }) {
   const { t } = useTranslation()
   const detailsPageId = customer?.id || getLeadId(customer)
 
@@ -1593,7 +1608,7 @@ export function CustomerDetailsDrawer({ customer, open, onClose, onStatusChanged
       topOffset="calc(var(--layout-header-height, 48px) - 1px)"
       headerActions={detailsPageId ? (
         <Link
-          to={`/lead/${detailsPageId}`}
+          to={detailsPagePath || `/lead/${detailsPageId}`}
           className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] px-2.5 text-xs font-black text-[#007A80] shadow-sm transition-colors hover:bg-[#E8F9FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#BEEFF2]"
           title={t('customers.drawer.openCustomerPage')}
           aria-label={t('customers.drawer.openCustomerPage')}
@@ -1604,12 +1619,15 @@ export function CustomerDetailsDrawer({ customer, open, onClose, onStatusChanged
       ) : null}
     >
       <CustomerDetailsContent
+        renderQuickActions={renderQuickActions}
+        quickActionOverrides={quickActionOverrides}
         customer={customer}
         enabled={open}
         onStatusChanged={onStatusChanged}
         showOpenPageButton={false}
         mode="drawer"
         initialTab={initialTab}
+        showCustomerDeals={showCustomerDeals}
       />
     </AppDrawer>
   )

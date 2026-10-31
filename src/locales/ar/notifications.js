@@ -63,6 +63,7 @@ export default {
     meetingReminder: 'تذكير باجتماع',
     callReminder: 'تذكير بمكالمة',
     messageReceived: 'رسالة جديدة',
+    teamChatMessageReceived: 'رسالة جديدة في الشات الداخلي',
     campaignFinished: 'اكتملت الحملة',
     campaignFailed: 'فشلت الحملة',
     workflowFailed: 'فشل سير العمل',

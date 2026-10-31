@@ -18,8 +18,11 @@ export function FormDialog({
   size = 'md',
   showCancel = true,
   showCloseButton = true,
+  closeOnBackdrop = true,
+  closeOnEscape = true,
   className,
   contentClassName,
+  footerActions,
 }) {
   const { t } = useTranslation()
   const handleSubmit = (e) => {
@@ -32,12 +35,15 @@ export function FormDialog({
     <AppModal
       isOpen={open}
       onClose={onClose}
+      closeOnBackdrop={closeOnBackdrop}
+      closeOnEscape={closeOnEscape}
       title={title}
       description={description}
       size={size}
       className={className}
       footer={
         <div className="flex gap-2 justify-end">
+          {footerActions}
           {showCancel && (
             <Button
               type="button"

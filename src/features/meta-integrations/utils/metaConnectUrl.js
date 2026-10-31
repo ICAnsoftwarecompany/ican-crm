@@ -11,7 +11,7 @@ export function resolveMetaConnectUrl(link = '') {
   if (!value) return ''
   if (/^https?:\/\//i.test(value)) return value
 
-  const rootDomain = trimSlashes(import.meta.env.VITE_API_ROOT_DOMAIN || '3s-export.com').replace(/^https?:\/\//i, '')
+  const rootDomain = trimSlashes(import.meta.env.VITE_API_ROOT_DOMAIN || 'app.main.alameer-realestate.com').replace(/^https?:\/\//i, '')
   const scheme = String(import.meta.env.VITE_API_SCHEME || 'https').replace(/:$/, '')
 
   if (!rootDomain) return value

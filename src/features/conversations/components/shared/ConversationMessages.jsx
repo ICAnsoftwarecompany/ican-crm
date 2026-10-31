@@ -435,7 +435,9 @@ export function ConversationMessages({
           )
           const timestampValue = message?.raw?.sent_at || message?.createdAt || message?.raw?.created_at
           const dateTimeLabel = formatDateTime12PreserveSource(timestampValue)
-          const senderName = getSenderName(message)
+          const senderName = message?.senderName || getSenderName(message)
+          const incomingStyle = !outgoing && message?.incomingStyle ? message.incomingStyle : null
+          const showGroupSender = !outgoing && Boolean(message?.showSenderName && senderName)
           const statusLabel = getStatusLabel(message?.status)
           const showOutgoingMeta = outgoing && (senderName || dateTimeLabel || statusLabel)
           const attachments = Array.isArray(message.attachments) ? message.attachments : []
@@ -502,13 +504,19 @@ export function ConversationMessages({
                       ? 'rounded-br-md text-white'
                       : 'rounded-bl-md border border-[var(--border)] bg-[var(--surface)] text-[var(--text)]'
                   } ${isHighlighted ? 'ring-2 ring-[#00C2CB] ring-offset-2 ring-offset-[#F8FEFF] shadow-[0_0_0_3px_rgba(0,194,203,0.12)]' : ''}`}
-                  style={outgoing ? { backgroundColor: channelColor } : undefined}
+                  style={outgoing ? { backgroundColor: channelColor } : incomingStyle ? { backgroundColor: incomingStyle.background, borderColor: incomingStyle.border, color: incomingStyle.text } : undefined}
                 >
                   {isHighlighted && (
                     <div className={`mb-1 text-[10px] font-black ${outgoing ? 'text-white/85' : 'text-[var(--brand-accent)]'}`}>
                       جديد
                     </div>
                   )}
+
+                  {showGroupSender ? (
+                    <div className="mb-1 truncate text-[10px] font-black" style={{ color: incomingStyle?.text || '#0F766E' }}>
+                      {senderName}
+                    </div>
+                  ) : null}
 
                   {replyTargetId || replyLabel ? (
                     <button
@@ -551,7 +559,8 @@ export function ConversationMessages({
                 ) : null}
 
                 {!outgoing && dateTimeLabel ? (
-                  <div className="mt-1.5 flex items-center justify-start text-[10px] font-semibold text-[var(--text-muted)]">
+                  <div className="mt-1.5 flex items-center justify-start gap-2 text-[10px] font-semibold text-[var(--text-muted)]">
+                    {showGroupSender ? <span className="max-w-[220px] truncate" style={{ color: incomingStyle?.text || '#0F766E' }}>{senderName}</span> : null}
                     <span>{dateTimeLabel}</span>
                   </div>
                 ) : null}

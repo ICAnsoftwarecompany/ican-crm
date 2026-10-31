@@ -3,7 +3,7 @@ import httpClient from '../../../services/httpClient'
 // Postman "Deals Workspace → Pipeline Template": reads and delete live on `/api/pipeline-templates`,
 // create and update ("update + sync") on `/api/tenant/pipeline-templates`. Kept exactly as the collection
 // has them (changed 2026-10-03 — create/update used to post to `/api/pipeline-templates`).
-const READ_PATH = '/api/pipeline-templates'
+const READ_PATH = '/api/tenant/pipeline-templates'
 const WRITE_PATH = '/api/tenant/pipeline-templates'
 
 export const pipelineTemplatesApi = {

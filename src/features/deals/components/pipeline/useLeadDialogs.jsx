@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ScheduleActivityDialog } from '../../../activities'
@@ -7,6 +9,14 @@ import { WonDialog } from '../closing/WonDialog'
 import { LostDialog } from '../closing/LostDialog'
 import { BulkAssignDialog } from '../leads/BulkAssignDialog'
 import { DealLeadDrawer } from '../leads/DealLeadDrawer'
+import { FollowUpNoteDialog, LeadInterestDialog } from '../../../leads'
+import { definitionsApi } from '../../../definitions'
+import { dealLeadCustomer, dealLeadPath, dealDrawerActionOverrides } from '../../utils/dealLeadActions'
+import { dealKeys } from '../../constants/dealQueryKeys'
+import { useDealWorkspace } from '../../hooks/useDealWorkspace'
+import { useLeadTaskAction } from '../../../lead-tasks'
+
+const EMPTY_STATUSES = []
 
 /**
  * Every dialog a deal lead can open (drawer, won, lost, assign, call/meeting) + the `actions` object the
@@ -15,12 +25,25 @@ import { DealLeadDrawer } from '../leads/DealLeadDrawer'
  */
 export function useLeadDialogs({ dealId, leads, stages, people }) {
   const { t } = useTranslation()
+  const { renderCustomerDrawer } = useDealWorkspace()
+  const navigate = useNavigate()
+  const client = useQueryClient()
   const { changeStage } = useDealLeadMutations(dealId)
   const [drawerId, setDrawerId] = useState(null)
   const [won, setWon] = useState(null)
   const [lost, setLost] = useState(null)
   const [assign, setAssign] = useState(null)
   const [schedule, setSchedule] = useState(null)
+  const [followUp, setFollowUp] = useState(null)
+  const [interest, setInterest] = useState(null)
+  const taskAction = useLeadTaskAction({ dealId })
+  const statusesQuery = useQuery({ queryKey: ['customers', 'lead-status-tabs'], queryFn: () => definitionsApi.getStatuses(), enabled: Boolean(followUp), staleTime: 60000 })
+  const statuses = statusesQuery.data?.data?.lead || EMPTY_STATUSES
+  const onCrmSaved = () => {
+    client.invalidateQueries({ queryKey: dealKeys.all })
+    client.invalidateQueries({ queryKey: ['customers'] })
+    client.invalidateQueries({ queryKey: ['leads'] })
+  }
 
   const drawerLead = drawerId ? leads.find((lead) => String(lead.id) === String(drawerId)) || null : null
 
@@ -35,18 +58,29 @@ export function useLeadDialogs({ dealId, leads, stages, people }) {
 
   const actions = {
     onOpen: (lead) => setDrawerId(lead.id),
-    onWon: (lead, stage = null) => setWon({ lead, stage }),
-    onLost: (lead, stage = null) => setLost({ lead, stage }),
+    onAddTask: (rows) => { setDrawerId(null); taskAction.open(rows) },
+    onWon: (lead, stage = null) => { setDrawerId(null); setWon({ lead, stage }) },
+    onLost: (lead, stage = null) => { setDrawerId(null); setLost({ lead, stage }) },
     onAssign: (rows, clearSelection) => setAssign({ rows, clearSelection }),
-    onSchedule: (lead, type) => setSchedule({ lead, type }),
+    onSchedule: (lead, type) => { setDrawerId(null); setSchedule({ lead, type }) },
+    onFollowUp: (lead) => { setDrawerId(null); setFollowUp(dealLeadCustomer(lead)) },
+    onInterest: (lead) => { setDrawerId(null); setInterest(dealLeadCustomer(lead)) },
+    onOpenPage: (lead) => navigate(dealLeadPath(dealId, lead.id)),
   }
 
   const dialogs = (
     <>
-      <DealLeadDrawer dealId={dealId} lead={drawerLead} stages={stages} people={people} open={Boolean(drawerLead)} onClose={() => setDrawerId(null)} actions={actions} />
+      {taskAction.dialog}
+      {drawerLead && renderCustomerDrawer ? renderCustomerDrawer({
+        customer: dealLeadCustomer(drawerLead), open: true, onClose: () => setDrawerId(null),
+        onStatusChanged: onCrmSaved, detailsPagePath: dealLeadPath(dealId, drawerLead.id),
+        quickActionOverrides: dealDrawerActionOverrides(drawerLead, actions, t),
+      }) : <DealLeadDrawer dealId={dealId} lead={drawerLead} stages={stages} people={people} open={Boolean(drawerLead)} onClose={() => setDrawerId(null)} actions={actions} />}
       <WonDialog dealId={dealId} lead={won?.lead} open={Boolean(won)} onClose={() => setWon(null)} onWon={() => moveAfterClose(won)} />
       <LostDialog dealId={dealId} lead={lost?.lead} open={Boolean(lost)} onClose={() => setLost(null)} onLost={() => moveAfterClose(lost)} />
       <BulkAssignDialog dealId={dealId} leads={assign?.rows || []} people={people} open={Boolean(assign)} onClose={() => setAssign(null)} onDone={() => assign?.clearSelection?.()} />
+      {followUp && <FollowUpNoteDialog open customer={followUp} statuses={statuses} onClose={() => setFollowUp(null)} onSaved={onCrmSaved} />}
+      {interest && <LeadInterestDialog open customer={interest} onClose={() => setInterest(null)} onSaved={onCrmSaved} />}
       {schedule && (
         <ScheduleActivityDialog
           type={schedule.type}

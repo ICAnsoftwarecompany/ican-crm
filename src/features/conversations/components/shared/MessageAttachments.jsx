@@ -231,7 +231,7 @@ export function MessageAttachments({ attachments = [], outgoing = false, onOpenM
       {attachments.map((attachment, index) => {
         const type = String(attachment?.type || '').toLowerCase()
         const url = attachment?.url || ''
-        const label = attachment?.mimeType || attachment?.mime_type || type || 'file'
+        const label = attachment?.label || attachment?.file_name || attachment?.name || attachment?.filename || attachment?.mimeType || attachment?.mime_type || type || 'file'
         const sizeLabel = formatFileSize(attachment?.size)
         const key = attachment?.key || attachment?.id || `${url}-${index}`
 

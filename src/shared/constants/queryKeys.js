@@ -15,6 +15,9 @@ export const QUERY_KEYS = {
     myLeads: ['leads', 'my-leads'],
   },
   customers: {
+    done: (filters) => ['customers', 'done', filters],
+    retargeting: (filters) => ['customers', 'retargeting', filters],
+    lost: (filters) => ['customers', 'lost', filters],
     all: ['customers'],
     list: (filters) => ['customers', 'list', filters],
     detail: (id) => ['customers', 'detail', id],

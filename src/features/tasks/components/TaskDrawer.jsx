@@ -51,6 +51,8 @@ export function TaskDrawer({
   onClose,
   onUpdated,
   onDeleted,
+  portal = false,
+  containerClassName,
 }) {
   const { t, i18n } = useTranslation()
   const [isEditing, setIsEditing] = useState(false)
@@ -197,6 +199,8 @@ export function TaskDrawer({
       title={task ? getTaskTitle(task, t) : t('tasks.drawer.taskDetailsTitle')}
       description={task ? typeMeta.label : '...'}
       size="xl"
+      portal={portal}
+      containerClassName={containerClassName}
     >
       {infoQuery.isLoading && (
         <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm font-semibold text-[var(--text-muted)]">

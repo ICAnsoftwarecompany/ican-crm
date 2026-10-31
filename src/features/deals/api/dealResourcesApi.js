@@ -17,7 +17,9 @@ export const dealResourcesApi = {
   updateTeamMember: async (memberId, payload) => (await httpClient.post(`${BASE_PATH}/team/${memberId}`, payload)).data,
 
   getProducts: async (dealId, params) => (await httpClient.get(`${BASE_PATH}/${dealId}/products`, { params })).data,
-  /** `{ deal_id, product_ids: [] }` */
-  addProducts: async (payload) => (await httpClient.post(`${BASE_PATH}/products`, payload)).data,
+  getProduct: async (dealId, productId) => (await httpClient.get(`${BASE_PATH}/${dealId}/products/${productId}`)).data,
+  /** `{ products: [{ product_id, details: {} }] }`; deal ID belongs in the URL. */
+  addProducts: async (dealId, payload) => (await httpClient.post(`${BASE_PATH}/${dealId}/products`, payload)).data,
+  updateProduct: async (dealId, productId, payload) => (await httpClient.patch(`${BASE_PATH}/${dealId}/products/${productId}`, payload)).data,
   removeProduct: async (dealId, productId) => (await httpClient.delete(`${BASE_PATH}/${dealId}/products/${productId}`)).data,
 }

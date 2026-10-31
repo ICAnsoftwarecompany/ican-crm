@@ -163,7 +163,7 @@ function trimSlashes(value = '') {
 }
 
 function getMessengerMediaBaseUrl(path = '') {
-  const rootDomain = trimSlashes(import.meta.env.VITE_API_ROOT_DOMAIN || '3s-export.com').replace(/^https?:\/\//i, '')
+  const rootDomain = trimSlashes(import.meta.env.VITE_API_ROOT_DOMAIN || 'app.main.alameer-realestate.com').replace(/^https?:\/\//i, '')
   const scheme = String(import.meta.env.VITE_API_SCHEME || 'https').replace(/:$/, '')
   const tenantFromHost = resolveTenantFromHostname(undefined, rootDomain)
   const tenantFromPath = String(path || '').split('/').filter(Boolean)[0] || ''
@@ -624,9 +624,23 @@ export function getMessengerNotificationData(payload = {}) {
 export function isMessengerNotification(payload = {}) {
   const data = getMessengerNotificationData(payload)
   const type = String(payload.type || data.type || data.channel || data.source || '').toLowerCase()
-  if (type.includes('whatsapp') || type.includes('gmail')) return false
+  const haystack = [
+    type,
+    payload.event,
+    payload.channel,
+    payload.action,
+    data.event,
+    data.action,
+    data.channel,
+    payload.notification?.type,
+  ].filter(Boolean).join(' ').toLowerCase()
+
+  if (haystack.includes('whatsapp') || haystack.includes('gmail')) return false
+  if (haystack.includes('internal') || haystack.includes('team-chat')) return false
+  if (haystack.includes('chat.') || haystack.includes('chat_') || haystack.includes('chat ')) return false
+
   return (
-    type.includes('messenger') ||
+    haystack.includes('messenger') ||
     Boolean(payload.conversation?.id || data.conversation?.id || payload.conversation_id || data.conversation_id)
   )
 }

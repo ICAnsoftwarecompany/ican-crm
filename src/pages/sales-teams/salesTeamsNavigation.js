@@ -32,6 +32,7 @@ export function getSalesTeamsSidebarConfig(t) {
             children: [{ id: 'new-rule', to: SALES_TEAMS_ROUTES.newRule, label: t('salesTeams.nav.newRule'), icon: Plus }],
           },
           { id: 'channels', to: SALES_TEAMS_ROUTES.channels, label: t('salesTeams.nav.channels'), icon: MessagesSquare },
+          { id: 'manual', to: SALES_TEAMS_ROUTES.manual, label: t('salesTeams.manual.title'), icon: UserCheck },
         ],
       },
       {

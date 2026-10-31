@@ -1,6 +1,7 @@
 import httpClient from '../../../services/httpClient'
 
 export const leadAssignmentApi = {
+  distributeManually: async (payload) => (await httpClient.post('/api/tenant/leads/manual/lead/distribution', payload)).data,
   createRule: async (payload) => {
     const res = await httpClient.post('/api/tenant/lead-assignment/create/rule', payload)
     return res.data

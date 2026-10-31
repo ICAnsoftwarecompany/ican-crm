@@ -1,4 +1,69 @@
 export default {
+  leadTaskDisplay: { column: 'Tasks', count: '{{count}} tasks', open: 'Open tasks', openTask: 'Open task', remaining: 'Remaining: {{days}}d {{hours}}h {{minutes}}m', overdue: 'Overdue: {{days}}d {{hours}}h {{minutes}}m', noDeadline: 'No scheduled open task' },
+  leadTasksInvalidTargets: 'Cannot save: {{count}} selected customers have no valid lead ID.',
+  leadTasks: { add: 'Add task', copies: 'An independent task will be created for each of {{count}} leads.', checklist: 'Checklist', addItem: 'Add item', item: 'Item {{number}}', completedItem: 'Complete item {{number}}', removeItem: 'Remove', date: 'Due date (optional)', time: 'Time (optional)', reminder: 'Enable reminder', progress: 'Created {{count}} of {{total}} tasks', failed: 'Could not create the task', retry: 'Retry remaining tasks' },
+  activityContext: { inside: 'Activity within a deal', outside: 'Activity outside a deal', linked: 'Linked to a deal', unlinked: 'Not linked to a deal' },
+  leadCreate: {
+    title: 'Add lead', saveNext: 'Save and add another', saved: 'Lead added', failed: 'Could not add the lead', tenantMissing: 'The current tenant could not be identified', automatic: 'Automatic distribution', agent: 'Owner', status: 'Status', tag: 'Tag', source: 'Source', linkedType: 'Link type', linkDate: 'Link date', manual: 'Manual', automation: 'Automation', none: 'None', attributes: 'Custom fields', addAttribute: 'Add field', attributeName: 'Field name', attributeValue: 'Field value', interests: 'Interested products', addInterest: 'Add interest', product: 'Product', interestLevel: 'Interest level', low: 'Low', medium: 'Medium', high: 'High', interestNote: 'Interest note', note: 'Note', remove: 'Remove', optionsError: 'Some options could not be loaded', company: 'Company',
+  },
+  transfer: {
+    import: 'Import', export: 'Export', upload: 'Upload file', saveRows: 'Save pending rows', savedCount: 'Saved: {{count}}', emptyFile: 'No rows were found in the file', failed: 'The operation could not be completed', name: 'Name', phone: 'Phone', email: 'Email', company: 'Company', state: 'State', pending: 'Pending', saved: 'Saved', empty: 'No leads added yet', format: 'File format', download: 'Export all customers', exported: '{{count}} customers exported',
+  },
+  deals360: {
+    dealColumn: 'Deal {{number}}',
+    openCustomerDeals: 'Open customer deals',
+    viewContract: 'View contract details',
+    title: 'Customer Deals', customer: 'Customer', deal: 'Deal', deals_count: 'All deals', open: 'Open', won: 'Won', lost: 'Lost', total_won_value: 'Total won value', all: 'All', filter: 'Filter deals', search: 'Search deals or contracts', loading: 'Loading customer deals', error: 'Could not load customer deals.', retry: 'Try again', refresh: 'Refresh', empty: 'This customer has no deals yet.', noMatches: 'No matching deals.', unavailable: '-', owner: 'Owner', stage: 'Stage', value: 'Value', date: 'Deal date', lostReason: 'Loss reason', products: 'Products', product: 'Product', quantity: 'Quantity', unitPrice: 'Unit price', discount: 'Discount', total: 'Total', noProducts: 'No products recorded.', contracts: 'Sales contracts', noContracts: 'No contracts recorded.', openContracts: 'Open deal contracts', openDeal: 'Open deal', downPayment: 'Down payment', payment: 'Payment method', status: 'Status', signedAt: 'Signed on', frequency: 'Frequency', installmentCount: 'Installment count', firstDue: 'First due date', installments: 'Installment schedule', installment: 'Installment', dueDate: 'Due date', amount: 'Amount', paidAmount: 'Paid amount', paidAt: 'Paid on',
+    states: { won: 'Won', open: 'Open', lost: 'Lost', active: 'Active', cancelled: 'Cancelled', paid: 'Paid', partial: 'Partially paid', pending: 'Pending', late: 'Late', overdue: 'Overdue', cash: 'Cash', installment: 'Installments', installments: 'Installments', bank_transfer: 'Bank transfer', monthly: 'Monthly', weekly: 'Weekly', daily: 'Daily', quarterly: 'Quarterly', yearly: 'Yearly' },
+  },
+  "wonSteps": { "label": "Record win steps", "products": "Products", "payment": "Payment", "settings": "Other settings", "next": "Next", "previous": "Back" },
+  "lostStatusSync": {
+    "label": "Lost status",
+    "choose": "Choose lost status",
+    "required": "Choose a lost status to complete saving",
+    "noStatuses": "No active lost status exists. Add an is_lost status in status settings.",
+    "activityTitle": "Loss recorded from Leads Center",
+    "activityDescription": "Recorded a loss for {{name}} and changed their status to {{status}}",
+    "partialFailure": "Completed {{saved}} customers; could not complete {{failed}}: {{error}}. Save again to retry only the remaining steps."
+  },
+  "contextTiles": { "meeting": "Meeting", "call": "Call", "followUp": "Follow-up", "interest": "Interest", "select": "Select customer" },
+  "wonStatusSync": {
+    "label": "Sale status after completion",
+    "choose": "Choose sale status",
+    "required": "Choose a sale status to complete the transaction",
+    "noStatuses": "No active sale status exists. Add an is_deal status in status settings.",
+    "activityTitle": "Sale recorded from Leads Center",
+    "activityDescription": "Recorded a win for {{name}} and changed their status to {{status}}",
+    "partialFailure": "The sale was recorded, but the customer status could not be updated: {{error}}. Save again to retry the status update only."
+  },
+  "wonDealFlow": {
+    "question": "Does this customer belong to an existing deal?",
+    "yes": "Yes, an existing deal",
+    "no": "No, create a new deal",
+    "autoHint": "Recording the win creates a deal named after the customer and purchased products, then records the sale against it.",
+    "autoDescription": "Sale to {{name}}",
+    "createFailed": "The new deal ID could not be read. Check the deal before retrying.",
+    "document": "After recording the win",
+    "none": "No additional action",
+    "contract": "Open sales contract",
+    "invoice": "Issue invoice (coming soon)",
+    "invoiceUnavailable": "Ready to connect when the invoice API is available",
+    "documentHint": "Recording a win automatically creates the contract and payment plan on the server. The contract option opens the customer deals and contracts after saving. Invoice issuing is being prepared."
+  },
+  "customerSegments": { "done": "Purchased or completed", "retargeting": "Retargeting customers" },
+  "segmentStatuses": { "done": "Purchased or completed", "won": "Won", "lost": "Lost", "pending": "Pending", "active": "Active", "retargeting": "Retargeting", "retarget": "Retargeting" },
+  "dealLink": {
+    "startDate": "Starts: {{date}}",
+    "endDate": "Ends: {{date}}",
+    "targetRevenue": "Target revenue: {{value}}",
+    "targetLeads": "Target leads: {{value}}",
+    "badge": "In a deal",
+    "linked": "This customer is already linked to a deal",
+    "number": "Deal #{{id}}",
+    "status": "Deal status: {{status}}",
+    "addedAt": "Added to deal: {{date}}",
+    "statuses": { "lost": "Lost", "won": "Won", "open": "Open", "active": "Active", "pending": "Pending", "in_progress": "In progress" }
+  },
   "title": "Leads Center",
   "newCustomer": "New Customer",
   "noCustomers": "No leads found",
@@ -98,6 +163,7 @@ export default {
     "noMeetingsInRange": "No meetings in the last {{range}} in the current tab",
     "noCallsInRange": "No calls in the last {{range}} in the current tab",
     "allStatuses": "All Statuses",
+    "noStatus": "No status",
     "toasts": {
       "activityStarted": "Activity started successfully",
       "activityCancelled": "Activity cancelled successfully",
@@ -110,6 +176,7 @@ export default {
       "activitySavedDesc": "{{activity}} for {{name}}.",
       "statusUpdated": "Customer status updated",
       "statusUpdatedDesc": "{{name}} moved to {{status}}. Customer data updated automatically.",
+      "ownerAssigned": "{{name}} assigned to the selected owner.",
       "newStatusFallback": "the new status"
     },
     "confirm": {
@@ -128,6 +195,8 @@ export default {
       "addMeeting": "Add meeting appointment",
       "addCall": "Add call appointment",
       "addFollowUp": "Add follow-up for the customer",
+      "assignOwner": "Assign customer to owner",
+      "assignOwnerDesc": "Choose the owner for {{name}}.",
       "customerActionsSection": "Customer actions",
       "selectCustomer": "Select customer: {{name}}"
     },

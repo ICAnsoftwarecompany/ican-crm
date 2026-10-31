@@ -32,3 +32,13 @@ plain change and render `dialog`.
 **Known gaps:** the server does not block moving a closed lead yet (§A3) — UI guard only; reasons per status are not saved yet
 (§A4); the open-deal block needs `deals[]` on the lead row (§A5); close fields live in `data`, so reports cannot group them yet
 (§A2, §A8). Not seen in a browser (no login available).
+## Sale status wizard - 2026-10-17 22:21 (Africa/Cairo)
+
+Bulk callback clarification - 2026-10-17 22:23 (Africa/Cairo): successful rows accumulate locally; the existing `{ status, mode, done }` callback runs only at the end of the queue or on explicit cancellation after partial success. This keeps bulk selection alive between customers and reports the total completed count. Cancelling before any success does not invoke the callback.
+
+`useLeadCloseRequest` now routes all intercepted `won` statuses (`is_deal: 1`) to `LeadWonDialog` from lead outcomes, not the legacy "record sale here / add to deal" form. It supplies the selected status through `initialSaleStatusId`; the wizard still validates it against current active sale definitions. Products, payment and other settings lead to deal creation/selection, direct won and audited status synchronization. No plain sale status change occurs before transaction completion. Multiple selected customers are processed one at a time with a fresh keyed wizard; successful ones advance, cancelling stops the remaining queue, and failures stay in the wizard for retry. Callbacks retain the existing `{ status, mode, done }` shape (one success at a time). Lost, retarget and reopen keep their existing dialogs. Direct consumers of the legacy LeadCloseDialog are unchanged; status-change entry points use this hook.
+
+## Loss status modal - 2026-10-17 22:26 (Africa/Cairo)
+
+Status transitions to `is_lost: 1` now open `LeadLostDialog` from lead outcomes instead of the legacy close form. The chosen status is passed through `initialLostStatusId` and validated against active lost definitions. All selected customers are passed together; the existing loss endpoint, audited status synchronization, reason/note validation and partial-failure checkpoints remain owned by the outcome modal. Cancellation changes no status; the `{ status, mode: 'lost', done }` completion callback runs only after all saves succeed. Retarget and reopen stay on the legacy close form.
+

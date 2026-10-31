@@ -1,6 +1,13 @@
 import httpClient from '../../../services/httpClient'
 
 export const customersApi = {
+  getDeals: async (customerId) => (await httpClient.get(`/api/tenant/customers/${customerId}/deals`)).data,
+  getDoneCustomers: async (params) => (await httpClient.get('/api/tenant/customers/mine', { params })).data,
+  getRetargetingCustomers: async (params) => (await httpClient.get('/api/tenant/customers/retargeting', { params })).data,
+  getLostCustomers: async (params) => {
+    const res = await httpClient.get('/api/tenant/customers/lost', { params })
+    return res.data
+  },
   createCustomers: async (payload) => {
     const res = await httpClient.post('/api/tenant/customers/create', payload)
     console.log('[customersApi] createCustomers response:', res.data)

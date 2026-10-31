@@ -4,6 +4,8 @@ import i18n from 'i18next'
 import { PanelRightOpen, Plus } from 'lucide-react'
 
 import { Badge } from '../../../shared/components/ui/Badge'
+import { CustomerDealBadge } from '../../../features/customers/components/CustomerDealBadge'
+import { CustomerDealsCount } from '../../../features/customers'
 import { CustomerSourceBadge } from '../../../shared/components/Icons/CustomerSourceBadge'
 import { definitionsApi } from '../../../features/definitions/api/definitionsApi'
 import { usersApi } from '../../../features/users/api/usersApi'
@@ -1062,6 +1064,7 @@ export function useCustomersTableColumns(options = {}) {
               </button>
               <div className="flex min-w-0 flex-wrap items-center gap-1.5">
                 <span className="min-w-0 break-words font-bold text-[var(--text)]">{leadName}</span>
+                <CustomerDealBadge customer={row} />
                 {isFreshLeadRow(row) ? <FreshLeadBadge label={freshLeadLabel} /> : null}
               </div>
             </div>
@@ -1141,6 +1144,16 @@ export function useCustomersTableColumns(options = {}) {
       visible: true,
       width: 'w-36',
       render: (row) => renderNullable(row.__customerCompany || row.company || getLead(row).company),
+    },
+    {
+      id: 'customer_deals_count',
+      header: (translate || i18n.t.bind(i18n))('customers.deals360.deals_count'),
+      accessor: 'id',
+      visible: true,
+      sortable: false,
+      filterable: false,
+      searchable: false,
+      render: (row) => <CustomerDealsCount customerId={row.id} />,
     },
     {
       id: 'customer_code',

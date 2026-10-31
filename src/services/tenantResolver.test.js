@@ -3,32 +3,32 @@ import { resolveTenantFromHostname, resolveTenantId, requireTenantId } from './t
 
 describe('resolveTenantFromHostname', () => {
   it('extracts the tenant subdomain from a production host', () => {
-    expect(resolveTenantFromHostname('test0002.3s-export.com', '3s-export.com')).toBe('test0002')
+    expect(resolveTenantFromHostname('test0002.app.main.alameer-realestate.com', 'app.main.alameer-realestate.com')).toBe('test0002')
   })
 
   it('returns empty for localhost / loopback hosts', () => {
-    expect(resolveTenantFromHostname('localhost', '3s-export.com')).toBe('')
-    expect(resolveTenantFromHostname('127.0.0.1', '3s-export.com')).toBe('')
-    expect(resolveTenantFromHostname('0.0.0.0', '3s-export.com')).toBe('')
+    expect(resolveTenantFromHostname('localhost', 'app.main.alameer-realestate.com')).toBe('')
+    expect(resolveTenantFromHostname('127.0.0.1', 'app.main.alameer-realestate.com')).toBe('')
+    expect(resolveTenantFromHostname('0.0.0.0', 'app.main.alameer-realestate.com')).toBe('')
   })
 
   it('returns empty for the bare root domain (no tenant)', () => {
-    expect(resolveTenantFromHostname('3s-export.com', '3s-export.com')).toBe('')
+    expect(resolveTenantFromHostname('app.main.alameer-realestate.com', 'app.main.alameer-realestate.com')).toBe('')
   })
 
   it('ignores known non-tenant subdomains', () => {
-    expect(resolveTenantFromHostname('www.3s-export.com', '3s-export.com')).toBe('')
-    expect(resolveTenantFromHostname('app.3s-export.com', '3s-export.com')).toBe('')
-    expect(resolveTenantFromHostname('crm.3s-export.com', '3s-export.com')).toBe('')
-    expect(resolveTenantFromHostname('dashboard.3s-export.com', '3s-export.com')).toBe('')
+    expect(resolveTenantFromHostname('www.app.main.alameer-realestate.com', 'app.main.alameer-realestate.com')).toBe('')
+    expect(resolveTenantFromHostname('app.app.main.alameer-realestate.com', 'app.main.alameer-realestate.com')).toBe('')
+    expect(resolveTenantFromHostname('crm.app.main.alameer-realestate.com', 'app.main.alameer-realestate.com')).toBe('')
+    expect(resolveTenantFromHostname('dashboard.app.main.alameer-realestate.com', 'app.main.alameer-realestate.com')).toBe('')
   })
 
   it('strips a port from the hostname before resolving', () => {
-    expect(resolveTenantFromHostname('test0002.3s-export.com:5173', '3s-export.com')).toBe('test0002')
+    expect(resolveTenantFromHostname('test0002.app.main.alameer-realestate.com:5173', 'app.main.alameer-realestate.com')).toBe('test0002')
   })
 
   it('is case-insensitive', () => {
-    expect(resolveTenantFromHostname('TEST0002.3S-EXPORT.COM', '3s-export.com')).toBe('test0002')
+    expect(resolveTenantFromHostname('TEST0002.app.main.alameer-realestate.com', 'app.main.alameer-realestate.com')).toBe('test0002')
   })
 
   it('handles a nip.io style dev host with an embedded tenant', () => {

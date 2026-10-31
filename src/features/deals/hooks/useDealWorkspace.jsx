@@ -10,7 +10,7 @@ const DealWorkspaceContext = createContext(null)
  * Loads what every page of one deal needs (deal, stages, leads) once, in the workspace layout. Pages read it
  * with `useDealWorkspace()`; everything else (team, products, contracts…) is loaded by the page that needs it.
  */
-export function DealWorkspaceProvider({ dealId, children }) {
+export function DealWorkspaceProvider({ dealId, children, renderCustomerDrawer }) {
   const dealQuery = useDeal(dealId)
   const templatesQuery = usePipelineTemplates()
   const leadsQuery = useDealLeads(dealId)
@@ -20,6 +20,7 @@ export function DealWorkspaceProvider({ dealId, children }) {
     const stages = resolveDealStages(deal, templatesQuery.templates)
     return {
       dealId: String(dealId),
+      renderCustomerDrawer,
       deal,
       dealQuery,
       stages,
@@ -29,7 +30,7 @@ export function DealWorkspaceProvider({ dealId, children }) {
       leadIndex: buildDealLeadIndex(leadsQuery.leads),
       summary: summarizeDealLeads(leadsQuery.leads),
     }
-  }, [dealId, dealQuery, leadsQuery, templatesQuery.templates])
+  }, [dealId, dealQuery, leadsQuery, templatesQuery.templates, renderCustomerDrawer])
 
   return <DealWorkspaceContext.Provider value={value}>{children}</DealWorkspaceContext.Provider>
 }

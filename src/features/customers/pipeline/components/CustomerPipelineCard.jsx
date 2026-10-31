@@ -87,6 +87,7 @@ export function CustomerPipelineCard({
     { id: 'call', label: t('customers.page.actions.addCall'), icon: <Phone size={14} />, onSelect: () => actions.onAddCall?.(customer) },
     { id: 'follow-up', label: t('customers.page.actions.addFollowUp'), icon: <NotebookPen size={14} />, onSelect: () => actions.onAddFollowUp?.(customer) },
     ...(actions.onAddInterest ? [{ id: 'interest', label: t('leads.interestDialog.contextAction'), icon: <HeartHandshake size={14} />, onSelect: () => actions.onAddInterest(customer) }] : []),
+    ...(actions.onAssignOwner ? [{ id: 'assign-owner', label: t('customers.page.actions.assignOwner'), icon: <UserRound size={14} />, onSelect: () => actions.onAssignOwner(customer) }] : []),
     ...(actions.onMarkWon ? [{ id: 'won', label: t('customers.leadOutcome.contextWon'), icon: <Trophy size={14} />, onSelect: () => actions.onMarkWon(customer) }] : []),
     ...(actions.onMarkLost ? [{ id: 'lost', label: t('customers.leadOutcome.contextLost'), icon: <ThumbsDown size={14} />, onSelect: () => actions.onMarkLost(customer) }] : []),
   ]

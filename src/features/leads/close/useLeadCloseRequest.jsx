@@ -1,10 +1,12 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { extractMessage } from '../../../shared/utils/apiResponse'
 import { LeadCloseDialog } from './LeadCloseDialog'
 import { resolveCloseMode } from './leadClose'
 import { useLeadClose } from './useLeadClose'
+import { LeadWonDialog } from '../outcome/components/LeadWonDialog'
+import { LeadLostDialog } from '../outcome/components/LeadLostDialog'
 
 /**
  * One interception point for every Leads Center status change. Call `interceptStatusChange(...)` before a
@@ -17,6 +19,8 @@ export function useLeadCloseRequest({ statuses = [], getOldStatus } = {}) {
   const { t } = useTranslation()
   const { submit, submitting } = useLeadClose()
   const [request, setRequest] = useState(null)
+  const completedWonRef = useRef(false)
+  const wonProgressRef = useRef({ done: 0, status: null })
 
   const interceptStatusChange = useCallback(({ rows, status, onDone }) => {
     const list = (Array.isArray(rows) ? rows : [rows]).filter(Boolean)
@@ -24,6 +28,8 @@ export function useLeadCloseRequest({ statuses = [], getOldStatus } = {}) {
     const modes = list.map((row) => resolveCloseMode(getOldStatus?.(row), status))
     const mode = modes.find((value) => value && value !== 'reopen') || (modes.includes('reopen') ? 'reopen' : null)
     if (!mode) return false
+    completedWonRef.current = false
+    wonProgressRef.current = { done: 0, status: null }
     setRequest({ key: `${Date.now()}-${status.id}`, mode, rows: list, status, statuses, onDone })
     return true
   }, [getOldStatus, statuses])
@@ -41,7 +47,34 @@ export function useLeadCloseRequest({ statuses = [], getOldStatus } = {}) {
     else setRequest(null)
   }
 
-  const dialog = (
+  const dialog = request?.mode === 'won' ? (
+    <LeadWonDialog
+      key={`${request.key}-${request.rows[0]?.lead_id ?? request.rows[0]?.lead?.id ?? request.rows[0]?.id}`}
+      open
+      customer={request.rows[0]}
+      initialSaleStatusId={request.status.id}
+      onDone={({ status }) => {
+        completedWonRef.current = true
+        wonProgressRef.current = { done: wonProgressRef.current.done + 1, status }
+      }}
+      onClose={() => {
+        const completed = completedWonRef.current
+        completedWonRef.current = false
+        const hasNext = completed && request.rows.length > 1
+        setRequest((current) => hasNext ? { ...current, rows: current.rows.slice(1) } : null)
+        if (!hasNext && wonProgressRef.current.done) request.onDone?.({ ...wonProgressRef.current, mode: 'won' })
+      }}
+    />
+  ) : request?.mode === 'lost' ? (
+    <LeadLostDialog
+      key={request.key}
+      open
+      customers={request.rows}
+      initialLostStatusId={request.status.id}
+      onClose={() => setRequest(null)}
+      onDone={({ status, done }) => request.onDone?.({ status, mode: 'lost', done })}
+    />
+  ) : (
     <LeadCloseDialog request={request} submitting={submitting} onCancel={() => !submitting && setRequest(null)} onSubmit={handleSubmit} />
   )
 

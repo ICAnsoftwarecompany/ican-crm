@@ -7,8 +7,6 @@ export function CustomersPageHeader({
   onAdd,
   onImport,
   onExport,
-  onTrash,
-  trashActive = false,
   onTableSettings,
   viewToggle = null,
 }) {
@@ -28,8 +26,6 @@ export function CustomersPageHeader({
             onAdd={onAdd}
             onImport={onImport}
             onExport={onExport}
-            onTrash={onTrash}
-            trashActive={trashActive}
             onTableSettings={onTableSettings}
           />
         </div>

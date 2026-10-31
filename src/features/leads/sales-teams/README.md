@@ -132,3 +132,7 @@ sales-teams/
 - اتجاه الأولوية ومعنى "أول قاعدة مطابقة" مش متأكدين منهم — E3.
 - الصفحة مبتعرضش التوزيع الفعلي (مين استلم كام ليد)؛ ده في تقارير مركز العملاء (`/LeadsCenter/reports` → حسب المسؤول).
 - الصلاحيات على الباك؛ الصفحة متاحة لأي حد بيشوف مركز العملاء.
+## Manual distribution - 2026-10-17 22:06 (Africa/Cairo)
+
+Public component `ManualLeadDistributionAction` receives DataTable selection context (`selectedRows`, `clearSelection`). `leadAssignmentApi.distributeManually` posts to `/api/tenant/leads/manual/lead/distribution` with exactly `{ lead_ids: [48, 49] }`. IDs come from `lead_id` or `lead.id`, are validated and deduplicated; missing mappings block submission rather than silently dropping rows. Empty selection and pending requests cannot be submitted. On success selection clears and customer/lead/sales-team caches invalidate; on failure selection remains. The backend alone owns sales-user priority/order, authorization and distribution execution. No response breakdown is assumed because none was supplied. Route: `/LeadsCenter/teams/manual` (`SALES_TEAMS_ROUTES.manual`).
+

@@ -1,22 +1,19 @@
 import { CustomersPageShortcuts } from '../CustomersPageShortcuts'
-import { LeadsActionsMenu } from './LeadsActionsMenu'
+import { Plus } from 'lucide-react'
+import { Button } from '../../../../shared/components/ui/Button'
+import { useTranslation } from 'react-i18next'
 import { TableSettingsAction } from './TableSettingsAction'
-import { TrashLeadsAction } from './TrashLeadsAction'
 
 export function CustomersPageActions({
   onAdd,
-  onImport,
-  onExport,
-  onTrash,
-  trashActive = false,
   onTableSettings,
 }) {
+  const { t } = useTranslation()
   return (
     <div className="flex flex-wrap items-center gap-2">
       <CustomersPageShortcuts />
       <TableSettingsAction onClick={onTableSettings} />
-      <LeadsActionsMenu onAdd={onAdd} onImport={onImport} onExport={onExport} />
-      <TrashLeadsAction active={trashActive} onClick={onTrash} />
+      {onAdd && <Button size="sm" onClick={onAdd}><Plus size={16} />{t('customers.pageActions.leadAction')}</Button>}
     </div>
   )
 }

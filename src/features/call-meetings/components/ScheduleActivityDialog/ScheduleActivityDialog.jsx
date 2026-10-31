@@ -228,6 +228,7 @@ export function ScheduleActivityDialog({
   const teamsQuery = useTeams()
   const isEdit = Boolean(activity?.id)
   const scheduleType = String(activity?.type || type || '').toLowerCase() === 'call' ? 'call' : 'meeting'
+  const [quickComplete, setQuickComplete] = useState(false)
   const PRIORITY_OPTIONS = useMemo(() => getPriorityOptions(t), [t])
   const REMINDER_OPTIONS = useMemo(() => getReminderOptions(t), [t])
   const SCHEDULE_CONFIG = useMemo(() => getScheduleConfig(t), [t])
@@ -239,7 +240,7 @@ export function ScheduleActivityDialog({
   const resolvedTeamId = teamId || getTeamId(customer)
   const customerPhone = defaultPhone || getCustomerPhone(customer)
   const mutations = useMeetingMutations()
-  const isPending = mutations.create.isPending || mutations.update.isPending
+  const isPending = mutations.create.isPending || mutations.update.isPending || mutations.changeStatus.isPending
   const defaultDates = useMemo(() => {
     const start = addMinutes(new Date(), config.defaultStartOffset)
     const end = addMinutes(start, 60)
@@ -289,7 +290,12 @@ export function ScheduleActivityDialog({
       : []
     const assigned = normalizeId(resolvedAssignedUserId)
 
-    setTitle(pickFirst(defaultTitle, activity?.title))
+    setQuickComplete(false)
+    const customerName = fieldValue(getCustomerName(customer), t('activities.scheduleDialog.customerFallback'))
+    const suggestedTitle = scheduleType === 'call'
+      ? `${t('activities.scheduleDialog.quickActionCall')} ${customerName}`
+      : `${t('activities.scheduleDialog.quickActionMeeting')} ${customerName}`
+    setTitle(pickFirst(defaultTitle, activity?.title, suggestedTitle))
     setDescription(pickFirst(activity?.description, activity?.notes, activity?.note))
     setMode(pickFirst(activity?.mode, 'online'))
     setMeetingLink(pickFirst(activity?.meeting_link, activity?.meeting_url, activity?.url))
@@ -473,37 +479,60 @@ export function ScheduleActivityDialog({
       title: title.trim() || `${config.defaultTitle} ${fieldValue(getCustomerName(customer), t('activities.scheduleDialog.customerFallback'))}`,
       description: description.trim(),
       type: scheduleType,
-      mode,
-      meeting_link: mode === 'online' ? meetingLink.trim() : '',
-      location: mode === 'offline' ? location.trim() : '',
+      mode: quickComplete ? 'offline' : mode,
+      meeting_link: quickComplete ? '' : (mode === 'online' ? meetingLink.trim() : ''),
+      location: quickComplete ? '' : (mode === 'offline' ? location.trim() : ''),
       longitude: '',
       latitude: '',
-      scope,
-      priority,
-      start_at: formatDateTimeForApi(startAt),
-      end_at: formatDateTimeForApi(endAt),
-      team_id: scope === 'team' ? selectedTeamId : '',
+      scope: quickComplete ? 'participants' : scope,
+      priority: quickComplete ? 'high' : priority,
+      start_at: quickComplete ? formatDateTimeForApi(startAt) : formatDateTimeForApi(startAt),
+      end_at: quickComplete ? formatDateTimeForApi(endAt) : formatDateTimeForApi(endAt),
+      team_id: quickComplete ? '' : (scope === 'team' ? selectedTeamId : ''),
       taskable_type: effectiveTaskableType,
       taskable_id: effectiveTaskableId,
-      users: scope === 'participants' ? selectedUserIds : [],
-      reminder_type: buildReminderType(reminderChannels),
-      reminder_before: reminderChannels.length ? reminderBefore : '',
-      reminder_unit: reminderChannels.length ? reminderUnit : '',
+      users: quickComplete ? selectedUserIds : (scope === 'participants' ? selectedUserIds : []),
+      reminder_type: quickComplete ? '' : buildReminderType(reminderChannels),
+      reminder_before: quickComplete ? '' : (reminderChannels.length ? reminderBefore : ''),
+      reminder_unit: quickComplete ? '' : (reminderChannels.length ? reminderUnit : ''),
       attachments,
     }
 
     if (scheduleType === 'call') {
-      payload.call_provider = callProvider
-      payload.caller_number = callerNumber.trim()
-      payload.callee_number = calleeNumber.trim()
+      payload.call_provider = quickComplete ? 'manual' : callProvider
+      payload.caller_number = quickComplete ? '' : callerNumber.trim()
+      payload.callee_number = quickComplete ? '' : calleeNumber.trim()
     }
 
-    const result = isEdit
-      ? await mutations.update.mutateAsync({ meetingId: activity.id, payload })
-      : await mutations.create.mutateAsync(payload)
+    let result = null
+    if (quickComplete) {
+      result = isEdit
+        ? await mutations.update.mutateAsync({ meetingId: activity.id, payload })
+        : await mutations.create.mutateAsync(payload)
+
+      const meetingOrCallId = extractMeetingId(result) || activity?.id
+      if (!meetingOrCallId) {
+        toast.error(t('activities.scheduleDialog.completeStatusMissingError'))
+        return
+      }
+
+      await mutations.changeStatus.mutateAsync({
+        meetingId: meetingOrCallId,
+        payload: {
+          status: 'completed',
+          actual_start_at: null,
+          actual_end_at: null,
+        },
+      })
+    } else {
+      result = isEdit
+        ? await mutations.update.mutateAsync({ meetingId: activity.id, payload })
+        : await mutations.create.mutateAsync(payload)
+    }
 
     const createdMeetingId = extractMeetingId(result)
-    toast.success(isEdit ? t('activities.scheduleDialog.updatedToast') : config.successMessage)
+    const successMessage = quickComplete ? t('activities.scheduleDialog.completedToast') : (isEdit ? t('activities.scheduleDialog.updatedToast') : config.successMessage)
+    toast.success(successMessage)
     onSaved?.(result, payload)
     if (isEdit) onUpdated?.(result, payload)
     else onCreated?.(result, payload)
@@ -531,10 +560,10 @@ export function ScheduleActivityDialog({
     </>
   )
 
-  const form = (
-    <form id={config.formId} className="space-y-4" onSubmit={handleSubmit}>
+  const formContent = (
+    <>
       <div className="rounded-xl border border-[#BEEFF2] bg-[#F8FEFF] p-3 shadow-sm">
-        <div className="flex min-w-0 items-center gap-3">
+        <div className="flex min-w-0 flex-wrap items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E8F9FA] text-[#007A80]">
             <UserRound size={18} />
           </div>
@@ -542,6 +571,12 @@ export function ScheduleActivityDialog({
             <div className="text-[11px] font-bold text-[var(--text-muted)]">{t('activities.scheduleDialog.customerLabel')}</div>
             <div className="truncate text-sm font-black text-[var(--text)]">{customerDisplayName}</div>
           </div>
+
+          <label className="flex items-center gap-2 rounded-full border border-[#BEEFF2] bg-white px-2.5 py-1 text-[10px] font-black text-[var(--text)]">
+            <input type="checkbox" checked={quickComplete} onChange={(event) => setQuickComplete(event.target.checked)} className="h-3.5 w-3.5 accent-[#007A80]" />
+            {t('activities.scheduleDialog.quickCompleteLabel')}
+          </label>
+
           {customerDisplayPhone ? (
             <div className="max-w-[42%] truncate rounded-full border border-[#BEEFF2] bg-white px-3 py-1 text-[11px] font-bold text-[#007A80]">
               {customerDisplayPhone}
@@ -572,222 +607,243 @@ export function ScheduleActivityDialog({
         </Section>
       ) : null}
 
-      <Section title={t('activities.scheduleDialog.appointmentDataTitle')} icon={CalendarClock}>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <FormField label={config.titleLabel}>
-            <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder={config.titlePlaceholder} className={inputClassName} />
-          </FormField>
-          <div className="space-y-2">
-            <div className="text-xs font-bold text-[var(--text)]">{t('activities.scheduleDialog.priorityLabel')}</div>
-            <div className="grid grid-cols-4 gap-2">
-              {PRIORITY_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => setPriority(option.value)}
-                  className={`rounded-xl border px-2 py-2 text-center transition ${priority === option.value ? 'border-[#00C2CB] bg-[#F8FEFF] shadow-sm' : 'border-[var(--border)] bg-white hover:border-[#BEEFF2]'}`}
-                >
-                  <span className="mx-auto mb-1 block h-3 w-3 rounded-full" style={{ backgroundColor: option.color }} />
-                  <span className="block text-[10px] font-black text-[var(--text)]">{option.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-          <FormField label={t('activities.scheduleDialog.startLabel')}>
-            <input type="datetime-local" value={startAt} onChange={(event) => handleStartChange(event.target.value)} className={inputClassName} />
-          </FormField>
-          <FormField label={t('activities.scheduleDialog.endLabel')}>
-            <input type="datetime-local" value={endAt} onChange={(event) => setEndAt(event.target.value)} className={inputClassName} />
-          </FormField>
-        </div>
-      </Section>
-
-      <Section title={scheduleType === 'call' ? t('activities.scheduleDialog.callSettingsTitle') : t('activities.scheduleDialog.meetingModeTitle')} icon={scheduleType === 'call' ? PhoneCall : Video}>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <FormField label={scheduleType === 'call' ? t('activities.scheduleDialog.callModeLabel') : t('activities.scheduleDialog.meetingModeLabel')}>
-            <select value={mode} onChange={(event) => setMode(event.target.value)} className={inputClassName}>
-              <option value="online">Online</option>
-              <option value="offline">Offline</option>
-            </select>
-          </FormField>
-          {scheduleType === 'call' ? (
-            <FormField label={t('activities.scheduleDialog.callProviderLabel')}>
-              <select value={callProvider} onChange={(event) => setCallProvider(event.target.value)} className={inputClassName}>
-                <option value="manual">Manual</option>
-                <option value="cloud_call_center">Cloud Call Center</option>
-              </select>
+      {quickComplete ? (
+        <Section title={scheduleType === 'call' ? t('activities.scheduleDialog.quickActionCall') : t('activities.scheduleDialog.quickActionMeeting')} icon={scheduleType === 'call' ? PhoneCall : Video}>
+          <div className="space-y-3">
+            <FormField label={config.titleLabel}>
+              <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder={config.titlePlaceholder} className={inputClassName} />
             </FormField>
-          ) : null}
-          {scheduleType === 'call' ? (
-            <>
-              <FormField label={t('activities.scheduleDialog.callerNumberLabel')}>
-                <input value={callerNumber} onChange={(event) => setCallerNumber(event.target.value)} placeholder={t('activities.scheduleDialog.optionalPlaceholder')} className={inputClassName} />
-              </FormField>
-              <FormField label={t('activities.scheduleDialog.calleeNumberLabel')}>
-                <input value={calleeNumber} onChange={(event) => setCalleeNumber(event.target.value)} placeholder={t('activities.scheduleDialog.calleeNumberLabel')} className={inputClassName} />
-              </FormField>
-            </>
-          ) : null}
-          {mode === 'online' ? (
-            <FormField label={scheduleType === 'call' ? t('activities.scheduleDialog.callLinkLabel') : t('activities.scheduleDialog.meetingLinkLabel')}>
-              <input value={meetingLink} onChange={(event) => setMeetingLink(event.target.value)} placeholder="https://..." className={inputClassName} />
-            </FormField>
-          ) : (
-            <FormField label={scheduleType === 'call' ? t('activities.scheduleDialog.callLocationLabel') : t('activities.scheduleDialog.meetingLocationLabel')}>
-              <input value={location} onChange={(event) => setLocation(event.target.value)} placeholder={t('activities.scheduleDialog.addressPlaceholder')} className={inputClassName} />
-            </FormField>
-          )}
-        </div>
-      </Section>
-
-      <Section title={t('activities.scheduleDialog.participantsScopeTitle')} icon={UsersRound}>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <FormField label={t('activities.scheduleDialog.scopeLabel')}>
-            <select value={scope} onChange={(event) => setScope(event.target.value)} className={inputClassName}>
-              <option value="participants">Participants</option>
-              <option value="team">Team</option>
-            </select>
-          </FormField>
-          {scope === 'team' ? (
-            <FormField label={t('activities.scheduleDialog.teamLabel')}>
-              <select value={selectedTeamId} onChange={(event) => setSelectedTeamId(event.target.value)} className={inputClassName}>
-                <option value="">{t('activities.scheduleDialog.chooseTeamPlaceholder')}</option>
-                {teams.map((team) => <option key={getEntityId(team)} value={getEntityId(team)}>{getTeamLabel(team)}</option>)}
-              </select>
-            </FormField>
-          ) : (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <div className="text-xs font-bold text-[var(--text)]">{t('activities.scheduleDialog.participatingUsersLabel')}</div>
-                <button
-                  type="button"
-                  onClick={() => setIsParticipantsDialogOpen(true)}
-                  className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] px-2 text-[11px] font-black text-[#007A80]"
-                >
-                  <UsersRound size={12} />
-                  {t('activities.scheduleDialog.chooseUsersButton')}
-                </button>
-              </div>
-
-              <div className="rounded-lg border border-[var(--border)] bg-white p-2">
-                <div className="text-[11px] font-semibold text-[var(--text-muted)]">
-                  {t('activities.scheduleDialog.participantsCountLabel')} <span className="font-black text-[var(--text)]">{selectedUserIds.length}</span>
-                </div>
-                {selectedUsersPreview.length ? (
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {selectedUsersPreview.slice(0, 5).map((user) => (
-                      <span key={normalizeId(getEntityId(user))} className="rounded-full border border-[#BEEFF2] bg-[#F8FEFF] px-2 py-0.5 text-[10px] font-bold text-[#007A80]">
-                        {getUserLabel(user)}
-                      </span>
-                    ))}
-                    {selectedUsersPreview.length > 5 ? (
-                      <span className="rounded-full border border-[#E2E8F0] bg-white px-2 py-0.5 text-[10px] font-bold text-[#475569]">
-                        +{selectedUsersPreview.length - 5}
-                      </span>
-                    ) : null}
-                  </div>
-                ) : (
-                  <div className="mt-2 rounded-lg border border-dashed border-[#E5F7F8] bg-[#F8FEFF] p-2 text-[11px] font-semibold text-[var(--text-muted)]">
-                    {t('activities.scheduleDialog.noParticipantsSelected')}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </Section>
-
-      <FormField label={config.notesLabel}>
-        <textarea value={description} onChange={(event) => setDescription(event.target.value)} placeholder={config.notesPlaceholder} className={textareaClassName} />
-      </FormField>
-
-      <Section title={t('activities.scheduleDialog.remindersTitle')} icon={Bell}>
-        <div className="flex flex-wrap gap-2">
-          {REMINDER_OPTIONS.map((option) => {
-            const checked = reminderChannels.includes(option.value)
-            return (
-              <button key={option.value} type="button" onClick={() => setReminderChannels((current) => checked ? current.filter((item) => item !== option.value) : [...current, option.value])} className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-xs font-black transition ${checked ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]' : 'border-[var(--border)] bg-white text-[var(--text-muted)]'}`}>
-                <span className={`flex h-4 w-4 items-center justify-center rounded border ${checked ? 'border-[#00AEB8] bg-[#00AEB8] text-white' : 'border-[var(--border)] bg-white'}`}>
-                  {checked ? <Check size={12} /> : null}
-                </span>
-                {option.label}
-              </button>
-            )
-          })}
-        </div>
-        {reminderChannels.length ? (
-          <div className="grid gap-3 sm:grid-cols-2">
-            <FormField label={t('activities.scheduleDialog.reminderUnitLabel')}>
-              <select value={reminderUnit} onChange={(event) => setReminderUnit(event.target.value)} className={inputClassName}>
-                <option value="minutes">{t('activities.scheduleDialog.minutesOption')}</option>
-                <option value="hours">{t('activities.scheduleDialog.hoursOption')}</option>
-                <option value="days">{t('activities.scheduleDialog.daysOption')}</option>
-              </select>
-            </FormField>
-            <FormField label={t('activities.scheduleDialog.reminderCountLabel')}>
-              <input type="number" min="0" value={reminderBefore} onChange={(event) => setReminderBefore(event.target.value)} className={inputClassName} />
+            <FormField label={t('activities.scheduleDialog.call.notesLabel')}>
+              <textarea value={description} onChange={(event) => setDescription(event.target.value)} placeholder={config.notesPlaceholder} className={textareaClassName} />
             </FormField>
           </div>
-        ) : null}
-      </Section>
-
-      <Section title={t('activities.scheduleDialog.attachmentsTitle')} icon={FileUp}>
-        <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={() => setAttachmentMode('files')} className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-xs font-black ${attachmentMode === 'files' ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]' : 'border-[var(--border)] bg-white text-[var(--text-muted)]'}`}>
-            <FileUp size={14} />
-            {t('activities.scheduleDialog.filesTabLabel')}
-          </button>
-          <button type="button" onClick={() => setAttachmentMode('voice_note')} className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-xs font-black ${attachmentMode === 'voice_note' ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]' : 'border-[var(--border)] bg-white text-[var(--text-muted)]'}`}>
-            <FileAudio size={14} />
-            {t('activities.scheduleDialog.voiceNoteTabLabel')}
-          </button>
-        </div>
-
-        {attachmentMode === 'voice_note' ? (
-          <div className="space-y-3 rounded-xl border border-dashed border-[#BEEFF2] bg-[#F8FEFF] p-3">
-            <div className="flex items-center justify-between gap-3">
-              <div className="text-[11px] font-black text-[var(--text)]">
-                {isVoiceRecording ? t('activities.scheduleDialog.recordingInProgress', { seconds: recordingSeconds }) : t('activities.scheduleDialog.recordVoiceNote')}
-              </div>
-              <button
-                type="button"
-                onClick={isVoiceRecording ? handleVoiceRecordingStop : startVoiceRecording}
-                className={`inline-flex h-9 items-center justify-center rounded-lg px-3 text-[11px] font-black ${isVoiceRecording ? 'bg-[#FEE2E2] text-[#991B1B]' : 'bg-[#E8F9FA] text-[#007A80]'}`}
-              >
-                {isVoiceRecording ? t('activities.scheduleDialog.stopRecording') : t('activities.scheduleDialog.recordButton')}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <input
-            type="file"
-            multiple
-            accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
-            onChange={(event) => addFilesToAttachments(Array.from(event.target.files || []))}
-            className="block w-full rounded-lg border border-dashed border-[#BEEFF2] bg-[#F8FEFF] p-3 text-xs font-bold text-[var(--text-muted)]"
-          />
-        )}
-
-        {attachments.length ? (
-          <div className="flex flex-wrap gap-2">
-            {attachments.map((file) => <span key={`${file.name}-${file.size}-${file.type || 'unknown'}`} className="rounded-full bg-white px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">{file.name}</span>)}
-          </div>
-        ) : null}
-      </Section>
-
-      {scheduleType === 'meeting' ? (
-        <Section title={t('activities.scheduleDialog.preMeetingSectionTitle')} icon={Radio}>
-          <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-[#E5F7F8] bg-[#F8FEFF] p-3">
-            <span className="text-xs font-black text-[var(--text)]">{t('activities.scheduleDialog.openPreMeetingAfterSave')}</span>
-            <input type="checkbox" checked={openPreMeetingReport} onChange={(event) => setOpenPreMeetingReport(event.target.checked)} className="h-4 w-4 accent-[#00AEB8]" />
-          </label>
         </Section>
-      ) : null}
+      ) : (
+        <>
+          <Section title={t('activities.scheduleDialog.appointmentDataTitle')} icon={CalendarClock}>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <FormField label={config.titleLabel}>
+                <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder={config.titlePlaceholder} className={inputClassName} />
+              </FormField>
+              <div className="space-y-2">
+                <div className="text-xs font-bold text-[var(--text)]">{t('activities.scheduleDialog.priorityLabel')}</div>
+                <div className="grid grid-cols-4 gap-2">
+                  {PRIORITY_OPTIONS.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setPriority(option.value)}
+                      className={`rounded-xl border px-2 py-2 text-center transition ${priority === option.value ? 'border-[#00C2CB] bg-[#F8FEFF] shadow-sm' : 'border-[var(--border)] bg-white hover:border-[#BEEFF2]'}`}
+                    >
+                      <span className="mx-auto mb-1 block h-3 w-3 rounded-full" style={{ backgroundColor: option.color }} />
+                      <span className="block text-[10px] font-black text-[var(--text)]">{option.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <FormField label={t('activities.scheduleDialog.startLabel')}>
+                <input type="datetime-local" value={startAt} onChange={(event) => handleStartChange(event.target.value)} className={inputClassName} />
+              </FormField>
+              <FormField label={t('activities.scheduleDialog.endLabel')}>
+                <input type="datetime-local" value={endAt} onChange={(event) => setEndAt(event.target.value)} className={inputClassName} />
+              </FormField>
+            </div>
+          </Section>
 
-      <div className="inline-flex items-center gap-2 rounded-full bg-[#E8F9FA] px-3 py-1 text-[11px] font-bold text-[#007A80]">
-        <MapPin size={13} />
-        {t('activities.scheduleDialog.linkedToEntity', { id: fieldValue(effectiveTaskableId) })}
-      </div>
+          <Section title={scheduleType === 'call' ? t('activities.scheduleDialog.callSettingsTitle') : t('activities.scheduleDialog.meetingModeTitle')} icon={scheduleType === 'call' ? PhoneCall : Video}>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <FormField label={scheduleType === 'call' ? t('activities.scheduleDialog.callModeLabel') : t('activities.scheduleDialog.meetingModeLabel')}>
+                <select value={mode} onChange={(event) => setMode(event.target.value)} className={inputClassName}>
+                  <option value="online">Online</option>
+                  <option value="offline">Offline</option>
+                </select>
+              </FormField>
+              {scheduleType === 'call' ? (
+                <FormField label={t('activities.scheduleDialog.callProviderLabel')}>
+                  <select value={callProvider} onChange={(event) => setCallProvider(event.target.value)} className={inputClassName}>
+                    <option value="manual">Manual</option>
+                    <option value="cloud_call_center">Cloud Call Center</option>
+                  </select>
+                </FormField>
+              ) : null}
+              {scheduleType === 'call' ? (
+                <>
+                  <FormField label={t('activities.scheduleDialog.callerNumberLabel')}>
+                    <input value={callerNumber} onChange={(event) => setCallerNumber(event.target.value)} placeholder={t('activities.scheduleDialog.optionalPlaceholder')} className={inputClassName} />
+                  </FormField>
+                  <FormField label={t('activities.scheduleDialog.calleeNumberLabel')}>
+                    <input value={calleeNumber} onChange={(event) => setCalleeNumber(event.target.value)} placeholder={t('activities.scheduleDialog.calleeNumberLabel')} className={inputClassName} />
+                  </FormField>
+                </>
+              ) : null}
+              {mode === 'online' ? (
+                <FormField label={scheduleType === 'call' ? t('activities.scheduleDialog.callLinkLabel') : t('activities.scheduleDialog.meetingLinkLabel')}>
+                  <input value={meetingLink} onChange={(event) => setMeetingLink(event.target.value)} placeholder="https://..." className={inputClassName} />
+                </FormField>
+              ) : (
+                <FormField label={scheduleType === 'call' ? t('activities.scheduleDialog.callLocationLabel') : t('activities.scheduleDialog.meetingLocationLabel')}>
+                  <input value={location} onChange={(event) => setLocation(event.target.value)} placeholder={t('activities.scheduleDialog.addressPlaceholder')} className={inputClassName} />
+                </FormField>
+              )}
+            </div>
+          </Section>
+
+          <Section title={t('activities.scheduleDialog.participantsScopeTitle')} icon={UsersRound}>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <FormField label={t('activities.scheduleDialog.scopeLabel')}>
+                <select value={scope} onChange={(event) => setScope(event.target.value)} className={inputClassName}>
+                  <option value="participants">Participants</option>
+                  <option value="team">Team</option>
+                </select>
+              </FormField>
+              {scope === 'team' ? (
+                <FormField label={t('activities.scheduleDialog.teamLabel')}>
+                  <select value={selectedTeamId} onChange={(event) => setSelectedTeamId(event.target.value)} className={inputClassName}>
+                    <option value="">{t('activities.scheduleDialog.chooseTeamPlaceholder')}</option>
+                    {teams.map((team) => <option key={getEntityId(team)} value={getEntityId(team)}>{getTeamLabel(team)}</option>)}
+                  </select>
+                </FormField>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="text-xs font-bold text-[var(--text)]">{t('activities.scheduleDialog.participatingUsersLabel')}</div>
+                    <button
+                      type="button"
+                      onClick={() => setIsParticipantsDialogOpen(true)}
+                      className="inline-flex h-8 items-center gap-1 rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] px-2 text-[11px] font-black text-[#007A80]"
+                    >
+                      <UsersRound size={12} />
+                      {t('activities.scheduleDialog.chooseUsersButton')}
+                    </button>
+                  </div>
+
+                  <div className="rounded-lg border border-[var(--border)] bg-white p-2">
+                    <div className="text-[11px] font-semibold text-[var(--text-muted)]">
+                      {t('activities.scheduleDialog.participantsCountLabel')} <span className="font-black text-[var(--text)]">{selectedUserIds.length}</span>
+                    </div>
+                    {selectedUsersPreview.length ? (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {selectedUsersPreview.slice(0, 5).map((user) => (
+                          <span key={normalizeId(getEntityId(user))} className="rounded-full border border-[#BEEFF2] bg-[#F8FEFF] px-2 py-0.5 text-[10px] font-bold text-[#007A80]">
+                            {getUserLabel(user)}
+                          </span>
+                        ))}
+                        {selectedUsersPreview.length > 5 ? (
+                          <span className="rounded-full border border-[#E2E8F0] bg-white px-2 py-0.5 text-[10px] font-bold text-[#475569]">
+                            +{selectedUsersPreview.length - 5}
+                          </span>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <div className="mt-2 rounded-lg border border-dashed border-[#E5F7F8] bg-[#F8FEFF] p-2 text-[11px] font-semibold text-[var(--text-muted)]">
+                        {t('activities.scheduleDialog.noParticipantsSelected')}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </Section>
+
+          <FormField label={config.notesLabel}>
+            <textarea value={description} onChange={(event) => setDescription(event.target.value)} placeholder={config.notesPlaceholder} className={textareaClassName} />
+          </FormField>
+
+          <Section title={t('activities.scheduleDialog.remindersTitle')} icon={Bell}>
+            <div className="flex flex-wrap gap-2">
+              {REMINDER_OPTIONS.map((option) => {
+                const checked = reminderChannels.includes(option.value)
+                return (
+                  <button key={option.value} type="button" onClick={() => setReminderChannels((current) => checked ? current.filter((item) => item !== option.value) : [...current, option.value])} className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-xs font-black transition ${checked ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]' : 'border-[var(--border)] bg-white text-[var(--text-muted)]'}`}>
+                    <span className={`flex h-4 w-4 items-center justify-center rounded border ${checked ? 'border-[#00AEB8] bg-[#00AEB8] text-white' : 'border-[var(--border)] bg-white'}`}>
+                      {checked ? <Check size={12} /> : null}
+                    </span>
+                    {option.label}
+                  </button>
+                )
+              })}
+            </div>
+            {reminderChannels.length ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <FormField label={t('activities.scheduleDialog.reminderUnitLabel')}>
+                  <select value={reminderUnit} onChange={(event) => setReminderUnit(event.target.value)} className={inputClassName}>
+                    <option value="minutes">{t('activities.scheduleDialog.minutesOption')}</option>
+                    <option value="hours">{t('activities.scheduleDialog.hoursOption')}</option>
+                    <option value="days">{t('activities.scheduleDialog.daysOption')}</option>
+                  </select>
+                </FormField>
+                <FormField label={t('activities.scheduleDialog.reminderCountLabel')}>
+                  <input type="number" min="0" value={reminderBefore} onChange={(event) => setReminderBefore(event.target.value)} className={inputClassName} />
+                </FormField>
+              </div>
+            ) : null}
+          </Section>
+
+          <Section title={t('activities.scheduleDialog.attachmentsTitle')} icon={FileUp}>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" onClick={() => setAttachmentMode('files')} className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-xs font-black ${attachmentMode === 'files' ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]' : 'border-[var(--border)] bg-white text-[var(--text-muted)]'}`}>
+                <FileUp size={14} />
+                {t('activities.scheduleDialog.filesTabLabel')}
+              </button>
+              <button type="button" onClick={() => setAttachmentMode('voice_note')} className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-xs font-black ${attachmentMode === 'voice_note' ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]' : 'border-[var(--border)] bg-white text-[var(--text-muted)]'}`}>
+                <FileAudio size={14} />
+                {t('activities.scheduleDialog.voiceNoteTabLabel')}
+              </button>
+            </div>
+
+            {attachmentMode === 'voice_note' ? (
+              <div className="space-y-3 rounded-xl border border-dashed border-[#BEEFF2] bg-[#F8FEFF] p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-[11px] font-black text-[var(--text)]">
+                    {isVoiceRecording ? t('activities.scheduleDialog.recordingInProgress', { seconds: recordingSeconds }) : t('activities.scheduleDialog.recordVoiceNote')}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={isVoiceRecording ? handleVoiceRecordingStop : startVoiceRecording}
+                    className={`inline-flex h-9 items-center justify-center rounded-lg px-3 text-[11px] font-black ${isVoiceRecording ? 'bg-[#FEE2E2] text-[#991B1B]' : 'bg-[#E8F9FA] text-[#007A80]'}`}
+                  >
+                    {isVoiceRecording ? t('activities.scheduleDialog.stopRecording') : t('activities.scheduleDialog.recordButton')}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <input
+                type="file"
+                multiple
+                accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+                onChange={(event) => addFilesToAttachments(Array.from(event.target.files || []))}
+                className="block w-full rounded-lg border border-dashed border-[#BEEFF2] bg-[#F8FEFF] p-3 text-xs font-bold text-[var(--text-muted)]"
+              />
+            )}
+
+            {attachments.length ? (
+              <div className="flex flex-wrap gap-2">
+                {attachments.map((file) => <span key={`${file.name}-${file.size}-${file.type || 'unknown'}`} className="rounded-full bg-white px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">{file.name}</span>)}
+              </div>
+            ) : null}
+          </Section>
+
+          {scheduleType === 'meeting' ? (
+            <Section title={t('activities.scheduleDialog.preMeetingSectionTitle')} icon={Radio}>
+              <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-[#E5F7F8] bg-[#F8FEFF] p-3">
+                <span className="text-xs font-black text-[var(--text)]">{t('activities.scheduleDialog.openPreMeetingAfterSave')}</span>
+                <input type="checkbox" checked={openPreMeetingReport} onChange={(event) => setOpenPreMeetingReport(event.target.checked)} className="h-4 w-4 accent-[#00AEB8]" />
+              </label>
+            </Section>
+          ) : null}
+
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#E8F9FA] px-3 py-1 text-[11px] font-bold text-[#007A80]">
+            <MapPin size={13} />
+            {t('activities.scheduleDialog.linkedToEntity', { id: fieldValue(effectiveTaskableId) })}
+          </div>
+        </>
+      )}
+    </>
+  )
+
+  const form = (
+    <form id={config.formId} className="space-y-4" onSubmit={handleSubmit}>
+      {formContent}
     </form>
   )
 

@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react'
 import { PipelineColumn } from './PipelineColumn'
 import { PipelineDndBoard } from './PipelineDndBoard'
 import { usePipelineDragDrop } from './usePipelineDragDrop'
+import { useBoardPan } from './useBoardPan'
 
 function matches(value, expected) {
   return String(value ?? '') === String(expected ?? '')
@@ -38,8 +39,10 @@ export function PipelineBoard({
   minColumnWidth = 260,
   columnBodyClassName,
   pressDelay,
+  longPressPan = false,
 }) {
   const scrollRef = useRef(null)
+  const panning = useBoardPan(scrollRef, longPressPan && dragMode === 'longPress', pressDelay)
   const lanes = useMemo(() => (groupBy?.lanes?.length ? groupBy.lanes : [{ id: null, label: null }]), [groupBy])
 
   const handleItemMove = (itemId, fromStageId, toStageId, laneId) => {
@@ -75,7 +78,7 @@ export function PipelineBoard({
 
   if (dragMode === 'longPress') {
     return (
-      <div ref={scrollRef} className="min-w-0 overflow-x-auto pb-2">
+      <div ref={scrollRef} className={`min-w-0 overflow-x-auto pb-2 ${longPressPan ? panning ? 'cursor-grabbing select-none' : 'cursor-grab' : ''}`}>
         <PipelineDndBoard
           stages={stages}
           lanes={lanes}

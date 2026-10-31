@@ -25,6 +25,52 @@ export function useCustomers(filters, options = {}) {
   })
 }
 
+const selectFreshCustomers = (data) => ({
+  ...data,
+  pages: data.pages.map((page) => ({
+    ...page,
+    data: (page.data || []).filter((customer) => customer.lead_type === 'fresh lead'),
+  })),
+})
+
+export function useFreshCustomers() {
+  return useCustomers(undefined, { select: selectFreshCustomers })
+}
+
+export function useLostCustomers(filters = {}, options = {}) {
+  return useCustomerSegment('lost', filters, options)
+}
+
+export function useDoneCustomers(filters = {}, options = {}) {
+  return useCustomerSegment('done', filters, options)
+}
+
+export function useRetargetingCustomers(filters = {}, options = {}) {
+  return useCustomerSegment('retargeting', filters, options)
+}
+
+function useCustomerSegment(segment, filters, options) {
+  const fetchers = {
+    lost: customersApi.getLostCustomers,
+    done: customersApi.getDoneCustomers,
+    retargeting: customersApi.getRetargetingCustomers,
+  }
+  return useInfiniteQuery({
+    ...options,
+    queryKey: QUERY_KEYS.customers[segment](filters),
+    initialPageParam: 1,
+    queryFn: async ({ pageParam }) => {
+      const response = await fetchers[segment]({ ...filters, page: pageParam })
+      return response?.data ?? { data: [] }
+    },
+    getNextPageParam: (lastPage) => {
+      const current = Number(lastPage?.current_page)
+      const last = Number(lastPage?.last_page)
+      return current > 0 && current < last ? current + 1 : undefined
+    },
+  })
+}
+
 export function useDeletedCustomers(enabled = false) {
   return useQuery({
     queryKey: QUERY_KEYS.customers.deleted,

@@ -10,11 +10,22 @@ import { LostQuickAction, WonQuickAction } from './OutcomeQuickActions'
 import { SmsQuickAction } from './SmsQuickAction'
 import { StatusQuickAction } from './StatusQuickAction'
 import { WhatsappQuickAction } from './WhatsappQuickAction'
+import { QuickActionButton } from './QuickActionButton'
+import { useLeadTaskAction } from '../../../../../features/lead-tasks'
+import { ListTodo } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+
+function TaskQuickAction({ customer }) {
+  const { t } = useTranslation()
+  const task = useLeadTaskAction()
+  return <><QuickActionButton icon={ListTodo} label={t('customers.leadTasks.add')} onClick={() => task.open(customer)} disabled={!customer?.lead_id && !customer?.lead?.id} />{task.dialog}</>
+}
 
 const STORAGE_KEY = 'customer-details-quick-actions-order:v2'
 const LONG_PRESS_MS = 280
 
 const ACTIONS = [
+  { id: 'task', render: (props) => <TaskQuickAction customer={props.customer} /> },
   {
     id: 'follow-up',
     render: (props) => (
@@ -154,6 +165,8 @@ export function CustomerQuickActions({
   onStatusChanged,
   onInterestChanged,
   className,
+  onlyIds,
+  actionOverrides,
 }) {
   const longPressTimerRef = useRef(null)
   const recentDragTimerRef = useRef(null)
@@ -223,7 +236,7 @@ export function CustomerQuickActions({
   return (
     <div className={cn('-mx-1 mt-3 overflow-x-auto px-1 pb-0.5', className)}>
       <div className="flex min-w-max items-center gap-1">
-        {orderedActions.map((action) => (
+        {orderedActions.filter((action) => (!onlyIds || onlyIds.includes(action.id)) && actionOverrides?.[action.id] !== null).map((action) => (
           <div
             key={action.id}
             onPointerDown={() => startLongPress(action.id)}
@@ -246,7 +259,7 @@ export function CustomerQuickActions({
               draggingId && draggingId !== action.id && 'cursor-grabbing'
             )}
           >
-            {action.render({
+            {actionOverrides?.[action.id] ? <QuickActionButton {...actionOverrides[action.id]} /> : action.render({
               customer,
               currentStatus,
               statuses,

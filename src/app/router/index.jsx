@@ -6,12 +6,16 @@ import { LoginPage } from '../../pages/auth/LoginPage'
 import { DashboardPage } from '../../pages/dashboard/DashboardPage'
 import { MyWorkPage } from '../../pages/my-work/MyWorkPage'
 import { CustomersPage } from '../../pages/customers/CustomersPage'
+import { CustomerDealsPage } from '../../pages/customers/customer-deals/CustomerDealsPage'
 import { CustomersLayout } from '../../pages/customers/layout/CustomersLayout'
 import { NewCustomersPage } from '../../pages/customers/pages/NewCustomersPage'
 import { FollowUpCustomersPage } from '../../pages/customers/pages/FollowUpCustomersPage'
 import { InactiveCustomersPage } from '../../pages/customers/pages/InactiveCustomersPage'
+import { DoneCustomersPage } from '../../pages/customers/pages/DoneCustomersPage'
+import { RetargetingCustomersPage } from '../../pages/customers/pages/RetargetingCustomersPage'
 import { CustomerSegmentsPage } from '../../pages/customers/pages/CustomerSegmentsPage'
 import { SalesTeamsLayout } from '../../pages/sales-teams/SalesTeamsLayout'
+import { SalesTeamsManualDistributionPage } from '../../pages/sales-teams/SalesTeamsManualDistributionPage'
 import { SalesTeamsChannelsPage, SalesTeamsPage, SalesTeamsReportsPage, SalesTeamsRuleBuilderPage, SalesTeamsRulesPage, SalesTeamsUsersPage } from '../../pages/sales-teams/SalesTeamsPages'
 import { DuplicateCustomersPage } from '../../pages/customers/pages/DuplicateCustomersPage'
 import { CustomerCustomizationPage } from '../../pages/customers/pages/customization/CustomerCustomizationPage'
@@ -122,6 +126,7 @@ export const router = createBrowserRouter([
           { path: 'users', element: <SalesTeamsUsersPage /> },
           { path: 'channels', element: <SalesTeamsChannelsPage /> },
           { path: 'rules', element: <SalesTeamsRulesPage /> },
+          { path: 'manual', element: <SalesTeamsManualDistributionPage /> },
           { path: 'rules/new', element: <SalesTeamsRuleBuilderPage /> },
           { path: 'rules/:ruleId/edit', element: <SalesTeamsRuleBuilderPage /> },
           { path: 'reports', element: <SalesTeamsReportsPage /> },
@@ -135,6 +140,8 @@ export const router = createBrowserRouter([
           { path: 'new', element: <NewCustomersPage /> },
           { path: 'follow-up', element: <FollowUpCustomersPage /> },
           { path: 'inactive', element: <InactiveCustomersPage /> },
+          { path: 'done', element: <DoneCustomersPage /> },
+          { path: 'retargeting', element: <RetargetingCustomersPage /> },
           { path: 'segments', element: <CustomerSegmentsPage /> },
           // Lead distribution rules moved into the sales teams area (2026-10-16); the old URL still works.
           { path: 'assignments', element: <Navigate to="/LeadsCenter/teams/rules" replace /> },
@@ -155,6 +162,7 @@ export const router = createBrowserRouter([
         ],
       },
       { path: 'lead/:customerId', element: <CustomerLeadDetailsPage /> },
+      { path: 'customers/:customerId/deals', element: <CustomerDealsPage /> },
       { path: 'leads/:customerId', element: <CustomerLeadDetailsPage /> },
       { path: 'activities', element: <ActivitiesPage /> },
       // Calls and meetings moved to their own Communication hub modules (2026-10-01).

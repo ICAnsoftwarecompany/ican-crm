@@ -27,7 +27,7 @@ function normalizeText(value = '') {
 }
 
 function getMediaBaseUrl(path = '') {
-  const rootDomain = trimSlashes(import.meta.env.VITE_API_ROOT_DOMAIN || '3s-export.com').replace(/^https?:\/\//i, '')
+  const rootDomain = trimSlashes(import.meta.env.VITE_API_ROOT_DOMAIN || 'app.main.alameer-realestate.com').replace(/^https?:\/\//i, '')
   const scheme = String(import.meta.env.VITE_API_SCHEME || 'https').replace(/:$/, '')
   const tenantFromHost = resolveTenantFromHostname(undefined, rootDomain)
   const tenantFromPath = String(path || '').split('/').filter(Boolean)[0] || ''

@@ -1,5 +1,6 @@
 // Public surface of the Leads Center sales teams + lead distribution page (2026-10-15; own sub-sidebar and rule builder page 2026-10-16). See README.md.
 export { TeamsView } from './components/TeamsView'
+export { ManualLeadDistributionAction } from './components/ManualLeadDistributionAction'
 export { RulesView } from './components/RulesView'
 export { RuleBuilder } from './rule-builder'
 export { SalesTeamsReportView } from './reports/SalesTeamsReportView'

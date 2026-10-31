@@ -16,7 +16,7 @@ import { PersonSelect } from '../common/PersonSelect'
  * back so the step adds it to the deal. Starts with the users already picked in the step.
  * `onCreated({ teamId, memberIds, replaceUsers })`; the teams list refreshes by itself (query invalidation).
  */
-export function QuickTeamDialog({ open, users, initialMemberIds = [], onClose, onCreated }) {
+export function QuickTeamDialog({ open, users, dealName = '', defaultLeaderId = '', initialMemberIds = [], onClose, onCreated }) {
   const { t } = useTranslation()
   const { create } = useTeamMutations()
   const [name, setName] = useState('')
@@ -25,15 +25,17 @@ export function QuickTeamDialog({ open, users, initialMemberIds = [], onClose, o
   const [replaceUsers, setReplaceUsers] = useState(true)
   const [query, setQuery] = useState('')
   const [showErrors, setShowErrors] = useState(false)
+  const [serverError, setServerError] = useState('')
 
   useEffect(() => {
     if (!open) return
     setName('')
-    setLeaderId('')
+    setLeaderId(users.some((user) => String(user.id) === String(defaultLeaderId)) ? String(defaultLeaderId) : '')
     setMemberIds(initialMemberIds.map(String))
     setReplaceUsers(true)
     setQuery('')
     setShowErrors(false)
+    setServerError('')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
@@ -51,7 +53,8 @@ export function QuickTeamDialog({ open, users, initialMemberIds = [], onClose, o
       setShowErrors(true)
       return
     }
-    const payload = buildQuickTeamPayload({ name, leaderId, memberIds })
+    const payload = buildQuickTeamPayload({ name, dealName, leaderId, memberIds })
+    setServerError('')
     try {
       const teamId = extractCreatedId(await create.mutateAsync(payload), 'team')
       if (!teamId) {
@@ -62,7 +65,10 @@ export function QuickTeamDialog({ open, users, initialMemberIds = [], onClose, o
       toast.success(t('dealWorkspace.wizard.team.quick.created', { name: payload.name }))
       onCreated({ teamId: String(teamId), memberIds: payload.members.map(String), replaceUsers: pickedFromStep && replaceUsers })
     } catch (error) {
-      toast.error(extractMessage(error, t('dealWorkspace.wizard.team.quick.failed')))
+      const validation = Object.values(error?.response?.data?.errors || {}).flat().filter((value) => typeof value === 'string')
+      const message = validation.length ? validation.join(' ') : extractMessage(error, t('dealWorkspace.wizard.team.quick.failed'))
+      setServerError(message)
+      toast.error(message)
     }
   }
 
@@ -79,11 +85,13 @@ export function QuickTeamDialog({ open, users, initialMemberIds = [], onClose, o
       cancelText={t('dealWorkspace.wizard.cancel')}
     >
       <div className="space-y-4">
+        {serverError && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{serverError}</p>}
+        {dealName && <p className="break-words text-sm text-[var(--text)]">{t('dealWorkspace.wizard.team.quick.finalName')}: {buildQuickTeamPayload({ name, dealName }).name}</p>}
         <div className="grid gap-3 sm:grid-cols-2">
           <FieldLabel label={t('dealWorkspace.wizard.team.quick.name')} hint={t('dealWorkspace.wizard.team.quick.nameHint')} error={err('name')}>
             <input className={dealInputClass} value={name} onChange={(event) => setName(event.target.value)} placeholder={t('dealWorkspace.wizard.team.quick.namePlaceholder')} />
           </FieldLabel>
-          <FieldLabel label={t('dealWorkspace.wizard.team.quick.leader')} hint={t('dealWorkspace.wizard.team.quick.leaderHint')}>
+          <FieldLabel label={t('dealWorkspace.wizard.team.quick.leader')} hint={t('dealWorkspace.wizard.team.quick.leaderHint')} error={err('leaderId')}>
             <PersonSelect people={users} value={leaderId} onChange={setLeaderId} placeholder={t('dealWorkspace.wizard.team.quick.noLeader')} />
           </FieldLabel>
         </div>

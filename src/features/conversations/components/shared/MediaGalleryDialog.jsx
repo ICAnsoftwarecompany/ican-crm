@@ -1,6 +1,27 @@
+import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { ChevronLeft, ChevronRight, ExternalLink, FileText, Music, X } from 'lucide-react'
 
 export function MediaGalleryDialog({ open, items = [], activeIndex = 0, onIndexChange, onClose }) {
+  useEffect(() => {
+    if (!open || !items.length) return undefined
+    if (typeof document === 'undefined') return undefined
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') onClose?.()
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [items.length, onClose, open])
+
   if (!open || !items.length) return null
 
   const currentIndex = Math.max(0, Math.min(activeIndex, items.length - 1))
@@ -18,7 +39,9 @@ export function MediaGalleryDialog({ open, items = [], activeIndex = 0, onIndexC
     onIndexChange?.((currentIndex + 1) % items.length)
   }
 
-  return (
+  if (typeof document === 'undefined') return null
+
+  return createPortal(
     <div className="fixed inset-0 z-[70000] flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-sm">
       <div className="flex h-[min(860px,92vh)] w-[min(1040px,96vw)] flex-col overflow-hidden rounded-2xl border border-white/15 bg-slate-950 shadow-2xl">
         <header className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3 text-white">
@@ -129,6 +152,7 @@ export function MediaGalleryDialog({ open, items = [], activeIndex = 0, onIndexC
           ))}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

@@ -1,5 +1,12 @@
 // Sales teams area (/LeadsCenter/teams/*, features/leads/sales-teams): teams, distribution rules, rule builder, reports. 2026-10-15, area + builder 2026-10-16.
 export default {
+  manual: {
+    title: 'توزيع يدوي',
+    distribute: 'توزيع المحدد ({{count}})',
+    success: 'تم توزيع الليدز المحددة بنجاح',
+    failed: 'تعذر توزيع الليدز المحددة',
+    invalidSelection: 'يجب أن يكون لكل عميل محدد معرف ليد مرتبط صالح',
+  },
   "nav": {
     "title": "فرق السيلز",
     "description": "الفرق وتوزيع الليدز عليها",

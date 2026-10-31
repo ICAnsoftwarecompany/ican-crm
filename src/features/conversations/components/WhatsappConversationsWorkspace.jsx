@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { CheckCheck, ExternalLink, LayoutTemplate, Search, UserPlus, UserRound, X } from 'lucide-react'
 import { toast } from 'sonner'
+import { useOnlineUsers, useUsers } from '../../users/hooks/useUsers'
 
 import { useWhatsappRealtime } from '../../../realtime/hooks/useWhatsappRealtime'
 import { playWhatsappNotificationSound } from '../utils/notificationSound'
@@ -38,6 +39,7 @@ import { NewConversationComposer } from './shared/NewConversationComposer'
 import { whatsappIntegrationApi } from '../../integrations/whatsapp'
 import { ConversationListToggle } from './shared/ConversationListToggle'
 import { useConversationListCollapsed } from './shared/useConversationListCollapsed'
+import { buildPresenceIndex, formatLastSeen, getPresenceForEntity, mergeUsersWithPresence } from '../utils/presenceStatus'
 
 const LAST_WHATSAPP_CONVERSATION_KEY = 'conversations:last:whatsapp'
 
@@ -145,6 +147,11 @@ export function WhatsappConversationsWorkspace({
     refetchInterval: panel ? 60000 : false,
   })
   const conversations = conversationsQuery.data || []
+  const usersQuery = useUsers(undefined, { enabled: open, staleTime: 30000 })
+  const onlineUsersQuery = useOnlineUsers(undefined, {
+    enabled: open,
+    refetchInterval: open ? 30000 : false,
+  })
   const [selectedId, setSelectedId] = useState(() => panel ? '' : window.localStorage.getItem(LAST_WHATSAPP_CONVERSATION_KEY) || '')
   const [isComposing, setIsComposing] = useState(false)
   const [listCollapsed, setListCollapsed] = useConversationListCollapsed('whatsapp')
@@ -154,9 +161,24 @@ export function WhatsappConversationsWorkspace({
   const [linkDialogConversation, setLinkDialogConversation] = useState(null)
   const [templatesDialogOpen, setTemplatesDialogOpen] = useState(false)
 
+  const presenceIndex = useMemo(() => (
+    buildPresenceIndex(usersQuery.data || [], onlineUsersQuery.data || [])
+  ), [onlineUsersQuery.data, usersQuery.data])
+
+  const conversationsWithPresence = useMemo(() => (
+    conversations.map((conversation) => {
+      const entity = conversation?.contact || conversation?.customer || conversation?.lead || conversation
+      return {
+        ...conversation,
+        users: mergeUsersWithPresence(conversation?.users || [], presenceIndex),
+        _presence: getPresenceForEntity(entity, presenceIndex),
+      }
+    })
+  ), [conversations, presenceIndex])
+
   const selectedConversation = useMemo(() => (
-    conversations.find((conversation) => String(getWhatsappConversationId(conversation)) === String(selectedId)) || null
-  ), [conversations, selectedId])
+    conversationsWithPresence.find((conversation) => String(getWhatsappConversationId(conversation)) === String(selectedId)) || null
+  ), [conversationsWithPresence, selectedId])
 
   const conversationInfoQuery = useWhatsappConversationInfo(selectedId, undefined, { enabled: open && Boolean(selectedId) })
   const conversationInfo = conversationInfoQuery.data || selectedConversation
@@ -168,8 +190,20 @@ export function WhatsappConversationsWorkspace({
   ), [conversationInfo, messagesQuery.data])
 
   const filteredConversations = useMemo(() => (
-    filterWhatsappConversations(conversations, query, filters)
-  ), [conversations, filters, query])
+    filterWhatsappConversations(conversationsWithPresence, query, filters)
+  ), [conversationsWithPresence, filters, query])
+
+  const selectedConversationPresence = useMemo(() => {
+    if (!selectedId) return null
+    const source = conversationInfo || selectedConversation
+    if (!source) return null
+    const entity = source?.contact || source?.customer || source?.lead || source
+    return getPresenceForEntity(entity, presenceIndex)
+  }, [conversationInfo, presenceIndex, selectedConversation, selectedId])
+
+  const selectedConversationUsers = useMemo(() => (
+    mergeUsersWithPresence(conversationInfo?.users ?? selectedConversation?.users ?? [], presenceIndex)
+  ), [conversationInfo?.users, presenceIndex, selectedConversation?.users])
 
   useEffect(() => {
     if (!open) return
@@ -464,6 +498,11 @@ export function WhatsappConversationsWorkspace({
           const unreadCount = Number(conversation.unread_count || 0)
           const isClosed = String(conversation.status || '').toLowerCase() === 'closed'
           const assignedUserName = conversation?.assigned_user?.name || ''
+          const conversationUsers = Array.isArray(conversation?.users) ? conversation.users : []
+          const onlineMembers = conversationUsers.filter((user) => Boolean(user?.is_online)).length
+          const hasGroupPresence = conversationUsers.length > 1
+          const directPresence = conversation?._presence
+          const hasDirectPresence = Boolean(directPresence && typeof directPresence?.isOnline === 'boolean')
 
           return (
             <div
@@ -494,6 +533,19 @@ export function WhatsappConversationsWorkspace({
                     <LastMessageStatus conversation={conversation} />
                     <span className="min-w-0 truncate">{getWhatsappConversationSubtitle(conversation) || getWhatsappConversationContact(conversation) || '-'}</span>
                   </span>
+                  {hasGroupPresence ? (
+                    <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-[var(--surface)] px-2 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
+                      <span>Group</span>
+                      <span>•</span>
+                      <span>{onlineMembers}/{conversationUsers.length} Online</span>
+                    </span>
+                  ) : null}
+                  {!hasGroupPresence && hasDirectPresence ? (
+                    <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-[var(--surface)] px-2 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
+                      <span className={directPresence.isOnline ? 'text-[#047857]' : 'text-[#475569]'}>{directPresence.isOnline ? 'Online' : 'Offline'}</span>
+                      {!directPresence.isOnline && directPresence.lastSeenAt ? <span>• آخر تواجد: {formatLastSeen(directPresence.lastSeenAt)}</span> : null}
+                    </span>
+                  ) : null}
                   {assignedUserName ? (
                     <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-[var(--surface)] px-2 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
                       <UserRound size={11} />
@@ -557,10 +609,11 @@ export function WhatsappConversationsWorkspace({
           phone: selectedContact || '',
           channel: 'WhatsApp',
           conversationId: selectedId,
+          presence: selectedConversationPresence,
           status: conversationInfo?.status ?? selectedConversation?.status ?? '',
           customer: conversationInfo?.customer ?? selectedConversation?.customer ?? null,
           assignedUser: conversationInfo?.assigned_user ?? selectedConversation?.assigned_user ?? null,
-          users: conversationInfo?.users ?? selectedConversation?.users ?? [],
+          users: selectedConversationUsers,
         }}
         messages={messages}
         isLoadingMessages={messagesQuery.isLoading || conversationInfoQuery.isLoading}

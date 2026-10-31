@@ -59,7 +59,9 @@ function normalizeSingleActivity({ log, activity, index }) {
   const fallbackId = `${log?.id || 'log'}-${activity?.id || index}-${type}`
 
   return {
-    id: activity?.id || fallbackId,
+    id: log?.activityScope ? `${log.activityScope}-${log?.action || type}-${log?.id}-${activity?.id || index}` : activity?.id || fallbackId,
+    activityScope: log?.activityScope || null,
+    contextDeal: log?.contextDeal || null,
     logId: log?.id ?? null,
     type,
     category: config.category || 'other',

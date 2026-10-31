@@ -1,14 +1,10 @@
 import { UserRoundX } from 'lucide-react'
-import { CustomerPlaceholderPage } from './CustomerPlaceholderPage'
 import { useTranslation } from 'react-i18next'
+import { useLostCustomers } from '../../../features/customers/hooks/useCustomers'
+import { CustomerSegmentTable } from '../components/CustomerSegmentTable'
 
 export function InactiveCustomersPage() {
   const { t } = useTranslation()
-  return (
-    <CustomerPlaceholderPage
-      title={t('customers.placeholders.inactive.title')}
-      description={t('customers.placeholders.inactive.description')}
-      icon={UserRoundX}
-    />
-  )
+  const query = useLostCustomers()
+  return <CustomerSegmentTable query={query} title={t('customers.placeholders.inactive.title')} tableId="customers-lost" icon={UserRoundX} />
 }

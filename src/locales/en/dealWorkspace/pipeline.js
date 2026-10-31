@@ -1,5 +1,16 @@
 export default {
   "pipeline": {
+    "chats": "Deal conversations",
+    "createChat": "Create group",
+    "chatCreating": "Creating group...",
+    "createChatQuestion": "Create an internal chat group for this deal?",
+    "chatMembersUnavailable": "Could not resolve team members. Check the team members and retry.",
+    "chatTeamMembersUnavailable": "Membership data for team “{{name}}” is incomplete in the server response. Check this team's members and retry.",
+    "chatFailed": "Could not create the group.",
+    "noChats": "No groups for this deal yet.",
+    "allStages": "All stages",
+    "noStage": "No stage",
+    "stages": "Deal stages",
     "viewLabel": "View",
     "search": "Search name, phone, email...",
     "statusFilter": "Lead status",
@@ -72,6 +83,7 @@ export default {
       "failed": "Could not assign the leads."
     },
     "drawer": {
+      "notFound": "This lead is not in this deal or is unavailable in the loaded list.",
       "description": "Deal lead",
       "openRecord": "Open lead page",
       "stageChanged": "Stage changed.",

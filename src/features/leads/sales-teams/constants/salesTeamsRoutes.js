@@ -6,6 +6,7 @@ export const SALES_TEAMS_ROUTES = {
   users: `${SALES_TEAMS_BASE}/users`,
   channels: `${SALES_TEAMS_BASE}/channels`,
   rules: `${SALES_TEAMS_BASE}/rules`,
+  manual: `${SALES_TEAMS_BASE}/manual`,
   newRule: `${SALES_TEAMS_BASE}/rules/new`,
   editRule: (ruleId) => `${SALES_TEAMS_BASE}/rules/${encodeURIComponent(ruleId)}/edit`,
   reports: `${SALES_TEAMS_BASE}/reports`,

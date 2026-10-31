@@ -18,6 +18,7 @@ export function useDealPipelineState() {
     return {
       view: DEAL_VIEW_MODES.includes(view) ? view : (DEAL_VIEW_MODES.includes(preferredView) ? preferredView : 'kanban'),
       status: params.get('status') || 'open',
+      stage: params.get('stage') || '',
       ownerId: params.get('owner') || '',
       search: params.get('q') || '',
       filter: params.get('filter') || '',

@@ -233,6 +233,10 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 
 ## Deals
 
+**Deal product contract update - 2026-10-19 11:23 (Africa/Cairo):** Product list/add now use `/api/tenant/deals/{dealId}/products` with `{ products: [{ product_id, details }] }` for POST. Single-product GET/PATCH/DELETE use `.../{productId}`; PATCH sends `{ details }`. Nested `product` is catalog data and `details` is specific to this deal, while association `id` is not product ID. Wizard and workspace product editors/listing migrated together. Earlier references to `/deals/products` plus `product_ids` are superseded. See `features/deals/README.md` for field support and retry/cache behavior.
+
+**Customer Deals 360 - 2026-10-17 21:23 (Africa/Cairo):** `/customers/:customerId/deals` loads `GET /api/tenant/customers/{customerId}/deals` (customer ID, not lead ID). Shows customer contacts, server summary, all deals including Lead-Center sales, products, contracts, plans and installments. Optional `?deal=ID` expands the completed deal. The lead-win contract option navigates here only after win and status synchronization succeed. Public URL builder: `customerDealsPath` from `features/customers`. [Page guide](../src/pages/customers/customer-deals/README.md), [feature components](../src/features/customers/customer-deals/README.md). Read-only: no duplicate contract creation or invented invoice/payment API.
+
 > **Documentation update:** 2026-10-03 23:32 (Africa/Cairo) — rebuilt as a hub + one workspace per deal. Full spec and backend contract (Arabic):
 > [deals/DEALS-WORKSPACE-SPEC.md](deals/DEALS-WORKSPACE-SPEC.md).
 
@@ -288,3 +292,16 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 - Large route-owned implementations under `pages/customers` (`CustomersPage.jsx`, drawer, proposals) should migrate into features incrementally, with tests first.
 - ~~Customer drawer Tasks tab duplicates the Tasks domain~~ (resolved 2026-10-02 02:40 (Africa/Cairo), tasks F2); the eight Leads Center placeholder routes need real pages or removal from the internal sidebar.
 - Remaining hardcoded Arabic copy in the activity timeline, `DataTable` operator labels and some drawer parts; visual RTL/LTR and dark-mode QA not verified on authenticated routes.
+# Customer Timeline Context
+
+2026-10-22 22:47 (Africa/Cairo)
+
+The customer drawer reads the full lead-log response using the existing query cache.
+Explicit `lead_activities` takes precedence over duplicated `data`; these entries are
+labelled outside the deal. `deal_activities.lead_actions` and `deal_actions` are merged
+chronologically and labelled within the deal, with its name and link when provided.
+Audit descriptions, actors, timestamps and properties are preserved. Legacy responses
+without scope metadata remain unclassified; dates never determine deal membership.
+The name header honors explicit `linked_to_deal` true/false, falling back to embedded
+customer deal information only when the response has no linkage flag.
+

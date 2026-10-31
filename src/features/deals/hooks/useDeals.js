@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { dealsApi, pipelineTemplatesApi } from '../api'
 import { dealKeys } from '../constants/dealQueryKeys'
-import { unwrapEntity, unwrapList } from './dealResponse'
+import { normalizeDealDetail, unwrapList } from './dealResponse'
 
 export function useDeals(params) {
   const query = useQuery({ queryKey: dealKeys.list(params), queryFn: () => dealsApi.getAll(params) })
@@ -12,7 +12,7 @@ export function useDeals(params) {
 
 export function useDeal(id) {
   const query = useQuery({ queryKey: dealKeys.detail(id), queryFn: () => dealsApi.getById(id), enabled: Boolean(id) })
-  const deal = useMemo(() => unwrapEntity(query.data, 'deal'), [query.data])
+  const deal = useMemo(() => normalizeDealDetail(query.data, id), [query.data, id])
   return { ...query, deal }
 }
 

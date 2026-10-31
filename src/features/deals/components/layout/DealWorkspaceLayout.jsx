@@ -36,10 +36,10 @@ function DealWorkspaceShell() {
  * Route shell of `/deals/:dealId/*`: loads the deal once (DealWorkspaceProvider) and renders the shared
  * sub-sidebar + the deal header + the routed page. One workspace per deal; each keeps its own data.
  */
-export function DealWorkspaceLayout() {
+export function DealWorkspaceLayout({ renderCustomerDrawer }) {
   const { dealId } = useParams()
   return (
-    <DealWorkspaceProvider dealId={dealId}>
+    <DealWorkspaceProvider dealId={dealId} renderCustomerDrawer={renderCustomerDrawer}>
       <DealWorkspaceShell />
     </DealWorkspaceProvider>
   )

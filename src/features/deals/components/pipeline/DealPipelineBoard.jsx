@@ -5,6 +5,7 @@ import { extractMessage } from '../../../../shared/utils/apiResponse'
 import { useDealLeadMutations } from '../../hooks/useDealLeads'
 import { isWonStage } from '../../utils/dealStages'
 import { DealLeadCard } from './DealLeadCard'
+import { NO_DEAL_STAGE, hasDealStage } from './DealStageTabs'
 
 /**
  * Kanban of the deal's leads (shared PipelineBoard, long-press drag so a click still opens the card).
@@ -16,6 +17,7 @@ export function DealPipelineBoard({ dealId, stages, leads, lanes, ownerNames, ac
   const { changeStage } = useDealLeadMutations(dealId)
 
   const handleMove = async (itemId, fromStageId, toStageId) => {
+    if (toStageId === NO_DEAL_STAGE) return
     const lead = leads.find((entry) => String(entry.id) === String(itemId))
     if (lead && lead.status !== 'open') {
       toast.error(t('dealWorkspace.pipeline.closedLeadMove'))
@@ -42,7 +44,7 @@ export function DealPipelineBoard({ dealId, stages, leads, lanes, ownerNames, ac
   return (
     <PipelineBoard
       stages={stages}
-      items={lanes ? lanes.items : leads}
+      items={(lanes ? lanes.items : leads).map((lead) => hasDealStage(lead) ? lead : { ...lead, stage_id: NO_DEAL_STAGE })}
       itemStageKey="stage_id"
       groupBy={lanes ? { key: 'laneId', lanes: lanes.lanes.map((lane) => ({ ...lane, label: lane.label || t('dealWorkspace.pipeline.noTeamLane') })) } : null}
       dragMode="longPress"

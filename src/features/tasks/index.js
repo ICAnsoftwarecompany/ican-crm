@@ -2,6 +2,7 @@
 // To-Do + taskable registry added 2026-10-02 F1; record panel, quick actions, picker in F2). Existing consumers that import internal paths keep
 // working; new cross-feature code imports from here. See ./README.md.
 export { useTasks, useTaskMutations } from './hooks/useTasks'
+export { tasksApi } from './api/tasksApi'
 export { useTodoList } from './hooks/useTodoList'
 export { useEntityTasks } from './hooks/useEntityTasks'
 export { useCurrentUserId } from './hooks/useCurrentUserId'

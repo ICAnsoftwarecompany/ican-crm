@@ -1,3 +1,15 @@
 // Public surface of the customers feature (added 2026-10-02 for the tasks record picker).
 // Older consumers still import internal paths; new cross-feature code imports from here.
 export { useCustomers } from './hooks/useCustomers'
+export { LeadCreateDrawer } from './lead-create/LeadCreateDrawer'
+export { CustomerTransferWorkspace } from './lead-transfer/CustomerTransferWorkspace'
+export { CustomerDealsWorkspace } from './customer-deals/CustomerDealsWorkspace'
+export { CustomerDealsCount } from './customer-deals/CustomerDealsCount'
+export { useCustomerDeals } from './customer-deals/useCustomerDeals'
+export { customerDealTimeline } from './customer-deals/customerDealTimeline'
+export { CustomerDealTimelineActivity } from './customer-deals/CustomerDealTimelineActivity'
+export { CustomerDealsDrawerSection } from './customer-deals/CustomerDealsDrawerSection'
+export { useCustomerDealColumns } from './customer-deals/useCustomerDealColumns'
+export { customerDealsPath } from './customer-deals/customerDealsModel'
+export { buildCustomerRowContextActions } from './utils/customerRowContextActions'
+export { leadActivityContext } from './utils/leadActivityContext'

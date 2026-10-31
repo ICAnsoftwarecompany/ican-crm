@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Package, Plus, Trash2 } from 'lucide-react'
+import { Package, Plus, Trash2, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { ResourceState } from '../../../../shared/components/data/ResourceState'
 import { ConfirmDialog } from '../../../../shared/components/overlays/ConfirmDialog'
@@ -13,6 +13,7 @@ import { DealProductModeCard } from '../common/DealProductModeCard'
 import { ProductUnitBadge } from '../common/ProductUnitBadge'
 import { useProductOptions } from '../common/useProductOptions'
 import { AttachProductsDialog } from './AttachProductsDialog'
+import { DealProductDialog } from './DealProductDialog'
 
 /** Products this deal sells (offered first in the won dialog and the lead products editor). */
 export function DealProductsPanel() {
@@ -23,6 +24,7 @@ export function DealProductsPanel() {
   const { mode, products: modeProducts } = useProductOptions(dealId)
   const [attaching, setAttaching] = useState(false)
   const [removing, setRemoving] = useState(null)
+  const [editingId, setEditingId] = useState(null)
 
   const confirmRemove = async () => {
     try {
@@ -60,16 +62,18 @@ export function DealProductsPanel() {
                   <p className="truncate text-sm font-bold text-[var(--text)]">{product.name || `#${product.id}`}</p>
                   {product.price !== null && product.price !== undefined && <p className="text-xs text-[var(--text-muted)]" dir="ltr">{formatMoney(product.price, i18n.language)}</p>}
                   <div className="mt-1"><ProductUnitBadge product={product} /></div>
+                  <dl className="mt-2 space-y-1 text-xs text-[var(--text-muted)]">{Object.entries(product.details).map(([key, value]) => <div key={key} className="flex flex-wrap gap-1"><dt>{t(`dealWorkspace.products.details.${key}`, { defaultValue: key })}:</dt><dd className="break-all">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</dd></div>)}</dl>
                 </div>
               </div>
-              <button type="button" onClick={() => setRemoving(product)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-red-600" aria-label={t('dealWorkspace.products.remove')} title={t('dealWorkspace.products.remove')}>
+              <div className="flex shrink-0 gap-1"><button type="button" onClick={() => setEditingId(product.id)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-[var(--surface-2)]" aria-label={t('dealWorkspace.products.editDetails')} title={t('dealWorkspace.products.editDetails')}><Pencil size={15} /></button><button type="button" onClick={() => setRemoving(product)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-red-600" aria-label={t('dealWorkspace.products.remove')} title={t('dealWorkspace.products.remove')}>
                 <Trash2 size={15} />
-              </button>
+              </button></div>
             </li>
           ))}
         </ul>
       </ResourceState>
       <AttachProductsDialog dealId={dealId} existingIds={query.products.map((product) => product.id)} open={attaching} onClose={() => setAttaching(false)} />
+      {editingId != null && <DealProductDialog dealId={dealId} productId={editingId} onClose={() => setEditingId(null)} />}
       <ConfirmDialog
         isOpen={Boolean(removing)}
         onCancel={() => setRemoving(null)}

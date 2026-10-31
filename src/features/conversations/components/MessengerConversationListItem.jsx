@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { UserPlus, UserRound } from 'lucide-react'
+import { Circle, UserPlus, UserRound } from 'lucide-react'
 import {
   getMessengerConversationId,
   getMessengerConversationSubtitle,
@@ -9,6 +9,7 @@ import {
 import { MessengerConversationHoverPreview } from './MessengerConversationHoverPreview'
 import { formatConversationTime } from '../utils/formatConversationTime'
 import { LastMessageStatus } from './shared/LastMessageStatus'
+import { formatLastSeen } from '../utils/presenceStatus'
 
 function MessengerConversationAvatar({ conversation, className = 'h-10 w-10 rounded-lg' }) {
   const [imageFailed, setImageFailed] = useState(false)
@@ -40,6 +41,8 @@ export function MessengerConversationListItem({ conversation, isActive, onSelect
   const hasLinkedCustomer = Boolean(conversation?.customer)
   const assignedUserName = conversation?.assigned_user?.name || ''
   const isClosed = String(conversation?.status || '').toLowerCase() === 'closed'
+  const presence = conversation?._presence
+  const hasPresence = Boolean(presence && typeof presence?.isOnline === 'boolean')
 
   return (
     <div
@@ -81,6 +84,13 @@ export function MessengerConversationListItem({ conversation, isActive, onSelect
               {getMessengerConversationSubtitle(conversation) || 'لا توجد معاينة للرسالة'}
             </span>
           </span>
+          {hasPresence ? (
+            <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-[var(--surface)] px-2 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
+              <Circle size={8} className={presence.isOnline ? 'fill-[#22C55E] text-[#22C55E]' : 'fill-[#94A3B8] text-[#94A3B8]'} />
+              <span>{presence.isOnline ? 'Online' : 'Offline'}</span>
+              {!presence.isOnline && presence.lastSeenAt ? <span>• آخر تواجد: {formatLastSeen(presence.lastSeenAt)}</span> : null}
+            </span>
+          ) : null}
           {assignedUserName ? (
             <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-[var(--surface)] px-2 py-0.5 text-[10px] font-black text-[var(--text-muted)]">
               <UserRound size={11} />

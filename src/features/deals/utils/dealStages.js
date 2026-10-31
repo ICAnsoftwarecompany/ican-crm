@@ -18,14 +18,14 @@ export function isTerminalStage(stage) {
 }
 
 /**
- * The deal's own stages first (`deal.stages`), then the embedded template, then the template from the
- * templates list. Sorted by `order`; each stage gets a `label` for the shared PipelineBoard.
+ * Full deal stages first, then deal-owned stages_summary, then template fallback.
+ * Sorted by `order` (server order retained when absent); summary names never imply terminal flags.
  */
 export function resolveDealStages(deal, templates = []) {
   const template = deal?.pipeline_template
     || deal?.pipelineTemplate
     || (Array.isArray(templates) ? templates.find((item) => sameId(item?.id, deal?.pipeline_template_id)) : null)
-  const source = [deal?.stages, deal?.deal_stages, template?.stages].find((list) => Array.isArray(list) && list.length) || []
+  const source = [deal?.stages, deal?.deal_stages, deal?.stages_summary, template?.stages].find((list) => Array.isArray(list) && list.length) || []
   return source
     .slice()
     .sort((left, right) => Number(left?.order ?? 0) - Number(right?.order ?? 0))

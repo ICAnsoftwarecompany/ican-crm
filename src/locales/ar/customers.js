@@ -1,4 +1,69 @@
 export default {
+  leadTaskDisplay: { column: 'المهام', count: '{{count}} مهمة', open: 'فتح المهام', openTask: 'فتح المهمة', remaining: 'متبقي: {{days}} يوم {{hours}} س {{minutes}} د', overdue: 'متأخرة: {{days}} يوم {{hours}} س {{minutes}} د', noDeadline: 'لا توجد مهمة مفتوحة بموعد' },
+  leadTasksInvalidTargets: 'لا يمكن الحفظ: {{count}} من العملاء المحددين ليس لديهم رقم ليد صالح.',
+  leadTasks: { add: 'إضافة مهمة', copies: 'سيتم إنشاء مهمة مستقلة لكل ليد من {{count}} ليدز.', checklist: 'قائمة المهام', addItem: 'إضافة نقطة', item: 'النقطة {{number}}', completedItem: 'إتمام النقطة {{number}}', removeItem: 'إزالة', date: 'تاريخ الاستحقاق (اختياري)', time: 'الوقت (اختياري)', reminder: 'تفعيل التنبيه', progress: 'تم إنشاء {{count}} من {{total}} مهمة', failed: 'تعذر إنشاء المهمة', retry: 'إعادة محاولة المهام المتبقية' },
+  activityContext: { inside: 'نشاط داخل الصفقة', outside: 'نشاط خارج الصفقة', linked: 'مرتبط بصفقة', unlinked: 'غير مرتبط بصفقة' },
+  leadCreate: {
+    title: 'إضافة عميل محتمل', saveNext: 'حفظ وإضافة آخر', saved: 'تمت إضافة العميل المحتمل', failed: 'تعذرت إضافة العميل المحتمل', tenantMissing: 'تعذر تحديد الشركة الحالية', automatic: 'التوزيع التلقائي', agent: 'المسؤول', status: 'الحالة', tag: 'التصنيف', source: 'المصدر', linkedType: 'طريقة الربط', linkDate: 'تاريخ الربط', manual: 'يدوي', automation: 'أتمتة', none: 'بدون', attributes: 'الخصائص الإضافية', addAttribute: 'إضافة خاصية', attributeName: 'اسم الخاصية', attributeValue: 'قيمة الخاصية', interests: 'المنتجات المهتم بها', addInterest: 'إضافة اهتمام', product: 'المنتج', interestLevel: 'درجة الاهتمام', low: 'منخفض', medium: 'متوسط', high: 'مرتفع', interestNote: 'ملاحظة الاهتمام', note: 'ملاحظة', remove: 'حذف', optionsError: 'تعذر تحميل بعض الاختيارات', company: 'الشركة',
+  },
+  transfer: {
+    import: 'الاستيراد', export: 'التصدير', upload: 'رفع ملف', saveRows: 'حفظ الصفوف المعلقة', savedCount: 'تم حفظ: {{count}}', emptyFile: 'لا توجد صفوف في الملف', failed: 'تعذر إتمام العملية', name: 'الاسم', phone: 'الهاتف', email: 'البريد الإلكتروني', company: 'الشركة', state: 'الحالة', pending: 'بانتظار الحفظ', saved: 'تم الحفظ', empty: 'لم تتم إضافة عملاء محتملين بعد', format: 'صيغة الملف', download: 'تصدير جميع العملاء', exported: 'تم تصدير {{count}} عميل',
+  },
+  deals360: {
+    dealColumn: 'الصفقة {{number}}',
+    openCustomerDeals: 'فتح صفحة صفقات العميل',
+    viewContract: 'عرض بيانات العقد',
+    title: 'صفقات العميل', customer: 'العميل', deal: 'الصفقة', deals_count: 'كل الصفقات', open: 'مفتوحة', won: 'مكتسبة', lost: 'خاسرة', total_won_value: 'إجمالي قيمة الكسب', all: 'الكل', filter: 'تصفية الصفقات', search: 'بحث عن صفقة أو عقد', loading: 'جارٍ تحميل صفقات العميل', error: 'تعذر تحميل صفقات العميل.', retry: 'إعادة المحاولة', refresh: 'تحديث', empty: 'لا توجد صفقات لهذا العميل بعد.', noMatches: 'لا توجد صفقات مطابقة.', unavailable: '-', owner: 'المسؤول', stage: 'المرحلة', value: 'القيمة', date: 'تاريخ الصفقة', lostReason: 'سبب الخسارة', products: 'المنتجات', product: 'المنتج', quantity: 'الكمية', unitPrice: 'سعر الوحدة', discount: 'الخصم', total: 'الإجمالي', noProducts: 'لا توجد منتجات مسجلة.', contracts: 'عقود البيع', noContracts: 'لا توجد عقود مسجلة.', openContracts: 'فتح عقود الصفقة', openDeal: 'فتح الصفقة', downPayment: 'الدفعة المقدمة', payment: 'طريقة الدفع', status: 'الحالة', signedAt: 'تاريخ التوقيع', frequency: 'التكرار', installmentCount: 'عدد الأقساط', firstDue: 'أول استحقاق', installments: 'جدول الأقساط', installment: 'القسط', dueDate: 'تاريخ الاستحقاق', amount: 'المبلغ', paidAmount: 'المبلغ المدفوع', paidAt: 'تاريخ الدفع',
+    states: { won: 'مكتسبة', open: 'مفتوحة', lost: 'خاسرة', active: 'نشط', cancelled: 'ملغي', paid: 'مدفوع', partial: 'مدفوع جزئيًا', pending: 'قيد الانتظار', late: 'متأخر', overdue: 'متأخر الاستحقاق', cash: 'كاش', installment: 'تقسيط', installments: 'تقسيط', bank_transfer: 'تحويل بنكي', monthly: 'شهري', weekly: 'أسبوعي', daily: 'يومي', quarterly: 'ربع سنوي', yearly: 'سنوي' },
+  },
+  "wonSteps": { "label": "مراحل تسجيل الكسب", "products": "المنتجات", "payment": "طرق الدفع", "settings": "باقي الإعدادات", "next": "التالي", "previous": "السابق" },
+  "lostStatusSync": {
+    "label": "حالة الخسارة",
+    "choose": "اختر حالة الخسارة",
+    "required": "اختر حالة خسارة لإكمال الحفظ",
+    "noStatuses": "لا توجد حالة خسارة مفعّلة. أضف حالة is_lost من إعدادات الحالات.",
+    "activityTitle": "تسجيل خسارة من مركز العملاء",
+    "activityDescription": "تم تسجيل خسارة العميل {{name}} وتحويله إلى حالة {{status}}",
+    "partialFailure": "اكتمل حفظ {{saved}} عميل، وتعذر إكمال {{failed}}: {{error}}. أعد الحفظ لإكمال الخطوات المتبقية فقط."
+  },
+  "contextTiles": { "meeting": "اجتماع", "call": "مكالمة", "followUp": "متابعة", "interest": "اهتمام", "select": "تحديد العميل" },
+  "wonStatusSync": {
+    "label": "حالة البيع بعد إتمام الصفقة",
+    "choose": "اختر حالة البيع",
+    "required": "اختر حالة بيع لإكمال المعاملة",
+    "noStatuses": "لا توجد حالة بيع مفعّلة. أضف حالة يكون is_deal فيها مفعّلًا من إعدادات الحالات.",
+    "activityTitle": "تسجيل بيع من مركز العملاء",
+    "activityDescription": "تم تسجيل كسب العميل {{name}} وتحويله إلى حالة {{status}}",
+    "partialFailure": "تم تسجيل البيع، لكن تعذر تحديث حالة العميل: {{error}}. أعد الحفظ لإكمال تحديث الحالة فقط."
+  },
+  "wonDealFlow": {
+    "question": "هل ينتمي العميل إلى صفقة معينة؟",
+    "yes": "نعم، صفقة موجودة",
+    "no": "لا، إنشاء صفقة جديدة",
+    "autoHint": "عند تسجيل الكسب ستُنشأ صفقة باسم العميل والمنتجات التي اشتراها، ثم يُسجّل الكسب عليها.",
+    "autoDescription": "بيع للعميل {{name}}",
+    "createFailed": "تعذر استلام معرّف الصفقة الجديدة. راجع الصفقة قبل إعادة المحاولة.",
+    "document": "الإجراء بعد تسجيل الكسب",
+    "none": "بدون إجراء إضافي",
+    "contract": "فتح عقد البيع",
+    "invoice": "إصدار فاتورة (قريبًا)",
+    "invoiceUnavailable": "جاهز للربط عند توفير دالة إصدار الفواتير",
+    "documentHint": "تسجيل الكسب ينشئ العقد وخطة الدفع تلقائيًا على السيرفر. اختيار العقد يفتح صفقات العميل وعقوده بعد نجاح الحفظ. إصدار الفواتير قيد التجهيز."
+  },
+  "customerSegments": { "done": "عملاء اشتروا أو نفّذوا", "retargeting": "عملاء إعادة الاستهداف" },
+  "segmentStatuses": { "done": "تم التنفيذ أو الشراء", "won": "كسب", "lost": "خسارة", "pending": "قيد الانتظار", "active": "نشط", "retargeting": "إعادة استهداف", "retarget": "إعادة استهداف" },
+  "dealLink": {
+    "startDate": "البداية: {{date}}",
+    "endDate": "النهاية: {{date}}",
+    "targetRevenue": "الإيراد المستهدف: {{value}}",
+    "targetLeads": "العملاء المستهدفون: {{value}}",
+    "badge": "مرتبط بديل",
+    "linked": "العميل مرتبط بديل بالفعل",
+    "number": "الديل #{{id}}",
+    "status": "حالة الديل: {{status}}",
+    "addedAt": "تاريخ الإضافة للديل: {{date}}",
+    "statuses": { "lost": "خسارة", "won": "كسب", "open": "مفتوح", "active": "نشط", "pending": "قيد الانتظار", "in_progress": "قيد التنفيذ" }
+  },
   "title": "مركز العملاء المحتملين",
   "newCustomer": "عميل جديد",
   "noCustomers": "لا يوجد عملاء محتملون",
@@ -98,6 +163,7 @@ export default {
     "noMeetingsInRange": "لا توجد اجتماعات خلال {{range}} داخل التاب الحالي",
     "noCallsInRange": "لا توجد مكالمات خلال {{range}} داخل التاب الحالي",
     "allStatuses": "كل الحالات",
+    "noStatus": "بدون حالة",
     "toasts": {
       "activityStarted": "تم بدء النشاط بنجاح",
       "activityCancelled": "تم إلغاء النشاط بنجاح",
@@ -110,6 +176,7 @@ export default {
       "activitySavedDesc": "{{activity}} للعميل {{name}}.",
       "statusUpdated": "تم تحديث حالة العميل",
       "statusUpdatedDesc": "{{name}} انتقل إلى {{status}}. تم تحديث بيانات العملاء تلقائيًا.",
+      "ownerAssigned": "تم إسناد {{name}} إلى المسؤول المختار.",
       "newStatusFallback": "الحالة الجديدة"
     },
     "confirm": {
@@ -128,6 +195,8 @@ export default {
       "addMeeting": "اضافة موعد اجتماع",
       "addCall": "اضافة موعد مكالمة",
       "addFollowUp": "اضافة متابعة علي العميل",
+      "assignOwner": "إسناد العميل إلى مسؤول",
+      "assignOwnerDesc": "اختر مسؤول {{name}}.",
       "customerActionsSection": "إجراءات العميل",
       "selectCustomer": "تحديد العميل: {{name}}"
     },

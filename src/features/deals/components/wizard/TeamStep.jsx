@@ -8,6 +8,7 @@ import { TEAM_ROLES } from '../../constants/dealOptions'
 import { addQuickTeamToMembers } from '../../utils/quickTeam'
 import { QuickTeamDialog } from './QuickTeamDialog'
 import { TeamPicker } from './TeamPicker'
+import { canOfferDealChat } from '../../utils/dealChat'
 
 const DEFAULT_ROLE = 'sales_rep'
 const teamMembersOf = (team) => [team?.members, team?.users].find(Array.isArray) || []
@@ -20,7 +21,7 @@ const teamMembersOf = (team) => [team?.members, team?.users].find(Array.isArray)
  * The owner (step 2) can be added as manager automatically. No fitting team? "Quick team" creates one
  * (`POST /teams/create`, QuickTeamDialog) and adds it to the deal right away.
  */
-export function TeamStep({ value, onChange, ownerId, errors = {} }) {
+export function TeamStep({ value, onChange, ownerId, dealName = '', errors = {} }) {
   const { t, i18n } = useTranslation()
   const usersQuery = useUsers()
   const teamsQuery = useTeams()
@@ -102,6 +103,12 @@ export function TeamStep({ value, onChange, ownerId, errors = {} }) {
       )}
 
       <section className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3">
+        {canOfferDealChat(value, ownerId) && (
+          <label className="mb-4 flex items-center gap-2 text-sm text-[var(--text)]">
+            <input type="checkbox" checked={Boolean(value.createChat)} onChange={(event) => onChange({ createChat: event.target.checked })} />
+            {t('dealWorkspace.pipeline.createChatQuestion')}
+          </label>
+        )}
         <h3 className="mb-2 text-sm font-bold text-[var(--text)]">{t('dealWorkspace.wizard.team.rolesTitle')}</h3>
         <dl className="grid gap-2 sm:grid-cols-3">
           {TEAM_ROLES.map((role) => (
@@ -117,7 +124,7 @@ export function TeamStep({ value, onChange, ownerId, errors = {} }) {
         {userCount || teamCount ? <Send size={15} className="text-[var(--brand-accent)]" /> : <UsersRound size={15} className="text-[var(--text-muted)]" />}
         {userCount || teamCount ? t('dealWorkspace.wizard.team.summary', { users: userCount, teams: teamCount }) : t('dealWorkspace.wizard.team.none')}
       </div>
-      <QuickTeamDialog open={quickOpen} users={users} initialMemberIds={pickedUserIds} onClose={() => setQuickOpen(false)} onCreated={onQuickCreated} />
+      <QuickTeamDialog open={quickOpen} users={users} dealName={dealName} defaultLeaderId={ownerId} initialMemberIds={pickedUserIds} onClose={() => setQuickOpen(false)} onCreated={onQuickCreated} />
       {errors.members && <p className="text-xs text-red-600 dark:text-red-400">{t(`dealWorkspace.wizard.errors.${errors.members}`)}</p>}
       <p className="text-xs text-[var(--text-muted)]">{t('dealWorkspace.team.add.notifyHint')}</p>
     </div>

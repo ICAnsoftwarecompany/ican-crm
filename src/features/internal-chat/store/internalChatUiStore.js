@@ -3,7 +3,7 @@ import { create } from 'zustand'
 export const useInternalChatUiStore = create((set) => ({
   activeConversationId: '',
   openedThreadId: '',
-  detailsPanelOpen: true,
+  detailsPanelOpen: false,
   sidebarCollapsed: false,
   replyingTo: null,
   editingMessage: null,

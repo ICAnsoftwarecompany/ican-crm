@@ -14,15 +14,16 @@ const toId = (value) => {
 export function validateQuickTeam({ name = '', leaderId = '', memberIds = [] } = {}) {
   const errors = {}
   if (!String(name).trim()) errors.name = 'quickTeamNameRequired'
+  if (!leaderId) errors.leaderId = 'quickTeamLeaderRequired'
   if (!memberIds.length && !leaderId) errors.members = 'quickTeamMembersRequired'
   return errors
 }
 
-export function buildQuickTeamPayload({ name = '', leaderId = '', memberIds = [] } = {}) {
+export function buildQuickTeamPayload({ name = '', dealName = '', leaderId = '', memberIds = [] } = {}) {
   const members = [...new Set([...(leaderId ? [String(leaderId)] : []), ...memberIds.map(String)])].map(toId)
   return {
-    name: String(name).trim(),
-    ...(leaderId ? { team_leader_id: toId(leaderId) } : {}),
+    name: [String(dealName).trim(), String(name).trim()].filter(Boolean).join(' - '),
+    ...(leaderId ? { team_leader_id: String(leaderId) } : {}),
     active: true,
     type: QUICK_TEAM_TYPE,
     members,

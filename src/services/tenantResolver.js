@@ -1,5 +1,5 @@
 const IGNORED_SUBDOMAINS = new Set(['www', 'app', 'crm', 'dashboard'])
-const DEFAULT_ROOT_DOMAIN = '3s-export.com'
+const DEFAULT_ROOT_DOMAIN = 'app.main.alameer-realestate.com'
 
 function normalizeTenantValue(value) {
   if (value === null || value === undefined) return ''

@@ -51,4 +51,19 @@ describe('normalizeNotification', () => {
     expect(result).toHaveLength(1)
     expect(result[0].type).toBe('task.shared')
   })
+
+  it('maps the internal team chat received-message type to the team chat route', () => {
+    const result = normalizeNotification({
+      id: 10,
+      type: 'intrnal.chat.message.received',
+      data: { message: 'New message received' },
+      created_at: '2026-10-27T09:16:00Z',
+    })
+
+    expect(result).toMatchObject({
+      category: 'communication',
+      target: '/team-chat',
+      titleKey: 'notifications.types.teamChatMessageReceived',
+    })
+  })
 })

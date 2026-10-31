@@ -16,6 +16,8 @@ export const notificationRegistry = {
   'gmail.conversation.assigned': { category: 'communication', icon: Mail, tone: 'communication', titleKey: 'notifications.types.gmailConversationAssigned', getTarget: () => '/conversations?channel=gmail' },
   'whatsapp.conversation.assigned': { category: 'communication', icon: MessageCircle, tone: 'communication', titleKey: 'notifications.types.whatsappConversationAssigned', getTarget: () => '/conversations?channel=whatsapp' },
   'chat.added_to_group': { category: 'communication', icon: Users, tone: 'communication', titleKey: 'notifications.types.chatAddedToGroup', getTarget: () => '/team-chat' },
+  'intrnal.chat.message.received': { category: 'communication', icon: MessageCircle, tone: 'communication', titleKey: 'notifications.types.teamChatMessageReceived', getTarget: () => '/team-chat' },
+  'internal.chat.message.received': { category: 'communication', icon: MessageCircle, tone: 'communication', titleKey: 'notifications.types.teamChatMessageReceived', getTarget: () => '/team-chat' },
   'proposal.viewed': { category: 'sales', icon: Eye, tone: 'info', titleKey: 'notifications.types.proposalViewed', getTarget: leadTarget },
   'proposal.option_selected': { category: 'sales', icon: CheckSquare, tone: 'success', titleKey: 'notifications.types.proposalOptionSelected', getTarget: leadTarget },
   'proposal.accepted': { category: 'sales', icon: UserCheck, tone: 'success', titleKey: 'notifications.types.proposalAccepted', getTarget: leadTarget },

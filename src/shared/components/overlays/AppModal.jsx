@@ -20,23 +20,30 @@ export function AppModal({
   className,
   contentClassName,
   closeOnBackdrop = true,
+  closeOnEscape = true,
 }) {
   const { t } = useTranslation()
   useEffect(() => {
     if (!isOpen) return
 
     const handleEscape = (e) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key !== 'Escape') return
+      if (!closeOnEscape) {
+        e.preventDefault()
+        e.stopImmediatePropagation()
+        return
+      }
+      onClose?.()
     }
 
-    document.addEventListener('keydown', handleEscape)
+    document.addEventListener('keydown', handleEscape, !closeOnEscape)
     document.body.style.overflow = 'hidden'
 
     return () => {
-      document.removeEventListener('keydown', handleEscape)
+      document.removeEventListener('keydown', handleEscape, !closeOnEscape)
       document.body.style.overflow = 'unset'
     }
-  }, [isOpen, onClose])
+  }, [isOpen, onClose, closeOnEscape])
 
   if (!isOpen) return null
 

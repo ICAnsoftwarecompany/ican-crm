@@ -12,6 +12,7 @@ doc in the same change.
 | 2 | [2-SALES.md](2-SALES.md) | You work on leads, customers, assignment, statuses, activities, deals, opportunities, proposals |
 | 3 | [3-FEATURES.md](3-FEATURES.md) | You work on conversations, campaigns, outreach, social, tasks, automation, notifications, AI agent, products, settings |
 | 4 | [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md) | You work on the Customer Hub (`features/service`, `/service/*`) or the customer portal (`/portal/*`) |
+| 2026-10-25 01:10 (Africa/Cairo) | [PROJECT-OVERVIEW-AR.md](PROJECT-OVERVIEW-AR.md) | Arabic executive/technical overview of the project architecture, design approach, and feature map |
 | — | [customer-service/SERVICE-MASTER-SPEC.md](customer-service/SERVICE-MASTER-SPEC.md) | Backend contract and business rules for Customer Service (Arabic) |
 | — | [customer-service/SERVICE-BRIEF.md](customer-service/SERVICE-BRIEF.md) | The decision brief behind the spec (Arabic) |
 | — | [tasks/TASKS-TODO-SPEC.md](tasks/TASKS-TODO-SPEC.md) | Tasks and To-Do: concepts, UI, rules, frontend code and the phased backend contract (Arabic) |
@@ -122,6 +123,31 @@ Newest first. Every docs change also carries a `YYYY-MM-DD HH:mm (Africa/Cairo)`
 
 | When | What changed | Where |
 |---|---|---|
+| 2026-10-25 01:10 (Africa/Cairo) | Added a new Arabic project overview covering architecture layering, design system approach, and feature capabilities map | this index, `docs/PROJECT-OVERVIEW-AR.md` |
+| 2026-10-22 22:32 (Africa/Cairo) | Restore native compact customer drawer quick-action strip for deal leads while retaining deal-specific handlers and disabled states | `features/deals/README.md`, CustomerQuickActions, QuickActionButton, dealLeadActions |
+| 2026-10-19 19:34 (Africa/Cairo) | Header product/service shortcut, drawer explorer, hover previews, complete product fields and paginated deal-customer interest/negotiation matching | `features/deals/README.md`, product explorer, productInterests model/tests |
+| 2026-10-19 18:52 (Africa/Cairo) | Deal leads reuse the actual customer drawer through page composition, retaining deal-bound actions, communication launchers and the distinct lead-page URL | `features/deals/README.md`, `pages/deals/DealCustomerDrawer.jsx`, customer drawer optional slots |
+| 2026-10-19 18:35 (Africa/Cairo) | Unified CRM actions in deal table/card/drawer and separate deal-lead route; migrated reusable follow-up editor and row action descriptors into features | `features/deals/README.md`, [Follow-up](../src/features/leads/follow-up-note/README.md), `features/customers/utils/customerRowContextActions.js` |
+| 2026-10-19 15:35 (Africa/Cairo) | Chat creation retry resolves paginated teams, merges member aliases, accepts explicitly empty/leader-only teams and names incomplete teams in errors | `features/deals/README.md`, dealChat utility and tests |
+| 2026-10-19 15:18 (Africa/Cairo) | Deal conversations route, scoped internal chat reuse, opt-in wizard groups with paginated numbering and retry checkpoints | `features/deals/README.md`, [Internal chat](../src/features/internal-chat/README.md), `pages/deals` |
+| 2026-10-19 13:32 (Africa/Cairo) | Hide stage chevrons in board view; board ignores remembered table stage filter and displays every stage | `features/deals/README.md`, DealPipelineView, route test |
+| 2026-10-19 13:26 (Africa/Cairo) | Pipeline board/table switch moved to workspace header beside Add leads; search/status/owner arranged in a responsive row | `features/deals/README.md`, workspace header, pipeline toolbar |
+| 2026-10-19 13:30 (Africa/Cairo) | Deal pipeline chevron stage navigation for board/table, all/no-stage filters, unstaged column, removed duplicate toolbar add button | `features/deals/README.md`, pipeline components |
+| 2026-10-19 13:08 (Africa/Cairo) | Deal detail parser preserves sibling stages_summary/stats; pipeline displays actual summary stages instead of a false no-stages warning | `features/deals/README.md`, `hooks/dealResponse.js`, `utils/dealStages.js`, tests |
+| 2026-10-19 11:23 (Africa/Cairo) | Deal products migrated to deal-scoped GET/POST and product GET/PATCH/DELETE; per-deal details in creation/workspace and catalog/link ID separation | `features/deals/README.md`, `pages/deals/README.md`, 2-SALES (Deals) |
+| 2026-10-18 15:43 (Africa/Cairo) | Deal quick teams use `Deal - Team` names, required/default leader, exact team-create JSON and visible 422 validation details | `features/deals/README.md`, `pages/deals/README.md`, QuickTeamDialog tests |
+| 2026-10-17 22:48 (Africa/Cairo) | Lead-only add button opens repeat-save drawer; live customer query refresh; import/export tabs with file review, manual live review and full-list downloads | [Lead creation](../src/features/customers/lead-create/README.md), [Transfer](../src/features/customers/lead-transfer/README.md) |
+| 2026-10-17 22:38 (Africa/Cairo) | Removed the trash button from the customer page header; trash remains in the sidebar. Lead actions menu (add/import/export) is unchanged | `pages/customers/CustomersPage.jsx`, `components/CustomersPageHeader.jsx`, `components/page-actions/CustomersPageActions.jsx` |
+| 2026-10-17 22:26 (Africa/Cairo) | is_lost status changes open the existing customer loss modal with the selected status, including bulk selection | `features/leads/close/README.md`, `features/leads/outcome/README.md` |
+| 2026-10-17 22:21 (Africa/Cairo) | Sale status changes now open the product/payment transaction wizard with the chosen is_deal status; bulk customers processed sequentially | `features/leads/close/README.md`, `features/leads/outcome/README.md` |
+| 2026-10-17 22:16 (Africa/Cairo) | Main Leads Center table and quick drawer header show deal count/open link; HomeTab shows deals; timeline merges transaction events at their dates | `features/customers/customer-deals/README.md`, customers table/drawer/timeline |
+| 2026-10-17 22:06 (Africa/Cairo) | Manual lead distribution sidebar/page reuses Leads Center table; posts selected linked lead IDs and leaves priority/order to backend | `pages/sales-teams/README.md`, `features/leads/sales-teams/README.md` |
+| 2026-10-17 22:01 (Africa/Cairo) | Done customers use a focused drawer with table fields and deals only, without the full customer tabs/details | `pages/customers/components/DoneCustomerDrawer.jsx`, customer-deals READMEs |
+| 2026-10-17 21:51 (Africa/Cairo) | Done-customer deals moved into timeline/home tabs; separate ordinal deal columns and open-page icons in the done table | [Page README](../src/pages/customers/customer-deals/README.md), [feature README](../src/features/customers/customer-deals/README.md) |
+| 2026-10-17 21:46 (Africa/Cairo) | Contract detail API corrected to singular `/api/tenant/deals/contract/{id}`; consumers share getById; list/payment endpoints unchanged | `features/deals/api/contractsApi.js`, customer-deals READMEs and test |
+| 2026-10-17 21:39 (Africa/Cairo) | Done customers drawer shows API-backed deals summary and links to customer deals and selected transactions | [Page README](../src/pages/customers/customer-deals/README.md), [feature README](../src/features/customers/customer-deals/README.md) |
+| 2026-10-17 21:36 (Africa/Cairo) | Customer Deals 360 contract numbers/details open ContractDrawer backed by `GET /api/tenant/deals/contracts/{id}` | [Page README](../src/pages/customers/customer-deals/README.md), [feature README](../src/features/customers/customer-deals/README.md) |
+| 2026-10-17 21:23 (Africa/Cairo) | Customer Deals 360 at `/customers/:customerId/deals`, API-backed customer/deals/contracts/installments, and successful lead-win contract navigation | [Page README](../src/pages/customers/customer-deals/README.md), [feature README](../src/features/customers/customer-deals/README.md), 2-SALES (Deals) |
 | 2026-10-16 02:40 (Africa/Cairo) | Sales teams area: **Sales users** `/LeadsCenter/teams/users` (`sales-teams/sales-users`: users of type sales ranked by a unique priority, inline one-field edits of priority / manager / role / type / active through `users/update/{id}/`, swap and auto order, duplicate warnings; shared DataTable) and **Chat distribution** `/LeadsCenter/teams/channels` (`sales-teams/channel-distribution`: per channel (WhatsApp, Messenger; Instagram, TikTok, Gmail, Snapchat soon) the distribution setting `channel/distribution-settings` and the receiving users `channel/assignment-rules` ordered by priority, add with the current order shown). `features/users` exports `useUserMutations` | `backend/BACKEND-REQUESTS.md` (E3 14-19) · this index · READMEs `features/leads/sales-teams`, new `sales-users`, new `channel-distribution`, `pages/sales-teams` |
 | 2026-10-16 01:05 (Africa/Cairo) | Rule builder priority step lists every existing rule (active and inactive) with its priority, conditions, assign type and receiver, the new rule placed live, and "Above" / "Below" buttons per rule (`rule-builder/components/PriorityLadder.jsx`, `priorityLadder`). The rules list now reads nested response shapes (`useAssignmentRules` → `extractRows`) | this index · README `features/leads/sales-teams/rule-builder` |
 | 2026-10-16 00:45 (Africa/Cairo) | Rule builder: campaign / ad / lead form conditions picked from searchable lists merging Meta (Campaign Center `facebook/campaigns/get`, the chosen campaign's ad sets and their ads) and CRM lists, with platform, status and page (`sales-teams/utils/ruleSources.js`, `ConditionPicker`); receiver step: team or one user (full users list), plus an inline quick team (`teams/create`, then selected). `features/campaigns` already exports the Meta hooks used | `backend/BACKEND-REQUESTS.md` (E3 questions 11-13) · this index · READMEs `features/leads/sales-teams`, `features/leads/sales-teams/rule-builder` |
@@ -172,3 +198,51 @@ Newest first. Every docs change also carries a `YYYY-MM-DD HH:mm (Africa/Cairo)`
 | 2026-10-01 01:20 (Africa/Cairo) | `/leads` page removed (redirect); assignment rules → `/LeadsCenter/assignments`; Leads Center sub-sidebar reorganized (activities moved up, status board / proposal builder / sales teams out, Automation + AI setup in the footer); Sales teams in the main sidebar; calendar-first Leads Center activities on the shared calendar; `WorkflowModuleWorkspace` | 2-SALES (Leads page and lead assignment, Leads Center pages) · 1-ARCHITECTURE (Sidebar and navigation) · 3-FEATURES (Workflow engine) · `CLAUDE.md` |
 | 2026-10-01 00:55 (Africa/Cairo) | My Work page (`/my-work`) with section registry; public exports for tasks, calendar, analytics and conversation unread counts; Customer Hub "My Work" nav label renamed to "Service work" | 1-ARCHITECTURE (Sidebar and navigation) · 3-FEATURES (My Work) · 4-CUSTOMER-SERVICE (Routes and navigation) · this index · `CLAUDE.md` · READMEs `features/my-work`, `pages/my-work` |
 | 2026-10-01 00:25 (Africa/Cairo) | Communication hub (new main-sidebar section; `/calls`, `/meetings` added; conversations and team chat moved there; Activities item removed from Sales); shared sub-sidebar rule and migration of every internal sidebar; shared module pages and AI setup; settings sections registry; README-per-new-folder rule | 1-ARCHITECTURE (Sidebar and navigation, Sub-sidebar, Module pages and AI setup, Calendar, Definition of Done, Adding a new module, Known debt) · 2-SALES (Leads Center pages, Activities) · 3-FEATURES (Communication hub, Conversations, Internal chat, AI agent, Settings) · this index · `CLAUDE.md` · new READMEs listed above |
+# Customer Activity Context Update
+
+2026-10-22 22:47 (Africa/Cairo)
+
+Customer drawer activities now distinguish explicit deal and non-deal activity sources,
+without duplicating the legacy log list. The name header shows explicit current deal
+linkage. See [Sales](2-SALES.md#customer-timeline-context).
+
+# Deal Lead Table Navigation Update
+
+2026-10-22 22:56 (Africa/Cairo)
+
+Deal tables now show an adjacent customer drawer icon and support native modified-click
+navigation from the name to the deal-specific lead page. See the
+[deals feature](../src/features/deals/README.md#deal-lead-table-navigation).
+
+# Single Product Deal Header Update
+
+2026-10-22 23:07 (Africa/Cairo)
+
+Single-product/service deals now show an integrated header summary and returned
+product/deal images. See [deals feature](../src/features/deals/README.md#single-product-workspace-header).
+
+# Compact Product Drawer Update
+
+2026-10-22 23:11 (Africa/Cairo)
+
+The deal product/service drawer now uses compact responsive fact tiles and nested
+detail grids, with technical fields expandable to reduce scrolling. See the
+[deals feature](../src/features/deals/README.md#compact-product-drawer-facts).
+
+# Lead Task Creation
+
+2026-10-22 23:21 (Africa/Cairo)
+
+Added independent per-lead task creation from CRM/deal actions and selected rows,
+including description checklist, files, optional scheduling/reminder, priority and
+partial-batch retry. See [lead-tasks](../src/features/lead-tasks/README.md) for the public
+API, existing task contract, ID rules and backend limitations.
+
+# Lead Task Column And Timeline
+
+2026-10-22 23:30 (Africa/Cairo)
+
+Added task counts, live nearest-deadline countdown and task-list drawer to CRM/deal
+tables; customer timelines now include task creation events and task detail actions.
+See [lead tasks](../src/features/lead-tasks/README.md#task-column-and-timeline).
+

@@ -11,6 +11,7 @@ window.matchMedia = window.matchMedia || (() => ({
 }))
 window.ResizeObserver = window.ResizeObserver || class { observe() {} unobserve() {} disconnect() {} }
 window.scrollTo = window.scrollTo || (() => {})
+HTMLElement.prototype.scrollTo = HTMLElement.prototype.scrollTo || (() => {})
 
 const stages = [
   { id: 10, name: 'New', order: 1, color: '#3498db' },
@@ -92,6 +93,84 @@ function renderAt(path) {
 afterEach(() => { cleanup(); window.localStorage.clear(); post.mockClear() })
 
 describe('deals area', () => {
+  it('opens deal product shortcut and loads selected product details and interested customers', async () => {
+    routes.unshift([/\/api\/tenant\/deals\/1\/products\/9$/, { data: { id: 901, product_id: 9, details: { notes: 'Special delivery' }, product: { id: 9, name: 'Premium package', price: '150.00', code: 'V12' } } }])
+    routes.unshift([/\/api\/tenant\/deals\/leads\/101\/productsc$/, { data: [{ product_id: 9 }] }])
+    try {
+      renderAt('/deals/1/pipeline?view=kanban')
+      fireEvent.click(await screen.findByRole('button', { name: /dealWorkspace.products.explorer.shortcut/ }))
+      fireEvent.click(await screen.findByRole('button', { name: /Premium package/ }))
+      expect(await screen.findByText('Special delivery')).toBeTruthy()
+      expect(await screen.findByRole('link', { name: 'Ahmed Ali' })).toBeTruthy()
+      expect(screen.queryByRole('link', { name: 'Sara Hassan' })).toBeNull()
+    } finally { routes.splice(0, 2) }
+  })
+
+  it('uses the CRM customer drawer for deal leads and preserves the deal detail route', async () => {
+    renderAt('/deals/1/pipeline?view=kanban')
+    fireEvent.click(await screen.findByText('Ahmed Ali'))
+    expect(await screen.findByText('customers.drawer.detailsTitle')).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'customers.drawer.openCustomerPage' }).getAttribute('href')).toBe('/deals/1/leads/101')
+    expect(screen.getAllByText('customers.drawer.tabs.timeline').length).toBeGreaterThan(0)
+    const wonButton = screen.getByText('customers.leadOutcome.won.action').closest('button')
+    expect(wonButton.className).toContain('h-8')
+    expect(screen.queryByRole('button', { name: 'dealWorkspace.leads.drawer.openRecord' })).toBeNull()
+    fireEvent.click(wonButton)
+    expect(await screen.findByText('dealWorkspace.closing.won.title')).toBeTruthy()
+  })
+
+  it('opens a distinct deal-lead page with shared CRM follow-up actions', async () => {
+    renderAt('/deals/1/leads/101')
+    expect(await screen.findByRole('heading', { name: 'Ahmed Ali' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'customers.leadOutcome.won.action' })).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'customers.contextTiles.followUp' }))
+    expect(await screen.findByRole('heading', { name: 'customers.followUp.addFollowUp' })).toBeTruthy()
+  })
+
+  it('renders deal chat in the sidebar and shows only its named groups', async () => {
+    routes.unshift([/\/api\/tenant\/chat$/, { data: [
+      { id: 701, type: 'group', name: 'Q4 Sales Deal - G1', users: [] },
+      { id: 702, type: 'group', name: 'Unrelated deal - G1', users: [] },
+    ] }])
+    try {
+      renderAt('/deals/1/chats')
+      expect(await screen.findByRole('button', { name: /Q4 Sales Deal - G1/ })).toBeTruthy()
+      expect(screen.queryByText('Unrelated deal - G1')).toBeNull()
+      expect(screen.getAllByRole('link', { name: 'dealWorkspace.pages.chats' }).some((link) => link.getAttribute('href') === '/deals/1/chats')).toBe(true)
+    } finally { routes.shift() }
+  })
+
+  it('places pipeline view controls in the header and search before filters', async () => {
+    const router = renderAt('/deals/1/pipeline?view=table&stage=10&q=Ahmed')
+    const search = await screen.findByRole('textbox', { name: 'dealWorkspace.pipeline.search' })
+    const toggle = screen.getByRole('group', { name: 'dealWorkspace.pipeline.viewLabel' })
+    expect(toggle.closest('header')).toBeTruthy()
+    expect(within(toggle.closest('header')).getByRole('button', { name: 'dealWorkspace.leads.add' })).toBeTruthy()
+    const status = screen.getByRole('combobox', { name: 'dealWorkspace.pipeline.statusFilter' })
+    expect(search.compareDocumentPosition(status) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(search.parentElement.parentElement).toBe(status.parentElement)
+    fireEvent.click(within(toggle).getByRole('button', { name: 'dealWorkspace.viewToggle.kanban' }))
+    await waitFor(() => expect(router.state.location.search).toContain('view=kanban'))
+    expect(router.state.location.search).toContain('stage=10')
+    expect(router.state.location.search).toContain('q=Ahmed')
+    expect(screen.queryByRole('group', { name: 'dealWorkspace.pipeline.stages' })).toBeNull()
+    expect(screen.getByText('Negotiation')).toBeTruthy()
+    fireEvent.click(within(toggle).getByRole('button', { name: 'dealWorkspace.viewToggle.table' }))
+    expect(await screen.findByRole('group', { name: 'dealWorkspace.pipeline.stages' })).toBeTruthy()
+  })
+
+  it('shows stages_summary from the deal response instead of the no-stages warning', async () => {
+    const route = routes.find(([pattern]) => pattern.test('/api/tenant/deals/1'))
+    const original = route[1]
+    route[1] = { data: { deal: { name: 'Building deal', status: 'active' }, stats: { total_leads: 0 }, stages_summary: [{ id: 43, name: 'Summary new', leads_count: 0 }, { id: 44, name: 'Summary negotiation', leads_count: 0 }] } }
+    try {
+      renderAt('/deals/1/pipeline?view=board')
+      expect((await screen.findAllByText('Summary new')).length).toBeGreaterThan(0)
+      expect(screen.getAllByText('Summary negotiation').length).toBeGreaterThan(0)
+      expect(screen.queryByText('dealWorkspace.pipeline.noStages')).toBeNull()
+    } finally { route[1] = original }
+  })
+
   it('lists deals in the hub', async () => {
     renderAt('/deals')
     // DataTable rows are virtualized (no layout in jsdom): check the page and the request instead.
@@ -211,13 +290,13 @@ describe('deals area', () => {
     await waitFor(() => expect(router.state.location.pathname).toBe('/deals/88'))
 
     const urls = post.mock.calls.map(([url]) => url)
-    expect(urls).toEqual(['/api/tenant/pipeline-templates', '/api/tenant/deals', '/api/tenant/deals/team', '/api/tenant/deals/products', '/api/tenant/deals/88/campaigns'])
+    expect(urls).toEqual(['/api/tenant/pipeline-templates', '/api/tenant/deals', '/api/tenant/deals/team', '/api/tenant/deals/88/products', '/api/tenant/deals/88/campaigns'])
     const bodies = post.mock.calls.map(([, body]) => body)
     expect(bodies[0]).toMatchObject({ name: 'Villas pipeline', type: 'sales', status: true })
     expect(bodies[0].stages.filter((stage) => stage.is_won_stage)).toHaveLength(1)
     expect(bodies[1]).toMatchObject({ pipeline_template_id: 77, name: 'Villa 12 sale' })
     expect(bodies[2]).toEqual({ deal_id: 88, users: [{ user_id: 4, role: 'sales_rep' }], teams: [{ team_id: 3, role: 'manager' }] })
-    expect(bodies[3]).toEqual({ deal_id: 88, product_ids: [31] })
+    expect(bodies[3]).toEqual({ products: [{ product_id: 31, details: {} }] })
     expect(bodies[4]).toEqual({ campaign_ids: [1], is_active: true })
   })
   it('quick team: with no teams, creates one from the team step and adds it to the deal', async () => {
@@ -239,10 +318,11 @@ describe('deals area', () => {
       fireEvent.click(dialogSubmit)
       expect(await screen.findByText('dealWorkspace.wizard.errors.quickTeamNameRequired')).toBeTruthy()
       fireEvent.change(screen.getByLabelText(/^dealWorkspace.wizard.team.quick.name/), { target: { value: 'Villas team' } })
+      fireEvent.change(screen.getByLabelText(/^dealWorkspace.wizard.team.quick.leader/), { target: { value: '4' } })
       const dialog = screen.getByText('dealWorkspace.wizard.team.quick.footnote').closest('div')
-      fireEvent.click(within(dialog).getByRole('checkbox', { name: /^Nour/ }))
+      expect(within(dialog).getByRole('checkbox', { name: /^Nour/ }).checked).toBe(true)
       fireEvent.click(dialogSubmit)
-      await waitFor(() => expect(post).toHaveBeenCalledWith('/api/tenant/teams/create', { name: 'Villas team', active: true, type: 'sales', members: [4] }))
+      await waitFor(() => expect(post).toHaveBeenCalledWith('/api/tenant/teams/create', { name: 'Deal - Villas team', team_leader_id: '4', active: true, type: 'sales', members: [4] }))
       await waitFor(() => expect(screen.getByText('dealWorkspace.wizard.team.summary')).toBeTruthy())
       next()
       fireEvent.click(await screen.findByRole('radio', { name: 'dealWorkspace.wizard.source.modes.later.title' }))

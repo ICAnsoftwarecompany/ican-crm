@@ -1,6 +1,6 @@
 import { resolveTenantFromHostname } from './tenantResolver'
 
-const DEFAULT_API_ROOT_DOMAIN = '3s-export.com'
+const DEFAULT_API_ROOT_DOMAIN = 'app.main.alameer-realestate.com'
 
 function trimSlashes(value = '') {
   return String(value).trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '')

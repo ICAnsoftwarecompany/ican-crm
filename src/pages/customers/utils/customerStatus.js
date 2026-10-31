@@ -1,3 +1,5 @@
+export const NO_CUSTOMER_STATUS_ID = '__no_status__'
+
 export function extractLeadStatuses(response) {
   const data = response?.data ?? response
   const leadStatuses = Array.isArray(data?.lead) ? data.lead : []
@@ -56,5 +58,11 @@ export function filterCustomersByStatusId(customers = [], statusId) {
   if (statusId === null || statusId === undefined || statusId === '') return customers
 
   const selectedId = String(statusId)
+  if (selectedId === NO_CUSTOMER_STATUS_ID) {
+    return customers.filter((customer) => {
+      const id = getCustomerLeadStatusTypeId(customer)
+      return id === null || id === undefined || id === ''
+    })
+  }
   return customers.filter((customer) => String(getCustomerLeadStatusTypeId(customer) ?? '') === selectedId)
 }
