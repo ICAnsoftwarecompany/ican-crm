@@ -39,9 +39,6 @@ export function ReviewStep({ state, created, progress, error, onEdit, onFinishWi
     ...(requests.template ? [{ id: 'template', label: t('dealWorkspace.wizard.review.requests.template'), done: Boolean(created.templateId) }] : []),
     { id: 'deal', label: t('dealWorkspace.wizard.review.requests.deal'), done: Boolean(created.dealId) },
     ...(teamSize ? [{ id: 'team', label: t('dealWorkspace.wizard.review.requests.teamBatch', teamCount), done: created.teamDone === true }] : []),
-<<<<<<< HEAD
-    ...(state.team.createChat && canOfferDealChat(state.team, state.basics.owner_id) ? [{ id: 'chat', label: t('dealWorkspace.pipeline.createChat'), done: created.chatDone }] : []),
-=======
     ...(requests.chatGroup ? [{
       id: 'chatGroup',
       label: requests.chatGroup.mode === 'new'
@@ -49,7 +46,6 @@ export function ReviewStep({ state, created, progress, error, onEdit, onFinishWi
         : t('dealWorkspace.wizard.review.requests.chatGroupExisting', { count: requests.chatGroup.userIds.length }),
       done: created.chatGroupDone,
     }] : []),
->>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
     ...(requests.products(1) ? [{ id: 'products', label: t('dealWorkspace.wizard.review.requests.products', { count: state.products.ids.length }), done: created.productsDone }] : []),
     ...(source.campaigns ? [{ id: 'campaigns', label: t('dealWorkspace.wizard.review.requests.campaigns', { count: source.campaigns }), done: created.campaignsDone }] : []),
     ...(source.existing ? [{ id: 'existingLeads', label: t('dealWorkspace.wizard.review.requests.existingLeads', { count: source.existing }), done: created.existingLeadsDone }] : []),
