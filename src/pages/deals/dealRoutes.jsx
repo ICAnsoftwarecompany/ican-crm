@@ -50,12 +50,9 @@ export const dealRoutes = [
       { path: 'leads/:dealLeadId', element: <DealLeadPage /> },
       { path: 'contracts', element: <DealContractsPage /> },
       { path: 'team', element: <DealTeamPage /> },
-<<<<<<< HEAD
       { path: 'chats', element: <DealChatsPage /> },
-=======
       { path: 'groups', element: <DealGroupsPage /> },
       { path: 'conversations', element: <DealConversationsPage /> },
->>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
       { path: 'meetings', element: <DealMeetingsPage /> },
       { path: 'calls', element: <DealCallsPage /> },
       { path: 'tasks', element: <DealTasksPage /> },
