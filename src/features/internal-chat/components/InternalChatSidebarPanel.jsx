@@ -135,7 +135,7 @@ function toComposerMessage(message) {
  * Internal chat side panel. Optional scope (2026-10-16, deal groups): `conversationFilter`, `title`, `headerExtra`
  * (a node under the search), `emptyList`, `openPagePath` (the "open" button; default /team-chat).
  */
-export function InternalChatSidebarPanel({ open, onClose, conversationFilter = null, title = null, headerExtra = null, emptyList = null, openPagePath = '/team-chat' }) {
+export function InternalChatSidebarPanel({ open, onClose, conversationFilter: scopeFilter = null, title = null, headerExtra = null, emptyList = null, openPagePath = '/team-chat' }) {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [conversationFilter, setConversationFilter] = useState('all')
@@ -148,8 +148,8 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter = n
   const [listScrollPercent, setListScrollPercent] = useState(0)
 
   const conversationsQuery = useChatConversations({ per_page: 30 }, { enabled: open })
-<<<<<<< HEAD
-  const conversations = Array.isArray(conversationsQuery.data) ? conversationsQuery.data : []
+  const allConversations = Array.isArray(conversationsQuery.data) ? conversationsQuery.data : []
+  const conversations = useMemo(() => (scopeFilter ? allConversations.filter(scopeFilter) : allConversations), [allConversations, scopeFilter])
   const usersQuery = useUsers(undefined, { enabled: open })
   const onlineUsersQuery = useOnlineUsers(undefined, { enabled: open, refetchInterval: open ? 30000 : false })
   const users = Array.isArray(usersQuery.data) ? usersQuery.data : []
@@ -241,14 +241,6 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter = n
     setMode('list')
     if (selectedConversationId) return
 
-=======
-  const allConversations = Array.isArray(conversationsQuery.data) ? conversationsQuery.data : []
-  const conversations = useMemo(() => (conversationFilter ? allConversations.filter(conversationFilter) : allConversations), [allConversations, conversationFilter])
-
-  useEffect(() => {
-    if (!open) return
-    if (conversations.some((item) => String(getConversationId(item)) === String(selectedConversationId || ''))) return
->>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
     const firstId = getConversationId(conversations[0])
     if (firstId) {
       setSelectedConversationId(firstId)
@@ -413,7 +405,7 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter = n
 
   const handleOpenPage = () => {
     const conversationId = selectedConversationId ? `?conversation=${encodeURIComponent(String(selectedConversationId))}` : ''
-    navigate(`/team-chat${conversationId}`)
+    navigate(openPagePath === '/team-chat' ? `/team-chat${conversationId}` : openPagePath)
     onClose?.()
   }
 
@@ -423,7 +415,6 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter = n
       style={{ transform: open ? 'translateX(0)' : `translateX(${isRtl ? '-100%' : '100%'})` }}
       aria-hidden={!open}
     >
-<<<<<<< HEAD
       <div className="flex h-full min-h-0 flex-col overflow-hidden">
         {mode === 'list' ? (
           <>
@@ -434,26 +425,12 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter = n
                     <MessagesSquare size={18} />
                   </span>
                   <div className="min-w-0">
-                    <h2 className="truncate text-sm font-black text-[var(--text)]">الشات الداخلي</h2>
+                    <h2 className="truncate text-sm font-black text-[var(--text)]">{title || 'الشات الداخلي'}</h2>
                     <p className="truncate text-xs font-semibold text-[var(--text-muted)]">{conversations.length} محادثة</p>
                   </div>
-=======
-      <div className="grid h-full min-h-0 grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)]">
-        <div className="min-h-0 border-b border-[var(--border)] md:border-b-0 md:border-e">
-          <header className="border-b border-[var(--border)] bg-[var(--surface-2)] p-3">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex min-w-0 items-center gap-2">
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]">
-                  <MessagesSquare size={18} />
-                </span>
-                <div className="min-w-0">
-                  <h2 className="truncate text-sm font-black text-[var(--text)]">{title || 'الشات الداخلي'}</h2>
-                  <p className="truncate text-xs font-semibold text-[var(--text-muted)]">{conversations.length} محادثة</p>
->>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
                 </div>
                 <HeaderActions onOpenPage={handleOpenPage} onClose={onClose} />
               </div>
-<<<<<<< HEAD
 
               <label className="relative mt-3 block">
                 <Search size={14} className="pointer-events-none absolute start-2.5 top-2.5 text-[var(--text-muted)]" />
@@ -533,48 +510,6 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter = n
                                 {unreadCount > 99 ? '99+' : unreadCount}
                               </span>
                             ) : null}
-=======
-              <HeaderActions onOpenPage={() => { navigate(openPagePath); onClose?.() }} onClose={onClose} />
-            </div>
-
-            <label className="relative mt-3 block">
-              <Search size={14} className="pointer-events-none absolute start-2.5 top-2.5 text-[var(--text-muted)]" />
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="ابحث..."
-                className="h-9 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] ps-8 pe-3 text-xs font-semibold text-[var(--text)] outline-none focus:border-[#00C2CB] focus:ring-2 focus:ring-[#BEEFF2]"
-              />
-            </label>
-            {headerExtra}
-          </header>
-
-          <div className="min-h-0 overflow-y-auto p-2">
-            {!conversations.length && !conversationsQuery.isLoading && emptyList}
-            {filteredConversations.map((conversation) => {
-              const id = getConversationId(conversation)
-              const isActive = String(id || '') === String(getConversationId(selectedConversation) || '')
-              return (
-                <button
-                  key={id || conversation?.name}
-                  type="button"
-                  onClick={() => setSelectedConversationId(id)}
-                  className={[
-                    'mb-2 w-full rounded-xl border p-2 text-start transition-colors',
-                    isActive ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)]' : 'border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-2)]',
-                  ].join(' ')}
-                >
-                  <div className="flex items-start gap-2">
-                    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]">
-                      <UserRound size={14} />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="flex items-center justify-between gap-2">
-                        <span className="truncate text-xs font-black text-[var(--text)]">{conversation?.display_name || conversation?.name || 'Conversation'}</span>
-                        {conversation?.unread_count > 0 ? (
-                          <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[10px] font-black text-white">
-                            {conversation.unread_count > 99 ? '99+' : conversation.unread_count}
->>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
                           </span>
                           <span className="mt-1 flex items-center justify-between gap-2 text-[10px] font-semibold text-[var(--text-muted)]">
                             <span className={cn('min-w-0 truncate', hasUnread && 'font-black text-[var(--text)]')}>{getLastMessagePreview(conversation)}</span>
