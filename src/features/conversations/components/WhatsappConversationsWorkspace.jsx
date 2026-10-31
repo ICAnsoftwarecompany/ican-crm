@@ -157,6 +157,9 @@ export function WhatsappConversationsWorkspace({
   const [linkDialogConversation, setLinkDialogConversation] = useState(null)
   const [templatesDialogOpen, setTemplatesDialogOpen] = useState(false)
 
+  const usersQuery = useUsers(undefined, { enabled: open })
+  const onlineUsersQuery = useOnlineUsers(undefined, { enabled: open })
+
   const presenceIndex = useMemo(() => (
     buildPresenceIndex(usersQuery.data || [], onlineUsersQuery.data || [])
   ), [onlineUsersQuery.data, usersQuery.data])
