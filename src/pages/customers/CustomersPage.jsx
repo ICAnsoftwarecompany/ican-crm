@@ -27,7 +27,6 @@ import { useMessengerConversations } from '../../features/conversations/hooks/us
 import { getMessengerConversationId } from '../../features/conversations/utils/messengerConversations'
 import { useGmailConversations } from '../../features/conversations/hooks/useGmailConversations'
 import { getGmailConversationId } from '../../features/conversations/utils/gmailConversations'
-import { useLeadLogs } from '../../features/leads/hooks/useLeads'
 import { useUsers } from '../../features/users/hooks/useUsers'
 import { definitionsApi } from '../../features/definitions/api/definitionsApi'
 import { requestOpenMessengerSidebar } from '../../features/conversations/constants/messengerSidebarEvents'
@@ -274,67 +273,30 @@ function buildGmailLookup(conversations = []) {
   return map
 }
 
-function extractLeadLogsPayload(response) {
-  const payload = response?.data ?? response
-  if (!payload) return {}
-  if (Array.isArray(payload)) {
-    return payload.reduce((acc, item) => {
-      const leadId = item?.lead_id || item?.lead?.id
-      if (leadId) {
-        acc[String(leadId)] = {
-          lead_id: leadId,
-          logs: Array.isArray(item?.logs) ? item.logs : [item],
-        }
-      }
-      return acc
-    }, {})
-  }
-  return typeof payload === 'object' ? payload : {}
-}
-
 function getLeadNoteText(activity = {}) {
   const note = activity?.data?.note ?? activity?.note ?? activity?.description
   return note === null || note === undefined ? '' : String(note).trim()
 }
 
-function buildLatestLeadNotesMap(logsPayload = {}) {
+// The customers list already embeds lead_activities; no separate lead logs request.
+function buildLatestLeadNotesMap(customers = []) {
   const map = new Map()
-  const groups = extractLeadLogsPayload(logsPayload)
-
-  Object.values(groups).forEach((group) => {
-    const leadId = group?.lead_id
-    if (!leadId) return
-
-    const activities = []
-    const logs = Array.isArray(group?.logs) ? group.logs : []
-
-    logs.forEach((log) => {
-      const logActivities = Array.isArray(log?.activities) ? log.activities : []
-      logActivities.forEach((activity) => {
-        if (normalizeActivityType(activity?.type) !== 'note-to-lead') return
-        const note = getLeadNoteText(activity)
-        if (!note) return
-
-        activities.push({
-          ...activity,
-          note,
-          user: activity?.user || log?.user || null,
-          _sortAt: parseTimestamp(activity?.activity_at || activity?.created_at || log?.created_at),
-        })
-      })
-    })
-
-    activities.sort((first, second) => {
-      const firstTime = Number.isNaN(first._sortAt) ? 0 : first._sortAt
-      const secondTime = Number.isNaN(second._sortAt) ? 0 : second._sortAt
-      return secondTime - firstTime
-    })
-
-    if (activities[0]) {
-      map.set(String(leadId), activities[0])
-    }
+  customers.forEach((customer) => {
+    const leadId = customer?.lead?.id ?? customer?.lead_id
+    if (leadId == null) return
+    const activities = Array.isArray(customer?.lead?.lead_activities)
+      ? customer.lead.lead_activities : []
+    const notes = activities
+      .filter((activity) => normalizeActivityType(activity?.type) === 'note-to-lead')
+      .map((activity) => ({
+        ...activity,
+        note: getLeadNoteText(activity),
+        _sortAt: parseTimestamp(activity?.activity_at || activity?.created_at),
+      }))
+      .filter((activity) => activity.note)
+      .sort((a, b) => (Number(b._sortAt) || 0) - (Number(a._sortAt) || 0))
+    if (notes[0]) map.set(String(leadId), notes[0])
   })
-
   return map
 }
 
@@ -616,10 +578,6 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
   const meetingMutations = useMeetingMutations()
   const messengerConversationsQuery = useMessengerConversations({ per_page: 100 })
   const gmailConversationsQuery = useGmailConversations({ per_page: 100 }, { enabled: !showTrash })
-  const leadLogsQuery = useLeadLogs(undefined, {
-    enabled: !showTrash,
-    select: (response) => response,
-  })
   const leadStatusesQuery = useQuery({
     queryKey: ['customers', 'lead-note-dialog', 'statuses'],
     queryFn: () => definitionsApi.getStatuses(),
@@ -762,8 +720,8 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
   const messengerLookup = useMemo(() => buildMessengerLookup(messengerConversationsQuery.data || []), [messengerConversationsQuery.data])
   const gmailLookup = useMemo(() => buildGmailLookup(gmailConversationsQuery.data || []), [gmailConversationsQuery.data])
   const latestLeadNotes = useMemo(
-    () => buildLatestLeadNotesMap(leadLogsQuery.data || {}),
-    [leadLogsQuery.data]
+    () => buildLatestLeadNotesMap(sourceRows),
+    [sourceRows]
   )
   const statusById = useMemo(
     () => new Map((leadStatusesQuery.data || []).map((status) => [String(status?.id ?? ''), status])),
@@ -827,8 +785,8 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
 
   const handleLeadNoteSaved = useCallback(async () => {
     setLeadNoteDialogRow(null)
-    await Promise.allSettled([leadLogsQuery.refetch(), refetch()])
-  }, [leadLogsQuery, refetch])
+    await refetch()
+  }, [refetch])
 
   const handleOpenScheduledActivityDialog = useCallback((row, type) => {
     setScheduleDialog({ row, type })
@@ -1078,7 +1036,6 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
         description: t('customers.page.toasts.followUpAddedDesc', { name: customerName }),
         duration: 3200,
       })
-      leadLogsQuery.refetch()
       refetch()
       return
     }
