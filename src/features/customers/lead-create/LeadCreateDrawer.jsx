@@ -101,6 +101,17 @@ export function LeadCreateDrawer({ open, onClose, onCreated }) {
         <Button type="submit" loading={mutation.isPending}>{tr('saveNext')} <kbd dir="ltr" className="ms-2 rounded border border-current/20 px-1.5 py-0.5 text-xs font-normal">Ctrl + S</kbd></Button>
       </div>
     </form>
-    {savedName && createPortal(<div className="pointer-events-none fixed inset-0 z-[9999] flex items-center justify-center p-4" role="status" aria-live="polite"><div className="flex max-w-md items-center gap-3 rounded-2xl border border-emerald-500/30 bg-[var(--surface)] px-6 py-5 text-[var(--text)] shadow-2xl"><CheckCircle2 size={28} className="shrink-0 text-emerald-600" /><span className="text-base font-semibold">{tr('saved')} — {savedName}</span></div></div>, document.body)}
+    {savedName && createPortal(
+      <div className="pointer-events-none fixed inset-x-0 top-16 z-[9999] flex justify-center px-4 sm:top-20" role="status" aria-live="polite">
+        <div className="flex w-full max-w-sm items-center gap-3 rounded-xl border border-emerald-500/20 bg-[var(--surface)] px-4 py-3 text-[var(--text)] shadow-[0_12px_40px_rgba(0,0,0,0.16)] ring-1 ring-black/5 dark:ring-white/10">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"><CheckCircle2 size={22} strokeWidth={2.2} /></span>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold">{tr('saved')}</p>
+            <p className="mt-0.5 truncate text-xs text-[var(--text-muted)]">{savedName}</p>
+          </div>
+        </div>
+      </div>,
+      document.body
+    )}
   </AppDrawer>
 }
