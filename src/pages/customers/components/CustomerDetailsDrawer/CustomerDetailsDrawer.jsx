@@ -18,6 +18,7 @@ import {
   Heart,
   Mail,
   MoreHorizontal,
+  Trash2,
   Paperclip,
   Pencil,
   PhoneCall,
@@ -31,7 +32,7 @@ import {
 import { toast } from 'sonner'
 
 import { definitionsApi } from '../../../../features/definitions/api/definitionsApi'
-import { useCustomerInfo } from '../../../../features/customers/hooks/useCustomers'
+import { useCustomerInfo, useCustomerMutations } from '../../../../features/customers/hooks/useCustomers'
 import { useLeadMutations } from '../../../../features/leads/hooks/useLeads'
 import { AppDrawer } from '../../../../shared/components/overlays/AppDrawer'
 import { Badge } from '../../../../shared/components/ui/Badge'
@@ -1587,9 +1588,22 @@ export function CustomerDetailsContent({
   )
 }
 
-export function CustomerDetailsDrawer({ customer, open, onClose, onStatusChanged, initialTab = 'timeline', showCustomerDeals = false, detailsPagePath, renderQuickActions, quickActionOverrides }) {
+export function CustomerDetailsDrawer({ customer, open, onClose, onStatusChanged, onDeleted, initialTab = 'timeline', showCustomerDeals = false, detailsPagePath, renderQuickActions, quickActionOverrides }) {
   const { t } = useTranslation()
-  const detailsPageId = customer?.id || getLeadId(customer)
+  const mutations = useCustomerMutations()
+  const detailsPageId = customer?.id || customer?.customer_id
+  const handleDelete = async () => {
+    if (!detailsPageId || mutations.remove.isPending) return
+    if (!window.confirm(t('customers.page.confirm.deleteCustomer', { name: customer?.name || t('customers.page.confirm.thisCustomer') }))) return
+    try {
+      await mutations.remove.mutateAsync({ ids: [detailsPageId] })
+      toast.success(t('customers.page.actions.deleteSelected', { count: 1 }))
+      onDeleted?.(customer)
+      onClose?.()
+    } catch (error) {
+      toast.error(extractMessage(error, t('customers.page.actions.deleteSelected', { count: 1 })))
+    }
+  }
 
   return (
     <AppDrawer
@@ -1607,6 +1621,10 @@ export function CustomerDetailsDrawer({ customer, open, onClose, onStatusChanged
       portal
       topOffset="calc(var(--layout-header-height, 48px) - 1px)"
       headerActions={detailsPageId ? (
+        <div className="flex items-center gap-2">
+        <button type="button" onClick={handleDelete} disabled={mutations.remove.isPending} className="inline-flex h-8 items-center gap-1 rounded-lg border border-red-200 px-2.5 text-xs font-bold text-red-600 hover:bg-red-50 disabled:opacity-50" title={t('customers.page.actions.deleteSelected', { count: 1 })}>
+          <Trash2 size={14} /> {t('customers.page.actions.deleteSelected', { count: 1 })}
+        </button>
         <Link
           to={detailsPagePath || `/lead/${detailsPageId}`}
           className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] px-2.5 text-xs font-black text-[#007A80] shadow-sm transition-colors hover:bg-[#E8F9FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#BEEFF2]"
@@ -1616,6 +1634,7 @@ export function CustomerDetailsDrawer({ customer, open, onClose, onStatusChanged
           <ExternalLink size={14} />
           <span className="hidden sm:inline">{t('customers.drawer.openPageButton')}</span>
         </Link>
+        </div>
       ) : null}
     >
       <CustomerDetailsContent
