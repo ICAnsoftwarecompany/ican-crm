@@ -4,10 +4,12 @@ import { definitionsApi } from '../../../../features/definitions/api/definitions
 import { countCustomersByStatus, extractLeadStatuses, filterCustomersByStatusId, NO_CUSTOMER_STATUS_ID } from '../../utils/customerStatus'
 import { useTranslation } from 'react-i18next'
 
-function CountBadge({ count, active }) {
+function CountBadge({ count, active, pulse = false }) {
   return (
-    <span className={`ms-2 inline-flex min-w-6 items-center justify-center rounded-full px-2 py-0.5 text-xs font-bold ${
-      active
+    <span className={`ms-2 inline-flex min-w-6 items-center justify-center rounded-full px-2 py-0.5 text-xs font-bold transition-all duration-500 ${
+      pulse
+        ? 'bg-emerald-500 text-white scale-110 shadow-[0_0_0_4px_rgba(16,185,129,0.12)]'
+        : active
         ? 'bg-[#00C2CB] text-white'
         : 'bg-white text-[var(--text-muted)] ring-1 ring-[var(--border)]'
     }`}>
@@ -22,6 +24,7 @@ export function LeadStatusTabs({
   onStatusChange,
   customers = [],
   onStatusesChange,
+  recentStatusChange = null,
 }) {
   const { t } = useTranslation()
   const statusesQuery = useQuery({
@@ -70,7 +73,7 @@ export function LeadStatusTabs({
         <button
           type="button"
           onClick={() => onStatusChange?.(null)}
-          className={`lead-stage-tab relative min-h-11 shrink-0 border px-6 py-2 text-sm font-medium transition-colors ${
+          className={`lead-stage-tab relative min-h-11 shrink-0 border px-6 py-2 text-sm font-medium transition-all duration-500 ${
             selectedStatusId === null
               ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80] shadow-sm'
               : 'border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)] hover:bg-[#F8FAFF]'
@@ -86,6 +89,7 @@ export function LeadStatusTabs({
         {[{ id: NO_CUSTOMER_STATUS_ID, status: t('customers.page.noStatus'), color: '#94A3B8' }, ...statuses].map((status) => {
           const isSelected = String(selectedStatusId) === String(status.id)
           const color = status.color || '#64748B'
+          const justChanged = recentStatusChange?.id === String(status.id)
 
           return (
             <button
@@ -93,7 +97,9 @@ export function LeadStatusTabs({
               type="button"
               onClick={() => onStatusChange?.(status)}
               className={`lead-stage-tab relative -ms-3 min-h-11 shrink-0 border px-6 py-2 text-sm font-medium transition-colors ${
-                isSelected
+                justChanged
+                  ? 'border-emerald-400 bg-emerald-50 text-emerald-800 shadow-md dark:bg-emerald-500/10 dark:text-emerald-300'
+                  : isSelected
                   ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80] shadow-sm'
                   : 'border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)] hover:bg-[#F8FAFF]'
               }`}
@@ -101,7 +107,7 @@ export function LeadStatusTabs({
             >
               <span className="inline-flex items-center">
                 {status.status}
-                <CountBadge count={status.id === NO_CUSTOMER_STATUS_ID ? filterCustomersByStatusId(customers, NO_CUSTOMER_STATUS_ID).length : countByStatusId[String(status.id)] || 0} active={isSelected} />
+                <CountBadge count={status.id === NO_CUSTOMER_STATUS_ID ? filterCustomersByStatusId(customers, NO_CUSTOMER_STATUS_ID).length : countByStatusId[String(status.id)] || 0} active={isSelected} pulse={justChanged} />
               </span>
               <span
                 className="absolute inset-x-5 bottom-1 h-1 rounded-full"
