@@ -1402,6 +1402,7 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
             toolbarActions={selectionToolbar || (!showTrash ? ({ selectedRows, selectedCount, clearSelection }) => (
               <div className="flex flex-wrap items-center gap-2">
               {selectedRows.length > 0 && <Button size="sm" variant="outline" onClick={() => taskAction.open(selectedRows)}><ListTodo size={14} />{t('customers.leadTasks.add')}</Button>}
+              {selectedRows.length > 0 && <Button size="sm" variant="outline" className="border-red-200 text-red-600 hover:bg-red-50" disabled={mutations.remove.isPending} onClick={() => handleBulkDelete(selectedRows, clearSelection)}><Trash2 size={14} />{t('customers.page.actions.deleteSelected', { count: selectedRows.length })}</Button>
               <CustomersBulkActions
                 selectedRows={selectedRows}
                 selectedCount={selectedCount}
@@ -1466,6 +1467,7 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
         open={isDetailsOpen}
         onClose={() => setIsDetailsOpen(false)}
         onStatusChanged={handleCustomerStatusChanged}
+        onDeleted={() => { setSelectedCustomer(null); refetch() }}
         initialTab={detailsInitialTab}
       />
 
