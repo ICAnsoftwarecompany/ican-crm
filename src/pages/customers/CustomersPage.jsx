@@ -1052,6 +1052,10 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
     }
   }, [leadStatusTabs, selectedLeadStatusId, setSelectedLeadStatusId, setSelectedLeadTypeTab, showTrash])
 
+  const [recentStatusChange, setRecentStatusChange] = useState(null)
+  const statusPulseTimer = useRef(null)
+  useEffect(() => () => window.clearTimeout(statusPulseTimer.current), [])
+
   const handleCustomerStatusChanged = ({ customer, newStatus, actionType, activityType, activityTitle }) => {
     const customerName = customer?.name || customer?.email || customer?.phone || t('customers.table.theCustomer')
 
@@ -1078,7 +1082,13 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
     }
 
     const statusName = newStatus?.status || newStatus?.name || t('customers.page.toasts.newStatusFallback')
-    toast.info(t('customers.page.toasts.statusUpdated'), {
+    const changedStatusId = newStatus?.id ?? newStatus?.status_type_id
+    if (changedStatusId != null) {
+      window.clearTimeout(statusPulseTimer.current)
+      setRecentStatusChange({ id: String(changedStatusId), key: Date.now() })
+      statusPulseTimer.current = window.setTimeout(() => setRecentStatusChange(null), 2600)
+    }
+    toast.success(t('customers.page.toasts.statusUpdated'), {
       description: t('customers.page.toasts.statusUpdatedDesc', { name: customerName, status: statusName }),
       duration: 3800,
     })
@@ -1348,6 +1358,7 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
           selectedStatusId={selectedLeadStatusId}
           onStatusChange={handleLeadStatusTabChange}
           onStatusesChange={setLeadStatusTabs}
+          recentStatusChange={recentStatusChange}
           customers={sourceRows}
           freshLeadCount={freshLeadRows.length}
           freshLeadActive={freshLeadActive}
