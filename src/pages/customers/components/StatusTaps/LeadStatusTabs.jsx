@@ -120,8 +120,10 @@ export function LeadStatusTabs({
               }`}
               title={status.status}
             >
+              {justChanged && <span className="absolute inset-x-5 top-0 h-1 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />}
               <span className={`inline-flex items-center rounded-lg px-1 py-0.5 font-semibold transition-all duration-300 ${justChanged ? 'lead-stage-arrived-name text-emerald-800 dark:text-emerald-100' : ''}`}>
                 {status.status}
+                {justChanged && <span className="ms-1 rounded-full bg-emerald-600 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm" aria-label="تم تحديث الحالة">●</span>}
                 <CountBadge count={status.id === NO_CUSTOMER_STATUS_ID ? filterCustomersByStatusId(customers, NO_CUSTOMER_STATUS_ID).length : countByStatusId[String(status.id)] || 0} active={isSelected} pulse={justChanged} />
               </span>
               <span
