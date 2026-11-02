@@ -633,8 +633,26 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
   const previousUnreadByConversationRef = useRef(new Map())
   const flashTimeoutsRef = useRef(new Map())
 
+  const [recentStatusChange, setRecentStatusChange] = useState(null)
+  const statusPulseTimer = useRef(null)
+  const showStatusArrival = useCallback((statusId, customerName = '') => {
+    if (statusId == null || statusId === '') return
+    window.clearTimeout(statusPulseTimer.current)
+    setRecentStatusChange({ id: String(statusId), key: Date.now(), customerName })
+    statusPulseTimer.current = window.setTimeout(() => setRecentStatusChange(null), 4500)
+  }, [])
+  useEffect(() => () => window.clearTimeout(statusPulseTimer.current), [])
+
+  const onRealtimeCustomerUpdated = useCallback(({ customer, previousCustomer, action }) => {
+    if (action === 'deleted' || customer?.deleted_at) return
+    const nextStatus = customer?.lead?.status_type_id ?? customer?.status_type_id
+    const oldStatus = previousCustomer?.lead?.status_type_id ?? previousCustomer?.status_type_id
+    if (nextStatus == null || (previousCustomer && String(nextStatus) === String(oldStatus))) return
+    showStatusArrival(nextStatus, customer?.name || '')
+  }, [showStatusArrival])
   useCustomersTableRealtime({
     enabled: !showTrash,
+    onCustomerUpdated: onRealtimeCustomerUpdated,
   })
 
   useEffect(() => {
@@ -1052,10 +1070,6 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
     }
   }, [leadStatusTabs, selectedLeadStatusId, setSelectedLeadStatusId, setSelectedLeadTypeTab, showTrash])
 
-  const [recentStatusChange, setRecentStatusChange] = useState(null)
-  const statusPulseTimer = useRef(null)
-  useEffect(() => () => window.clearTimeout(statusPulseTimer.current), [])
-
   const handleCustomerStatusChanged = ({ customer, newStatus, actionType, activityType, activityTitle }) => {
     const customerName = customer?.name || customer?.email || customer?.phone || t('customers.table.theCustomer')
 
@@ -1084,9 +1098,7 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
     const statusName = newStatus?.status || newStatus?.name || t('customers.page.toasts.newStatusFallback')
     const changedStatusId = newStatus?.id ?? newStatus?.status_type_id
     if (changedStatusId != null) {
-      window.clearTimeout(statusPulseTimer.current)
-      setRecentStatusChange({ id: String(changedStatusId), key: Date.now() })
-      statusPulseTimer.current = window.setTimeout(() => setRecentStatusChange(null), 2600)
+      showStatusArrival(changedStatusId, customerName)
     }
     toast.success(t('customers.page.toasts.statusUpdated'), {
       description: t('customers.page.toasts.statusUpdatedDesc', { name: customerName, status: statusName }),
