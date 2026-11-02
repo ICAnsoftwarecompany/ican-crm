@@ -1426,7 +1426,7 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
                 onAddLeadNote={handleOpenLeadNoteDialog}
               />
               </div>
-            ) : null)}
+            ))}
             emptyMessage={
               showTrash
                 ? t('customers.page.emptyTrash')
