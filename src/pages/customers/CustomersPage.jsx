@@ -1097,10 +1097,13 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
   }
 
   const handleRestore = async (customer) => {
+    if (!window.confirm(t('customers.page.actions.restoreSelected', { count: 1 }))) return
     try {
       await mutations.restore.mutateAsync({ ids: [customer.id] })
+      toast.success(t('customers.page.actions.restoreSelected', { count: 1 }))
     } catch (error) {
       console.error('Restore error:', error)
+      toast.error(error?.response?.data?.message || error?.message || 'Restore failed')
     }
   }
 
@@ -1109,8 +1112,10 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
 
     try {
       await mutations.forceDelete.mutateAsync({ ids: [customer.id] })
+      toast.success(t('customers.page.actions.deletePermanent', { count: 1 }))
     } catch (error) {
       console.error('Permanent delete error:', error)
+      toast.error(error?.response?.data?.message || error?.message || 'Permanent delete failed')
     }
   }
 
@@ -1136,12 +1141,15 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
   const handleBulkRestore = async (selectedRows, clearSelection) => {
     const ids = getSelectedCustomerIds(selectedRows)
     if (!ids.length) return
+    if (!window.confirm(t('customers.page.actions.restoreSelected', { count: ids.length }))) return
 
     try {
       await mutations.restore.mutateAsync({ ids })
       clearSelection?.()
+      toast.success(t('customers.page.actions.restoreSelected', { count: ids.length }))
     } catch (error) {
       console.error('Bulk restore error:', error)
+      toast.error(error?.response?.data?.message || error?.message || 'Restore failed')
     }
   }
 
@@ -1153,8 +1161,10 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
     try {
       await mutations.forceDelete.mutateAsync({ ids })
       clearSelection?.()
+      toast.success(t('customers.page.actions.deletePermanent', { count: ids.length }))
     } catch (error) {
       console.error('Bulk permanent delete error:', error)
+      toast.error(error?.response?.data?.message || error?.message || 'Permanent delete failed')
     }
   }
 
@@ -1399,7 +1409,12 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
             selectionContextActions={getSelectionContextActions}
             rowContextActions={getRowContextActions}
             serialColumnRender={serialColumnRender}
-            toolbarActions={selectionToolbar || (!showTrash ? ({ selectedRows, selectedCount, clearSelection }) => (
+            toolbarActions={selectionToolbar || (showTrash ? ({ selectedRows, clearSelection }) => (
+              <div className="flex flex-wrap items-center gap-2">
+                {selectedRows.length > 0 && <Button size="sm" variant="outline" disabled={mutations.restore.isPending} onClick={() => handleBulkRestore(selectedRows, clearSelection)}><ArchiveRestore size={14} />{t('customers.page.actions.restoreSelected', { count: selectedRows.length })}</Button>}
+                {selectedRows.length > 0 && <Button size="sm" variant="outline" className="border-red-200 text-red-600 hover:bg-red-50" disabled={mutations.forceDelete.isPending} onClick={() => handleBulkForceDelete(selectedRows, clearSelection)}><Trash2 size={14} />{t('customers.page.actions.deletePermanent', { count: selectedRows.length })}</Button>}
+              </div>
+            ) : ({ selectedRows, selectedCount, clearSelection }) => (
               <div className="flex flex-wrap items-center gap-2">
               {selectedRows.length > 0 && <Button size="sm" variant="outline" onClick={() => taskAction.open(selectedRows)}><ListTodo size={14} />{t('customers.leadTasks.add')}</Button>}
               {selectedRows.length > 0 && <Button size="sm" variant="outline" className="border-red-200 text-red-600 hover:bg-red-50" disabled={mutations.remove.isPending} onClick={() => handleBulkDelete(selectedRows, clearSelection)}><Trash2 size={14} />{t('customers.page.actions.deleteSelected', { count: selectedRows.length })}</Button>}
