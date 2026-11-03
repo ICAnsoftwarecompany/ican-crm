@@ -12,16 +12,7 @@ window.matchMedia = window.matchMedia || (() => ({
 window.ResizeObserver = window.ResizeObserver || class { observe() {} unobserve() {} disconnect() {} }
 window.scrollTo = window.scrollTo || (() => {})
 HTMLElement.prototype.scrollTo = HTMLElement.prototype.scrollTo || (() => {})
-<<<<<<< HEAD
 HTMLElement.prototype.scrollIntoView = HTMLElement.prototype.scrollIntoView || (() => {})
-=======
-window.HTMLElement.prototype.scrollTo = window.HTMLElement.prototype.scrollTo || function scrollTo() {}
-window.HTMLElement.prototype.scrollIntoView = window.HTMLElement.prototype.scrollIntoView || function scrollIntoView() {}
->>>>>>> fix/resolve-merge-conflict-markers
-=======
-window.HTMLElement.prototype.scrollTo = window.HTMLElement.prototype.scrollTo || function scrollTo() {}
-window.HTMLElement.prototype.scrollIntoView = window.HTMLElement.prototype.scrollIntoView || function scrollIntoView() {}
->>>>>>> feature/lead-360-redesign
 
 const stages = [
   { id: 10, name: 'New', order: 1, color: '#3498db' },
@@ -303,16 +294,7 @@ describe('deals area', () => {
     await waitFor(() => expect(router.state.location.pathname).toBe('/deals/88'))
 
     const urls = post.mock.calls.map(([url]) => url)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    expect(urls).toEqual(['/api/tenant/pipeline-templates', '/api/tenant/deals', '/api/tenant/deals/team', '/api/tenant/deals/88/products', '/api/tenant/deals/88/campaigns'])
-=======
-    // The team's internal group: "<deal name> G<next>" ("Villa 12 sale G1" exists → G2) with the team's users.
-    expect(urls).toEqual(['/api/tenant/pipeline-templates', '/api/tenant/deals', '/api/tenant/deals/team', '/api/tenant/chat', '/api/tenant/deals/products', '/api/tenant/deals/88/campaigns'])
->>>>>>> fix/resolve-merge-conflict-markers
-=======
     expect(urls).toEqual(['/api/tenant/pipeline-templates', '/api/tenant/deals', '/api/tenant/deals/team', '/api/tenant/chat', '/api/tenant/deals/88/products', '/api/tenant/deals/88/campaigns'])
->>>>>>> feature/lead-360-redesign
     const bodies = post.mock.calls.map(([, body]) => body)
     expect(bodies[0]).toMatchObject({ name: 'Villas pipeline', type: 'sales', status: true })
     expect(bodies[0].stages.filter((stage) => stage.is_won_stage)).toHaveLength(1)
@@ -321,10 +303,6 @@ describe('deals area', () => {
     expect(bodies[3]).toEqual({ type: 'group', name: 'Villa 12 sale - G1', user_ids: [4, 6] })
     expect(bodies[4]).toEqual({ products: [{ product_id: 31, details: {} }] })
     expect(bodies[5]).toEqual({ campaign_ids: [1], is_active: true })
-<<<<<<< HEAD
->>>>>>> fix/resolve-merge-conflict-markers
-=======
->>>>>>> feature/lead-360-redesign
   })
   it('quick team: with no teams, creates one from the team step and adds it to the deal', async () => {
     const teamsRoute = routes.find(([pattern]) => pattern.test('/api/tenant/teams/get'))

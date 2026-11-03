@@ -27,10 +27,7 @@ export const DEAL_WORKSPACE_PAGES = [
   { id: 'contracts', path: 'contracts', icon: FileSignature, group: 'work' },
   { id: 'team', path: 'team', icon: Users, group: 'collaboration' },
   { id: 'chats', path: 'chats', icon: MessagesSquare, group: 'collaboration' },
-<<<<<<< HEAD
   // 2026-10-16: the deal's internal groups ("<name> G<n>") and its customers' conversations (every channel).
-=======
->>>>>>> feature/lead-360-redesign
   { id: 'groups', path: 'groups', icon: MessagesSquare, group: 'collaboration' },
   { id: 'conversations', path: 'conversations', icon: MessageCircle, group: 'collaboration' },
   { id: 'meetings', path: 'meetings', icon: Presentation, group: 'collaboration' },

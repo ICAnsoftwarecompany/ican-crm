@@ -133,12 +133,8 @@ function mapMessage(message) {
   }
 }
 
-<<<<<<< HEAD
-export function InternalChatWorkspace({ conversations: scopedConversations, scopeKey, conversationFilter: scopeFilter = null, title = null, headerAction = null, emptyList = null } = {}) {
-=======
 /** Team chat supports optional deal scope and custom list header. */
 export function InternalChatWorkspace({ conversations: scopedConversations, scopeKey, conversationFilter: scopedConversationFilter = null, title = null, headerAction = null, emptyList = null } = {}) {
->>>>>>> feature/lead-360-redesign
   const { t } = useTranslation()
   const [query, setQuery] = useState('')
   const [conversationFilter, setConversationFilter] = useState('all')

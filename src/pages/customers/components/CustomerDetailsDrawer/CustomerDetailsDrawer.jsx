@@ -1678,12 +1678,9 @@ export function CustomerDetailsDrawer({ customer, open, onClose, onStatusChanged
       topOffset="calc(var(--layout-header-height, 48px) - 1px)"
       headerActions={detailsPageId ? (
         <div className="flex items-center gap-2">
-<<<<<<< HEAD
-=======
         <button type="button" onClick={handleDelete} disabled={mutations.remove.isPending} className="inline-flex h-8 items-center gap-1 rounded-lg border border-red-200 px-2.5 text-xs font-bold text-red-600 hover:bg-red-50 disabled:opacity-50" title={t('customers.page.actions.deleteSelected', { count: 1 })}>
           <Trash2 size={14} /> {t('customers.page.actions.deleteSelected', { count: 1 })}
         </button>
->>>>>>> fix/resolve-merge-conflict-markers
         <Link
           to={detailsPagePath || `/lead/${detailsPageId}`}
           className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] px-2.5 text-xs font-black text-[#007A80] shadow-sm transition-colors hover:bg-[#E8F9FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#BEEFF2]"

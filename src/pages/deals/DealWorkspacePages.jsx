@@ -24,14 +24,6 @@ import {
   DealStagesSettings,
   DealTasksPanel,
   DealTeamPanel,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-  DealChatWorkspace,
-  DealLeadDetail,
->>>>>>> fix/resolve-merge-conflict-markers
-=======
->>>>>>> feature/lead-360-redesign
   useDealConversationFilter,
   useDealReport,
   useDealWorkspace,

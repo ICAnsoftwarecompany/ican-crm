@@ -148,24 +148,12 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
   const [listScrollPercent, setListScrollPercent] = useState(0)
 
   const conversationsQuery = useChatConversations({ per_page: 30 }, { enabled: open })
-<<<<<<< HEAD
   const allConversations = Array.isArray(conversationsQuery.data) ? conversationsQuery.data : []
   const conversations = useMemo(() => (scopeFilter ? allConversations.filter(scopeFilter) : allConversations), [allConversations, scopeFilter])
-=======
->>>>>>> feature/lead-360-redesign
   const usersQuery = useUsers(undefined, { enabled: open })
   const onlineUsersQuery = useOnlineUsers(undefined, { enabled: open, refetchInterval: open ? 30000 : false })
   const users = Array.isArray(usersQuery.data) ? usersQuery.data : []
   const onlineUsers = Array.isArray(onlineUsersQuery.data) ? onlineUsersQuery.data : []
-
-  const allConversations = useMemo(() => (Array.isArray(conversationsQuery.data) ? conversationsQuery.data : []), [conversationsQuery.data])
-  const scopedConversations = useMemo(() => {
-    if (!conversationFilter) return allConversations
-    if (typeof conversationFilter === 'function') return allConversations.filter(conversationFilter)
-    return allConversations
-  }, [allConversations, conversationFilter])
-
-  const conversations = useMemo(() => scopedConversations, [scopedConversations])
 
   const onlinePresenceByUserId = useMemo(() => {
     const map = new Map()
@@ -247,23 +235,14 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
   ), [currentUserId, getConversationMembers, resolveMemberPresence])
 
   useEffect(() => {
-<<<<<<< HEAD
-    if (!open) return
-    setMode('list')
-    if (selectedConversationId && conversations.some((item) => String(getConversationId(item)) === String(selectedConversationId))) return
-
-    const firstId = getConversationId(conversations[0])
-    if (firstId) {
-      setSelectedConversationId(firstId)
-=======
     if (!open) {
       setMode('list')
       setQuery('')
       setUiFilter('all')
       setListScrollPercent(0)
       return
->>>>>>> feature/lead-360-redesign
     }
+
     setMode('list')
   }, [open])
 
@@ -422,11 +401,8 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
 
   const handleOpenPage = () => {
     const conversationId = selectedConversationId ? `?conversation=${encodeURIComponent(String(selectedConversationId))}` : ''
-<<<<<<< HEAD
     navigate(openPagePath === '/team-chat' ? `/team-chat${conversationId}` : openPagePath)
-=======
     navigate(`${openPagePath}${conversationId}`)
->>>>>>> feature/lead-360-redesign
     onClose?.()
   }
 
@@ -491,16 +467,11 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
             </header>
 
             <div className="relative min-h-0 flex-1">
-<<<<<<< HEAD
               <div
                 ref={listScrollRef}
                 onScroll={syncListScrollPercent}
                 className="h-full overflow-y-auto p-2 pe-6"
               >
-                {!conversations.length && !conversationsQuery.isLoading && emptyList}
-              {filteredConversations.map((conversation) => {
-=======
-              <div ref={listScrollRef} onScroll={syncListScrollPercent} className="h-full overflow-y-auto p-2 pe-6">
                 {!filteredConversations.length && !conversationsQuery.isLoading && (
                   <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface-2)] p-3 text-center text-xs font-semibold text-[var(--text-muted)]">
                     {emptyList || 'لا توجد محادثات'}
@@ -508,7 +479,6 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
                 )}
 
                 {filteredConversations.map((conversation) => {
->>>>>>> feature/lead-360-redesign
                   const id = getConversationId(conversation)
                   const isActive = String(id || '') === String(getConversationId(selectedConversation) || '')
                   const type = getConversationType(conversation)

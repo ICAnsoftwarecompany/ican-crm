@@ -40,11 +40,6 @@ export function ReviewStep({ state, created, progress, error, onEdit, onFinishWi
     { id: 'deal', label: t('dealWorkspace.wizard.review.requests.deal'), done: Boolean(created.dealId) },
     ...(teamSize ? [{ id: 'team', label: t('dealWorkspace.wizard.review.requests.teamBatch', teamCount), done: created.teamDone === true }] : []),
     ...(state.team.createChat && canOfferDealChat(state.team, state.basics.owner_id) ? [{ id: 'chat', label: t('dealWorkspace.pipeline.createChat'), done: created.chatDone }] : []),
-<<<<<<< HEAD
-=======
->>>>>>> fix/resolve-merge-conflict-markers
-=======
->>>>>>> feature/lead-360-redesign
     ...(requests.chatGroup ? [{
       id: 'chatGroup',
       label: requests.chatGroup.mode === 'new'

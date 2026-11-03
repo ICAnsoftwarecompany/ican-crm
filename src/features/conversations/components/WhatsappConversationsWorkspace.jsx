@@ -159,11 +159,6 @@ export function WhatsappConversationsWorkspace({
   const [filters, setFilters] = useState(DEFAULT_MESSENGER_CONVERSATION_FILTERS)
   const [linkDialogConversation, setLinkDialogConversation] = useState(null)
   const [templatesDialogOpen, setTemplatesDialogOpen] = useState(false)
-  const usersQuery = useUsers()
-  const onlineUsersQuery = useOnlineUsers(undefined, { refetchInterval: 30000 })
-
-  const usersQuery = useUsers(undefined, { enabled: open })
-  const onlineUsersQuery = useOnlineUsers(undefined, { enabled: open })
 
   const presenceIndex = useMemo(() => (
     buildPresenceIndex(usersQuery.data || [], onlineUsersQuery.data || [])

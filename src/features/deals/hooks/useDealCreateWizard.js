@@ -9,13 +9,6 @@ import { dealCampaignsApi, dealLeadsApi, dealResourcesApi, dealsApi, pipelineTem
 import { dealKeys } from '../constants/dealQueryKeys'
 import { WIZARD_STEPS, buildWizardRequests, extractCreatedId, firstInvalidStepBefore, withWizardDefaults } from '../utils/dealWizard'
 import { buildNewLeadPayload } from '../utils/leadSource'
-<<<<<<< HEAD
-import { nextDealGroupName } from '../utils/dealGroups'
-import { unwrapList } from './dealResponse'
-
-const DRAFT_KEY = 'deals:create-wizard:draft'
-const EMPTY_CREATED = { templateId: null, dealId: null, teamDone: false, productsDone: false, chatGroupDone: false, chatGroupName: '', campaignsDone: false, existingLeadsDone: false, newLeadKeys: [] }
-=======
 import { canOfferDealChat, createDealChat, nextDealGroupName, resolveWizardChatUsers } from '../utils/dealChat'
 
 const DRAFT_KEY = 'deals:create-wizard:draft'
@@ -32,7 +25,6 @@ const EMPTY_CREATED = {
   existingLeadsDone: false,
   newLeadKeys: [],
 }
->>>>>>> feature/lead-360-redesign
 
 /**
  * State + submission of the "new deal" wizard. The draft (answers + what was already created) lives in
@@ -116,8 +108,6 @@ export function useDealCreateWizard() {
       }
       mark('team', 'done')
 
-<<<<<<< HEAD
-=======
       phase = 'chat'
       if (state.team.createChat && canOfferDealChat(state.team, state.basics.owner_id) && !done.chatDone) {
         mark('chat', 'running')
@@ -134,7 +124,6 @@ export function useDealCreateWizard() {
       }
       mark('chat', 'done')
 
->>>>>>> feature/lead-360-redesign
       // Internal chat group of the sales team: '<deal name> G<n>' (next free number) or the team added to a group.
       phase = 'chatGroup'
       const chatGroup = requests.chatGroup
