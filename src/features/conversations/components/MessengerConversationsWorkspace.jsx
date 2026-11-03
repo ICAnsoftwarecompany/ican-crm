@@ -1,3 +1,4 @@
+import { EntityMentionsButton } from '../../mentions'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
@@ -337,7 +338,7 @@ export function MessengerConversationsWorkspace({ threadHeaderActions = null, co
             isTogglingConversationStatus={mutations.closeConversation.isPending || mutations.reopenConversation.isPending}
             {...getThreadCapabilityProps(messengerAdapter.capabilities)}
             channelColor="#0A7CFF"
-            headerActions={selectedId ? threadHeaderActions : null}
+            headerActions={selectedId ? <div className="flex items-center gap-2"><EntityMentionsButton entityType="messenger_conversation" entityId={selectedId} />{threadHeaderActions}</div> : null}
             autoFocusKey={selectedId}
             highlightedMessageId={highlightedMessageId}
             composerDisabled={!selectedId}
