@@ -30,13 +30,8 @@ export function createWizardState(stageNames = []) {
       stages: DEFAULT_WIZARD_STAGES.map((stage, index) => ({ ...stage, name: stageNames[index] || '' })),
     },
     basics: { name: '', description: '', type: 'sales', status: 'active', start_date: '', end_date: '', target_revenue: '', target_leads: '', owner_id: '' },
-<<<<<<< HEAD
     products: { ids: [], details: {} },
-    team: { members: [], addOwner: true, createChat: false },
-=======
-    products: { ids: [] },
-    team: { members: [], addOwner: true, chat: { mode: 'new', groupId: '', userIds: [] } },
->>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
+    team: { members: [], addOwner: true, createChat: false, chat: { mode: 'new', groupId: '', userIds: [] } },
     source: createLeadSourceState(),
   }
 }
@@ -44,13 +39,15 @@ export function createWizardState(stageNames = []) {
 /** A saved draft from before a step existed gets that step's defaults. */
 export function withWizardDefaults(state, stageNames) {
   const defaults = createWizardState(stageNames)
-<<<<<<< HEAD
-  return state ? { ...defaults, ...state, team: { ...defaults.team, ...(state.team || {}) }, products: { ...defaults.products, ...(state.products || {}) }, source: { ...defaults.source, ...(state.source || {}) } } : defaults
-=======
   if (!state) return defaults
   const team = { ...defaults.team, ...(state.team || {}) }
-  return { ...defaults, ...state, team: { ...team, chat: { ...defaults.team.chat, ...(team.chat || {}) } }, source: { ...defaults.source, ...(state.source || {}) } }
->>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
+  return {
+    ...defaults,
+    ...state,
+    team: { ...team, chat: { ...defaults.team.chat, ...(team.chat || {}) } },
+    products: { ...defaults.products, ...(state.products || {}) },
+    source: { ...defaults.source, ...(state.source || {}) },
+  }
 }
 
 /** Errors of one step as i18n keys (`dealWorkspace.wizard.errors.*`); empty object = step is valid. */

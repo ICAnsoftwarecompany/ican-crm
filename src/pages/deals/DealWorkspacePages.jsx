@@ -10,10 +10,12 @@ import {
   DealActivitiesPanel,
   DealAssistant,
   DealCalendar,
+  DealChatWorkspace,
   DealContractsTable,
   DealDangerZone,
   DealGeneralSettings,
   DealGroupsView,
+  DealLeadDetail,
   DealLostReasonsSettings,
   DealOverview,
   DealPipelineView,
@@ -22,12 +24,7 @@ import {
   DealStagesSettings,
   DealTasksPanel,
   DealTeamPanel,
-<<<<<<< HEAD
-  DealChatWorkspace,
-  DealLeadDetail,
-=======
   useDealConversationFilter,
->>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
   useDealReport,
   useDealWorkspace,
 } from '../../features/deals'
