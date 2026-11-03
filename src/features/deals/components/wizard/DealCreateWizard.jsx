@@ -74,10 +74,13 @@ export function DealCreateWizard() {
           {step === 'basics' && <BasicsStep value={state.basics} onChange={(patch) => update('basics', patch)} errors={errors} />}
           {step === 'products' && <ProductsStep value={state.products} onChange={(patch) => update('products', patch)} errors={errors} />}
 <<<<<<< HEAD
+<<<<<<< HEAD
           {step === 'products' && <ProductsStep value={state.products} onChange={(patch) => update('products', patch)} />}
 =======
 
 >>>>>>> fix/resolve-merge-conflict-markers
+=======
+>>>>>>> feature/lead-360-redesign
           {step === 'team' && <TeamStep value={state.team} ownerId={state.basics.owner_id} dealName={state.basics.name} onChange={(patch) => update('team', patch)} errors={errors} />}
           {step === 'source' && <LeadSourceStep value={state.source} pipeline={state.pipeline} ownerId={state.basics.owner_id} onChange={(patch) => update('source', patch)} errors={errors} />}
           {step === 'review' && <ReviewStep state={state} created={wizard.created} progress={wizard.progress} error={wizard.error} onEdit={goTo} onFinishWithoutFailed={wizard.finishWithoutFailed} />}

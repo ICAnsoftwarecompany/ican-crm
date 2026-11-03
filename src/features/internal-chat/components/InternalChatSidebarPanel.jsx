@@ -132,13 +132,13 @@ function toComposerMessage(message) {
 }
 
 /**
- * Internal chat side panel. Optional scope (2026-10-16, deal groups): `conversationFilter`, `title`, `headerExtra`
- * (a node under the search), `emptyList`, `openPagePath` (the "open" button; default /team-chat).
+ * Internal chat side panel. Optional scope (deal groups): `conversationFilter` can be a predicate,
+ * `title`, `headerExtra`, `emptyList`, and `openPagePath` for the "open" button.
  */
 export function InternalChatSidebarPanel({ open, onClose, conversationFilter: scopeFilter = null, title = null, headerExtra = null, emptyList = null, openPagePath = '/team-chat' }) {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
-  const [conversationFilter, setConversationFilter] = useState('all')
+  const [uiFilter, setUiFilter] = useState('all')
   const [mode, setMode] = useState('list')
   const selectedConversationId = useInternalChatUiStore((state) => state.activeConversationId)
   const setSelectedConversationId = useInternalChatUiStore((state) => state.setActiveConversationId)
@@ -148,16 +148,27 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
   const [listScrollPercent, setListScrollPercent] = useState(0)
 
   const conversationsQuery = useChatConversations({ per_page: 30 }, { enabled: open })
+<<<<<<< HEAD
   const allConversations = Array.isArray(conversationsQuery.data) ? conversationsQuery.data : []
   const conversations = useMemo(() => (scopeFilter ? allConversations.filter(scopeFilter) : allConversations), [allConversations, scopeFilter])
+=======
+>>>>>>> feature/lead-360-redesign
   const usersQuery = useUsers(undefined, { enabled: open })
   const onlineUsersQuery = useOnlineUsers(undefined, { enabled: open, refetchInterval: open ? 30000 : false })
   const users = Array.isArray(usersQuery.data) ? usersQuery.data : []
   const onlineUsers = Array.isArray(onlineUsersQuery.data) ? onlineUsersQuery.data : []
 
+  const allConversations = useMemo(() => (Array.isArray(conversationsQuery.data) ? conversationsQuery.data : []), [conversationsQuery.data])
+  const scopedConversations = useMemo(() => {
+    if (!conversationFilter) return allConversations
+    if (typeof conversationFilter === 'function') return allConversations.filter(conversationFilter)
+    return allConversations
+  }, [allConversations, conversationFilter])
+
+  const conversations = useMemo(() => scopedConversations, [scopedConversations])
+
   const onlinePresenceByUserId = useMemo(() => {
     const map = new Map()
-
     onlineUsers.forEach((entry) => {
       const userId = Number(entry?.user_id ?? entry?.id ?? 0)
       if (!userId) return
@@ -173,7 +184,6 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
         lastSeenAt: entry?.last_seen_at || entry?.lastSeenAt || '',
       })
     })
-
     return map
   }, [onlineUsers])
 
@@ -237,6 +247,7 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
   ), [currentUserId, getConversationMembers, resolveMemberPresence])
 
   useEffect(() => {
+<<<<<<< HEAD
     if (!open) return
     setMode('list')
     if (selectedConversationId && conversations.some((item) => String(getConversationId(item)) === String(selectedConversationId))) return
@@ -244,31 +255,38 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
     const firstId = getConversationId(conversations[0])
     if (firstId) {
       setSelectedConversationId(firstId)
+=======
+    if (!open) {
+      setMode('list')
+      setQuery('')
+      setUiFilter('all')
+      setListScrollPercent(0)
+      return
+>>>>>>> feature/lead-360-redesign
     }
-  }, [conversations, open, selectedConversationId, setSelectedConversationId])
+    setMode('list')
+  }, [open])
 
   useEffect(() => {
-    if (open) return
-    setMode('list')
-    setQuery('')
-    setConversationFilter('all')
-    setListScrollPercent(0)
-  }, [open])
+    if (!open || !conversations.length) return
+    if (selectedConversationId && conversations.some((item) => String(getConversationId(item)) === String(selectedConversationId))) return
+    const firstId = getConversationId(conversations[0])
+    if (firstId) setSelectedConversationId(firstId)
+  }, [conversations, open, selectedConversationId, setSelectedConversationId])
 
   const filteredConversations = useMemo(() => {
     const value = String(query || '').trim().toLowerCase()
-    const withFilter = conversations.filter((conversation) => {
+    const next = conversations.filter((conversation) => {
       const type = getConversationType(conversation)
       const presence = getConversationPresence(conversation)
 
-      if (conversationFilter === 'online' && !presence.isOnline) return false
-      if (conversationFilter === 'groups' && type !== 'group') return false
-      if (conversationFilter === 'unread' && Number(conversation?.unread_count || 0) <= 0) return false
-
+      if (uiFilter === 'online' && !presence.isOnline) return false
+      if (uiFilter === 'groups' && type !== 'group') return false
+      if (uiFilter === 'unread' && Number(conversation?.unread_count || 0) <= 0) return false
       return true
     })
 
-    const sorted = [...withFilter].sort((first, second) => {
+    const sorted = [...next].sort((first, second) => {
       const firstStamp = new Date(
         getConversationLastMessage(first)?.created_at
         || getConversationLastMessage(first)?.createdAt
@@ -287,18 +305,31 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
     })
 
     if (!value) return sorted
-
     return sorted.filter((conversation) => {
       const text = [conversation?.display_name, conversation?.name, getLastMessagePreview(conversation)].filter(Boolean).join(' ').toLowerCase()
       return text.includes(value)
     })
-  }, [conversationFilter, conversations, getConversationPresence, query])
+  }, [conversations, getConversationPresence, query, uiFilter])
+
+  const syncListScrollPercent = () => {
+    const container = listScrollRef.current
+    if (!container) return
+
+    const scrollableHeight = container.scrollHeight - container.clientHeight
+    if (scrollableHeight <= 0) {
+      setListScrollPercent(0)
+      return
+    }
+
+    const percent = Math.round((container.scrollTop / scrollableHeight) * 100)
+    setListScrollPercent(Number.isFinite(percent) ? Math.max(0, Math.min(100, percent)) : 0)
+  }
 
   useEffect(() => {
     if (mode !== 'list') return
     const frameId = window.requestAnimationFrame(syncListScrollPercent)
     return () => window.cancelAnimationFrame(frameId)
-  }, [filteredConversations.length, mode, query, conversationFilter])
+  }, [filteredConversations.length, mode, query, uiFilter])
 
   const selectedConversation = useMemo(() => (
     filteredConversations.find((item) => String(getConversationId(item)) === String(selectedConversationId || ''))
@@ -373,20 +404,6 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
   const selectedConversationPresence = getConversationPresence(selectedConversation)
   const selectedConversationType = getConversationType(selectedConversation)
 
-  const syncListScrollPercent = () => {
-    const container = listScrollRef.current
-    if (!container) return
-
-    const scrollableHeight = container.scrollHeight - container.clientHeight
-    if (scrollableHeight <= 0) {
-      setListScrollPercent(0)
-      return
-    }
-
-    const percent = Math.round((container.scrollTop / scrollableHeight) * 100)
-    setListScrollPercent(Number.isFinite(percent) ? Math.max(0, Math.min(100, percent)) : 0)
-  }
-
   const handleListSliderChange = (event) => {
     const value = Number(event.target.value || 0)
     setListScrollPercent(value)
@@ -405,7 +422,11 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
 
   const handleOpenPage = () => {
     const conversationId = selectedConversationId ? `?conversation=${encodeURIComponent(String(selectedConversationId))}` : ''
+<<<<<<< HEAD
     navigate(openPagePath === '/team-chat' ? `/team-chat${conversationId}` : openPagePath)
+=======
+    navigate(`${openPagePath}${conversationId}`)
+>>>>>>> feature/lead-360-redesign
     onClose?.()
   }
 
@@ -417,7 +438,7 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
     >
       <div className="flex h-full min-h-0 flex-col overflow-hidden">
         {mode === 'list' ? (
-          <>
+          <div className="flex h-full min-h-0 flex-col">
             <header className="border-b border-[var(--border)] bg-[var(--surface-2)] p-3">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
@@ -443,6 +464,8 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
                 />
               </label>
 
+              {headerExtra ? <div className="mt-2">{headerExtra}</div> : null}
+
               <div className="mt-2 flex items-center gap-1">
                 {[
                   { id: 'all', label: 'الكل' },
@@ -453,10 +476,10 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => setConversationFilter(item.id)}
+                    onClick={() => setUiFilter(item.id)}
                     className={[
                       'inline-flex h-7 items-center justify-center rounded-full border px-2 text-[10px] font-black transition-colors',
-                      conversationFilter === item.id
+                      uiFilter === item.id
                         ? 'border-[#00C2CB] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]'
                         : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-2)]',
                     ].join(' ')}
@@ -468,6 +491,7 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
             </header>
 
             <div className="relative min-h-0 flex-1">
+<<<<<<< HEAD
               <div
                 ref={listScrollRef}
                 onScroll={syncListScrollPercent}
@@ -475,12 +499,23 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
               >
                 {!conversations.length && !conversationsQuery.isLoading && emptyList}
               {filteredConversations.map((conversation) => {
+=======
+              <div ref={listScrollRef} onScroll={syncListScrollPercent} className="h-full overflow-y-auto p-2 pe-6">
+                {!filteredConversations.length && !conversationsQuery.isLoading && (
+                  <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface-2)] p-3 text-center text-xs font-semibold text-[var(--text-muted)]">
+                    {emptyList || 'لا توجد محادثات'}
+                  </div>
+                )}
+
+                {filteredConversations.map((conversation) => {
+>>>>>>> feature/lead-360-redesign
                   const id = getConversationId(conversation)
                   const isActive = String(id || '') === String(getConversationId(selectedConversation) || '')
                   const type = getConversationType(conversation)
                   const presence = getConversationPresence(conversation)
                   const unreadCount = Number(conversation?.unread_count || 0)
                   const hasUnread = unreadCount > 0
+
                   return (
                     <button
                       key={id || conversation?.name}
@@ -489,9 +524,7 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
                       className={[
                         'mb-2 w-full rounded-xl border p-2 text-start transition-colors',
                         isActive
-                          ? hasUnread
-                            ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)] shadow-sm shadow-[#00C2CB]/15'
-                            : 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)]'
+                          ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)]'
                           : hasUnread
                             ? 'border-[#FECACA] bg-[#FFF7F7] hover:border-[#FCA5A5]'
                             : 'border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-2)]',
@@ -513,14 +546,13 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
                               </span>
                             ) : null}
                           </span>
+
                           <span className="mt-1 flex items-center justify-between gap-2 text-[10px] font-semibold text-[var(--text-muted)]">
                             <span className={cn('min-w-0 truncate', hasUnread && 'font-black text-[var(--text)]')}>{getLastMessagePreview(conversation)}</span>
                             <span className={cn('shrink-0', hasUnread && 'font-black text-[var(--text)]')}>{formatConversationTimestamp(getConversationLastMessage(conversation)?.created_at || getConversationLastMessage(conversation)?.createdAt || conversation?.updated_at)}</span>
                           </span>
-                          <span className={[
-                            'mt-1 block truncate text-[10px] font-black',
-                            hasUnread ? 'text-[var(--text)]' : presence.isOnline ? 'text-[#15803D]' : 'text-[var(--text-muted)]',
-                          ].join(' ')}>
+
+                          <span className={cn('mt-1 block truncate text-[10px] font-black', type === 'group' ? 'text-[var(--text)]' : presence.isOnline ? 'text-[#15803D]' : 'text-[var(--text-muted)]')}>
                             {type === 'group'
                               ? `Online ${presence.onlineCount}/${presence.totalCount}`
                               : (presence.isOnline ? 'Online' : `Offline${presence.lastSeenAt ? ` • آخر تواجد ${formatLastSeen(presence.lastSeenAt)}` : ''}`)}
@@ -548,9 +580,9 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
                 </div>
               ) : null}
             </div>
-          </>
+          </div>
         ) : (
-          <>
+          <div className="flex h-full min-h-0 flex-col">
             <header className="border-b border-[var(--border)] bg-[var(--surface-2)] p-3">
               <div className="flex items-center justify-between gap-2">
                 <button
@@ -614,9 +646,10 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
                 emptyDescription={getConversationId(selectedConversation) ? 'ابدأ المحادثة مع الفريق.' : 'اختر محادثة من القائمة.'}
               />
             </div>
-          </>
+          </div>
         )}
       </div>
     </aside>
   )
 }
+

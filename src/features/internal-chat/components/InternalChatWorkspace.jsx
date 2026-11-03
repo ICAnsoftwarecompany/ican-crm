@@ -28,6 +28,7 @@ const SENDER_COLORS = [
 ]
 
 const DETAILS_AUTO_CLOSE_MAX_WIDTH = 1500
+const EMPTY_CONVERSATIONS = []
 
 function getConversationType(conversation) {
   return String(conversation?.type || '').toLowerCase()
@@ -132,7 +133,12 @@ function mapMessage(message) {
   }
 }
 
+<<<<<<< HEAD
 export function InternalChatWorkspace({ conversations: scopedConversations, scopeKey, conversationFilter: scopeFilter = null, title = null, headerAction = null, emptyList = null } = {}) {
+=======
+/** Team chat supports optional deal scope and custom list header. */
+export function InternalChatWorkspace({ conversations: scopedConversations, scopeKey, conversationFilter: scopedConversationFilter = null, title = null, headerAction = null, emptyList = null } = {}) {
+>>>>>>> feature/lead-360-redesign
   const { t } = useTranslation()
   const [query, setQuery] = useState('')
   const [conversationFilter, setConversationFilter] = useState('all')
@@ -152,7 +158,8 @@ export function InternalChatWorkspace({ conversations: scopedConversations, scop
   const currentUserId = String(currentUser?.id ?? currentUser?.user_id ?? currentUser?.userId ?? '')
 
   const conversationsQuery = useChatConversations({ per_page: 50 }, { enabled: scopedConversations === undefined })
-  const conversations = scopedConversations ?? (Array.isArray(conversationsQuery.data) ? conversationsQuery.data : [])
+  const sourceConversations = scopedConversations ?? (Array.isArray(conversationsQuery.data) ? conversationsQuery.data : EMPTY_CONVERSATIONS)
+  const conversations = useMemo(() => scopedConversationFilter ? sourceConversations.filter(scopedConversationFilter) : sourceConversations, [sourceConversations, scopedConversationFilter])
   const usersQuery = useUsers()
   const onlineUsersQuery = useOnlineUsers(undefined, { refetchInterval: 30000 })
   const users = Array.isArray(usersQuery.data) ? usersQuery.data : []

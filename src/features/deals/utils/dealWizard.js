@@ -32,10 +32,14 @@ export function createWizardState(stageNames = []) {
     basics: { name: '', description: '', type: 'sales', status: 'active', start_date: '', end_date: '', target_revenue: '', target_leads: '', owner_id: '' },
     products: { ids: [], details: {} },
 <<<<<<< HEAD
+<<<<<<< HEAD
     team: { members: [], addOwner: true, chat: { mode: 'new', groupId: '', userIds: [] } },
 =======
     team: { members: [], addOwner: true, createChat: false, chat: { mode: 'new', groupId: '', userIds: [] } },
 >>>>>>> fix/resolve-merge-conflict-markers
+=======
+    team: { members: [], addOwner: true, createChat: false, chat: { mode: 'new', groupId: '', userIds: [] } },
+>>>>>>> feature/lead-360-redesign
     source: createLeadSourceState(),
   }
 }
@@ -45,7 +49,17 @@ export function withWizardDefaults(state, stageNames) {
   const defaults = createWizardState(stageNames)
   if (!state) return defaults
   const team = { ...defaults.team, ...(state.team || {}) }
+<<<<<<< HEAD
   return { ...defaults, ...state, team: { ...team, chat: { ...defaults.team.chat, ...(team.chat || {}) } }, products: { ...defaults.products, ...(state.products || {}) }, source: { ...defaults.source, ...(state.source || {}) } }
+=======
+  return {
+    ...defaults,
+    ...state,
+    team: { ...team, chat: { ...defaults.team.chat, ...(team.chat || {}) } },
+    products: { ...defaults.products, ...(state.products || {}) },
+    source: { ...defaults.source, ...(state.source || {}) },
+  }
+>>>>>>> feature/lead-360-redesign
 }
 
 /** Errors of one step as i18n keys (`dealWorkspace.wizard.errors.*`); empty object = step is valid. */

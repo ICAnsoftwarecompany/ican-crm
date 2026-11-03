@@ -66,6 +66,8 @@ export function MessengerConversationsWorkspace({ threadHeaderActions = null, co
   const [linkDialogConversation, setLinkDialogConversation] = useState(null)
   const [conversationFilters, setConversationFilters] = useState(DEFAULT_MESSENGER_CONVERSATION_FILTERS)
   const requestedConversationId = searchParams.get('conversation') || ''
+  const usersQuery = useUsers()
+  const onlineUsersQuery = useOnlineUsers(undefined, { refetchInterval: 30000 })
 
   const presenceIndex = useMemo(() => (
     buildPresenceIndex(usersQuery.data || [], onlineUsersQuery.data || [])

@@ -10,10 +10,12 @@ import {
   DealActivitiesPanel,
   DealAssistant,
   DealCalendar,
+  DealChatWorkspace,
   DealContractsTable,
   DealDangerZone,
   DealGeneralSettings,
   DealGroupsView,
+  DealLeadDetail,
   DealLostReasonsSettings,
   DealOverview,
   DealPipelineView,
@@ -23,10 +25,13 @@ import {
   DealTasksPanel,
   DealTeamPanel,
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   DealChatWorkspace,
   DealLeadDetail,
 >>>>>>> fix/resolve-merge-conflict-markers
+=======
+>>>>>>> feature/lead-360-redesign
   useDealConversationFilter,
   useDealReport,
   useDealWorkspace,

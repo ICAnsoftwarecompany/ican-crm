@@ -4,16 +4,35 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useLocalStorage } from '../../../shared/components/data-table/hooks/useLocalStorage'
 import { extractMessage } from '../../../shared/utils/apiResponse'
-import { internalChatApi } from '../../internal-chat'
+import { chatKeys, getAllChatConversations, internalChatApi } from '../../internal-chat'
 import { dealCampaignsApi, dealLeadsApi, dealResourcesApi, dealsApi, pipelineTemplatesApi } from '../api'
 import { dealKeys } from '../constants/dealQueryKeys'
 import { WIZARD_STEPS, buildWizardRequests, extractCreatedId, firstInvalidStepBefore, withWizardDefaults } from '../utils/dealWizard'
 import { buildNewLeadPayload } from '../utils/leadSource'
+<<<<<<< HEAD
 import { nextDealGroupName } from '../utils/dealGroups'
 import { unwrapList } from './dealResponse'
 
 const DRAFT_KEY = 'deals:create-wizard:draft'
 const EMPTY_CREATED = { templateId: null, dealId: null, teamDone: false, productsDone: false, chatGroupDone: false, chatGroupName: '', campaignsDone: false, existingLeadsDone: false, newLeadKeys: [] }
+=======
+import { canOfferDealChat, createDealChat, nextDealGroupName, resolveWizardChatUsers } from '../utils/dealChat'
+
+const DRAFT_KEY = 'deals:create-wizard:draft'
+const EMPTY_CREATED = {
+  templateId: null,
+  dealId: null,
+  teamDone: false,
+  chatDone: false,
+  chatName: null,
+  productsDone: false,
+  chatGroupDone: false,
+  chatGroupName: '',
+  campaignsDone: false,
+  existingLeadsDone: false,
+  newLeadKeys: [],
+}
+>>>>>>> feature/lead-360-redesign
 
 /**
  * State + submission of the "new deal" wizard. The draft (answers + what was already created) lives in
@@ -97,14 +116,33 @@ export function useDealCreateWizard() {
       }
       mark('team', 'done')
 
+<<<<<<< HEAD
+=======
+      phase = 'chat'
+      if (state.team.createChat && canOfferDealChat(state.team, state.basics.owner_id) && !done.chatDone) {
+        mark('chat', 'running')
+        const conversations = await getAllChatConversations()
+        const existing = done.chatName && conversations.find((item) => item.type === 'group' && item.name === done.chatName)
+        if (!done.chatName) {
+          done.chatName = nextDealGroupName(state.basics.name, conversations)
+          persist()
+        }
+        if (!existing) await createDealChat(state.basics.name, await resolveWizardChatUsers(state), done.chatName)
+        done.chatDone = true
+        persist()
+        await client.invalidateQueries({ queryKey: chatKeys.all })
+      }
+      mark('chat', 'done')
+
+>>>>>>> feature/lead-360-redesign
       // Internal chat group of the sales team: '<deal name> G<n>' (next free number) or the team added to a group.
       phase = 'chatGroup'
       const chatGroup = requests.chatGroup
       if (chatGroup && !done.chatGroupDone) {
         mark('chatGroup', 'running')
         if (chatGroup.mode === 'new') {
-          const chats = unwrapList(await internalChatApi.getConversations({ per_page: 200 }), ['chats', 'conversations'])
-          const name = nextDealGroupName(chatGroup.dealName, chats)
+          const conversations = await getAllChatConversations()
+          const name = nextDealGroupName(chatGroup.dealName, conversations)
           await internalChatApi.createConversation({ type: 'group', name, user_ids: chatGroup.userIds })
           done.chatGroupName = name
         } else {

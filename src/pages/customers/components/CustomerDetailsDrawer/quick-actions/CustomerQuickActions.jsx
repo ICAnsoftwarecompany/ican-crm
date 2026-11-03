@@ -197,6 +197,7 @@ export function CustomerQuickActions({
   className,
   onlyIds,
   actionOverrides,
+  vertical = false,
 }) {
   const longPressTimerRef = useRef(null)
   const recentDragTimerRef = useRef(null)
@@ -265,8 +266,8 @@ export function CustomerQuickActions({
   }
 
   return (
-    <div className={cn('-mx-1 mt-3 overflow-x-auto px-1 pb-0.5', className)}>
-      <div className="flex min-w-max items-center gap-1">
+    <div className={cn(vertical ? 'mt-0 min-w-0 overflow-visible' : '-mx-1 mt-3 overflow-x-auto px-1 pb-0.5', className)}>
+      <div className={cn(vertical ? 'flex w-full min-w-0 flex-col items-stretch gap-2' : 'flex min-w-max items-center gap-1')}>
         {orderedActions.filter((action) => (!onlyIds || onlyIds.includes(action.id)) && actionOverrides?.[action.id] !== null).map((action) => (
           <div
             key={action.id}
@@ -285,7 +286,8 @@ export function CustomerQuickActions({
               event.stopPropagation()
             }}
             className={cn(
-              'touch-pan-x select-none rounded-lg transition-transform duration-150',
+              vertical ? 'w-full min-w-0 touch-pan-y [&_button]:w-full [&_button]:justify-center' : 'touch-pan-x',
+              'select-none rounded-lg transition-transform duration-150',
               draggingId === action.id && 'scale-105 opacity-80 ring-2 ring-[#00C2CB] ring-offset-2',
               draggingId && draggingId !== action.id && 'cursor-grabbing'
             )}
