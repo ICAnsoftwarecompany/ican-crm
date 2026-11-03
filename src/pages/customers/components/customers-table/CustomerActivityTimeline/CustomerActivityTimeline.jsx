@@ -36,7 +36,7 @@ function getActivitySearchText(activity) {
 
 function filterByCategory(activity, activeFilter) {
   if (activeFilter === 'all') return true
-  return String(activity?.category || 'other') === activeFilter
+  return String(activity?.type || 'unknown').trim().toLowerCase() === activeFilter
 }
 
 function computeCounts(activities) {
@@ -133,7 +133,7 @@ export function CustomerActivityTimeline({ activities = [] }) {
 
       <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-3">
         <div className="flex flex-wrap items-center gap-2">
-          <ActivityFilters activeFilter={activeFilter} onFilterChange={setActiveFilter} counts={counts} />
+          <ActivityFilters activeFilter={activeFilter} onFilterChange={setActiveFilter} activities={sortedActivities} />
 
           <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
             <div className="relative flex items-center gap-2">
@@ -240,6 +240,7 @@ export function CustomerActivityTimeline({ activities = [] }) {
               type="button"
               onClick={() => {
                 setSelectedUser('all')
+                setActiveFilter('all')
                 setFromDate('')
                 setToDate('')
                 setSearchText('')
