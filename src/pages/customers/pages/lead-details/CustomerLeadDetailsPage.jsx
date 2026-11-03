@@ -1,9 +1,7 @@
 import { useParams, useSearchParams } from 'react-router-dom'
 
 import { AfterMeetingReportDrawer, PreMeetingReportDrawer } from '../../../../features/call-meetings'
-import { CustomerDetailsContent } from '../../components/CustomerDetailsDrawer/CustomerDetailsDrawer'
-import { LeadDetailsBreadcrumbs } from './LeadDetailsBreadcrumbs'
-import { LeadPageSwitcher } from './LeadPageSwitcher'
+import { Customer360Page } from './customer-360/Customer360Page'
 
 export function CustomerLeadDetailsPage() {
   const { customerId } = useParams()
@@ -29,17 +27,7 @@ export function CustomerLeadDetailsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <LeadDetailsBreadcrumbs />
-        <LeadPageSwitcher activeCustomerId={customerId} />
-      </div>
-
-      <CustomerDetailsContent
-        customer={{ id: customerId }}
-        enabled={Boolean(customerId)}
-        mode="page"
-        initialTab={initialTab}
-      />
+      <Customer360Page customerId={customerId} initialTab={initialTab} />
 
       <PreMeetingReportDrawer
         open={shouldOpenPreMeetingReport}
