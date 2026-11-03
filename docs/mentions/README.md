@@ -3,7 +3,7 @@
 > Documentation update: 2026-11-03 22:48 (Africa/Cairo) — initial implementation and phased integration contract.
 
 ## Status
-**PARTIAL** — Phase 1: mentions API client and React Query hooks. This repository is the React frontend; backend storage, authorization, broadcasting and mention behavior live in the separate Laravel backend.
+**PARTIAL** — Phase 1 API and React Query hooks; Phase 2 read-only Deal Workspace mention viewer. This repository is the React frontend; backend storage, authorization, broadcasting and mention behavior live in the separate Laravel backend.
 
 ## Existing backend endpoints
 All paths are prefixed with `/api`, and `httpClient` adds bearer token and `api_password`.
@@ -57,3 +57,6 @@ The DealChatDock reuses existing conversation views; avoid a second implementati
 
 ## Validation
 Required repository checks: `npm run lint`, `npm run check:i18n`, `npm run check:architecture`, `npm run check:service`, `npx vitest run`, `npm run build`. They must run before declaring implementation complete. Backend responses and visual behavior remain unverified until a test tenant is available.
+
+## Phase 2 update — 2026-11-03 23:10 (Africa/Cairo)
+Added a reusable read-only `EntityMentionsButton` and `extractMentions` adapter, first mounted in `DealWorkspaceHeader` with the actual deal ID. Uses existing `AppModal`, ar/en locale modules, semantic theme tokens, and query error/empty/loading states. Composer, inbox and other module mounts remain planned. Create payload has not been verified; no speculative request is sent.
