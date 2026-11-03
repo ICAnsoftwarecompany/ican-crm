@@ -33,3 +33,10 @@ See [integration design](../../../docs/mentions/README.md).
 - Reusable `EntityMentionsButton` displays an on-demand modal with loading, empty, error and retry states; first consumer is the Deal Workspace header.
 - `extractMentions` supports array and common paginated response wrappers. It does not claim an authoritative backend response contract.
 - Viewer is read-only until the create request schema and recipient permission semantics are verified.
+
+## Implementation update — 2026-11-03 (Africa/Cairo)
+- Added `MentionComposer` using existing user/team hooks, validated selection, and documented `entity_type`, `entity_id`, `user_ids`, `team_ids`, `type`, `message` request fields.
+- Entity viewer now supports create and list tabs; available on Deal Workspace and Customer Details Drawer.
+- Added read-only `MentionsInbox` component (received/sent). It is not yet mounted in the global header.
+- Inline @mentions and external conversation surfaces remain pending; customer-facing composers were not modified.
+- Verification pending: tenant API responses, authorization, build and repository checks.
