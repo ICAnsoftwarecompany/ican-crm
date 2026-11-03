@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useUsers } from '../../users/hooks/useUsers'
-import { useTeams } from '../../teams/hooks/useTeams'
+import { useUsers } from '../../users'
+import { useTeams } from '../../teams'
 import { useCreateMention } from '../hooks/useMentions'
 
 export function MentionComposer({ entityType, entityId, onCreated }) {
@@ -15,7 +15,7 @@ export function MentionComposer({ entityType, entityId, onCreated }) {
   const create = useCreateMention()
   const toggle = (setter, id) => setter(previous => previous.includes(id)
     ? previous.filter(value => value !== id) : [...previous, id])
-  const canSubmit = (userIds.length > 0 || teamIds.length > 0) && message.trim() && !create.isPending
+  const canSubmit = Boolean((userIds.length > 0 || teamIds.length > 0) && message.trim() && !create.isPending && !users.isPending && !teams.isPending && !users.isError && !teams.isError)
 
   async function submit(event) {
     event.preventDefault()
