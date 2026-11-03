@@ -3,11 +3,13 @@ import { AtSign } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { AppModal } from '../../../shared/components/overlays/AppModal'
 import { useEntityMentions } from '../hooks/useMentions'
+import { MentionComposer } from './MentionComposer'
 import { extractMentions } from '../utils/normalizeMentions'
 
 export function EntityMentionsButton({ entityType, entityId }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
+  const [tab, setTab] = useState('list')
   const query = useEntityMentions(entityType, entityId, { enabled: open })
   const mentions = extractMentions(query.data)
 
@@ -21,6 +23,11 @@ export function EntityMentionsButton({ entityType, entityId }) {
         {t('mentions.title')}
       </button>
       <AppModal isOpen={open} onClose={() => setOpen(false)} title={t('mentions.title')}>
+        <div className="mb-3 flex gap-2">
+          <button type="button" onClick={() => setTab('list')} aria-pressed={tab === 'list'} className="rounded-lg border border-[var(--border)] px-3 py-2 text-sm">{t('mentions.title')}</button>
+          <button type="button" onClick={() => setTab('create')} aria-pressed={tab === 'create'} className="rounded-lg border border-[var(--border)] px-3 py-2 text-sm">{t('mentions.create')}</button>
+        </div>
+        {tab === 'create' ? <MentionComposer entityType={entityType} entityId={entityId} onCreated={() => setTab('list')} /> : (
         {query.isPending ? (
           <p role="status" className="text-sm text-[var(--text-muted)]">{t('mentions.loading')}</p>
         ) : query.isError ? (
@@ -39,6 +46,7 @@ export function EntityMentionsButton({ entityType, entityId }) {
               </li>
             ))}
           </ul>
+        )}
         )}
       </AppModal>
     </>
