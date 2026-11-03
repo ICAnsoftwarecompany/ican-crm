@@ -12,7 +12,8 @@ import { StatusQuickAction } from './StatusQuickAction'
 import { WhatsappQuickAction } from './WhatsappQuickAction'
 import { QuickActionButton } from './QuickActionButton'
 import { useLeadTaskAction } from '../../../../../features/lead-tasks'
-import { ListTodo } from 'lucide-react'
+import { AtSign, ListTodo } from 'lucide-react'
+import { MentionComposer } from '../../../../../features/mentions/components/MentionComposer'
 import { useTranslation } from 'react-i18next'
 
 function TaskQuickAction({ customer }) {
@@ -21,10 +22,34 @@ function TaskQuickAction({ customer }) {
   return <><QuickActionButton icon={ListTodo} label={t('customers.leadTasks.add')} onClick={() => task.open(customer)} disabled={!customer?.lead_id && !customer?.lead?.id} />{task.dialog}</>
 }
 
+function MentionQuickAction({ customer }) {
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(false)
+  const entityId = customer?.id
+
+  return (
+    <div className="relative">
+      <QuickActionButton icon={AtSign} label={t('mentions.create')} onClick={() => setOpen((value) => !value)} disabled={entityId == null || entityId === ''} />
+      {open && (
+        <div className="fixed inset-0 z-[120000] flex items-center justify-center bg-black/30 p-3 sm:absolute sm:inset-auto sm:bottom-full sm:start-0 sm:mb-2 sm:block sm:w-[min(380px,90vw)] sm:bg-transparent sm:p-0" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false) }}>
+          <section role="dialog" aria-label={t('mentions.create')} className="max-h-[85vh] w-full overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-[var(--text)] shadow-xl" onPointerDown={(event) => event.stopPropagation()}>
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <h3 className="text-sm font-bold">{t('mentions.create')}</h3>
+              <button type="button" onClick={() => setOpen(false)} className="rounded-md px-2 py-1 text-sm" aria-label="Close">×</button>
+            </div>
+            <MentionComposer entityType="customer" entityId={entityId} onCreated={() => setOpen(false)} />
+          </section>
+        </div>
+      )}
+    </div>
+  )
+}
+
 const STORAGE_KEY = 'customer-details-quick-actions-order:v2'
 const LONG_PRESS_MS = 280
 
 const ACTIONS = [
+  { id: 'mention', render: (props) => <MentionQuickAction customer={props.customer} /> },
   { id: 'task', render: (props) => <TaskQuickAction customer={props.customer} /> },
   {
     id: 'follow-up',
