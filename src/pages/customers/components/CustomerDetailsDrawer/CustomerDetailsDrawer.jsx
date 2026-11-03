@@ -1,3 +1,4 @@
+import { Customer360Layout } from '../../../pages/customers/pages/lead-details/customer-360/components/Customer360Layout'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -117,7 +118,7 @@ function getDrawerVisibleTabsCount(width, totalTabs) {
 }
 
 function getDetailsLayoutMode(width, mode) {
-  if (mode === 'page' || width >= 760) return 'wide'
+  if (mode === 'page' || mode === '360' || width >= 760) return 'wide'
   if (width >= 560) return 'roomy'
   return 'compact'
 }
@@ -1411,7 +1412,7 @@ export function CustomerDetailsContent({
   }, [initialTab, requestedCustomerKey])
 
   useEffect(() => {
-    if (mode !== 'page' || activeTab !== 'home') return
+    if (!['page', '360'].includes(mode) || activeTab !== 'home') return
     setActiveTab('timeline')
     saveCustomerTab(requestedCustomerKey, 'timeline')
   }, [activeTab, mode, requestedCustomerKey])
@@ -1464,6 +1465,60 @@ export function CustomerDetailsContent({
       />
     </>
   )
+
+  if (mode === '360') {
+    return (
+      <Customer360Layout
+        header={<CustomerHeaderModern
+          hideOutcomeActions={Boolean(renderQuickActions || quickActionOverrides)}
+          customer={detailedCustomer}
+          currentStatus={currentStatus}
+          currentTag={currentTag}
+          tags={tags}
+          statuses={leadStatuses}
+          isLoadingDetails={customerInfoQuery.isFetching}
+          onStatusChanged={refreshCustomerDetails}
+          onTagChanged={refreshCustomerDetails}
+          showOpenPageButton={false}
+          detailsPageId={detailsPageId}
+        />}
+        actions={renderQuickActions ? renderQuickActions() : <CustomerQuickActions
+          actionOverrides={quickActionOverrides}
+          customer={detailedCustomer}
+          currentStatus={currentStatus}
+          statuses={leadStatuses}
+          onTimelineAction={openTimelineAction}
+          onOpenChat={openFloatingChat}
+          onFollowUpAdded={refreshCustomerDetails}
+          onStatusChanged={refreshCustomerDetails}
+          onInterestChanged={refreshCustomerDetails}
+          className="mt-0 w-full"
+        />}
+        overview={<HomeTab customer={detailedCustomer} layoutMode="compact" />}
+        tabs={<div ref={contentRef}><DrawerTabs
+          activeTab={pageActiveTab}
+          onChange={setActiveTab}
+          tabOrder={drawerTabOrder}
+          onTabOrderChange={updatePageTabOrder}
+          tabs={PAGE_TABS}
+          sticky={false}
+          containerWidth={contentWidth}
+        /></div>}
+        content={<ActiveTabContent
+          activeTab={pageActiveTab}
+          customer={detailedCustomer}
+          statuses={leadStatuses}
+          currentStatus={currentStatus}
+          timelineActionRequest={timelineActionRequest}
+          onActionChanged={refreshCustomerDetails}
+          layoutMode={layoutMode}
+          containerWidth={contentWidth}
+        />}
+        deals={enabled && customer?.id != null ? <CustomerDealsDrawerSection key={customer.id} customerId={customer.id} /> : null}
+        floatingChats={renderFloatingChats()}
+      />
+    )
+  }
 
   if (mode === 'page') {
     return (
