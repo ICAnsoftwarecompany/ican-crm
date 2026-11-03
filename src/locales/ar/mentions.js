@@ -13,6 +13,7 @@ export default {
   sendError: 'تعذر إرسال المنشن',
   received: 'الواردة',
   sent: 'المرسلة',
+  markSeen: 'تمت المشاهدة',
   title: 'المنشنات',
   loading: 'جاري تحميل المنشنات...',
   error: 'تعذر تحميل المنشنات.',
