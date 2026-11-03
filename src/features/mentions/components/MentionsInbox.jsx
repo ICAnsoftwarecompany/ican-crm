@@ -24,8 +24,13 @@ export function MentionsInbox() {
       mentions.length === 0 ? <p>{t('mentions.empty')}</p> :
       <ul className="space-y-2">{mentions.map((mention, index) =>
         <li key={mention.id ?? index} className="rounded-lg border border-[var(--border)] p-3">
-          {mention.message ?? mention.body ?? mention.text ?? t('mentions.noText')}
-          {tab === 'mine' && mention.id != null && !mention.seen_at && !mention.is_seen && (
+          <div className="space-y-1 text-sm">
+            <p className="font-semibold">{mention.entity_label ?? `${mention.entity_type ?? ''} #${mention.entity_id ?? ''}`}</p>
+            <p className="whitespace-pre-wrap">{mention.message ?? mention.body ?? mention.text ?? t('mentions.noText')}</p>
+            <p className="text-xs text-[var(--text-muted)]">{mention.by?.name ?? '—'} → {mention.user?.name ?? '—'} · {mention.type ?? ''} · {mention.created_at ? new Date(mention.created_at).toLocaleString() : ''}</p>
+            <p className="text-xs text-[var(--text-muted)]">{mention.seen ? 'تمت القراءة' : 'غير مقروء'}</p>
+          </div>
+          {tab === 'mine' && mention.id != null && !mention.seen && !mention.seen_at && !mention.is_seen && (
             <button type="button" disabled={markSeen.isPending} onClick={() => markSeen.mutate(mention.id)}
               className="ms-2 rounded-lg border border-[var(--border)] px-2 py-1 text-xs disabled:opacity-50">
               {t('mentions.markSeen')}
