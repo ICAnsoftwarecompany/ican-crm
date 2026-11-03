@@ -1,3 +1,4 @@
+import mentions from './mentions.js'
 import app from './app.js'
 import nav from './nav.js'
 import actions from './actions.js'
@@ -43,6 +44,7 @@ import reports from './reports.js'
 import salesTeams from './salesTeams.js'
 
 export default {
+  mentions,
   app,
   nav,
   actions,
