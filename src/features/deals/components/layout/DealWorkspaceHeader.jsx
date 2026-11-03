@@ -1,3 +1,4 @@
+import { EntityMentionsButton } from '../../../mentions'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, CalendarRange, Plus, Sparkles, UserRound } from 'lucide-react'
@@ -53,6 +54,7 @@ export function DealWorkspaceHeader() {
         </div>
         <div className="flex max-w-full flex-wrap items-center gap-2">
           <DealProductsShortcut key={dealId} />
+          <EntityMentionsButton entityType="deal" entityId={dealId} />
           {location.pathname === getDealPagePath(dealId, 'pipeline') && (
             <ViewToggle value={pipelineState.view} onChange={pipelineState.setView} label={t('dealWorkspace.pipeline.viewLabel')} />
           )}

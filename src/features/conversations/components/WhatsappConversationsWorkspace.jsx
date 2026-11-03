@@ -1,3 +1,4 @@
+import { EntityMentionsButton } from '../../mentions'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
@@ -624,7 +625,7 @@ export function WhatsappConversationsWorkspace({
         isTogglingConversationStatus={mutations.closeConversation.isPending || mutations.reopenConversation.isPending}
         {...getThreadCapabilityProps(whatsappAdapter.capabilities)}
         channelColor="#25D366"
-        headerActions={selectedId ? threadHeaderActions : null}
+        headerActions={selectedId ? <div className="flex items-center gap-2"><EntityMentionsButton entityType="whatsapp_conversation" entityId={selectedId} />{threadHeaderActions}</div> : null}
         autoFocusKey={`${panel ? 'panel' : 'page'}-${selectedId}`}
         composerDisabled={!selectedId || selectedClosed}
         emptyMessage={selectedId ? TEXT.noMessages : TEXT.chooseConversation}

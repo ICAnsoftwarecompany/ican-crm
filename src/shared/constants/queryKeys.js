@@ -1,4 +1,12 @@
 export const QUERY_KEYS = {
+  mentions: {
+    all: ['mentions'],
+    types: ['mentions', 'types'],
+    mine: (params = {}) => ['mentions', 'mine', params],
+    sent: (params = {}) => ['mentions', 'sent', params],
+    unseenCount: ['mentions', 'unseen-count'],
+    entity: (entityType, entityId) => ['mentions', 'entity', entityType, entityId],
+  },
   notifications: {
     all: ['notifications'],
     unread: ['notifications', 'unread'],

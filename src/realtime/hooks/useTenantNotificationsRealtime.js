@@ -107,7 +107,8 @@ export function useTenantNotificationsRealtime({
 
   const handleNotification = useCallback(
     (payload = {}) => {
-      console.log('Notification received:', payload)
+      // Reuse the tenant notification event to refresh mention data without opening another socket.
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.mentions.all })
       addNotification(buildNotificationFromPayload(payload, { persistent: true }))
       const persistentNotification = normalizeNotification(payload)
       if (persistentNotification.id) {
