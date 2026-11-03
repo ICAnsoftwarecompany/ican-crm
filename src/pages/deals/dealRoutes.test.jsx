@@ -11,12 +11,8 @@ window.matchMedia = window.matchMedia || (() => ({
 }))
 window.ResizeObserver = window.ResizeObserver || class { observe() {} unobserve() {} disconnect() {} }
 window.scrollTo = window.scrollTo || (() => {})
-<<<<<<< HEAD
 HTMLElement.prototype.scrollTo = HTMLElement.prototype.scrollTo || (() => {})
-=======
-window.HTMLElement.prototype.scrollTo = window.HTMLElement.prototype.scrollTo || function scrollTo() {}
-window.HTMLElement.prototype.scrollIntoView = window.HTMLElement.prototype.scrollIntoView || function scrollIntoView() {}
->>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
+HTMLElement.prototype.scrollIntoView = HTMLElement.prototype.scrollIntoView || (() => {})
 
 const stages = [
   { id: 10, name: 'New', order: 1, color: '#3498db' },
@@ -298,25 +294,14 @@ describe('deals area', () => {
     await waitFor(() => expect(router.state.location.pathname).toBe('/deals/88'))
 
     const urls = post.mock.calls.map(([url]) => url)
-<<<<<<< HEAD
     expect(urls).toEqual(['/api/tenant/pipeline-templates', '/api/tenant/deals', '/api/tenant/deals/team', '/api/tenant/deals/88/products', '/api/tenant/deals/88/campaigns'])
-=======
-    // The team's internal group: "<deal name> G<next>" ("Villa 12 sale G1" exists → G2) with the team's users.
-    expect(urls).toEqual(['/api/tenant/pipeline-templates', '/api/tenant/deals', '/api/tenant/deals/team', '/api/tenant/chat', '/api/tenant/deals/products', '/api/tenant/deals/88/campaigns'])
->>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
     const bodies = post.mock.calls.map(([, body]) => body)
     expect(bodies[0]).toMatchObject({ name: 'Villas pipeline', type: 'sales', status: true })
     expect(bodies[0].stages.filter((stage) => stage.is_won_stage)).toHaveLength(1)
     expect(bodies[1]).toMatchObject({ pipeline_template_id: 77, name: 'Villa 12 sale' })
     expect(bodies[2]).toEqual({ deal_id: 88, users: [{ user_id: 4, role: 'sales_rep' }], teams: [{ team_id: 3, role: 'manager' }] })
-<<<<<<< HEAD
     expect(bodies[3]).toEqual({ products: [{ product_id: 31, details: {} }] })
     expect(bodies[4]).toEqual({ campaign_ids: [1], is_active: true })
-=======
-    expect(bodies[3]).toEqual({ type: 'group', name: 'Villa 12 sale G2', user_ids: [4, 6] })
-    expect(bodies[4]).toEqual({ deal_id: 88, product_ids: [31] })
-    expect(bodies[5]).toEqual({ campaign_ids: [1], is_active: true })
->>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
   })
   it('quick team: with no teams, creates one from the team step and adds it to the deal', async () => {
     const teamsRoute = routes.find(([pattern]) => pattern.test('/api/tenant/teams/get'))
