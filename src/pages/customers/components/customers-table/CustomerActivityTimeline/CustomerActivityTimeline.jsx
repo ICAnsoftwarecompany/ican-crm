@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Activity, ArrowUpDown, CalendarRange, Search, X } from 'lucide-react'
+import { Activity, ArrowUpDown, CalendarRange, Search, Users, RotateCcw, X } from 'lucide-react'
 import { ActivityDateGroup } from './ActivityDateGroup'
 import { ActivityFilters } from './ActivityFilters'
 import { ActivityHeader } from './ActivityHeader'
@@ -131,19 +131,20 @@ export function CustomerActivityTimeline({ activities = [] }) {
     <div className="flex h-full min-h-0 flex-col gap-3" dir="rtl">
       <ActivityHeader totalCount={sortedActivities.length} lastActivityDate={lastActivityDate} />
 
-      <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-3">
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-2">
+        <div className="flex flex-nowrap items-center gap-1.5">
           <ActivityFilters activeFilter={activeFilter} onFilterChange={setActiveFilter} activities={sortedActivities} />
 
-          <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-1">
             <div className="relative flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setSearchOpen((value) => !value)}
-                className={`inline-flex h-9 items-center gap-2 rounded-lg border px-3 text-xs font-black transition ${searchText ? 'border-[#BEEFF2] bg-[#E8F9FA] text-[#007A80]' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
+                title={t('customers.activityTimeline.search')}
+                aria-label={t('customers.activityTimeline.search')}
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border text-xs font-black transition ${searchText ? 'border-[#BEEFF2] bg-[#E8F9FA] text-[#007A80]' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
               >
-                <Search size={14} />
-                {t('customers.activityTimeline.search')}
+                <Search size={16} />
               </button>
 
               {searchOpen && (
@@ -166,20 +167,22 @@ export function CustomerActivityTimeline({ activities = [] }) {
             <button
               type="button"
               onClick={() => setSortDirection((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
-              className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#BEEFF2] bg-[#E8F9FA] px-3 text-xs font-black text-[#007A80] transition hover:bg-[#d9f3f5]"
+              title={sortDirection === 'desc' ? t('customers.activityTimeline.newest') : t('customers.activityTimeline.oldest')}
+              aria-label={sortDirection === 'desc' ? t('customers.activityTimeline.newest') : t('customers.activityTimeline.oldest')}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#BEEFF2] bg-[#E8F9FA] text-xs font-black text-[#007A80] transition hover:bg-[#d9f3f5]"
             >
-              <ArrowUpDown size={14} />
-              {sortDirection === 'desc' ? t('customers.activityTimeline.newest') : t('customers.activityTimeline.oldest')}
+              <ArrowUpDown size={16} />
             </button>
 
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setDateFilterOpen((value) => !value)}
-                className={`inline-flex h-9 items-center gap-2 rounded-lg border px-3 text-xs font-black transition ${hasDateFilter ? 'border-[#BEEFF2] bg-[#E8F9FA] text-[#007A80]' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
+                title={t('customers.activityTimeline.date')}
+                aria-label={t('customers.activityTimeline.date')}
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border text-xs font-black transition ${hasDateFilter ? 'border-[#BEEFF2] bg-[#E8F9FA] text-[#007A80]' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
               >
-                <CalendarRange size={14} />
-                {hasDateFilter ? t('customers.activityTimeline.dateSelected') : t('customers.activityTimeline.date')}
+                <CalendarRange size={16} />
               </button>
 
               {dateFilterOpen && (
@@ -225,16 +228,21 @@ export function CustomerActivityTimeline({ activities = [] }) {
               )}
             </div>
 
-            <select
-              value={selectedUser}
-              onChange={(event) => setSelectedUser(event.target.value)}
-              className="h-9 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-[#00AEB8] focus:bg-white"
-            >
-              <option value="all">{t('customers.activityTimeline.users')}</option>
-              {availableUsers.map((user) => (
-                <option key={user.id} value={user.id}>{user.name}</option>
-              ))}
-            </select>
+            <div className={`relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition ${selectedUser !== 'all' ? 'border-[#BEEFF2] bg-[#E8F9FA] text-[#007A80]' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}>
+              <Users size={16} aria-hidden="true" />
+              <select
+                value={selectedUser}
+                onChange={(event) => setSelectedUser(event.target.value)}
+                title={t('customers.activityTimeline.users')}
+                aria-label={t('customers.activityTimeline.users')}
+                className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+              >
+                <option value="all">{t('customers.activityTimeline.users')}</option>
+                {availableUsers.map((user) => (
+                  <option key={user.id} value={user.id}>{user.name}</option>
+                ))}
+              </select>
+            </div>
 
             <button
               type="button"
@@ -246,9 +254,11 @@ export function CustomerActivityTimeline({ activities = [] }) {
                 setSearchText('')
                 setSearchOpen(false)
               }}
-              className="inline-flex h-9 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:bg-slate-50"
+              title={t('customers.activityTimeline.clearFilters')}
+              aria-label={t('customers.activityTimeline.clearFilters')}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-xs font-black text-slate-600 transition hover:bg-slate-50"
             >
-              {t('customers.activityTimeline.clearFilters')}
+              <RotateCcw size={16} />
             </button>
           </div>
         </div>
