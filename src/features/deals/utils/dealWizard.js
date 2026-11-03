@@ -31,7 +31,11 @@ export function createWizardState(stageNames = []) {
     },
     basics: { name: '', description: '', type: 'sales', status: 'active', start_date: '', end_date: '', target_revenue: '', target_leads: '', owner_id: '' },
     products: { ids: [], details: {} },
+<<<<<<< HEAD
     team: { members: [], addOwner: true, chat: { mode: 'new', groupId: '', userIds: [] } },
+=======
+    team: { members: [], addOwner: true, createChat: false, chat: { mode: 'new', groupId: '', userIds: [] } },
+>>>>>>> fix/resolve-merge-conflict-markers
     source: createLeadSourceState(),
   }
 }

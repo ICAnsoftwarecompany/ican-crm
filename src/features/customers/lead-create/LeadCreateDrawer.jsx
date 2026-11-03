@@ -1,4 +1,6 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { CheckCircle2, ContactRound, SlidersHorizontal } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -21,7 +23,25 @@ export function LeadCreateDrawer({ open, onClose, onCreated }) {
   const queryClient = useQueryClient()
   const [form, setForm] = useState(() => emptyLeadForm(user))
   const [error, setError] = useState('')
+  const [savedName, setSavedName] = useState('')
   const nameInputRef = useRef(null)
+  const formRef = useRef(null)
+  useEffect(() => {
+    if (!open) return undefined
+    const onKeyDown = (event) => {
+      if ((event.ctrlKey || event.metaKey) && !event.altKey && (event.code === 'KeyS' || event.key?.toLowerCase() === 's' || event.key === 'س')) {
+        event.preventDefault()
+        if (!event.repeat) formRef.current?.requestSubmit()
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [open])
+  useEffect(() => {
+    if (!savedName) return undefined
+    const timer = window.setTimeout(() => setSavedName(''), 3500)
+    return () => window.clearTimeout(timer)
+  }, [savedName])
   const users = useUsers()
   const products = useCatalogProducts()
   const statuses = useQuery({ queryKey: ['lead-create', 'statuses'], queryFn: () => definitionsApi.getStatuses(), enabled: open })
@@ -34,6 +54,7 @@ export function LeadCreateDrawer({ open, onClose, onCreated }) {
     event.preventDefault()
     if (mutation.isPending) return
     setError('')
+    setSavedName('')
     const tenantId = resolveTenantId(user)
     if (!form.name.trim() || !form.phone.trim()) return setError(t('customers.newCustomerDialog.nameAndPhoneRequired'))
     if (!tenantId) return setError(tr('tenantMissing'))
@@ -43,30 +64,54 @@ export function LeadCreateDrawer({ open, onClose, onCreated }) {
       if (response?.success === false) throw new Error(response.message || tr('failed'))
       await queryClient.invalidateQueries({ queryKey: ['customers'] })
       queryClient.invalidateQueries({ queryKey: ['leads'] })
+      setSavedName(payload.customers[0].name)
       onCreated?.(response, payload.customers)
       setForm(emptyLeadForm(user))
       setTimeout(() => nameInputRef.current?.focus(), 0)
-      toast.success(tr('saved'))
+
     } catch (cause) { setError(extractMessage(cause, tr('failed'))) }
   }
   return <AppDrawer open={open} onClose={() => !mutation.isPending && onClose()} title={tr('title')} size="xl" drawerKey="lead-create" closeOnBackdrop={false} pushPage portal>
-    <form onSubmit={submit} className="space-y-4 text-[var(--text)]">
-      {error && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{error}</p>}
-      <fieldset disabled={mutation.isPending} className="space-y-4 disabled:opacity-70">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{['name', 'phone', 'email', 'company'].map((key) => <label key={key} className="grid gap-1 text-sm">{key === 'company' ? tr('company') : t(`customers.${key}`)}<input ref={key === 'name' ? nameInputRef : undefined} required={key === 'name' || key === 'phone'} type={key === 'email' ? 'email' : key === 'phone' ? 'tel' : 'text'} className={leadInputClass} value={form[key]} onChange={(event) => setField(key, event.target.value)} /></label>)}</div>
-        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.automatic_distribution} onChange={(event) => setField('automatic_distribution', event.target.checked)} />{tr('automatic')}</label>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="grid gap-1 text-sm">{tr('agent')}<select className={leadInputClass} disabled={form.automatic_distribution} value={form.agent_id} onChange={(event) => setField('agent_id', event.target.value)}><option value="">{tr('none')}</option>{(users.data || []).map((agent) => <option key={agent.id} value={agent.id}>{agent.name}</option>)}</select></label>
-          <label className="grid gap-1 text-sm">{tr('status')}<select className={leadInputClass} value={form.status_type_id} onChange={(event) => setField('status_type_id', event.target.value)}><option value="">{tr('none')}</option>{statusList.filter((status) => Number(status.active ?? 1) === 1).map((status) => <option key={status.id} value={status.id}>{status.status || status.name}</option>)}</select></label>
-          <label className="grid gap-1 text-sm">{tr('tag')}<select className={leadInputClass} value={form.tag_id} onChange={(event) => setField('tag_id', event.target.value)}><option value="">{tr('none')}</option>{tagList.map((tag) => <option key={tag.id} value={tag.id}>{tag.tag || tag.name}</option>)}</select></label>
-          <label className="grid gap-1 text-sm">{tr('source')}<input className={leadInputClass} value={form.source} onChange={(event) => setField('source', event.target.value)} /></label>
-          <label className="grid gap-1 text-sm">{tr('linkedType')}<select className={leadInputClass} value={form.linked_type} onChange={(event) => setField('linked_type', event.target.value)}>{['manual', 'automation'].map((value) => <option key={value} value={value}>{tr(value)}</option>)}</select></label>
-          <label className="grid gap-1 text-sm">{tr('linkDate')}<input type="date" required className={leadInputClass} value={form.link_date} onChange={(event) => setField('link_date', event.target.value)} /></label>
-        </div>
-        {[users, products, statuses, tags].some((query) => query.isError) && <div role="alert" className="text-sm">{tr('optionsError')}<Button size="sm" variant="ghost" onClick={() => [users, products, statuses, tags].filter((query) => query.isError).forEach((query) => query.refetch())}>{t('common.retry')}</Button></div>}
-        <LeadExtraFields form={form} setField={setField} products={products.data || []} />
+    <form ref={formRef} onSubmit={submit} className="space-y-3 pb-2 text-[var(--text)]">
+      {error && <div role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">{error}</div>}
+      <fieldset disabled={mutation.isPending} className="space-y-3 disabled:opacity-70">
+        <section className="space-y-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 sm:p-4">
+          <div className="flex items-center gap-2 border-b border-[var(--border)] pb-2"><ContactRound size={18} className="text-blue-600" /><h3 className="font-semibold">{t('customers.name')} / {t('customers.phone')}</h3></div>
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+            {['name', 'phone', 'email', 'company'].map((key) => <label key={key} className="grid gap-1.5 text-sm"><span className="font-medium">{key === 'company' ? tr('company') : t(`customers.${key}`)}{(key === 'name' || key === 'phone') && <span className="ms-1 text-red-500">*</span>}</span><input ref={key === 'name' ? nameInputRef : undefined} required={key === 'name' || key === 'phone'} autoComplete={key === 'name' ? 'name' : key === 'email' ? 'email' : key === 'phone' ? 'tel' : 'organization'} type={key === 'email' ? 'email' : key === 'phone' ? 'tel' : 'text'} className={leadInputClass} value={form[key]} onChange={(event) => setField(key, event.target.value)} /></label>)}
+          </div>
+        </section>
+        <section className="space-y-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 sm:p-4">
+          <div className="flex items-center gap-2 border-b border-[var(--border)] pb-2"><SlidersHorizontal size={18} className="text-blue-600" /><h3 className="font-semibold">{tr('status')}</h3></div>
+          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] px-3 py-2 text-sm"><input type="checkbox" checked={form.automatic_distribution} onChange={(event) => setField('automatic_distribution', event.target.checked)} /><span className="font-medium">{tr('automatic')}</span></label>
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+            <label className="grid gap-1.5 text-sm">{tr('agent')}<select className={leadInputClass} disabled={form.automatic_distribution} value={form.agent_id} onChange={(event) => setField('agent_id', event.target.value)}><option value="">{tr('none')}</option>{(users.data || []).map((agent) => <option key={agent.id} value={agent.id}>{agent.name}</option>)}</select></label>
+            <label className="grid gap-1.5 text-sm">{tr('status')}<select className={leadInputClass} value={form.status_type_id} onChange={(event) => setField('status_type_id', event.target.value)}><option value="">{tr('none')}</option>{statusList.filter((status) => Number(status.active ?? 1) === 1).map((status) => <option key={status.id} value={status.id}>{status.status || status.name}</option>)}</select></label>
+            <label className="grid gap-1.5 text-sm">{tr('tag')}<select className={leadInputClass} value={form.tag_id} onChange={(event) => setField('tag_id', event.target.value)}><option value="">{tr('none')}</option>{tagList.map((tag) => <option key={tag.id} value={tag.id}>{tag.tag || tag.name}</option>)}</select></label>
+            <label className="grid gap-1.5 text-sm">{tr('source')}<input className={leadInputClass} value={form.source} onChange={(event) => setField('source', event.target.value)} /></label>
+            <label className="grid gap-1.5 text-sm">{tr('linkedType')}<select className={leadInputClass} value={form.linked_type} onChange={(event) => setField('linked_type', event.target.value)}>{['manual', 'automation'].map((value) => <option key={value} value={value}>{tr(value)}</option>)}</select></label>
+            <label className="grid gap-1.5 text-sm">{tr('linkDate')}<input type="date" required className={leadInputClass} value={form.link_date} onChange={(event) => setField('link_date', event.target.value)} /></label>
+          </div>
+          {[users, products, statuses, tags].some((query) => query.isError) && <div role="alert" className="text-sm">{tr('optionsError')}<Button type="button" size="sm" variant="ghost" onClick={() => [users, products, statuses, tags].filter((query) => query.isError).forEach((query) => query.refetch())}>{t('common.retry')}</Button></div>}
+        </section>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 sm:p-4"><LeadExtraFields form={form} setField={setField} products={products.data || []} /></div>
       </fieldset>
-      <div className="sticky bottom-0 border-t border-[var(--border)] bg-[var(--surface)] py-3"><Button type="submit" loading={mutation.isPending}>{tr('saveNext')}</Button></div>
+      <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t border-[var(--border)] bg-[var(--surface)] px-2 py-4">
+        <Button type="button" variant="outline" disabled={mutation.isPending} onClick={onClose}>{t('common.cancel')}</Button>
+        <Button type="submit" loading={mutation.isPending}>{tr('saveNext')} <kbd dir="ltr" className="ms-2 rounded border border-current/20 px-1.5 py-0.5 text-xs font-normal">Ctrl + S</kbd></Button>
+      </div>
     </form>
+    {savedName && createPortal(
+      <div className="pointer-events-none fixed inset-x-0 top-16 z-[9999] flex justify-center px-4 sm:top-20" role="status" aria-live="polite">
+        <div className="flex w-full max-w-sm items-center gap-3 rounded-xl border border-emerald-500/20 bg-[var(--surface)] px-4 py-3 text-[var(--text)] shadow-[0_12px_40px_rgba(0,0,0,0.16)] ring-1 ring-black/5 dark:ring-white/10">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"><CheckCircle2 size={22} strokeWidth={2.2} /></span>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold">{tr('saved')}</p>
+            <p className="mt-0.5 truncate text-xs text-[var(--text-muted)]">{savedName}</p>
+          </div>
+        </div>
+      </div>,
+      document.body
+    )}
   </AppDrawer>
 }

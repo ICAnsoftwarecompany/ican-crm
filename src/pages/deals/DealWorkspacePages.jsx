@@ -22,6 +22,11 @@ import {
   DealStagesSettings,
   DealTasksPanel,
   DealTeamPanel,
+<<<<<<< HEAD
+=======
+  DealChatWorkspace,
+  DealLeadDetail,
+>>>>>>> fix/resolve-merge-conflict-markers
   useDealConversationFilter,
   useDealReport,
   useDealWorkspace,

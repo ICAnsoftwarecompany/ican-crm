@@ -30,7 +30,6 @@ export const DEAL_WORKSPACE_PAGES = [
   // 2026-10-16: the deal's internal groups ("<name> G<n>") and its customers' conversations (every channel).
   { id: 'groups', path: 'groups', icon: MessagesSquare, group: 'collaboration' },
   { id: 'conversations', path: 'conversations', icon: MessageCircle, group: 'collaboration' },
-
   { id: 'meetings', path: 'meetings', icon: Presentation, group: 'collaboration' },
   { id: 'calls', path: 'calls', icon: PhoneCall, group: 'collaboration' },
   { id: 'tasks', path: 'tasks', icon: ListTodo, group: 'collaboration' },

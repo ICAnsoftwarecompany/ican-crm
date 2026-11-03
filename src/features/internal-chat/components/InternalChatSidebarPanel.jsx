@@ -405,7 +405,7 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
 
   const handleOpenPage = () => {
     const conversationId = selectedConversationId ? `?conversation=${encodeURIComponent(String(selectedConversationId))}` : ''
-    navigate(`${openPagePath}${conversationId}`)
+    navigate(openPagePath === '/team-chat' ? `/team-chat${conversationId}` : openPagePath)
     onClose?.()
   }
 

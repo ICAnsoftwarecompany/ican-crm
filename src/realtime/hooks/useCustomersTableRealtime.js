@@ -59,7 +59,7 @@ function updateDeletedCustomersCache(current = [], action, customer) {
   return removeCustomer(rows, customer?.id)
 }
 
-export function useCustomersTableRealtime({ tenantId = '', enabled = true } = {}) {
+export function useCustomersTableRealtime({ tenantId = '', enabled = true, onCustomerUpdated } = {}) {
   const queryClient = useQueryClient()
   const user = useAuthStore((state) => state.user)
   const resolvedTenantId = useMemo(() => resolveTenantId(user, tenantId), [user, tenantId])
@@ -84,6 +84,10 @@ export function useCustomersTableRealtime({ tenantId = '', enabled = true } = {}
       deletedAt: customer.deleted_at || null,
     })
 
+    const cachedLists = queryClient.getQueriesData({ queryKey: ['customers', 'list'] })
+    const previousCustomer = cachedLists.flatMap(([, data]) => data?.pages?.flatMap((page) => page?.data || []) || []).find((row) => String(row?.id) === String(customer.id))
+    onCustomerUpdated?.({ customer, previousCustomer, action, payload })
+
     queryClient.setQueriesData(
       { queryKey: ['customers', 'list'] },
       (current) => updateActiveCustomersCache(current, action, customer)
@@ -101,7 +105,7 @@ export function useCustomersTableRealtime({ tenantId = '', enabled = true } = {}
         ...customer,
       }
     })
-  }, [channelName, queryClient])
+  }, [channelName, onCustomerUpdated, queryClient])
 
   return useRealtimeChannel({
     channelName,

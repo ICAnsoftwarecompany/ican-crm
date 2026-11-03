@@ -27,7 +27,6 @@ import { useMessengerConversations } from '../../features/conversations/hooks/us
 import { getMessengerConversationId } from '../../features/conversations/utils/messengerConversations'
 import { useGmailConversations } from '../../features/conversations/hooks/useGmailConversations'
 import { getGmailConversationId } from '../../features/conversations/utils/gmailConversations'
-import { useLeadLogs } from '../../features/leads/hooks/useLeads'
 import { useUsers } from '../../features/users/hooks/useUsers'
 import { definitionsApi } from '../../features/definitions/api/definitionsApi'
 import { requestOpenMessengerSidebar } from '../../features/conversations/constants/messengerSidebarEvents'
@@ -274,67 +273,30 @@ function buildGmailLookup(conversations = []) {
   return map
 }
 
-function extractLeadLogsPayload(response) {
-  const payload = response?.data ?? response
-  if (!payload) return {}
-  if (Array.isArray(payload)) {
-    return payload.reduce((acc, item) => {
-      const leadId = item?.lead_id || item?.lead?.id
-      if (leadId) {
-        acc[String(leadId)] = {
-          lead_id: leadId,
-          logs: Array.isArray(item?.logs) ? item.logs : [item],
-        }
-      }
-      return acc
-    }, {})
-  }
-  return typeof payload === 'object' ? payload : {}
-}
-
 function getLeadNoteText(activity = {}) {
   const note = activity?.data?.note ?? activity?.note ?? activity?.description
   return note === null || note === undefined ? '' : String(note).trim()
 }
 
-function buildLatestLeadNotesMap(logsPayload = {}) {
+// The customers list already embeds lead_activities; no separate lead logs request.
+function buildLatestLeadNotesMap(customers = []) {
   const map = new Map()
-  const groups = extractLeadLogsPayload(logsPayload)
-
-  Object.values(groups).forEach((group) => {
-    const leadId = group?.lead_id
-    if (!leadId) return
-
-    const activities = []
-    const logs = Array.isArray(group?.logs) ? group.logs : []
-
-    logs.forEach((log) => {
-      const logActivities = Array.isArray(log?.activities) ? log.activities : []
-      logActivities.forEach((activity) => {
-        if (normalizeActivityType(activity?.type) !== 'note-to-lead') return
-        const note = getLeadNoteText(activity)
-        if (!note) return
-
-        activities.push({
-          ...activity,
-          note,
-          user: activity?.user || log?.user || null,
-          _sortAt: parseTimestamp(activity?.activity_at || activity?.created_at || log?.created_at),
-        })
-      })
-    })
-
-    activities.sort((first, second) => {
-      const firstTime = Number.isNaN(first._sortAt) ? 0 : first._sortAt
-      const secondTime = Number.isNaN(second._sortAt) ? 0 : second._sortAt
-      return secondTime - firstTime
-    })
-
-    if (activities[0]) {
-      map.set(String(leadId), activities[0])
-    }
+  customers.forEach((customer) => {
+    const leadId = customer?.lead?.id ?? customer?.lead_id
+    if (leadId == null) return
+    const activities = Array.isArray(customer?.lead?.lead_activities)
+      ? customer.lead.lead_activities : []
+    const notes = activities
+      .filter((activity) => normalizeActivityType(activity?.type) === 'note-to-lead')
+      .map((activity) => ({
+        ...activity,
+        note: getLeadNoteText(activity),
+        _sortAt: parseTimestamp(activity?.activity_at || activity?.created_at),
+      }))
+      .filter((activity) => activity.note)
+      .sort((a, b) => (Number(b._sortAt) || 0) - (Number(a._sortAt) || 0))
+    if (notes[0]) map.set(String(leadId), notes[0])
   })
-
   return map
 }
 
@@ -616,10 +578,6 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
   const meetingMutations = useMeetingMutations()
   const messengerConversationsQuery = useMessengerConversations({ per_page: 100 })
   const gmailConversationsQuery = useGmailConversations({ per_page: 100 }, { enabled: !showTrash })
-  const leadLogsQuery = useLeadLogs(undefined, {
-    enabled: !showTrash,
-    select: (response) => response,
-  })
   const leadStatusesQuery = useQuery({
     queryKey: ['customers', 'lead-note-dialog', 'statuses'],
     queryFn: () => definitionsApi.getStatuses(),
@@ -633,8 +591,26 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
   const previousUnreadByConversationRef = useRef(new Map())
   const flashTimeoutsRef = useRef(new Map())
 
+  const [recentStatusChange, setRecentStatusChange] = useState(null)
+  const statusPulseTimer = useRef(null)
+  const showStatusArrival = useCallback((statusId, customerName = '') => {
+    if (statusId == null || statusId === '') return
+    window.clearTimeout(statusPulseTimer.current)
+    setRecentStatusChange({ id: String(statusId), key: Date.now(), customerName })
+    statusPulseTimer.current = window.setTimeout(() => setRecentStatusChange(null), 4500)
+  }, [])
+  useEffect(() => () => window.clearTimeout(statusPulseTimer.current), [])
+
+  const onRealtimeCustomerUpdated = useCallback(({ customer, previousCustomer, action }) => {
+    if (action === 'deleted' || customer?.deleted_at) return
+    const nextStatus = customer?.lead?.status_type_id ?? customer?.status_type_id
+    const oldStatus = previousCustomer?.lead?.status_type_id ?? previousCustomer?.status_type_id
+    if (nextStatus == null || (previousCustomer && String(nextStatus) === String(oldStatus))) return
+    showStatusArrival(nextStatus, customer?.name || '')
+  }, [showStatusArrival])
   useCustomersTableRealtime({
     enabled: !showTrash,
+    onCustomerUpdated: onRealtimeCustomerUpdated,
   })
 
   useEffect(() => {
@@ -744,8 +720,8 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
   const messengerLookup = useMemo(() => buildMessengerLookup(messengerConversationsQuery.data || []), [messengerConversationsQuery.data])
   const gmailLookup = useMemo(() => buildGmailLookup(gmailConversationsQuery.data || []), [gmailConversationsQuery.data])
   const latestLeadNotes = useMemo(
-    () => buildLatestLeadNotesMap(leadLogsQuery.data || {}),
-    [leadLogsQuery.data]
+    () => buildLatestLeadNotesMap(sourceRows),
+    [sourceRows]
   )
   const statusById = useMemo(
     () => new Map((leadStatusesQuery.data || []).map((status) => [String(status?.id ?? ''), status])),
@@ -809,8 +785,8 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
 
   const handleLeadNoteSaved = useCallback(async () => {
     setLeadNoteDialogRow(null)
-    await Promise.allSettled([leadLogsQuery.refetch(), refetch()])
-  }, [leadLogsQuery, refetch])
+    await refetch()
+  }, [refetch])
 
   const handleOpenScheduledActivityDialog = useCallback((row, type) => {
     setScheduleDialog({ row, type })
@@ -1060,7 +1036,6 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
         description: t('customers.page.toasts.followUpAddedDesc', { name: customerName }),
         duration: 3200,
       })
-      leadLogsQuery.refetch()
       refetch()
       return
     }
@@ -1078,7 +1053,11 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
     }
 
     const statusName = newStatus?.status || newStatus?.name || t('customers.page.toasts.newStatusFallback')
-    toast.info(t('customers.page.toasts.statusUpdated'), {
+    const changedStatusId = newStatus?.id ?? newStatus?.status_type_id
+    if (changedStatusId != null) {
+      showStatusArrival(changedStatusId, customerName)
+    }
+    toast.success(t('customers.page.toasts.statusUpdated'), {
       description: t('customers.page.toasts.statusUpdatedDesc', { name: customerName, status: statusName }),
       duration: 3800,
     })
@@ -1097,10 +1076,13 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
   }
 
   const handleRestore = async (customer) => {
+    if (!window.confirm(t('customers.page.actions.restoreSelected', { count: 1 }))) return
     try {
       await mutations.restore.mutateAsync({ ids: [customer.id] })
+      toast.success(t('customers.page.actions.restoreSelected', { count: 1 }))
     } catch (error) {
       console.error('Restore error:', error)
+      toast.error(error?.response?.data?.message || error?.message || 'Restore failed')
     }
   }
 
@@ -1109,8 +1091,10 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
 
     try {
       await mutations.forceDelete.mutateAsync({ ids: [customer.id] })
+      toast.success(t('customers.page.actions.deletePermanent', { count: 1 }))
     } catch (error) {
       console.error('Permanent delete error:', error)
+      toast.error(error?.response?.data?.message || error?.message || 'Permanent delete failed')
     }
   }
 
@@ -1136,12 +1120,15 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
   const handleBulkRestore = async (selectedRows, clearSelection) => {
     const ids = getSelectedCustomerIds(selectedRows)
     if (!ids.length) return
+    if (!window.confirm(t('customers.page.actions.restoreSelected', { count: ids.length }))) return
 
     try {
       await mutations.restore.mutateAsync({ ids })
       clearSelection?.()
+      toast.success(t('customers.page.actions.restoreSelected', { count: ids.length }))
     } catch (error) {
       console.error('Bulk restore error:', error)
+      toast.error(error?.response?.data?.message || error?.message || 'Restore failed')
     }
   }
 
@@ -1153,8 +1140,10 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
     try {
       await mutations.forceDelete.mutateAsync({ ids })
       clearSelection?.()
+      toast.success(t('customers.page.actions.deletePermanent', { count: ids.length }))
     } catch (error) {
       console.error('Bulk permanent delete error:', error)
+      toast.error(error?.response?.data?.message || error?.message || 'Permanent delete failed')
     }
   }
 
@@ -1338,6 +1327,7 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
           selectedStatusId={selectedLeadStatusId}
           onStatusChange={handleLeadStatusTabChange}
           onStatusesChange={setLeadStatusTabs}
+          recentStatusChange={recentStatusChange}
           customers={sourceRows}
           freshLeadCount={freshLeadRows.length}
           freshLeadActive={freshLeadActive}
@@ -1399,9 +1389,15 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
             selectionContextActions={getSelectionContextActions}
             rowContextActions={getRowContextActions}
             serialColumnRender={serialColumnRender}
-            toolbarActions={selectionToolbar || (!showTrash ? ({ selectedRows, selectedCount, clearSelection }) => (
+            toolbarActions={selectionToolbar || (showTrash ? ({ selectedRows, clearSelection }) => (
+              <div className="flex flex-wrap items-center gap-2">
+                {selectedRows.length > 0 && <Button size="sm" variant="outline" disabled={mutations.restore.isPending} onClick={() => handleBulkRestore(selectedRows, clearSelection)}><ArchiveRestore size={14} />{t('customers.page.actions.restoreSelected', { count: selectedRows.length })}</Button>}
+                {selectedRows.length > 0 && <Button size="sm" variant="outline" className="border-red-200 text-red-600 hover:bg-red-50" disabled={mutations.forceDelete.isPending} onClick={() => handleBulkForceDelete(selectedRows, clearSelection)}><Trash2 size={14} />{t('customers.page.actions.deletePermanent', { count: selectedRows.length })}</Button>}
+              </div>
+            ) : ({ selectedRows, selectedCount, clearSelection }) => (
               <div className="flex flex-wrap items-center gap-2">
               {selectedRows.length > 0 && <Button size="sm" variant="outline" onClick={() => taskAction.open(selectedRows)}><ListTodo size={14} />{t('customers.leadTasks.add')}</Button>}
+              {selectedRows.length > 0 && <Button size="sm" variant="outline" className="border-red-200 text-red-600 hover:bg-red-50" disabled={mutations.remove.isPending} onClick={() => handleBulkDelete(selectedRows, clearSelection)}><Trash2 size={14} />{t('customers.page.actions.deleteSelected', { count: selectedRows.length })}</Button>}
               <CustomersBulkActions
                 selectedRows={selectedRows}
                 selectedCount={selectedCount}
@@ -1410,7 +1406,7 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
                 onAddLeadNote={handleOpenLeadNoteDialog}
               />
               </div>
-            ) : null)}
+            ))}
             emptyMessage={
               showTrash
                 ? t('customers.page.emptyTrash')
@@ -1466,6 +1462,7 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
         open={isDetailsOpen}
         onClose={() => setIsDetailsOpen(false)}
         onStatusChanged={handleCustomerStatusChanged}
+        onDeleted={() => { setSelectedCustomer(null); refetch() }}
         initialTab={detailsInitialTab}
       />
 

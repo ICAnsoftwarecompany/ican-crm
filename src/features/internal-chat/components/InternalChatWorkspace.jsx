@@ -152,8 +152,7 @@ export function InternalChatWorkspace({ conversations: scopedConversations, scop
   const currentUserId = String(currentUser?.id ?? currentUser?.user_id ?? currentUser?.userId ?? '')
 
   const conversationsQuery = useChatConversations({ per_page: 50 }, { enabled: scopedConversations === undefined })
-  const allConversations = scopedConversations ?? (Array.isArray(conversationsQuery.data) ? conversationsQuery.data : [])
-  const conversations = useMemo(() => (scopeFilter ? allConversations.filter(scopeFilter) : allConversations), [allConversations, scopeFilter])
+  const conversations = scopedConversations ?? (Array.isArray(conversationsQuery.data) ? conversationsQuery.data : [])
   const usersQuery = useUsers()
   const onlineUsersQuery = useOnlineUsers(undefined, { refetchInterval: 30000 })
   const users = Array.isArray(usersQuery.data) ? usersQuery.data : []
