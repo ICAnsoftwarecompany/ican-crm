@@ -23,27 +23,30 @@ function TaskQuickAction({ customer }) {
   return <><QuickActionButton icon={ListTodo} label={t('customers.leadTasks.add')} onClick={() => task.open(customer)} disabled={!customer?.lead_id && !customer?.lead?.id} />{task.dialog}</>
 }
 
-function MentionQuickAction({ customer }) {
+function MentionQuickAction({ customer, onOpen }) {
   const { t } = useTranslation()
-  const [open, setOpen] = useState(false)
-  const entityId = customer?.id
+  return <QuickActionButton icon={AtSign} label={t('mentions.create')} onClick={onOpen} disabled={customer?.id == null || customer.id === ''} />
+}
 
-  return (
-    <div className="relative">
-      <QuickActionButton icon={AtSign} label={t('mentions.create')} onClick={() => setOpen((value) => !value)} disabled={entityId == null || entityId === ''} />
-      {open && createPortal(
-        <div className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-black/50 p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false) }} onPointerDown={(event) => event.stopPropagation()}>
-          <section role="dialog" aria-label={t('mentions.create')} className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-[var(--text)] shadow-xl" onPointerDown={(event) => event.stopPropagation()}>
-            <div className="mb-3 flex items-center justify-between gap-2">
-              <h3 className="text-sm font-bold">{t('mentions.create')}</h3>
-              <button type="button" onClick={() => setOpen(false)} className="rounded-md px-2 py-1 text-sm" aria-label="Close">×</button>
-            </div>
-            <MentionComposer entityType="customer" entityId={entityId} onCreated={() => setOpen(false)} />
-          </section>
-        </div>,
-        document.body
-      )}
-    </div>
+function MentionActionDialog({ entityId, onClose }) {
+  const { t } = useTranslation()
+  useEffect(() => {
+    const onKeyDown = (event) => { if (event.key === 'Escape') onClose() }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [onClose])
+
+  return createPortal(
+    <div className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-black/50 p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>
+      <section role="dialog" aria-modal="true" aria-label={t('mentions.create')} className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-[var(--text)] shadow-2xl">
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <h3 className="text-sm font-bold">{t('mentions.create')}</h3>
+          <button type="button" onClick={onClose} className="rounded-md px-2 py-1 text-sm" aria-label="Close">×</button>
+        </div>
+        <MentionComposer entityType="customer" entityId={entityId} onCreated={onClose} />
+      </section>
+    </div>,
+    document.body
   )
 }
 
@@ -51,7 +54,7 @@ const STORAGE_KEY = 'customer-details-quick-actions-order:v2'
 const LONG_PRESS_MS = 280
 
 const ACTIONS = [
-  { id: 'mention', render: (props) => <MentionQuickAction customer={props.customer} /> },
+  { id: 'mention', render: (props) => <MentionQuickAction customer={props.customer} onOpen={props.onOpenMention} /> },
   { id: 'task', render: (props) => <TaskQuickAction customer={props.customer} /> },
   {
     id: 'follow-up',
@@ -200,6 +203,7 @@ export function CustomerQuickActions({
   const [order, setOrder] = useState(getStoredOrder)
   const [draggingId, setDraggingId] = useState(null)
   const [recentlyDragged, setRecentlyDragged] = useState(false)
+  const [mentionOpen, setMentionOpen] = useState(false)
 
   const orderedActions = useMemo(() => {
     const actionById = new Map(ACTIONS.map((action) => [action.id, action]))
@@ -266,7 +270,7 @@ export function CustomerQuickActions({
         {orderedActions.filter((action) => (!onlyIds || onlyIds.includes(action.id)) && actionOverrides?.[action.id] !== null).map((action) => (
           <div
             key={action.id}
-            onPointerDown={() => startLongPress(action.id)}
+            onPointerDown={() => { if (action.id !== 'mention') startLongPress(action.id) }}
             onPointerMove={() => {
               if (!draggingId) return
               setRecentlyDragged(true)
@@ -295,10 +299,12 @@ export function CustomerQuickActions({
               onFollowUpAdded,
               onStatusChanged,
               onInterestChanged,
+              onOpenMention: () => setMentionOpen(true),
             })}
           </div>
         ))}
       </div>
+      {mentionOpen && customer?.id != null && <MentionActionDialog entityId={customer.id} onClose={() => setMentionOpen(false)} />}
     </div>
   )
 }
