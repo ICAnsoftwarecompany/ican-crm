@@ -10,3 +10,5 @@ export {
   useMarkManyMentionsSeen,
   useRemoveMention,
 } from './hooks/useMentions'
+
+export { EntityMentionsButton } from './components/EntityMentionsButton'
