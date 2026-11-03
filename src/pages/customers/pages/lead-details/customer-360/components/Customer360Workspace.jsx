@@ -1,4 +1,4 @@
-import { CustomerDetailsContent } from '../../../components/CustomerDetailsDrawer/CustomerDetailsDrawer'
+import { CustomerDetailsContent } from '../../../../components/CustomerDetailsDrawer/CustomerDetailsDrawer'
 
 /** Reuses the production data loaders, tabs and mutations without duplicating business logic. */
 export function Customer360Workspace({ customerId, initialTab }) {
