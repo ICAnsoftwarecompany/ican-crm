@@ -1,3 +1,4 @@
+import { EntityMentionsButton } from '../../mentions'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
@@ -503,7 +504,7 @@ export function GmailConversationsWorkspace({
         isTogglingConversationStatus={mutations.closeConversation.isPending || mutations.reopenConversation.isPending}
         {...getThreadCapabilityProps(gmailAdapter.capabilities)}
         channelColor="#D93025"
-        headerActions={selectedId ? threadHeaderActions : null}
+        headerActions={selectedId ? <div className="flex items-center gap-2"><EntityMentionsButton entityType="gmail_conversation" entityId={selectedId} />{threadHeaderActions}</div> : null}
         autoFocusKey={`${panel ? 'panel' : 'page'}-${selectedId}`}
         composerDisabled={!selectedId || String(conversationInfo?.status || selectedConversation?.status || '').toLowerCase() === 'closed'}
         emptyMessage={selectedId ? 'لا توجد رسائل Gmail بعد.' : 'اختر محادثة Gmail'}
