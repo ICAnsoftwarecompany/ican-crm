@@ -125,9 +125,7 @@ export function TeamStep({ value, onChange, ownerId, dealName = '', errors = {} 
         {userCount || teamCount ? <Send size={15} className="text-[var(--brand-accent)]" /> : <UsersRound size={15} className="text-[var(--text-muted)]" />}
         {userCount || teamCount ? t('dealWorkspace.wizard.team.summary', { users: userCount, teams: teamCount }) : t('dealWorkspace.wizard.team.none')}
       </div>
-<<<<<<< HEAD
       <QuickTeamDialog open={quickOpen} users={users} dealName={dealName} defaultLeaderId={ownerId} initialMemberIds={pickedUserIds} onClose={() => setQuickOpen(false)} onCreated={onQuickCreated} />
-=======
       <TeamChatGroupSection
         value={value.chat}
         team={value}
@@ -139,7 +137,6 @@ export function TeamStep({ value, onChange, ownerId, dealName = '', errors = {} 
         error={errors.chatGroup ? t(`dealWorkspace.wizard.errors.${errors.chatGroup}`) : null}
       />
       <QuickTeamDialog open={quickOpen} users={users} initialMemberIds={pickedUserIds} onClose={() => setQuickOpen(false)} onCreated={onQuickCreated} />
->>>>>>> 878b9cb48a3ae296ca3b62ba20e19cec0e8aae17
       {errors.members && <p className="text-xs text-red-600 dark:text-red-400">{t(`dealWorkspace.wizard.errors.${errors.members}`)}</p>}
       <p className="text-xs text-[var(--text-muted)]">{t('dealWorkspace.team.add.notifyHint')}</p>
     </div>
