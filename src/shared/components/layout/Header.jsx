@@ -12,6 +12,7 @@ import { WhatsappNavbarButton } from '../../../features/conversations/components
 import { TasksNavbarButton } from '../../../features/tasks/components/TasksNavbarButton'
 import { TodoNavbarButton } from '../../../features/tasks'
 import { InternalChatNavbarButton } from '../../../features/internal-chat'
+import { MentionsCenterButton } from '../../../features/mentions'
 import { NotificationCenterButton } from '../../../features/notifications'
 import { LiveMeetingIndicator } from '../../../features/call-meetings'
 import { HeaderProfileMenu } from './HeaderProfileMenu'
@@ -123,6 +124,8 @@ export function Header({
         <LiveMeetingIndicator />
 
         <NotificationCenterButton />
+
+        <MentionsCenterButton />
 
         <AlertsIndicator />
 
