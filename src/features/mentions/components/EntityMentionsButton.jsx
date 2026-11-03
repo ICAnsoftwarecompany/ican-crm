@@ -41,6 +41,7 @@ export function EntityMentionsButton({ entityType, entityId }) {
             {mentions.map((mention, index) => (
               <li key={mention.id ?? index} className="rounded-lg border border-[var(--border)] p-3">
                 <p className="whitespace-pre-wrap break-words text-sm text-[var(--text)]">{mention.body ?? mention.message ?? mention.text ?? t('mentions.noText')}</p>
+                <p className="mt-1 text-xs text-[var(--text-muted)]">{mention.entity_label ?? ''} · {mention.by?.name ?? '—'} → {mention.user?.name ?? '—'} · {mention.type ?? ''} · {mention.seen ? 'تمت القراءة' : 'غير مقروء'}</p>
                 {mention.created_at && <time className="mt-2 block text-xs text-[var(--text-muted)]" dateTime={mention.created_at}>{mention.created_at}</time>}
               </li>
             ))}
