@@ -60,3 +60,10 @@ Required repository checks: `npm run lint`, `npm run check:i18n`, `npm run check
 
 ## Phase 2 update — 2026-11-03 23:10 (Africa/Cairo)
 Added a reusable read-only `EntityMentionsButton` and `extractMentions` adapter, first mounted in `DealWorkspaceHeader` with the actual deal ID. Uses existing `AppModal`, ar/en locale modules, semantic theme tokens, and query error/empty/loading states. Composer, inbox and other module mounts remain planned. Create payload has not been verified; no speculative request is sent.
+
+## Implementation update — 2026-11-03 (Africa/Cairo)
+- Added `MentionComposer` using existing user/team hooks, validated selection, and documented `entity_type`, `entity_id`, `user_ids`, `team_ids`, `type`, `message` request fields.
+- Entity viewer now supports create and list tabs; available on Deal Workspace and Customer Details Drawer.
+- Added read-only `MentionsInbox` component (received/sent). It is not yet mounted in the global header.
+- Inline @mentions and external conversation surfaces remain pending; customer-facing composers were not modified.
+- Verification pending: tenant API responses, authorization, build and repository checks.
