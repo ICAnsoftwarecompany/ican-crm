@@ -1,4 +1,4 @@
-import { Customer360Layout } from '../../../pages/customers/pages/lead-details/customer-360/components/Customer360Layout'
+import { Customer360Layout } from '../../pages/lead-details/customer-360/components/Customer360Layout'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useQuery } from '@tanstack/react-query'
