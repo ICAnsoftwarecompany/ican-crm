@@ -1483,6 +1483,7 @@ export function CustomerDetailsContent({
           detailsPageId={detailsPageId}
         />}
         actions={renderQuickActions ? renderQuickActions() : <CustomerQuickActions
+          vertical
           actionOverrides={quickActionOverrides}
           customer={detailedCustomer}
           currentStatus={currentStatus}
