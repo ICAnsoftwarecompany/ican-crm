@@ -1,16 +1,16 @@
-import { LayoutDashboard, ShieldCheck } from 'lucide-react'
+import { LayoutDashboard } from 'lucide-react'
 
 export function Customer360Intro({ customerId }) {
   return (
-    <section dir="rtl" className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-      <div className="absolute inset-y-0 right-0 w-1 bg-indigo-600" />
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600"><LayoutDashboard size={24} /></div>
-          <div><p className="text-xs font-semibold text-indigo-600">Lead Center / Customer 360</p><h1 className="mt-1 text-xl font-bold text-slate-900">ملف العميل الموحد</h1><p className="mt-1 text-sm text-slate-500">بيانات العميل وتفاعلاته وإجراءاته في مساحة واحدة</p></div>
+    <header dir="rtl" className="flex min-w-0 flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
+      <div className="flex min-w-0 items-center gap-2">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600"><LayoutDashboard size={17} /></span>
+        <div className="min-w-0">
+          <h1 className="text-sm font-bold text-slate-900">ملف العميل الموحد</h1>
+          <p className="text-[11px] text-slate-500">Customer 360 · مساحة متابعة العميل</p>
         </div>
-        <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600"><ShieldCheck size={16} className="text-emerald-600" /><span>رقم السجل: {customerId}</span></div>
       </div>
-    </section>
+      <span className="rounded-md bg-slate-50 px-2 py-1 text-[11px] text-slate-600">رقم السجل: {customerId}</span>
+    </header>
   )
 }
