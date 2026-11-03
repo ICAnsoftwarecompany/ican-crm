@@ -67,3 +67,9 @@ Added a reusable read-only `EntityMentionsButton` and `extractMentions` adapter,
 - Added read-only `MentionsInbox` component (received/sent). It is not yet mounted in the global header.
 - Inline @mentions and external conversation surfaces remain pending; customer-facing composers were not modified.
 - Verification pending: tenant API responses, authorization, build and repository checks.
+
+## Conversation integration — 2026-11-03 (Africa/Cairo)
+- Global header now displays a mentions inbox button and an unseen counter (60-second polling); inbox has received/sent tabs.
+- WhatsApp, Messenger and Gmail workspace conversation headers now mount `EntityMentionsButton` with their selected conversation ID. This is a CRM-internal mention, never part of the outbound message composer.
+- Internal chat conversation header mounts the same button with `chat` entity type and active chat ID. Inline @mention tokens tied to individual messages remain out of scope until chat-message backend contract is confirmed.
+- Runtime verification is pending: exact backend conversation identifiers, tenant permissions, response shape, repository checks, realtime event contract and production build.
