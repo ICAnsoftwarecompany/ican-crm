@@ -27,8 +27,7 @@ export function EntityMentionsButton({ entityType, entityId }) {
           <button type="button" onClick={() => setTab('list')} aria-pressed={tab === 'list'} className="rounded-lg border border-[var(--border)] px-3 py-2 text-sm">{t('mentions.title')}</button>
           <button type="button" onClick={() => setTab('create')} aria-pressed={tab === 'create'} className="rounded-lg border border-[var(--border)] px-3 py-2 text-sm">{t('mentions.create')}</button>
         </div>
-        {tab === 'create' ? <MentionComposer entityType={entityType} entityId={entityId} onCreated={() => setTab('list')} /> : (
-        {query.isPending ? (
+        {tab === 'create' ? <MentionComposer entityType={entityType} entityId={entityId} onCreated={() => setTab('list')} /> : query.isPending ? (
           <p role="status" className="text-sm text-[var(--text-muted)]">{t('mentions.loading')}</p>
         ) : query.isError ? (
           <div role="alert" className="space-y-3">
@@ -46,7 +45,6 @@ export function EntityMentionsButton({ entityType, entityId }) {
               </li>
             ))}
           </ul>
-        )}
         )}
       </AppModal>
     </>
