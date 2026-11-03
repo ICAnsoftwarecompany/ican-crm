@@ -2,5 +2,10 @@ import { LeadDetailsBreadcrumbs } from '../../LeadDetailsBreadcrumbs'
 import { LeadPageSwitcher } from '../../LeadPageSwitcher'
 
 export function Customer360Navigation({ customerId }) {
-  return <div className="flex flex-wrap items-center justify-between gap-3"><LeadDetailsBreadcrumbs /><LeadPageSwitcher activeCustomerId={customerId} /></div>
+  return (
+    <nav aria-label="التنقل داخل ملف العميل" className="flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-1">
+      <LeadDetailsBreadcrumbs />
+      <LeadPageSwitcher activeCustomerId={customerId} />
+    </nav>
+  )
 }
