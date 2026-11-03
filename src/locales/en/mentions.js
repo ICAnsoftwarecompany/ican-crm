@@ -13,6 +13,7 @@ export default {
   sendError: 'Could not send mention',
   received: 'Received',
   sent: 'Sent',
+  markSeen: 'Mark as seen',
   title: 'Mentions',
   loading: 'Loading mentions...',
   error: 'Could not load mentions.',
