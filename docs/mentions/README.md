@@ -73,3 +73,13 @@ Added a reusable read-only `EntityMentionsButton` and `extractMentions` adapter,
 - WhatsApp, Messenger and Gmail workspace conversation headers now mount `EntityMentionsButton` with their selected conversation ID. This is a CRM-internal mention, never part of the outbound message composer.
 - Internal chat conversation header mounts the same button with `chat` entity type and active chat ID. Inline @mention tokens tied to individual messages remain out of scope until chat-message backend contract is confirmed.
 - Runtime verification is pending: exact backend conversation identifiers, tenant permissions, response shape, repository checks, realtime event contract and production build.
+
+## Review fixes — 2026-11-03 (Africa/Cairo)
+- Realtime: existing tenant `.notification.created` event now invalidates mentions queries, using the existing Echo channel. This is best-effort until a real mention notification payload is verified.
+- Inbox: added mark-as-seen action for received mentions; routing to the correct entity remains pending verified backend identifiers and payload.
+- Composer: imports users and teams via public feature boundaries; prevents submit while recipient queries load or fail.
+- Customer details: does not substitute a lead ID for a customer ID; missing customer ID hides the entry point.
+- Fixed escaped newline characters in `docs/README.md`.
+- **Backend contract blocker:** `internalChatApi.sendMessage` only submits `body`, `reply_to_message_id`, and `attachments[]`. It has no documented `mentioned_user_ids`, message-to-mention linking, or atomic message/mention endpoint. Therefore inline @mention notifications are NOT implemented; adding plain @name text would be misleading and non-atomic. Backend must define structured user-ID tokens and message association first.
+- **Conversation ID blocker:** frontend `selectedId` is the conversation workspace identifier, but backend mention entity IDs have not been validated against actual tenant records for WhatsApp, Messenger or Gmail. Do not claim verified end-to-end linking.
+- **Checks:** no local dependency checkout or test tenant was available in this connector session; lint, i18n, architecture, service, vitest and build remain unexecuted. PR must stay draft until they pass.
