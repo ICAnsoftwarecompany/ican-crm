@@ -27,6 +27,7 @@ const SENDER_COLORS = [
 ]
 
 const DETAILS_AUTO_CLOSE_MAX_WIDTH = 1500
+const EMPTY_CONVERSATIONS = []
 
 function getConversationType(conversation) {
   return String(conversation?.type || '').toLowerCase()
@@ -152,7 +153,7 @@ export function InternalChatWorkspace({ conversations: scopedConversations, scop
   const currentUserId = String(currentUser?.id ?? currentUser?.user_id ?? currentUser?.userId ?? '')
 
   const conversationsQuery = useChatConversations({ per_page: 50 }, { enabled: scopedConversations === undefined })
-  const sourceConversations = scopedConversations ?? (Array.isArray(conversationsQuery.data) ? conversationsQuery.data : [])
+  const sourceConversations = scopedConversations ?? (Array.isArray(conversationsQuery.data) ? conversationsQuery.data : EMPTY_CONVERSATIONS)
   const conversations = useMemo(() => scopedConversationFilter ? sourceConversations.filter(scopedConversationFilter) : sourceConversations, [sourceConversations, scopedConversationFilter])
   const usersQuery = useUsers()
   const onlineUsersQuery = useOnlineUsers(undefined, { refetchInterval: 30000 })
