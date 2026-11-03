@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { EntityMentionsButton } from '../../../../features/mentions'
 import { CustomerActivityLinkBadge } from '../../../../features/customers/components/CustomerActivityLinkBadge'
 import {
   CalendarDays,
@@ -1609,7 +1608,6 @@ export function CustomerDetailsDrawer({ customer, open, onClose, onStatusChanged
       topOffset="calc(var(--layout-header-height, 48px) - 1px)"
       headerActions={detailsPageId ? (
         <div className="flex items-center gap-2">
-        <EntityMentionsButton entityType="customer" entityId={customer?.id} />
         <Link
           to={detailsPagePath || `/lead/${detailsPageId}`}
           className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[#BEEFF2] bg-[#F8FEFF] px-2.5 text-xs font-black text-[#007A80] shadow-sm transition-colors hover:bg-[#E8F9FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#BEEFF2]"
