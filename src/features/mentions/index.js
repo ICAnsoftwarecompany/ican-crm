@@ -12,3 +12,5 @@ export {
 } from './hooks/useMentions'
 
 export { EntityMentionsButton } from './components/EntityMentionsButton'
+export { MentionsInbox } from './components/MentionsInbox'
+export { MentionComposer } from './components/MentionComposer'
