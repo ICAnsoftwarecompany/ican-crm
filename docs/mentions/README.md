@@ -1,0 +1,59 @@
+# Internal Mentions — Integration design
+
+> Documentation update: 2026-11-03 22:48 (Africa/Cairo) — initial implementation and phased integration contract.
+
+## Status
+**PARTIAL** — Phase 1: mentions API client and React Query hooks. This repository is the React frontend; backend storage, authorization, broadcasting and mention behavior live in the separate Laravel backend.
+
+## Existing backend endpoints
+All paths are prefixed with `/api`, and `httpClient` adds bearer token and `api_password`.
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| POST | `/tenant/mentions` | Create mention |
+| GET | `/tenant/mentions/types` | Supported entity types |
+| GET | `/tenant/mentions/mine` | Received mentions |
+| GET | `/tenant/mentions/sent` | Sent mentions |
+| GET | `/tenant/mentions/unseen-count` | Unseen count |
+| GET | `/tenant/mentions/entity` | Mentions for entity, query: `entity_type`, `entity_id` |
+| POST | `/tenant/mentions/{id}/seen` | Mark one seen |
+| POST | `/tenant/mentions/seen` | Bulk/entity seen |
+| DELETE | `/tenant/mentions/{id}` | Revoke mention |
+
+Do not guess additional request fields or response structures. Verify the live contract before building the composer. The documented mention kinds are `view`, `action`, `transfer`; none implies automatic business action.
+
+## Architecture
+`src/features/mentions/api/mentionsApi.js` → existing `services/httpClient.js`.
+`src/features/mentions/hooks/useMentions.js` → TanStack Query with `QUERY_KEYS.mentions`.
+`src/features/mentions/index.js` is the public feature boundary. Existing notification center and Echo singleton remain the only realtime infrastructure. No `shared → features` imports.
+
+## Scope and mapping
+| Surface | Backend mention entity | Navigation rule | Implementation |
+| --- | --- | --- | --- |
+| Lead Center | `lead` or `customer` | Preserve `/lead/:customerId` and `/leads/:customerId`; resolve actual entity ID separately | Planned |
+| Deal workspace | `deal` | Existing `/deals/:dealId/*` | Planned |
+| Deal lead | `deal_lead` | Open deal + correct lead selection | Planned |
+| WhatsApp | `whatsapp_conversation` | Open selected conversation, never send to customer | Planned |
+| Messenger | `messenger_conversation` | Open selected conversation | Planned |
+| Gmail | `gmail_conversation` | Open selected thread | Planned |
+| Internal chat | `chat` | Open selected conversation; message-level @ is not in current contract | Planned |
+
+The DealChatDock reuses existing conversation views; avoid a second implementation or duplicate mentions. Do not assume Instagram/SMS mention types until the backend catalog advertises support.
+
+## Security and UX
+- The server must enforce tenant boundaries and record-level authorization. Hiding UI is not permission enforcement.
+- Mention visibility, notification read state and mention `seen` are separate concepts.
+- Mark seen only after successful navigation and entity access, not when a notification is merely displayed.
+- Never inject internal mention text into WhatsApp/Messenger/Gmail outgoing messages.
+- Keep existing route casing, Query keys, i18n ar/en, theme tokens, RTL/LTR logical CSS, loading/empty/error UI.
+- No additional WebSocket connection; validate existing `.notification.created` payload before integrating.
+
+## Phases
+1. **CURRENT:** API + React Query hooks + query keys + documentation.
+2. **PLANNED:** verify live request/response shapes; normalized mention adapter; reusable dialog, recipient picker and inbox; ar/en translations.
+3. **PLANNED:** integrate Lead Center and Deals using validated entity IDs.
+4. **PLANNED:** integrate external conversations and internal chat; inline message @mentions only after backend contract exists.
+5. **PLANNED:** notification routing, realtime invalidation, accessibility, permission and end-to-end testing.
+
+## Validation
+Required repository checks: `npm run lint`, `npm run check:i18n`, `npm run check:architecture`, `npm run check:service`, `npx vitest run`, `npm run build`. They must run before declaring implementation complete. Backend responses and visual behavior remain unverified until a test tenant is available.
