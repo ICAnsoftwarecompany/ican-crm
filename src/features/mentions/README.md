@@ -28,3 +28,8 @@ All calls use `services/httpClient`; React Query keys are under `QUERY_KEYS.ment
 - No database migrations are appropriate in this frontend repository.
 
 See [integration design](../../../docs/mentions/README.md).
+
+## Phase 2 — entity viewer (2026-11-03 23:10 Africa/Cairo)
+- Reusable `EntityMentionsButton` displays an on-demand modal with loading, empty, error and retry states; first consumer is the Deal Workspace header.
+- `extractMentions` supports array and common paginated response wrappers. It does not claim an authoritative backend response contract.
+- Viewer is read-only until the create request schema and recipient permission semantics are verified.
