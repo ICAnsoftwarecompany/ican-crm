@@ -148,6 +148,8 @@ export function WhatsappConversationsWorkspace({
     enabled: open,
     refetchInterval: panel ? 60000 : false,
   })
+  const usersQuery = useUsers(undefined, { enabled: open })
+  const onlineUsersQuery = useOnlineUsers(undefined, { enabled: open, refetchInterval: open ? 30000 : false })
   const conversations = conversationsQuery.data || []
   const [selectedId, setSelectedId] = useState(() => panel ? '' : window.localStorage.getItem(LAST_WHATSAPP_CONVERSATION_KEY) || '')
   const [isComposing, setIsComposing] = useState(false)
