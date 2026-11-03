@@ -1,0 +1,30 @@
+# Mentions feature
+
+> Documentation update: 2026-11-03 22:48 (Africa/Cairo) — phase 1 API and React Query integration.
+
+## Ownership
+Owns the internal mentions API integration and query hooks. The Laravel backend remains responsible for tenant isolation, recipient permissions, mention creation, read receipts and notifications. No new WebSocket client or authentication flow is introduced.
+
+## Public API
+Import from `features/mentions`:
+- `mentionsApi`: getTypes, getMine, getSent, getUnseenCount, getEntity, create, markSeen, markManySeen, remove.
+- Query hooks: `useMentionTypes`, `useMyMentions`, `useSentMentions`, `useUnseenMentionCount`, `useEntityMentions`.
+- Mutations: `useCreateMention`, `useMarkMentionSeen`, `useMarkManyMentionsSeen`, `useRemoveMention`.
+
+All calls use `services/httpClient`; React Query keys are under `QUERY_KEYS.mentions`. Mutations invalidate the mentions key prefix. API responses are intentionally preserved unchanged until verified against a live backend.
+
+## Integration plan
+1. Lead Center: customer/lead IDs must be distinguished (customer record ID is not necessarily lead ID).
+2. Deals: distinguish `deal` from `deal_lead` and use the backend's actual identifier.
+3. External conversations: `whatsapp_conversation`, `messenger_conversation`, `gmail_conversation` only when backend type catalog and IDs match. Mentions remain internal and must never be submitted through a customer-message composer.
+4. Internal chat: `chat` refers to the conversation. Inline @mentions tied to individual messages require a separate backend contract.
+5. Notifications: reuse existing tenant notification realtime infrastructure only after confirming the event payload and routing.
+
+## Known gaps
+- Phase 1 is API/query infrastructure only; no buttons, dialogs, inbox route, or module integration yet.
+- Response shapes, create payload schema, pagination and realtime mention event payload must be verified on the running tenant backend.
+- The backend must authorize access to the referenced entity for both sender and recipient; frontend checks are not security boundaries.
+- Do not treat mention type `action` or `transfer` as execution of an approval or ownership transfer.
+- No database migrations are appropriate in this frontend repository.
+
+See [integration design](../../../docs/mentions/README.md).
