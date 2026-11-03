@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import { cn } from '../../../../../shared/utils/cn'
 import { CallQuickAction, MeetingQuickAction } from '../../../../../features/call-meetings'
@@ -30,16 +31,17 @@ function MentionQuickAction({ customer }) {
   return (
     <div className="relative">
       <QuickActionButton icon={AtSign} label={t('mentions.create')} onClick={() => setOpen((value) => !value)} disabled={entityId == null || entityId === ''} />
-      {open && (
-        <div className="fixed inset-0 z-[120000] flex items-center justify-center bg-black/30 p-3 sm:absolute sm:inset-auto sm:bottom-full sm:start-0 sm:mb-2 sm:block sm:w-[min(380px,90vw)] sm:bg-transparent sm:p-0" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false) }}>
-          <section role="dialog" aria-label={t('mentions.create')} className="max-h-[85vh] w-full overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-[var(--text)] shadow-xl" onPointerDown={(event) => event.stopPropagation()}>
+      {open && createPortal(
+        <div className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-black/50 p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false) }} onPointerDown={(event) => event.stopPropagation()}>
+          <section role="dialog" aria-label={t('mentions.create')} className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-[var(--text)] shadow-xl" onPointerDown={(event) => event.stopPropagation()}>
             <div className="mb-3 flex items-center justify-between gap-2">
               <h3 className="text-sm font-bold">{t('mentions.create')}</h3>
               <button type="button" onClick={() => setOpen(false)} className="rounded-md px-2 py-1 text-sm" aria-label="Close">×</button>
             </div>
             <MentionComposer entityType="customer" entityId={entityId} onCreated={() => setOpen(false)} />
           </section>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
