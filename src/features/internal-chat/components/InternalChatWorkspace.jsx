@@ -1,3 +1,4 @@
+import { EntityMentionsButton } from '../../mentions'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ChevronsLeft, ChevronsRight, Circle, MessagesSquare, Plus, Search, UserRound, UsersRound } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -735,7 +736,8 @@ export function InternalChatWorkspace({ conversationFilter = null, title = null,
           supportsReply
           showCrmControls={false}
           showConversationStatusControl={false}
-          headerActions={
+          headerActions={<div className="flex items-center gap-2">
+            <EntityMentionsButton entityType="chat" entityId={activeId} />
             <button
               type="button"
               onClick={() => setDetailsPanelOpen(!detailsPanelOpen)}
@@ -745,7 +747,7 @@ export function InternalChatWorkspace({ conversationFilter = null, title = null,
               <UsersRound size={12} />
               {detailsPanelOpen ? 'إغلاق التفاصيل' : 'التفاصيل'}
             </button>
-          }
+          </div>}
           channelColor="#0F766E"
           autoFocusKey={getConversationId(activeConversation)}
           composerDisabled={!getConversationId(activeConversation)}
