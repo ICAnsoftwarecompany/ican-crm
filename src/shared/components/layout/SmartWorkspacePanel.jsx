@@ -71,8 +71,8 @@ export function SmartWorkspacePanel({ open, mode, onClose, onModeChange }) {
   return (
     <>
       <button type="button" aria-label={t('workspacePanel.close')} onClick={onClose}
-        className="fixed inset-0 z-30 bg-black/30 lg:hidden" />
-      <aside aria-label={t('workspacePanel.title')} className="fixed bottom-0 start-0 top-12 z-40 flex w-[min(340px,calc(100vw-24px))] flex-col border-e border-[var(--border)] bg-[var(--surface)] shadow-xl"
+        className={`fixed inset-0 z-30 bg-black/30 ${mode === 'docked' ? 'lg:hidden' : ''}`} />
+      <aside aria-label={t('workspacePanel.title')} className="fixed bottom-0 end-0 top-12 z-40 flex w-[min(340px,calc(100vw-24px))] flex-col border-s border-[var(--border)] bg-[var(--surface)] shadow-xl"
         style={{ maxWidth: 'calc(100vw - 24px)' }}>
         <header className="flex items-center justify-between gap-2 border-b border-[var(--border)] p-3">
           <h2 className="text-base font-black text-[var(--text)]">{t('workspacePanel.title')}</h2>
