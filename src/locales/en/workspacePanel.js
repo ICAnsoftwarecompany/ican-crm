@@ -14,5 +14,23 @@ export default {
     "tasks": "My Tasks",
     "alerts": "Alerts",
     "notifications": "Notifications"
-  }
+  },
+  "subtitle": "Your day at a glance",
+  "customize": "Customize my workspace",
+  "wide": "Expanded width (420px)",
+  "completeTask": "Complete task",
+  "completeError": "Could not complete the task. Please try again.",
+  "sections": {
+    "overdue": "Overdue",
+    "today": "Due today",
+    "alerts": "Important alerts",
+    "notifications": "Recent notifications"
+  },
+  "views": {
+    "overview": "Overview",
+    "tasks": "Tasks",
+    "notifications": "Notifications"
+  },
+  "moveUp": "Move up",
+  "moveDown": "Move down"
 }
