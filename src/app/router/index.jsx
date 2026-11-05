@@ -67,6 +67,7 @@ import { TodoPage } from '../../pages/todo/TodoPage'
 import { CalendarPage } from '../../pages/calendar/CalendarPage'
 import { TeamsPage } from '../../pages/teams/TeamsPage'
 import { UsersPage } from '../../pages/users/UsersPage'
+import { AboutCrmPage } from '../../pages/settings/pages/about/AboutCrmPage'
 import { SettingsLayout } from '../../pages/settings/layout/SettingsLayout'
 import { DefinitionsSettingsPage } from '../../pages/settings/pages/definitions/DefinitionsSettingsPage'
 import { UsersSettingsPage } from '../../pages/settings/pages/users/UsersSettingsPage'
@@ -235,6 +236,7 @@ export const router = createBrowserRouter([
           { path: 'users', element: <UsersSettingsPage /> },
           { path: 'integrations', element: <IntegrationsSettingsPage /> },
           { path: 'appearance', element: <AppearanceSettingsPage /> },
+          { path: 'about', element: <AboutCrmPage /> },
           { path: 'communication/:moduleId', element: <CommunicationSettingsPage /> },
         ],
       },
