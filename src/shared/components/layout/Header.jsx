@@ -129,7 +129,7 @@ export function Header({
           aria-label={t('workspacePanel.toggle')} title={t('workspacePanel.toggle')}
           className={`inline-flex h-8 items-center gap-1 rounded-lg border px-2 text-xs font-bold ${workspaceOpen ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text)]'}`}>
           <PanelRight size={16} />
-          <span className="hidden xl:inline">{t('workspacePanel.shortTitle')}</span>
+          <span className="hidden md:inline">{t('workspacePanel.shortTitle')}</span>
         </button>
 
         <NotificationCenterButton />
