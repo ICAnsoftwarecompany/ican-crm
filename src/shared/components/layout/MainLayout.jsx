@@ -145,7 +145,7 @@ export function MainLayout() {
         className={cn(
           'transition-all duration-300',
           collapsed ? 'ps-16' : 'ps-60',
-          workspaceDocked && 'lg:pe-[340px]',
+          workspaceDocked && 'lg:!pe-[340px]',
           
         )}
         style={{
