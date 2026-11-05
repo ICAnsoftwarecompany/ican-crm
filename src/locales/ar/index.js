@@ -40,6 +40,7 @@ import settings from './settings.js'
 import modulePages from './modulePages.js'
 import aiSetup from './aiSetup.js'
 import myWork from './myWork.js'
+import workspacePanel from './workspacePanel.js'
 import reports from './reports.js'
 import salesTeams from './salesTeams.js'
 
@@ -87,5 +88,6 @@ export default {
   modulePages,
   aiSetup,
   myWork,
+  workspacePanel,
   reports,
 }
