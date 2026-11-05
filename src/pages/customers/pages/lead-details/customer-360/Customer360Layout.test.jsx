@@ -15,7 +15,7 @@ const render = (props = {}) => renderToStaticMarkup(
 )
 
 describe('Customer360Layout', () => {
-  it('renders every core section with RTL direction', () => {
+  it('renders every core section and inherits the application direction', () => {
     const html = render()
     expect(html).toContain('dir="rtl"')
     for (const value of ['Customer header', 'Customer action', 'Customer profile', 'Customer tabs', 'Customer activity', 'Customer chats']) {
@@ -23,7 +23,7 @@ describe('Customer360Layout', () => {
     }
   })
 
-  it('places profile, activity and actions side by side in RTL reading order', () => {
+  it('places profile, activity and actions side by side in reading order', () => {
     const html = render({ deals: <span>Deal record</span> })
     expect(html).toContain('lg:grid-cols-12')
     expect(html.indexOf('Customer header')).toBeLessThan(html.indexOf('Customer activity'))
