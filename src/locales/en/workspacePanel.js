@@ -30,5 +30,7 @@ export default {
     "overview": "Overview",
     "tasks": "Tasks",
     "notifications": "Notifications"
-  }
+  },
+  "moveUp": "Move up",
+  "moveDown": "Move down"
 }
