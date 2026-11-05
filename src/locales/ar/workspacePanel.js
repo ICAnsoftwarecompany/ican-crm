@@ -14,5 +14,21 @@ export default {
     "tasks": "مهامي",
     "alerts": "التنبيهات",
     "notifications": "الإشعارات"
+  },
+  "subtitle": "نظرة سريعة على يومك",
+  "customize": "تخصيص مساحة عملي",
+  "wide": "عرض موسّع (420 بكسل)",
+  "completeTask": "إكمال المهمة",
+  "completeError": "تعذر إكمال المهمة. حاول مرة أخرى.",
+  "sections": {
+    "overdue": "مهام متأخرة",
+    "today": "مهام اليوم",
+    "alerts": "تنبيهات مهمة",
+    "notifications": "آخر الإشعارات"
+  },
+  "views": {
+    "overview": "نظرة عامة",
+    "tasks": "المهام",
+    "notifications": "الإشعارات"
   }
 }
