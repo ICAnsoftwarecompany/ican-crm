@@ -64,13 +64,12 @@ function WorkSection({ id, items, expanded, onExpand, onNavigate, onComplete, co
   )
 }
 
-export function SmartWorkspacePanel({ open, mode, onClose, onModeChange }) {
+export function SmartWorkspacePanel({ open, mode, onClose, onModeChange, wide, onWideChange }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [tab, setTab] = useLocalStorage('smart-work-hub-tab', 'overview')
   const [expanded, setExpanded] = useLocalStorage('smart-work-hub-expanded', ['overdue', 'today'])
   const [visibleSections, setVisibleSections] = useLocalStorage('smart-work-hub-sections', SECTIONS)
-  const [wide, setWide] = useLocalStorage('smart-work-hub-wide', false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [completeError, setCompleteError] = useState(false)
 
@@ -156,7 +155,7 @@ export function SmartWorkspacePanel({ open, mode, onClose, onModeChange }) {
           {settingsOpen && (
             <div className="mb-3 rounded-xl border border-[var(--border)] p-3">
               <label className="mb-2 flex items-center gap-2 text-xs font-semibold">
-                <input type="checkbox" checked={wide} onChange={(event) => setWide(event.target.checked)} />
+                <input type="checkbox" checked={wide} onChange={(event) => onWideChange(event.target.checked)} />
                 {t('workspacePanel.wide')}
               </label>
               {SECTIONS.map((id) => (
