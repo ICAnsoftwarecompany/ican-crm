@@ -1,4 +1,4 @@
-export default {
+const proposalTranslations = {
   "builder": {
     "fields": {
       "blockName": "Block Name",
@@ -239,4 +239,11 @@ export default {
       "link": "Link"
     }
   }
+}
+
+// Keep existing proposals.builder.* keys while exposing the page, wizard,
+// templates, pricing and other shared groups at proposals.* as used by the UI.
+export default {
+  ...proposalTranslations.builder,
+  ...proposalTranslations,
 }
