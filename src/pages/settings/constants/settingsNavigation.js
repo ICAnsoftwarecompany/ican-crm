@@ -1,4 +1,4 @@
-import { Palette, Settings, Tags, UserPlus, Workflow } from 'lucide-react'
+import { BookOpen, Palette, Settings, Tags, UserPlus, Workflow } from 'lucide-react'
 import { COMMUNICATION_MODULES } from '../../../features/communication'
 
 export const SETTINGS_ROUTE = '/settings'
@@ -18,6 +18,7 @@ export function getSettingsNavigationGroups(t) {
         { to: `${SETTINGS_ROUTE}/users`, label: t('settings.sections.users.label'), icon: UserPlus },
         { to: `${SETTINGS_ROUTE}/integrations`, label: t('settings.sections.integrations.label'), icon: Workflow },
         { to: `${SETTINGS_ROUTE}/appearance`, label: t('branding.appearance.nav.title'), icon: Palette },
+        { to: `${SETTINGS_ROUTE}/about`, label: t('settings.sections.about.label'), icon: BookOpen },
       ],
     },
     {
