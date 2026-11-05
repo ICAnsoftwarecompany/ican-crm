@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Search, Plus, MoreHorizontal, Command, PanelLeft, Users, Moon, Sun } from 'lucide-react'
+import { Search, Plus, MoreHorizontal, Command, PanelLeft, PanelRight, Users, Moon, Sun } from 'lucide-react'
 import { usePageHeaderStore } from '../../../store/pageHeaderStore'
 import { useThemeStore } from '../../../store/themeStore'
 import { useNavigation } from '../../../app/navigation/useNavigation'
@@ -31,6 +31,8 @@ const PAGE_CHANNEL_ICONS = [
 export function Header({
   onToggleSidebar,
   collapsed,
+  workspaceOpen = false,
+  onToggleWorkspace,
   messengerSidebarOpen = false,
   onToggleMessengerSidebar,
   gmailSidebarOpen = false,
@@ -122,6 +124,13 @@ export function Header({
         <NetworkStatusIndicator />
 
         <LiveMeetingIndicator />
+
+        <button type="button" onClick={onToggleWorkspace} aria-pressed={workspaceOpen}
+          aria-label={t('workspacePanel.toggle')} title={t('workspacePanel.toggle')}
+          className={`inline-flex h-8 items-center gap-1 rounded-lg border px-2 text-xs font-bold ${workspaceOpen ? 'border-[var(--brand-accent)] bg-[var(--brand-accent-soft)] text-[var(--brand-accent)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text)]'}`}>
+          <PanelRight size={16} />
+          <span className="hidden xl:inline">{t('workspacePanel.shortTitle')}</span>
+        </button>
 
         <NotificationCenterButton />
 
