@@ -70,6 +70,7 @@ export function SmartWorkspacePanel({ open, mode, onClose, onModeChange, wide, o
   const [tab, setTab] = useLocalStorage('smart-work-hub-tab', 'overview')
   const [expanded, setExpanded] = useLocalStorage('smart-work-hub-expanded', ['overdue', 'today'])
   const [visibleSections, setVisibleSections] = useLocalStorage('smart-work-hub-sections', SECTIONS)
+  const [sectionOrder, setSectionOrder] = useLocalStorage('smart-work-hub-order', SECTIONS)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [completeError, setCompleteError] = useState(false)
 
@@ -110,6 +111,14 @@ export function SmartWorkspacePanel({ open, mode, onClose, onModeChange, wide, o
     const list = Array.isArray(old) ? old : SECTIONS
     return list.includes(id) ? list.filter((key) => key !== id) : [...list, id]
   })
+  const moveSection = (id, direction) => setSectionOrder((old) => {
+    const list = Array.isArray(old) ? [...old] : [...SECTIONS]
+    const index = list.indexOf(id)
+    const next = index + direction
+    if (index < 0 || next < 0 || next >= list.length) return list
+    ;[list[index], list[next]] = [list[next], list[index]]
+    return list
+  })
   const completeTask = (id) => {
     setCompleteError(false)
     taskMutations.changeStatus.mutate({ taskId: id, payload: { status: 'completed' } }, {
@@ -117,7 +126,8 @@ export function SmartWorkspacePanel({ open, mode, onClose, onModeChange, wide, o
     })
   }
   const selected = tab === 'tasks' ? ['overdue', 'today'] : tab === 'notifications' ? ['notifications', 'alerts'] : SECTIONS
-  const displayed = selected.filter((id) => (Array.isArray(visibleSections) ? visibleSections : SECTIONS).includes(id))
+  const displayed = (Array.isArray(sectionOrder) ? sectionOrder : SECTIONS)
+    .filter((id) => selected.includes(id) && (Array.isArray(visibleSections) ? visibleSections : SECTIONS).includes(id))
   const loading = tasks.isLoading || alerts.isLoading || notifications.isLoading
   const error = tasks.error || alerts.error || notifications.error
 
@@ -158,12 +168,16 @@ export function SmartWorkspacePanel({ open, mode, onClose, onModeChange, wide, o
                 <input type="checkbox" checked={wide} onChange={(event) => onWideChange(event.target.checked)} />
                 {t('workspacePanel.wide')}
               </label>
-              {SECTIONS.map((id) => (
-                <label key={id} className="flex items-center gap-2 py-1 text-xs">
-                  <input type="checkbox" checked={(Array.isArray(visibleSections) ? visibleSections : SECTIONS).includes(id)}
-                    onChange={() => toggleVisible(id)} />
-                  {t('workspacePanel.sections.' + id)}
-                </label>
+              {(Array.isArray(sectionOrder) ? sectionOrder : SECTIONS).map((id) => (
+                <div key={id} className="flex items-center gap-2 py-1 text-xs">
+                  <label className="flex min-w-0 flex-1 items-center gap-2">
+                    <input type="checkbox" checked={(Array.isArray(visibleSections) ? visibleSections : SECTIONS).includes(id)}
+                      onChange={() => toggleVisible(id)} />
+                    {t('workspacePanel.sections.' + id)}
+                  </label>
+                  <button type="button" onClick={() => moveSection(id, -1)} aria-label={t('workspacePanel.moveUp')} className="rounded p-1 hover:bg-[var(--surface-2)]"><ChevronUp size={15} /></button>
+                  <button type="button" onClick={() => moveSection(id, 1)} aria-label={t('workspacePanel.moveDown')} className="rounded p-1 hover:bg-[var(--surface-2)]"><ChevronDown size={15} /></button>
+                </div>
               ))}
             </div>
           )}
