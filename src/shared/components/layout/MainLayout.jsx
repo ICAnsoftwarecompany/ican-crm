@@ -140,14 +140,15 @@ export function MainLayout() {
       <div
         className={cn(
           'transition-all duration-300',
-          collapsed ? 'ps-16' : 'ps-60'
+          collapsed ? 'ps-16' : 'ps-60',
+          workspaceDocked && 'lg:!pe-[340px]'
         )}
         style={{
           '--messenger-sidebar-width': 'min(390px, calc(100vw - 72px))',
           '--tasks-sidebar-width': 'min(390px, calc(100vw - 72px))',
           '--layout-sidebar-current': collapsed ? 'var(--sidebar-collapsed)' : 'var(--sidebar-width)',
           paddingInlineEnd: 'calc(var(--layout-right-sidebar-offset, 0px) + var(--layout-page-drawer-offset, 0px) + var(--smart-workspace-dock-offset, 0px))',
-          '--smart-workspace-dock-offset': workspaceDocked ? '340px' : '0px',
+          '--smart-workspace-dock-offset': '0px',
         }}
       >
         <Header
