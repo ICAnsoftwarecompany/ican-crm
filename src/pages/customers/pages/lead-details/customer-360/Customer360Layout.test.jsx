@@ -10,13 +10,13 @@ const render = (props = {}, language = 'ar') => {
   return renderToStaticMarkup(
     <I18nextProvider i18n={i18n}>
       <Customer360Layout
-    header={<span>Customer header</span>}
-    actions={<button type="button">Customer action</button>}
-    overview={<span>Customer profile</span>}
-    tabs={<nav>Customer tabs</nav>}
-    content={<article>Customer activity</article>}
-    floatingChats={<div>Customer chats</div>}
-    {...props}
+        header={<span>Customer header</span>}
+        actions={<button type="button">Customer action</button>}
+        overview={<span>Customer profile</span>}
+        tabs={<nav>Customer tabs</nav>}
+        content={<article>Customer activity</article>}
+        floatingChats={<div>Customer chats</div>}
+        {...props}
       />
     </I18nextProvider>
   )
