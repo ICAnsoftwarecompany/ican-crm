@@ -971,6 +971,15 @@ export default {
     "emptyDescription": "لم يتم تسجيل أحداث على هذا العميل حتى الآن."
   },
   "leadDetails": {
+    "unifiedProfile": "ملف العميل الموحد",
+    "workspaceSubtitle": "Customer 360 · مساحة متابعة العميل",
+    "recordNumber": "رقم السجل: {{id}}",
+    "profileNavigation": "التنقل داخل ملف العميل",
+    "profileAndDeals": "بيانات العميل والصفقات",
+    "activityAndHistory": "سجل العميل والأنشطة",
+    "actionsAndCommunication": "مركز الإجراءات والتواصل",
+    "customerDetailsAndActivities": "تفاصيل العميل والأنشطة",
+    "loadingDetails": "جاري تحميل بيانات العميل...",
     "breadcrumb": "مسار التنقل",
     "customers": "العملاء",
     "title": "تفاصيل العميل",

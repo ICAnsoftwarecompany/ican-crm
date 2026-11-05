@@ -971,6 +971,15 @@ export default {
     "emptyDescription": "No events have been recorded for this customer yet."
   },
   "leadDetails": {
+    "unifiedProfile": "Unified customer profile",
+    "workspaceSubtitle": "Customer 360 · Customer workspace",
+    "recordNumber": "Record number: {{id}}",
+    "profileNavigation": "Customer profile navigation",
+    "profileAndDeals": "Customer profile and deals",
+    "activityAndHistory": "Customer history and activities",
+    "actionsAndCommunication": "Actions and communication center",
+    "customerDetailsAndActivities": "Customer details and activities",
+    "loadingDetails": "Loading customer details...",
     "breadcrumb": "Breadcrumb",
     "customers": "Customers",
     "title": "Customer details",
