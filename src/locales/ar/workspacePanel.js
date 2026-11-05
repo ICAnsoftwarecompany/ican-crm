@@ -30,5 +30,7 @@ export default {
     "overview": "نظرة عامة",
     "tasks": "المهام",
     "notifications": "الإشعارات"
-  }
+  },
+  "moveUp": "تحريك لأعلى",
+  "moveDown": "تحريك لأسفل"
 }
