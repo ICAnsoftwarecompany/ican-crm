@@ -27,7 +27,7 @@ export function MainLayout() {
   const [collapsed, setCollapsed] = useLocalStorage('main-sidebar-collapsed', false)
   const [workspaceOpen, setWorkspaceOpen] = useLocalStorage('smart-workspace-open', true)
   const [workspaceMode, setWorkspaceMode] = useLocalStorage('smart-workspace-mode', 'docked')
-  const [workspaceWide] = useLocalStorage('smart-work-hub-wide', false)
+  const [workspaceWide, setWorkspaceWide] = useLocalStorage('smart-work-hub-wide', false)
   const [messengerSidebarOpen, setMessengerSidebarOpen] = useState(false)
   const [messengerSidebarTarget, setMessengerSidebarTarget] = useState({ conversationId: '' })
   const [gmailSidebarOpen, setGmailSidebarOpen] = useState(false)
@@ -278,6 +278,8 @@ export function MainLayout() {
         mode={workspaceMode}
         onClose={() => setWorkspaceOpen(false)}
         onModeChange={setWorkspaceMode}
+        wide={workspaceWide}
+        onWideChange={setWorkspaceWide}
       />
 
       <MessengerSidebarPanel
