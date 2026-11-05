@@ -3,6 +3,7 @@ import { PipelineTemplatesPanel } from '../../../features/deals'
 import { DefinitionsSettingsPage } from '../pages/definitions/DefinitionsSettingsPage'
 import { UsersSettingsPage } from '../pages/users/UsersSettingsPage'
 import { IntegrationsSettingsPage } from '../pages/integrations/IntegrationsSettingsPage'
+import { AboutCrmPage } from '../pages/about/AboutCrmPage'
 import { AppearanceSettingsPage } from '../pages/appearance/AppearanceSettingsPage'
 import { CommunicationSettingsSection } from '../pages/communication/CommunicationSettingsSection'
 
@@ -22,6 +23,7 @@ const SECTIONS = [
   { id: 'users', render: () => <UsersSettingsPage /> },
   { id: 'integrations', render: () => <IntegrationsSettingsPage /> },
   { id: 'appearance', render: () => <AppearanceSettingsPage /> },
+  { id: 'about', render: () => <AboutCrmPage /> },
   // Deals (2026-10-03): pipeline templates, also shown in every deal's Settings page and on /deals/pipelines.
   { id: 'deals.pipelines', render: () => <PipelineTemplatesPanel /> },
   ...COMMUNICATION_MODULES.map((module) => ({
