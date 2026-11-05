@@ -110,6 +110,10 @@ export function MainLayout() {
     setActiveUsersSidebarOpen(false)
   }
   const workspaceDocked = workspaceOpen && workspaceMode === 'docked'
+
+  useEffect(() => {
+    if (activeRightSidebar) setWorkspaceOpen(false)
+  }, [activeRightSidebar])
   const internalChatUnreadQuery = useChatUnreadCount({ per_page: 30 })
   const internalChatUnreadCount = Number(internalChatUnreadQuery.unreadCount || 0)
   const isDealRoute = /^\/deals\//.test(location.pathname)
