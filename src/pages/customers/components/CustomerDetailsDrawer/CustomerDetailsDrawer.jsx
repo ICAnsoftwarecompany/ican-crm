@@ -305,7 +305,7 @@ function CustomerHeader({ customer, currentStatus, currentTag, statuses, isLoadi
             </h3>
             {isLoadingDetails && (
               <span className="rounded-full bg-white/80 px-2 py-0.5 text-[11px] font-semibold text-[#007A80]">
-                Loading...
+                {t('customers.leadDetails.loadingDetails')}
               </span>
             )}
             {(customer.created_at || customer.createdAt) && (
@@ -749,7 +749,7 @@ function CustomerHeaderModernSplit({
                 ) : null}
                 {isLoadingDetails && (
                   <span className="rounded-full bg-[#E8F9FA] px-2 py-0.5 text-[11px] font-semibold text-[#007A80]">
-                    Loading...
+                    {t('customers.leadDetails.loadingDetails')}
                   </span>
                 )}
               </div>
