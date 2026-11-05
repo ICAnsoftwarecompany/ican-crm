@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { BriefcaseBusiness, MessagesSquare } from 'lucide-react'
 import { Sidebar } from './Sidebar'
 import { Header } from './Header'
+import { SmartWorkspacePanel } from './SmartWorkspacePanel'
 import { cn } from '../../utils/cn'
 import { useLocalStorage } from '../data-table/hooks/useLocalStorage'
 import { useGlobalMessengerNotifications } from '../../../features/conversations/hooks/useGlobalMessengerNotifications'
@@ -24,6 +25,8 @@ export function MainLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const [collapsed, setCollapsed] = useLocalStorage('main-sidebar-collapsed', false)
+  const [workspaceOpen, setWorkspaceOpen] = useLocalStorage('smart-workspace-open', false)
+  const [workspaceMode, setWorkspaceMode] = useLocalStorage('smart-workspace-mode', 'docked')
   const [messengerSidebarOpen, setMessengerSidebarOpen] = useState(false)
   const [messengerSidebarTarget, setMessengerSidebarTarget] = useState({ conversationId: '' })
   const [gmailSidebarOpen, setGmailSidebarOpen] = useState(false)
@@ -96,6 +99,17 @@ export function MainLayout() {
   }, [])
 
   const activeRightSidebar = messengerSidebarOpen || gmailSidebarOpen || whatsappSidebarOpen || tasksSidebarOpen || todoSidebarOpen || internalChatSidebarOpen || activeUsersSidebarOpen
+  const toggleWorkspace = () => {
+    setWorkspaceOpen((open) => !open)
+    setMessengerSidebarOpen(false)
+    setGmailSidebarOpen(false)
+    setWhatsappSidebarOpen(false)
+    setTasksSidebarOpen(false)
+    setTodoSidebarOpen(false)
+    setInternalChatSidebarOpen(false)
+    setActiveUsersSidebarOpen(false)
+  }
+  const workspaceDocked = workspaceOpen && workspaceMode === 'docked'
   const internalChatUnreadQuery = useChatUnreadCount({ per_page: 30 })
   const internalChatUnreadCount = Number(internalChatUnreadQuery.unreadCount || 0)
   const isDealRoute = /^\/deals\//.test(location.pathname)
@@ -132,11 +146,14 @@ export function MainLayout() {
           '--messenger-sidebar-width': 'min(390px, calc(100vw - 72px))',
           '--tasks-sidebar-width': 'min(390px, calc(100vw - 72px))',
           '--layout-sidebar-current': collapsed ? 'var(--sidebar-collapsed)' : 'var(--sidebar-width)',
-          paddingInlineEnd: 'calc(var(--layout-right-sidebar-offset, 0px) + var(--layout-page-drawer-offset, 0px))',
+          paddingInlineEnd: 'calc(var(--layout-right-sidebar-offset, 0px) + var(--layout-page-drawer-offset, 0px) + var(--smart-workspace-dock-offset, 0px))',
+          '--smart-workspace-dock-offset': workspaceDocked ? '340px' : '0px',
         }}
       >
         <Header
           collapsed={collapsed}
+          workspaceOpen={workspaceOpen}
+          onToggleWorkspace={toggleWorkspace}
           onToggleSidebar={() => setCollapsed((c) => !c)}
           messengerSidebarOpen={messengerSidebarOpen}
           onToggleMessengerSidebar={() => {
@@ -249,6 +266,13 @@ export function MainLayout() {
           </div>
         </main>
       </div>
+
+      <SmartWorkspacePanel
+        open={workspaceOpen}
+        mode={workspaceMode}
+        onClose={() => setWorkspaceOpen(false)}
+        onModeChange={setWorkspaceMode}
+      />
 
       <MessengerSidebarPanel
         open={messengerSidebarOpen}
