@@ -5,15 +5,16 @@ import { CheckCircle2, FileSignature, UserRound } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useCustomers } from '../../../../../features/customers/hooks/useCustomers'
-import { useProposalMutations, useProposalTemplates } from '../../../../../features/proposals'
+import { useProposalMutations, useProposalTemplates, useProposalTemplateInfo } from '../../../../../features/proposals'
 import { useUsers } from '../../../../../features/users/hooks/useUsers'
 import { Button } from '../../../../../shared/components/ui/Button'
 import { Input } from '../../../../../shared/components/ui/Input'
 import { Select } from '../../../../../shared/components/ui/Select'
 import { CURRENCY_OPTIONS } from '../constants/proposalBuilderDefaults'
-import { buildVersionPayload, createDefaultBuilderContent } from '../utils/proposalBuilderContent'
+import { buildVersionPayload } from '../utils/proposalBuilderContent'
 import { extractCustomersFromInfinite, getCustomerName, getResponseEntity } from '../utils/proposalPayloads'
 import { ProposalModal } from './ProposalModal'
+import { createProposalContentFromTemplate, getCurrentTemplateVersion } from '../utils/templateVersionSnapshot'
 
 function defaultExpiryDate() {
   const date = new Date()
@@ -48,6 +49,7 @@ export function ProposalWizard({ open, onClose }) {
   const customersQuery = useCustomers({ per_page: 60 })
   const templatesQuery = useProposalTemplates()
   const usersQuery = useUsers()
+  const selectedTemplateQuery = useProposalTemplateInfo(form.template_id, undefined, { enabled: Boolean(open && form.template_id) })
   const mutations = useProposalMutations()
 
   const customers = extractCustomersFromInfinite(customersQuery.data)
@@ -61,6 +63,8 @@ export function ProposalWizard({ open, onClose }) {
   const selectedTemplate = useMemo(() => (
     templates.find((template) => String(template.id) === String(form.template_id))
   ), [templates, form.template_id])
+
+  const currentTemplateVersion = getCurrentTemplateVersion(selectedTemplateQuery.data)
 
   const updateForm = (key, value) => {
     setForm((current) => {
@@ -80,8 +84,14 @@ export function ProposalWizard({ open, onClose }) {
   }
 
   const handleCreate = async () => {
+    if (mutations.createProposal.isPending || mutations.createProposalVersion.isPending) return
     if (!selectedCustomer) {
       toast.error(t('proposals.wizard.chooseCustomerFirst'))
+      return
+    }
+
+    if (!currentTemplateVersion || !createProposalContentFromTemplate(currentTemplateVersion, { title: form.title }, selectedCustomer, t)) {
+      toast.error(t('proposals.templateEditor.selectPublishedVersion'))
       return
     }
 
@@ -112,12 +122,12 @@ export function ProposalWizard({ open, onClose }) {
       return
     }
 
-    const visualContent = createDefaultBuilderContent({ ...createdProposal, ...payload }, selectedCustomer, t)
+    const visualContent = createProposalContentFromTemplate(currentTemplateVersion, { ...createdProposal, ...payload }, selectedCustomer, t)
     await mutations.createProposalVersion.mutateAsync({
       proposalId: createdProposalId,
       payload: buildVersionPayload(null, { ...createdProposal, ...payload }, visualContent, {
         name: 'Version 1',
-        change_note: 'Created from visual wizard',
+        change_note: t('proposals.templateEditor.createdFromTemplate'),
         template_id: Number(form.template_id) || undefined,
         is_current: true,
       }),
@@ -134,11 +144,11 @@ export function ProposalWizard({ open, onClose }) {
         {stepIndex === 0 ? t('customers.table.cancel') : t('proposals.wizard.previous')}
       </Button>
       {stepIndex < STEPS.length - 1 ? (
-        <Button disabled={!canMoveNext()} onClick={() => setStepIndex((index) => index + 1)}>
+        <Button disabled={!canMoveNext() || (STEPS[stepIndex].id === 'template' && (!currentTemplateVersion || selectedTemplateQuery.isLoading))} onClick={() => setStepIndex((index) => index + 1)}>
           {t('proposals.wizard.next')}
         </Button>
       ) : (
-        <Button onClick={handleCreate} loading={mutations.createProposal.isPending || mutations.createProposalVersion.isPending}>
+        <Button onClick={handleCreate} disabled={!currentTemplateVersion || selectedTemplateQuery.isLoading} loading={mutations.createProposal.isPending || mutations.createProposalVersion.isPending}>
           {t('proposals.wizard.createAndOpenBuilder')}
         </Button>
       )}
@@ -189,6 +199,7 @@ export function ProposalWizard({ open, onClose }) {
             options={templates.map((template) => ({ value: String(template.id), label: template.name || `Template #${template.id}` }))}
             placeholder={templatesQuery.isLoading ? t('proposals.wizard.loadingTemplates') : t('proposals.wizard.chooseTemplatePlaceholder')}
           />
+          {form.template_id && <div className="md:col-span-2 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm text-[var(--text-muted)]" role="status">{selectedTemplateQuery.isLoading ? t('proposals.templateEditor.loading') : currentTemplateVersion ? t('proposals.templateEditor.usingVersion', { name: currentTemplateVersion.name || currentTemplateVersion.id }) : t('proposals.templateEditor.selectPublishedVersion')}</div>}
           <Select
             label={t('customers.table.assignedTo')}
             value={form.assigned_to}
