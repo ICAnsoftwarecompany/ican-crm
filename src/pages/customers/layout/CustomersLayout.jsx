@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useLocation } from 'react-router-dom'
+import { FileText, Files, FilePlus2, LayoutTemplate, Settings2, Workflow } from 'lucide-react'
 import { SubSidebarLayout } from '../../../shared/components/sub-sidebar'
 import { getCustomersSidebarConfig } from '../constants/customerNavigation'
 import {
@@ -9,6 +11,20 @@ import {
 
 export function CustomersLayout() {
   const { t } = useTranslation()
+  const { pathname } = useLocation()
+  const isProposals = /^\/LeadsCenter\/proposals(?:\/|$)/.test(pathname)
+  const proposalSidebar = {
+    header: { icon: FileText, title: t('proposals.workspace.title'), description: t('proposals.workspace.listHelp'), expandLabel: t('proposals.workspace.title'), collapseLabel: t('proposals.workspace.title') },
+    ariaLabel: t('proposals.workspace.title'),
+    groups: [{ id: 'proposals', label: t('proposals.workspace.title'), items: [
+      { to: '/LeadsCenter/proposals', label: t('proposals.workspace.list'), icon: Files, end: true },
+      { to: '/LeadsCenter/proposals?action=new', label: t('proposals.workspace.new'), icon: FilePlus2 },
+      { to: '/LeadsCenter/proposals/templates', label: t('proposals.workspace.templates'), icon: LayoutTemplate },
+      { to: '/LeadsCenter/proposals?view=settings', label: t('proposals.workspace.settings'), icon: Settings2 },
+      { to: '/LeadsCenter/proposals?view=automation', label: t('proposals.workspace.automation'), icon: Workflow },
+    ] }],
+    footerItems: [],
+  }
   const [bulkActionsPinMode, setBulkActionsPinMode] = useState('none')
 
   useEffect(() => {
@@ -39,11 +55,11 @@ export function CustomersLayout() {
 
   return (
     <SubSidebarLayout
-      storageKey="customers-sidebar-collapsed"
-      mobileId="customers-mobile-sidebar"
-      mobileLabel={t('customers.nav.leadsCenterMenu')}
-      sidebar={getCustomersSidebarConfig(t)}
-      afterSidebar={bulkActionsRail}
+      storageKey={isProposals ? "proposals-sidebar-collapsed" : "customers-sidebar-collapsed"}
+      mobileId={isProposals ? "proposals-mobile-sidebar" : "customers-mobile-sidebar"}
+      mobileLabel={isProposals ? t("proposals.workspace.title") : t("customers.nav.leadsCenterMenu")}
+      sidebar={isProposals ? proposalSidebar : getCustomersSidebarConfig(t)}
+      afterSidebar={isProposals ? null : bulkActionsRail}
     />
   )
 }
