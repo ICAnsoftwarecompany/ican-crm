@@ -64,3 +64,44 @@ export function createProposalContentFromTemplate(templateVersion, proposal, cus
     sections,
   }
 }
+
+/**
+ * Compare persisted builder data with the submitted snapshot, ignoring
+ * object key order but retaining section/block array order.
+ */
+function stable(value) {
+  if (Array.isArray(value)) return value.map(stable)
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.keys(value).sort().map(key => [key, stable(value[key])]))
+  }
+  return value
+}
+
+export function verifySavedTemplateContent(saved, submitted) {
+  const raw = getTemplateVersionContent(saved)
+  if (raw == null) return false
+  let content = raw
+  if (typeof content === 'string') {
+    try { content = JSON.parse(content) } catch { return false }
+  }
+  if (!Array.isArray(content?.sections) || !Array.isArray(submitted?.sections)) return false
+  const shape = value => ({
+    sections: value.sections.map(section => ({
+      id: String(section.id),
+      title: section.title,
+      description: section.description || '',
+      is_visible: section.is_visible !== false && section.is_visible !== 0,
+      blocks: (section.blocks || []).map(block => ({
+        id: String(block.id),
+        type: block.type,
+        name: block.name,
+        is_visible: block.is_visible !== false && block.is_visible !== 0,
+        data: block.data || {},
+        styles: block.styles || {},
+      })),
+    })),
+    settings: value.settings || {},
+    design: value.design || {},
+  })
+  return JSON.stringify(stable(shape(content))) === JSON.stringify(stable(shape(submitted)))
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createProposalContentFromTemplate, getCurrentTemplateVersion, getTemplateVersions } from './templateVersionSnapshot'
+import { createProposalContentFromTemplate, getCurrentTemplateVersion, getTemplateVersions, verifySavedTemplateContent } from './templateVersionSnapshot'
 import { normalizeBuilderContent, moveItem } from './proposalBuilderContent'
 
 const translate = key => key
@@ -58,6 +58,18 @@ describe('template version isolation', () => {
     expect(restored.sections[1].blocks).toEqual([])
     expect(restored.sections[1].description).toBe('No blocks yet')
     expect(restored.sections[0].is_visible).toBe(false)
+  })
+
+  it('verifies persisted section and block order, not just an HTTP success', () => {
+    const saved = { content: structuredClone(templateContent) }
+    expect(verifySavedTemplateContent(saved, templateContent)).toBe(true)
+    const changed = structuredClone(templateContent)
+    changed.sections.reverse()
+    expect(verifySavedTemplateContent(saved, changed)).toBe(false)
+    const modified = structuredClone(templateContent)
+    modified.sections[0].blocks[1].data.content = 'Different'
+    expect(verifySavedTemplateContent(saved, modified)).toBe(false)
+    expect(verifySavedTemplateContent({ content: '{broken' }, templateContent)).toBe(false)
   })
 
   it('reorders without mutating the original array', () => {

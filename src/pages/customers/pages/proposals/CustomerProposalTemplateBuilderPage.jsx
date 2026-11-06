@@ -10,7 +10,7 @@ import { ProposalPropertiesPanel } from './components/ProposalPropertiesPanel'
 import { ProposalCanvas } from './components/ProposalCanvas'
 import { createDefaultBlock, createDefaultBuilderContent, createDefaultSection, moveItem, normalizeBuilderContent } from './utils/proposalBuilderContent'
 import { getEntityId, getResponseEntity } from './utils/proposalPayloads'
-import { getTemplateVersions, getTemplateVersionContent, getCurrentTemplateVersion } from './utils/templateVersionSnapshot'
+import { getTemplateVersions, getTemplateVersionContent, getCurrentTemplateVersion, getTemplateVersions as extractVersions, verifySavedTemplateContent } from './utils/templateVersionSnapshot'
 
 export function CustomerProposalTemplateBuilderPage() {
   const { templateId } = useParams()
@@ -58,6 +58,12 @@ export function CustomerProposalTemplateBuilderPage() {
       await mutations.updateVersionBuilder.mutateAsync({ versionId: currentVersion.id, payload: {
         content: savedContent, settings: savedContent.settings, design: savedContent.design,
       } })
+      const refreshed = await query.refetch()
+      const persisted = extractVersions(refreshed.data).find(version => String(version.id) === String(currentVersion.id))
+      if (!persisted || !verifySavedTemplateContent(persisted, savedContent)) {
+        toast.error(tr('saveNotVerified'))
+        return
+      }
       if (editRevision.current === revision) setDirty(false)
       toast.success(tr('saved'))
     } catch { toast.error(tr('saveFailed')) }
