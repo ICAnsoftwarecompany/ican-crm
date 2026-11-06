@@ -21,7 +21,7 @@ function SortableRow({ id, selected, children, onClick }) {
         selected && 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]'
       )}
     >
-      <button type="button" {...attributes} {...listeners} className="cursor-grab touch-none text-[var(--text-light)]" aria-label={t("proposals.builder.dragToReorder")}><GripVertical size={15} /></button>
+      <button type="button" {...attributes} {...listeners} className="cursor-grab touch-none text-[var(--text-light)]" aria-label={t("proposals.dragToReorder")}><GripVertical size={15} /></button>
       <button type="button" onClick={onClick} className="min-w-0 flex-1 truncate text-start">{children}</button>
     </div>
   )
