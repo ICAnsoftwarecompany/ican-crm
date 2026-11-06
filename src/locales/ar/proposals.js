@@ -1,4 +1,5 @@
 const proposalTranslations = {
+  builder: { dragToReorder: "اسحب لإعادة الترتيب" },
   templateEditor: {
   "edit": "تصميم القالب",
   "back": "العودة للقوالب",
