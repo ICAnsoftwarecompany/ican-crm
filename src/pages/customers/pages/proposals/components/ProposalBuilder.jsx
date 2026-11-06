@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { BadgeDollarSign, Layers, Settings2 } from 'lucide-react'
+import { BadgeDollarSign, Layers, Settings2, Info } from 'lucide-react'
 
 import {
   useProposalInfo,
@@ -213,7 +213,8 @@ export function ProposalBuilder({ proposalId }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#EEF4FA]">
+    <div className="min-h-screen bg-[var(--brand-bg)]">
+      <div className="flex items-start gap-2 border-b border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-xs leading-6 text-[var(--text-muted)]"><Info size={17} className="mt-0.5 shrink-0 text-[var(--brand-accent)]"/><span>{t('proposals.workspace.builderHelp')}</span></div>
       <ProposalBuilderHeader
         proposal={proposal}
         currentVersion={currentVersion}
