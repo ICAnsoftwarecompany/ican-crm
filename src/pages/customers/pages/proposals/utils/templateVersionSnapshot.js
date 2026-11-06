@@ -2,7 +2,8 @@ import { createUid, normalizeBuilderContent } from './proposalBuilderContent'
 
 export function getTemplateVersions(template) {
   const versions = template?.versions ?? template?.template_versions ?? template?.data?.versions ?? []
-  return Array.isArray(versions) ? versions : []
+  if (Array.isArray(versions) && versions.length) return versions
+  return template?.current_version?.id ? [template.current_version] : []
 }
 
 export function getCurrentTemplateVersion(template) {
@@ -35,7 +36,12 @@ function freshIds(content) {
 export function createProposalContentFromTemplate(templateVersion, proposal, customer, t) {
   const raw = getTemplateVersionContent(templateVersion)
   if (!raw) return null
-  const normalized = normalizeBuilderContent(raw, proposal, t)
+  let parsed = raw
+  if (typeof raw === 'string') {
+    try { parsed = JSON.parse(raw) } catch { return null }
+  }
+  if (!Array.isArray(parsed?.sections) || !parsed.sections.length) return null
+  const normalized = normalizeBuilderContent(parsed, proposal, t)
   const customerName = customer?.name || customer?.full_name || proposal?.metadata?.customer_name || ''
   const sections = freshIds(normalized).sections.map(section => ({
     ...section,
