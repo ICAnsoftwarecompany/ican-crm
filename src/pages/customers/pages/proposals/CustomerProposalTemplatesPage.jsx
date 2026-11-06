@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, Copy, FileSignature, Power, PowerOff, Plus, Info } from 'lucide-react'
+import { ArrowRight, Copy, FileSignature, Power, PowerOff, Plus, Info, PencilRuler } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { PageToolbar } from '../../../../shared/components/data/PageToolbar'
@@ -67,6 +67,7 @@ export function CustomerProposalTemplatesPage() {
             <h2 className="text-base font-black text-[var(--text)]">{template.name || t('proposals.templates.templateFallback', { id: template.id })}</h2>
             <p className="mt-2 line-clamp-3 min-h-12 text-sm font-semibold leading-6 text-[var(--text-muted)]">{template.description || t('proposals.renderer.noDescription')}</p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
+              <Link to={`/LeadsCenter/proposals/templates/${template.id}/builder`}><Button size="sm"><PencilRuler size={15}/>{t('proposals.templateEditor.edit')}</Button></Link>
               <Button variant="outline" size="sm" onClick={() => run(mutations.duplicateTemplate.mutateAsync(template.id), t('proposals.templates.templateDuplicated'))}>
                 <Copy size={15} />
                 {t('proposals.templates.duplicate')}
