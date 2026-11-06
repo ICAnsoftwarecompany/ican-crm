@@ -7,6 +7,7 @@ const proposalTranslations = {
     "settings": "Settings",
     "automation": "Automation",
     "back": "Back to Leads Center",
+    "builderHelp": "Drag sections and blocks to arrange the proposal, then edit properties, pricing and versions. Changes are saved automatically after you stop typing.",
     "builderHint": "Edit sections, pricing and versions inside the proposal builder.",
     "listHelp": "Start with a reusable template, then create a separate proposal for each customer. Edit proposals and create revisions in the builder.",
     "templatesHelp": "A template is a reusable design for multiple customers. Create a template, then activate it when ready.",
