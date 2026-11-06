@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { NavLink, useLocation } from 'react-router-dom'
-import { ProposalWorkspaceSidebar } from '../../../pages/customers/pages/proposals/components/ProposalWorkspaceSidebar'
+import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ChevronDown, GripVertical, Pin, Sparkles } from 'lucide-react'
 import { cn } from '../../utils/cn'
@@ -154,7 +153,6 @@ function SidebarSection({ section, collapsed, activeItemId, activeSectionId, exp
 
 export function Sidebar({ collapsed }) {
   const { t } = useTranslation()
-  const location = useLocation()
   const { sections, activeItem, activeSectionId } = useNavigation()
   const [collapsedSections, setCollapsedSections] = useLocalStorage('main-sidebar-collapsed-sections', {})
   const [favoriteIds, setFavoriteIds] = useLocalStorage('main-sidebar-favorites', [])
@@ -254,10 +252,6 @@ export function Sidebar({ collapsed }) {
       clearTooltipTimer()
       setReorderTooltip(null)
     },
-  }
-
-  if (/^\/LeadsCenter\/proposals(?:\/|$)/.test(location.pathname)) {
-    return <ProposalWorkspaceSidebar collapsed={collapsed} />
   }
 
   return (
