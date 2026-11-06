@@ -10,7 +10,7 @@ import { ProposalPropertiesPanel } from './components/ProposalPropertiesPanel'
 import { ProposalCanvas } from './components/ProposalCanvas'
 import { createDefaultBlock, createDefaultBuilderContent, createDefaultSection, moveItem, normalizeBuilderContent } from './utils/proposalBuilderContent'
 import { getEntityId, getResponseEntity } from './utils/proposalPayloads'
-import { getTemplateVersions, getTemplateVersionContent } from './utils/templateVersionSnapshot'
+import { getTemplateVersions, getTemplateVersionContent, getCurrentTemplateVersion } from './utils/templateVersionSnapshot'
 
 export function CustomerProposalTemplateBuilderPage() {
   const { templateId } = useParams()
@@ -28,7 +28,7 @@ export function CustomerProposalTemplateBuilderPage() {
   const [selected, setSelected] = useState(null)
   const [dirty, setDirty] = useState(false)
   const [preview, setPreview] = useState(false)
-  const currentVersion = versions.find(v => String(v.id) === String(versionId)) || versions.find(v => String(v.id) === String(template?.current_version_id)) || versions.find(v => v.is_current) || versions[0]
+  const currentVersion = versions.find(v => String(v.id) === String(versionId)) || getCurrentTemplateVersion(template) || versions[0]
   const selectedSectionId = selected?.type === 'block' ? selected.sectionId : selected?.id || content?.sections?.[0]?.id
   const pending = mutations.updateVersionBuilder.isPending || mutations.createTemplateVersion.isPending || mutations.duplicateVersion.isPending || mutations.setCurrentVersion.isPending
 
