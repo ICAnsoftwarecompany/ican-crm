@@ -22,43 +22,49 @@ export function CustomerProposalTemplateBuilderPage() {
   const versions = useMemo(() => getTemplateVersions(template), [template])
   const [versionId, setVersionId] = useState(null)
   const hydratedKey = useRef(null)
+  const editRevision = useRef(0)
+  const saving = useRef(false)
   const [content, setContent] = useState(null)
   const [selected, setSelected] = useState(null)
   const [dirty, setDirty] = useState(false)
   const [preview, setPreview] = useState(false)
-  const currentVersion = versions.find(v => String(v.id) === String(versionId)) || versions.find(v => v.is_current) || versions[0]
+  const currentVersion = versions.find(v => String(v.id) === String(versionId)) || versions.find(v => String(v.id) === String(template?.current_version_id)) || versions.find(v => v.is_current) || versions[0]
   const selectedSectionId = selected?.type === 'block' ? selected.sectionId : selected?.id || content?.sections?.[0]?.id
   const pending = mutations.updateVersionBuilder.isPending || mutations.createTemplateVersion.isPending || mutations.duplicateVersion.isPending || mutations.setCurrentVersion.isPending
 
   useEffect(() => {
     if (!template) return
     const key = String(template.id) + ':' + String(currentVersion?.id || 'none')
-    if (hydratedKey.current === key) return
+    if (hydratedKey.current === key || dirty || saving.current) return
     hydratedKey.current = key
     const raw = getTemplateVersionContent(currentVersion)
     const next = normalizeBuilderContent(raw, { title: template.name }, t)
     setContent(next)
     setSelected({ type: 'section', id: next.sections[0]?.id })
     setDirty(false)
-  }, [template?.id, currentVersion?.id, t])
+  }, [template?.id, currentVersion?.id, t, dirty])
 
   const change = (update) => {
+    editRevision.current += 1
     setContent(old => typeof update === 'function' ? update(old) : update)
     setDirty(true)
   }
   const save = async () => {
-    if (!currentVersion?.id || !content) return
+    if (!currentVersion?.id || !content || saving.current) return
+    saving.current = true
+    const revision = editRevision.current
     try {
       const savedContent = content
       await mutations.updateVersionBuilder.mutateAsync({ versionId: currentVersion.id, payload: {
         content: savedContent, settings: savedContent.settings, design: savedContent.design,
       } })
-      setDirty(false)
+      if (editRevision.current === revision) setDirty(false)
       toast.success(tr('saved'))
     } catch { toast.error(tr('saveFailed')) }
+    finally { saving.current = false }
   }
   const createVersion = async (duplicate = false) => {
-    if (dirty) { toast.error(tr('saveBeforeSwitch')); return }
+    if (dirty || saving.current || pending) { toast.error(tr('saveBeforeSwitch')); return }
     try {
       const response = duplicate && currentVersion?.id
         ? await mutations.duplicateVersion.mutateAsync(currentVersion.id)
@@ -77,12 +83,12 @@ export function CustomerProposalTemplateBuilderPage() {
     } catch { toast.error(tr('versionFailed')) }
   }
   const selectVersion = (id) => {
-    if (dirty) { toast.error(tr('saveBeforeSwitch')); return }
+    if (dirty || saving.current || pending) { toast.error(tr('saveBeforeSwitch')); return }
     hydratedKey.current = null
     setVersionId(id)
   }
   const publish = async () => {
-    if (dirty) { toast.error(tr('saveBeforeSwitch')); return }
+    if (dirty || saving.current || pending) { toast.error(tr('saveBeforeSwitch')); return }
     if (!currentVersion?.id || !window.confirm(tr('publishConfirm'))) return
     try {
       await mutations.setCurrentVersion.mutateAsync(currentVersion.id)
