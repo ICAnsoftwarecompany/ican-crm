@@ -9,7 +9,7 @@ import { ProposalBuilderSidebar } from './components/ProposalBuilderSidebar'
 import { ProposalPropertiesPanel } from './components/ProposalPropertiesPanel'
 import { ProposalCanvas } from './components/ProposalCanvas'
 import { createDefaultBlock, createDefaultBuilderContent, createDefaultSection, moveItem, normalizeBuilderContent } from './utils/proposalBuilderContent'
-import { getResponseEntity } from './utils/proposalPayloads'
+import { getEntityId, getResponseEntity } from './utils/proposalPayloads'
 
 function versionsFrom(template) {
   const source = template?.versions || template?.template_versions || template?.data?.versions || []
@@ -69,7 +69,8 @@ export function CustomerProposalTemplateBuilderPage() {
           settings: content?.settings, design: content?.design, is_current: false,
         } })
       const created = getResponseEntity(response)
-      if (created?.id) setVersionId(created.id)
+      const createdId = getEntityId(created)
+      if (createdId) setVersionId(createdId)
       await query.refetch()
       toast.success(tr('versionCreated'))
     } catch { toast.error(tr('versionFailed')) }
