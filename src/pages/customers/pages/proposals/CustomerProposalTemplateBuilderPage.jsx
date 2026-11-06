@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -10,14 +10,7 @@ import { ProposalPropertiesPanel } from './components/ProposalPropertiesPanel'
 import { ProposalCanvas } from './components/ProposalCanvas'
 import { createDefaultBlock, createDefaultBuilderContent, createDefaultSection, moveItem, normalizeBuilderContent } from './utils/proposalBuilderContent'
 import { getEntityId, getResponseEntity } from './utils/proposalPayloads'
-
-function versionsFrom(template) {
-  const source = template?.versions || template?.template_versions || template?.data?.versions || []
-  return Array.isArray(source) ? source : []
-}
-function versionContent(version) {
-  return version?.content || version?.builder_content || version?.builder?.content || version?.builder || null
-}
+import { getTemplateVersions, getTemplateVersionContent } from './utils/templateVersionSnapshot'
 
 export function CustomerProposalTemplateBuilderPage() {
   const { templateId } = useParams()
@@ -26,19 +19,23 @@ export function CustomerProposalTemplateBuilderPage() {
   const query = useProposalTemplateInfo(templateId)
   const mutations = useProposalTemplateMutations()
   const template = query.data
-  const versions = useMemo(() => versionsFrom(template), [template])
+  const versions = useMemo(() => getTemplateVersions(template), [template])
   const [versionId, setVersionId] = useState(null)
+  const hydratedKey = useRef(null)
   const [content, setContent] = useState(null)
   const [selected, setSelected] = useState(null)
   const [dirty, setDirty] = useState(false)
   const [preview, setPreview] = useState(false)
   const currentVersion = versions.find(v => String(v.id) === String(versionId)) || versions.find(v => v.is_current) || versions[0]
   const selectedSectionId = selected?.type === 'block' ? selected.sectionId : selected?.id || content?.sections?.[0]?.id
-  const pending = mutations.updateVersionBuilder.isPending || mutations.createTemplateVersion.isPending
+  const pending = mutations.updateVersionBuilder.isPending || mutations.createTemplateVersion.isPending || mutations.duplicateVersion.isPending || mutations.setCurrentVersion.isPending
 
   useEffect(() => {
     if (!template) return
-    const raw = versionContent(currentVersion)
+    const key = String(template.id) + ':' + String(currentVersion?.id || 'none')
+    if (hydratedKey.current === key) return
+    hydratedKey.current = key
+    const raw = getTemplateVersionContent(currentVersion)
     const next = normalizeBuilderContent(raw, { title: template.name }, t)
     setContent(next)
     setSelected({ type: 'section', id: next.sections[0]?.id })
@@ -52,8 +49,9 @@ export function CustomerProposalTemplateBuilderPage() {
   const save = async () => {
     if (!currentVersion?.id || !content) return
     try {
+      const savedContent = content
       await mutations.updateVersionBuilder.mutateAsync({ versionId: currentVersion.id, payload: {
-        content, settings: content.settings, design: content.design,
+        content: savedContent, settings: savedContent.settings, design: savedContent.design,
       } })
       setDirty(false)
       toast.success(tr('saved'))
@@ -70,13 +68,17 @@ export function CustomerProposalTemplateBuilderPage() {
         } })
       const created = getResponseEntity(response)
       const createdId = getEntityId(created)
-      if (createdId) setVersionId(createdId)
+      if (createdId) {
+        hydratedKey.current = null
+        setVersionId(createdId)
+      }
       await query.refetch()
       toast.success(tr('versionCreated'))
     } catch { toast.error(tr('versionFailed')) }
   }
   const selectVersion = (id) => {
     if (dirty) { toast.error(tr('saveBeforeSwitch')); return }
+    hydratedKey.current = null
     setVersionId(id)
   }
   const publish = async () => {
