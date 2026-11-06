@@ -17,11 +17,11 @@ export function CustomersLayout() {
     header: { icon: FileText, title: t('proposals.workspace.title'), description: t('proposals.workspace.listHelp'), expandLabel: t('proposals.workspace.title'), collapseLabel: t('proposals.workspace.title') },
     ariaLabel: t('proposals.workspace.title'),
     groups: [{ id: 'proposals', label: t('proposals.workspace.title'), items: [
-      { to: '/LeadsCenter/proposals', label: t('proposals.workspace.list'), icon: Files, end: true },
-      { to: '/LeadsCenter/proposals?action=new', label: t('proposals.workspace.new'), icon: FilePlus2 },
+      { to: '/LeadsCenter/proposals', label: t('proposals.workspace.list'), icon: Files, end: true, matchSearch: true },
+      { to: '/LeadsCenter/proposals?action=new', label: t('proposals.workspace.new'), icon: FilePlus2, matchSearch: true },
       { to: '/LeadsCenter/proposals/templates', label: t('proposals.workspace.templates'), icon: LayoutTemplate },
-      { to: '/LeadsCenter/proposals?view=settings', label: t('proposals.workspace.settings'), icon: Settings2 },
-      { to: '/LeadsCenter/proposals?view=automation', label: t('proposals.workspace.automation'), icon: Workflow },
+      { to: '/LeadsCenter/proposals?view=settings', label: t('proposals.workspace.settings'), icon: Settings2, matchSearch: true },
+      { to: '/LeadsCenter/proposals?view=automation', label: t('proposals.workspace.automation'), icon: Workflow, matchSearch: true },
     ] }],
     footerItems: [],
   }
