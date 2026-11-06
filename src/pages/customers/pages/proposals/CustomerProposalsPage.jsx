@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Edit3, Eye, FileSignature, Plus, Search, Trash2 } from 'lucide-react'
+import { Edit3, Eye, FileSignature, Plus, Search, Trash2, Info, Workflow, Settings2, Files } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { PageToolbar } from '../../../../shared/components/data/PageToolbar'
@@ -16,7 +16,12 @@ import { ProposalWizard } from './components/ProposalWizard'
 export function CustomerProposalsPage() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const view = searchParams.get('view')
+  const action = searchParams.get('action')
   const [isWizardOpen, setIsWizardOpen] = useState(false)
+  const wizardOpen = isWizardOpen || action === 'new'
+  const closeWizard = () => { setIsWizardOpen(false); if (action === 'new') setSearchParams({}) }
   const [filters, setFilters] = useState({ search: '', status: '', assigned_to: '' })
   const proposalsQuery = useProposals(filters)
   const usersQuery = useUsers()
@@ -55,6 +60,14 @@ export function CustomerProposalsPage() {
         </Button>
       </PageToolbar>
 
+      {view === 'settings' || view === 'automation' ? (
+        <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm">
+          <div className="flex items-center gap-3"><span className="rounded-xl bg-[var(--surface-2)] p-3">{view === 'settings' ? <Settings2 size={22}/> : <Workflow size={22}/>}</span><div><h2 className="font-bold text-[var(--text)]">{t('proposals.workspace.' + view)}</h2><p className="mt-1 text-sm text-[var(--text-muted)]">{t('proposals.workspace.' + view + 'Help')}</p></div></div>
+          <div className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4 text-sm leading-7 text-[var(--text-muted)]">{t('proposals.workspace.notConfigured')}</div>
+          <Button variant="outline" className="mt-4" onClick={() => navigate('/LeadsCenter/proposals')}>{t('proposals.workspace.list')}</Button>
+        </section>
+      ) : <>
+      <div className="flex items-start gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]"><Info size={19} className="mt-0.5 shrink-0 text-[var(--brand-accent)]"/><span>{t('proposals.workspace.listHelp')}</span></div>
       <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
         <div className="grid gap-3 lg:grid-cols-[1.4fr_1fr_1fr_auto]">
           <Input
@@ -112,7 +125,7 @@ export function CustomerProposalsPage() {
         {visibleProposals.map((proposal) => {
           const customer = getProposalCustomer(proposal)
           return (
-            <div key={proposal.id} className="grid grid-cols-[1.4fr_1fr_.7fr_.8fr_auto] items-center gap-3 border-b border-[var(--border)] px-4 py-3 last:border-b-0 hover:bg-[#F8FAFC]">
+            <div key={proposal.id} className="grid grid-cols-[1.4fr_1fr_.7fr_.8fr_auto] items-center gap-3 border-b border-[var(--border)] px-4 py-3 last:border-b-0 hover:bg-[var(--surface-2)]">
               <div className="min-w-0">
                 <div className="truncate text-sm font-black text-[var(--text)]">{proposal.title || t('proposals.page.proposalFallback', { id: proposal.id })}</div>
                 <div className="mt-1 truncate text-xs font-semibold text-[var(--text-muted)]">{proposal.description || t('proposals.page.expiresPrefix', { date: formatDate(proposal.expires_at, i18n.language) })}</div>
@@ -121,9 +134,9 @@ export function CustomerProposalsPage() {
                 <div className="truncate text-sm font-bold text-[var(--text)]">{customer?.name || '-'}</div>
                 <div className="truncate text-xs font-semibold text-[var(--text-muted)]">{customer?.email || customer?.phone || '-'}</div>
               </div>
-              <div className="text-sm font-black text-[#162847]" dir="ltr">{formatMoney(proposal.total ?? proposal.current_version?.total, proposal.currency)}</div>
+              <div className="text-sm font-black text-[var(--text)]" dir="ltr">{formatMoney(proposal.total ?? proposal.current_version?.total, proposal.currency)}</div>
               <div>
-                <span className="rounded-full border border-[#DCE8F3] bg-[#F8FAFC] px-2 py-1 text-xs font-black text-[var(--text-muted)]">
+                <span className="rounded-full border border-[#DCE8F3] bg-[var(--surface-2)] px-2 py-1 text-xs font-black text-[var(--text-muted)]">
                   {t(`proposals.page.status.${proposal.status || 'draft'}`, { defaultValue: proposal.status || 'draft' })}
                 </span>
               </div>
@@ -143,7 +156,8 @@ export function CustomerProposalsPage() {
         })}
       </section>
 
-      <ProposalWizard open={isWizardOpen} onClose={() => setIsWizardOpen(false)} />
+      </>}
+      <ProposalWizard open={wizardOpen} onClose={closeWizard} />
     </div>
   )
 }

@@ -1,4 +1,31 @@
-export default {
+const proposalTranslations = {
+  workspace: {
+    "title": "عروض الأسعار",
+    "list": "كل العروض",
+    "new": "إنشاء عرض",
+    "templates": "القوالب",
+    "settings": "الإعدادات",
+    "automation": "الأتمتة",
+    "back": "العودة لمركز العملاء",
+    "builderHelp": "اسحب الأقسام والعناصر لترتيب العرض، ثم عدّل الخصائص والأسعار والنسخ. التغييرات تُحفظ تلقائيًا بعد التوقف عن الكتابة.",
+    "builderHint": "يمكنك تعديل الأقسام والأسعار والنسخ من داخل المحرر.",
+    "listHelp": "ابدأ بإنشاء قالب قابل لإعادة الاستخدام، ثم أنشئ عرضًا خاصًا بكل عميل. يمكنك تعديل العرض وإنشاء نسخ جديدة من المحرر.",
+    "templatesHelp": "القالب هو تصميم أساسي تستخدمه مع أكثر من عميل. أنشئ قالبًا أولًا، ثم فعّله عند اكتمال إعداده.",
+    "settingsHelp": "إعدادات عروض الأسعار، مثل القيم الافتراضية والهوية البصرية.",
+    "automationHelp": "أتمتة إرسال العروض والمتابعة والموافقات.",
+    "notConfigured": "هذه الوظيفة لم يُوفّر لها Backend API ضمن الدوال المرسلة؛ لذلك لا توجد إعدادات أو أتمتة مفعّلة حاليًا. لن يتم حفظ إعدادات وهمية.",
+    "createTemplate": "قالب جديد",
+    "templateName": "اسم القالب",
+    "templateCategory": "التصنيف",
+    "templateDescription": "الوصف",
+    "saveTemplate": "حفظ القالب",
+    "cancel": "إلغاء",
+    "created": "تم إنشاء القالب",
+    "createFailed": "تعذر إنشاء القالب",
+    "loadFailed": "تعذر تحميل القوالب، حاول مرة أخرى.",
+    "emptyTemplates": "لا توجد قوالب بعد. ابدأ بإنشاء قالب جديد."
+},
+
   "builder": {
     "fields": {
       "blockName": "اسم البلوك",
@@ -240,3 +267,6 @@ export default {
     }
   }
 }
+
+// Expose the shared proposal groups at proposals.* while preserving builder.*.
+export default { ...proposalTranslations.builder, ...proposalTranslations }
