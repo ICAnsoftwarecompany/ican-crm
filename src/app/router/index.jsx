@@ -31,6 +31,7 @@ import { CustomerLeadDetailsPage } from '../../pages/customers/pages/lead-detail
 import { CustomerProposalsPage } from '../../pages/customers/pages/proposals/CustomerProposalsPage'
 import { CustomerProposalBuilderPage } from '../../pages/customers/pages/proposals/CustomerProposalBuilderPage'
 import { CustomerProposalTemplatesPage } from '../../pages/customers/pages/proposals/CustomerProposalTemplatesPage'
+import { CustomerProposalTemplateBuilderPage } from '../../pages/customers/pages/proposals/CustomerProposalTemplateBuilderPage'
 import { ActivitiesPage } from '../../features/activities'
 import { CampaignsPage } from '../../pages/campaigns/CampaignsPage'
 import { CampaignOverviewPage } from '../../pages/campaigns/pages/CampaignOverviewPage'
@@ -159,6 +160,7 @@ export const router = createBrowserRouter([
           { path: 'activities/meeting/:meetingId', element: <MeetingDetailPage /> },
           { path: 'proposals', element: <CustomerProposalsPage /> },
           { path: 'proposals/templates', element: <CustomerProposalTemplatesPage /> },
+          { path: 'proposals/templates/:templateId/builder', element: <CustomerProposalTemplateBuilderPage /> },
           { path: 'proposals/:proposalId/builder', element: <CustomerProposalBuilderPage /> },
         ],
       },
