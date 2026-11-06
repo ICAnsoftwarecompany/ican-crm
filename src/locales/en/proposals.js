@@ -1,4 +1,30 @@
 export default {
+  workspace: {
+    "title": "Proposals",
+    "list": "All proposals",
+    "new": "Create proposal",
+    "templates": "Templates",
+    "settings": "Settings",
+    "automation": "Automation",
+    "back": "Back to Leads Center",
+    "builderHint": "Edit sections, pricing and versions inside the proposal builder.",
+    "listHelp": "Start with a reusable template, then create a separate proposal for each customer. Edit proposals and create revisions in the builder.",
+    "templatesHelp": "A template is a reusable design for multiple customers. Create a template, then activate it when ready.",
+    "settingsHelp": "Proposal defaults and branding preferences.",
+    "automationHelp": "Automated proposal delivery, follow-ups and approvals.",
+    "notConfigured": "No backend API for this feature was included in the supplied endpoints. No automation or settings are active, and no fake settings will be saved.",
+    "createTemplate": "New template",
+    "templateName": "Template name",
+    "templateCategory": "Category",
+    "templateDescription": "Description",
+    "saveTemplate": "Save template",
+    "cancel": "Cancel",
+    "created": "Template created",
+    "createFailed": "Could not create template",
+    "loadFailed": "Could not load templates. Please try again.",
+    "emptyTemplates": "No templates yet. Create your first template."
+},
+
   "builder": {
     "fields": {
       "blockName": "Block Name",
