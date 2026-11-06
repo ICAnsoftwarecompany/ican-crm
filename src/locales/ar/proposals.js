@@ -1,4 +1,4 @@
-export default {
+const proposalTranslations = {
   workspace: {
     "title": "عروض الأسعار",
     "list": "كل العروض",
@@ -266,3 +266,6 @@ export default {
     }
   }
 }
+
+// Expose the shared proposal groups at proposals.* while preserving builder.*.
+export default { ...proposalTranslations.builder, ...proposalTranslations }
