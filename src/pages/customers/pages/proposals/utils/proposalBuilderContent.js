@@ -140,8 +140,9 @@ export function createDefaultBuilderContent(proposal = {}, customer = null, t) {
 function normalizeOldSection(section, index, t) {
   const sectionFallback = t ? t('proposals.builder.defaults.sectionFallback', { index: index + 1 }) : `Section ${index + 1}`
 
-  if (section?.blocks?.length) {
+  if (Array.isArray(section?.blocks)) {
     return {
+      ...section,
       id: String(section.id || createUid(`section_${index}`)),
       title: section.title || section.name || sectionFallback,
       description: section.description || '',
