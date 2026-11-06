@@ -20,7 +20,10 @@ const proposalTranslations = {
   "saveFailed": "Unable to save changes",
   "saveBeforeSwitch": "Save your changes before changing or creating versions",
   "versionCreated": "Template version created",
-  "versionFailed": "Version operation failed",
+  "selectPublishedVersion": "The selected template has no current version with saved design content. Save and set a current version in the template builder first.",
+    "usingVersion": "A separate snapshot will be created from template version: {{name}}",
+    "createdFromTemplate": "Created from the current template version",
+    "versionFailed": "Version operation failed",
   "publishConfirm": "Set this as the current template version?",
   "published": "Current template version updated"
 },
