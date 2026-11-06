@@ -9,8 +9,8 @@ export function getTemplateVersions(template) {
 export function getCurrentTemplateVersion(template) {
   const versions = getTemplateVersions(template)
   const currentId = template?.current_version_id ?? template?.current_version?.id
-  return versions.find(version => String(version.id) === String(currentId))
-    || versions.find(version => version.is_current === true || version.is_current === 1)
+  return versions.find(version => currentId != null && String(version.id) === String(currentId))
+    || versions.find(version => version.is_current === true || version.is_current === 1 || version.is_current === '1')
     || null
 }
 
