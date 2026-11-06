@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { cn } from '../../utils/cn'
 
 const baseClass = cn(
@@ -31,6 +31,10 @@ function ItemBody({ item, collapsed, isActive }) {
 
 /** One link. Disabled items render as a non-interactive row (plan-gated or "coming soon"). */
 export function SubSidebarNavItem({ item, collapsed = false, onNavigate }) {
+  const location = useLocation()
+  const queryAwareActive = item.matchSearch === true
+    ? location.pathname === item.to.split('?')[0] && location.search === (item.to.includes('?') ? '?' + item.to.split('?')[1] : '')
+    : null
   const layoutClass = collapsed ? 'h-10 justify-center px-0' : 'gap-2.5 px-2.5 py-2'
   const title = collapsed ? item.label : undefined
 
@@ -57,13 +61,13 @@ export function SubSidebarNavItem({ item, collapsed = false, onNavigate }) {
         cn(
           baseClass,
           layoutClass,
-          isActive
+          (queryAwareActive ?? isActive)
             ? 'bg-[var(--surface-2)] font-semibold text-[var(--text)]'
             : 'text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
         )
       }
     >
-      {({ isActive }) => <ItemBody item={item} collapsed={collapsed} isActive={isActive} />}
+      {({ isActive }) => <ItemBody item={item} collapsed={collapsed} isActive={queryAwareActive ?? isActive} />}
     </NavLink>
   )
 }
