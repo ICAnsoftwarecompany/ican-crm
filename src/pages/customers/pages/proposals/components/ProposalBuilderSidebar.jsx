@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { CSS } from '@dnd-kit/utilities'
-import { DndContext, closestCenter } from '@dnd-kit/core'
-import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { DndContext, PointerSensor, KeyboardSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core'
+import { SortableContext, useSortable, verticalListSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { EyeOff, GripVertical, Plus, Trash2 } from 'lucide-react'
 
 import { Button } from '../../../../../shared/components/ui/Button'
@@ -12,21 +12,17 @@ function SortableRow({ id, selected, children, onClick }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
 
   return (
-    <button
+    <div
       ref={setNodeRef}
-      type="button"
-      onClick={onClick}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
         'flex w-full items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-start text-xs font-bold text-[var(--text)]',
         selected && 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]'
       )}
     >
-      <span {...attributes} {...listeners} className="cursor-grab text-[var(--text-light)]">
-        <GripVertical size={15} />
-      </span>
-      <span className="min-w-0 flex-1 truncate">{children}</span>
-    </button>
+      <button type="button" {...attributes} {...listeners} className="cursor-grab touch-none text-[var(--text-light)]" aria-label="Drag to reorder"><GripVertical size={15} /></button>
+      <button type="button" onClick={onClick} className="min-w-0 flex-1 truncate text-start">{children}</button>
+    </div>
   )
 }
 
@@ -42,12 +38,13 @@ export function ProposalBuilderSidebar({
   onBlockDragEnd,
 }) {
   const { t } = useTranslation()
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }))
   const sections = content?.sections || []
   const activeSection = sections.find((section) => section.id === selectedSectionId) || sections[0]
   const blocks = activeSection?.blocks || []
 
   return (
-    <aside className="h-[calc(100vh-4.5rem)] w-[300px] shrink-0 overflow-y-auto border-e border-[var(--border)] bg-[var(--surface)] p-4">
+    <aside className="max-h-[70vh] w-full shrink-0 overflow-y-auto xl:h-[calc(100vh-4.5rem)] xl:max-h-none xl:w-[300px] border-e border-[var(--border)] bg-[var(--surface)] p-4">
       <div className="mb-5 flex items-center justify-between gap-2">
         <div>
           <h2 className="text-sm font-black text-[var(--text)]">{t('proposals.builder.structureTitle')}</h2>
@@ -58,7 +55,7 @@ export function ProposalBuilderSidebar({
         </Button>
       </div>
 
-      <DndContext collisionDetection={closestCenter} onDragEnd={onSectionDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onSectionDragEnd}>
         <SortableContext items={sections.map((section) => section.id)} strategy={verticalListSortingStrategy}>
           <div className="space-y-2">
             {sections.map((section) => (
@@ -88,7 +85,7 @@ export function ProposalBuilderSidebar({
 
       <div className="mt-6 border-t border-[var(--border)] pt-5">
         <h3 className="mb-3 text-xs font-black text-[var(--text-muted)]">{t('proposals.builder.selectedSectionBlocks')}</h3>
-        <DndContext collisionDetection={closestCenter} onDragEnd={onBlockDragEnd}>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onBlockDragEnd}>
           <SortableContext items={blocks.map((block) => block.id)} strategy={verticalListSortingStrategy}>
             <div className="space-y-2">
               {blocks.map((block) => (
