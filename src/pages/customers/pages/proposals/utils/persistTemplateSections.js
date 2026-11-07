@@ -1,5 +1,5 @@
 import { proposalTemplatesApi } from '../../../../../features/proposals/api/proposalTemplatesApi'
-import { getEntityId, getResponseEntity } from './proposalPayloads'
+import { getResponseEntity } from './proposalPayloads'
 
 const numericId = value => /^\\d+$/.test(String(value ?? ''))
 const requireId = response => {
@@ -26,7 +26,7 @@ export async function persistTemplateSections(versionId, content, onProgress = (
       is_visible: section.is_visible ?? true,
     }
     if (!numericId(section.id)) {
-      section.id = requireId(await proposalTemplatesApi.createVersionSection(versionId, sectionPayload))
+      section.id = requireId(await proposalTemplatesApi.createVersionSection(versionId, sectionPayload), 'section')
       onProgress(next)
     } else {
       await proposalTemplatesApi.updateSection(section.id, sectionPayload)
@@ -45,7 +45,7 @@ export async function persistTemplateSections(versionId, content, onProgress = (
         is_visible: block.is_visible ?? true,
       }
       if (!numericId(block.id)) {
-        block.id = requireId(await proposalTemplatesApi.createSectionBlock(section.id, blockPayload))
+        block.id = requireId(await proposalTemplatesApi.createSectionBlock(section.id, blockPayload), 'block')
         onProgress(next)
       } else {
         await proposalTemplatesApi.updateBlock(block.id, blockPayload)
