@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { CheckCircle2, FileSignature, UserRound } from 'lucide-react'
+import { UserRound } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useCustomers } from '../../../../../features/customers/hooks/useCustomers'
@@ -22,22 +22,13 @@ function defaultExpiryDate() {
   return date.toISOString().slice(0, 10)
 }
 
-function getWizardSteps(t) {
-  return [
-    { id: 'customer', label: t('proposals.wizard.steps.customer') },
-    { id: 'template', label: t('proposals.wizard.steps.template') },
-    { id: 'review', label: t('proposals.wizard.steps.review') },
-  ]
-}
-
 export function ProposalWizard({ open, onClose }) {
   const { t } = useTranslation()
-  const STEPS = useMemo(() => getWizardSteps(t), [t])
   const navigate = useNavigate()
-  const [stepIndex, setStepIndex] = useState(0)
+  const [searchParams] = useSearchParams()
   const [form, setForm] = useState({
     customer_id: '',
-    template_id: '',
+    template_id: searchParams.get('template_id') || '',
     assigned_to: '',
     title: '',
     description: '',
@@ -60,10 +51,6 @@ export function ProposalWizard({ open, onClose }) {
     customers.find((customer) => String(customer.id) === String(form.customer_id))
   ), [customers, form.customer_id])
 
-  const selectedTemplate = useMemo(() => (
-    templates.find((template) => String(template.id) === String(form.template_id))
-  ), [templates, form.template_id])
-
   const currentTemplateVersion = getCurrentTemplateVersion(selectedTemplateQuery.data)
 
   const updateForm = (key, value) => {
@@ -77,14 +64,12 @@ export function ProposalWizard({ open, onClose }) {
     })
   }
 
-  const canMoveNext = () => {
-    if (STEPS[stepIndex].id === 'customer') return Boolean(form.customer_id && form.title.trim())
-    if (STEPS[stepIndex].id === 'template') return Boolean(form.template_id)
-    return true
-  }
-
   const handleCreate = async () => {
     if (mutations.createProposal.isPending || mutations.createProposalVersion.isPending) return
+    if (!form.customer_id || !form.template_id || !form.title.trim()) {
+      toast.error(t('proposals.wizard.chooseCustomerFirst'))
+      return
+    }
     if (!selectedCustomer) {
       toast.error(t('proposals.wizard.chooseCustomerFirst'))
       return
@@ -138,99 +123,69 @@ export function ProposalWizard({ open, onClose }) {
     navigate(`/LeadsCenter/proposals/${createdProposalId}/builder`)
   }
 
+  const isSubmitting = mutations.createProposal.isPending || mutations.createProposalVersion.isPending
+  const canCreate = Boolean(form.customer_id && form.template_id && form.title.trim() && currentTemplateVersion && !selectedTemplateQuery.isLoading)
+
   const footer = (
-    <div className="flex items-center justify-between gap-3">
-      <Button variant="ghost" onClick={() => (stepIndex === 0 ? onClose() : setStepIndex((index) => index - 1))}>
-        {stepIndex === 0 ? t('customers.table.cancel') : t('proposals.wizard.previous')}
+    <div className="flex items-center justify-end gap-3">
+      <Button variant="ghost" disabled={isSubmitting} onClick={onClose}>{t('customers.table.cancel')}</Button>
+      <Button onClick={handleCreate} disabled={!canCreate || isSubmitting} loading={isSubmitting}>
+        {t('proposals.wizard.createAndOpenBuilder')}
       </Button>
-      {stepIndex < STEPS.length - 1 ? (
-        <Button disabled={!canMoveNext() || (STEPS[stepIndex].id === 'template' && (!currentTemplateVersion || selectedTemplateQuery.isLoading))} onClick={() => setStepIndex((index) => index + 1)}>
-          {t('proposals.wizard.next')}
-        </Button>
-      ) : (
-        <Button onClick={handleCreate} disabled={!currentTemplateVersion || selectedTemplateQuery.isLoading} loading={mutations.createProposal.isPending || mutations.createProposalVersion.isPending}>
-          {t('proposals.wizard.createAndOpenBuilder')}
-        </Button>
-      )}
     </div>
   )
 
   return (
     <ProposalModal open={open} onClose={onClose} title={t('proposals.wizard.modalTitle')} footer={footer}>
-      <div className="mb-6 grid grid-cols-3 gap-2">
-        {STEPS.map((step, index) => (
-          <div key={step.id} className={`rounded-lg border px-3 py-2 text-center text-xs font-black ${index <= stepIndex ? 'border-[#00C2CB] bg-[#E8F9FA] text-[#007A80]' : 'border-[var(--border)] text-[var(--text-muted)]'}`}>
-            {step.label}
+      <div className="grid gap-4 md:grid-cols-2">
+        <Select
+          label={t('proposals.wizard.chooseCustomerLabel')}
+          value={form.customer_id}
+          onChange={(value) => updateForm('customer_id', value)}
+          options={customers.map(customer => ({
+            value: String(customer.id),
+            label: `${getCustomerName(customer, t)} - ${customer.phone || customer.email || customer.id}`,
+          }))}
+          placeholder={customersQuery.isLoading ? t('proposals.wizard.loadingCustomers') : t('proposals.wizard.chooseCustomerPlaceholder')}
+        />
+        <Select
+          label={t('proposals.wizard.steps.template')}
+          value={form.template_id}
+          onChange={(value) => updateForm('template_id', value)}
+          options={templates.filter(template => template.is_active).map(template => ({
+            value: String(template.id),
+            label: template.name || `Template #${template.id}`,
+          }))}
+          placeholder={templatesQuery.isLoading ? t('proposals.wizard.loadingTemplates') : t('proposals.wizard.chooseTemplatePlaceholder')}
+        />
+        <Input label={t('proposals.builder.proposalTitle')} value={form.title} onChange={event => updateForm('title', event.target.value)} />
+        <Input label={t('proposals.wizard.expiryDateLabel')} type="date" value={form.expires_at} onChange={event => updateForm('expires_at', event.target.value)} />
+        <Select label={t('proposals.wizard.currencyLabel')} value={form.currency} onChange={value => updateForm('currency', value)} options={CURRENCY_OPTIONS} />
+        <Select
+          label={t('customers.table.assignedTo')}
+          value={form.assigned_to}
+          onChange={value => updateForm('assigned_to', value)}
+          options={users.map(user => ({ value: String(user.id), label: user.name || user.email || `User #${user.id}` }))}
+          placeholder={t('customers.followUp.optionalPlaceholder')}
+        />
+        <Input label={t('proposals.wizard.shortDescriptionLabel')} value={form.description} onChange={event => updateForm('description', event.target.value)} className="md:col-span-2" />
+        {selectedCustomer && (
+          <div className="md:col-span-2 flex flex-wrap items-center gap-2 rounded-lg border border-[var(--border)] p-3 text-sm">
+            <UserRound size={18} />
+            <strong>{getCustomerName(selectedCustomer, t)}</strong>
+            {[selectedCustomer.email, selectedCustomer.phone, selectedCustomer.company].filter(Boolean).map(value => <span key={value}>{value}</span>)}
           </div>
-        ))}
+        )}
+        {form.template_id && (
+          <p role="status" className="md:col-span-2 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm">
+            {selectedTemplateQuery.isLoading
+              ? t('proposals.templateEditor.loading')
+              : currentTemplateVersion
+                ? t('proposals.templateEditor.usingVersion', { name: currentTemplateVersion.name || currentTemplateVersion.id })
+                : t('proposals.templateEditor.selectPublishedVersion')}
+          </p>
+        )}
       </div>
-
-      {STEPS[stepIndex].id === 'customer' ? (
-        <div className="grid gap-4 md:grid-cols-2">
-          <Select
-            label={t('proposals.wizard.chooseCustomerLabel')}
-            value={form.customer_id}
-            onChange={(value) => updateForm('customer_id', value)}
-            options={customers.map((customer) => ({ value: String(customer.id), label: `${getCustomerName(customer, t)} - ${customer.phone || customer.email || customer.id}` }))}
-            placeholder={customersQuery.isLoading ? t('proposals.wizard.loadingCustomers') : t('proposals.wizard.chooseCustomerPlaceholder')}
-          />
-          <Input label={t('proposals.builder.proposalTitle')} value={form.title} onChange={(event) => updateForm('title', event.target.value)} />
-          <Input label={t('proposals.wizard.shortDescriptionLabel')} value={form.description} onChange={(event) => updateForm('description', event.target.value)} className="md:col-span-2" />
-          {selectedCustomer ? (
-            <div className="md:col-span-2 rounded-lg border border-[#DCE8F3] bg-[#F8FAFC] p-4">
-              <div className="mb-2 flex items-center gap-2 text-sm font-black text-[#162847]">
-                <UserRound size={18} />
-                {getCustomerName(selectedCustomer, t)}
-              </div>
-              <div className="flex flex-wrap gap-2 text-xs font-bold text-slate-500">
-                {[selectedCustomer.email, selectedCustomer.phone, selectedCustomer.company].filter(Boolean).map((value) => <span key={value}>{value}</span>)}
-              </div>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-
-      {STEPS[stepIndex].id === 'template' ? (
-        <div className="grid gap-4 md:grid-cols-2">
-          <Select
-            label={t('proposals.wizard.steps.template')}
-            value={form.template_id}
-            onChange={(value) => updateForm('template_id', value)}
-            options={templates.map((template) => ({ value: String(template.id), label: template.name || `Template #${template.id}` }))}
-            placeholder={templatesQuery.isLoading ? t('proposals.wizard.loadingTemplates') : t('proposals.wizard.chooseTemplatePlaceholder')}
-          />
-          {form.template_id && <div className="md:col-span-2 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm text-[var(--text-muted)]" role="status">{selectedTemplateQuery.isLoading ? t('proposals.templateEditor.loading') : currentTemplateVersion ? t('proposals.templateEditor.usingVersion', { name: currentTemplateVersion.name || currentTemplateVersion.id }) : t('proposals.templateEditor.selectPublishedVersion')}</div>}
-          <Select
-            label={t('customers.table.assignedTo')}
-            value={form.assigned_to}
-            onChange={(value) => updateForm('assigned_to', value)}
-            options={users.map((user) => ({ value: String(user.id), label: user.name || user.email || `User #${user.id}` }))}
-            placeholder={t('customers.followUp.optionalPlaceholder')}
-          />
-          <Select label={t('proposals.wizard.currencyLabel')} value={form.currency} onChange={(value) => updateForm('currency', value)} options={CURRENCY_OPTIONS} />
-          <Input label={t('proposals.wizard.expiryDateLabel')} type="date" value={form.expires_at} onChange={(event) => updateForm('expires_at', event.target.value)} />
-        </div>
-      ) : null}
-
-      {STEPS[stepIndex].id === 'review' ? (
-        <div className="rounded-xl border border-[#DCE8F3] bg-[#F8FAFC] p-5">
-          <div className="mb-4 flex items-center gap-2 text-base font-black text-[#162847]">
-            <FileSignature size={20} />
-            {t('proposals.wizard.reviewBeforeCreate')}
-          </div>
-          <div className="grid gap-3 text-sm md:grid-cols-2">
-            <div><span className="font-black">{t('proposals.builder.fields.title')}:</span> {form.title}</div>
-            <div><span className="font-black">{t('proposals.wizard.steps.customer')}:</span> {selectedCustomer ? getCustomerName(selectedCustomer, t) : '-'}</div>
-            <div><span className="font-black">{t('proposals.wizard.steps.template')}:</span> {selectedTemplate?.name || '-'}</div>
-            <div><span className="font-black">{t('proposals.wizard.currencyLabel')}:</span> {form.currency}</div>
-            <div><span className="font-black">{t('proposals.wizard.expiryDateLabel')}:</span> {form.expires_at || '-'}</div>
-          </div>
-          <div className="mt-5 flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-bold text-[#047857]">
-            <CheckCircle2 size={16} />
-            {t('proposals.wizard.willCreateEditableVersion')}
-          </div>
-        </div>
-      ) : null}
     </ProposalModal>
   )
 }

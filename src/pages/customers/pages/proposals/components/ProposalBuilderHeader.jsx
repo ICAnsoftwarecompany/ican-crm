@@ -13,6 +13,7 @@ export function ProposalBuilderHeader({
   onCreateVersion,
   onSaveNow,
   creatingVersion,
+  isSaving = false,
 }) {
   const { t } = useTranslation()
 
@@ -39,7 +40,7 @@ export function ProposalBuilderHeader({
             {formatMoney(currentVersion?.total, proposal?.currency)}
           </span>
           {currentVersion ? (
-            <Button variant="outline" size="sm" onClick={onSaveNow}>
+            <Button variant="outline" size="sm" onClick={onSaveNow} disabled={isSaving} loading={isSaving}>
               <Save size={16} />
               {t('proposals.header.saveNow')}
             </Button>
