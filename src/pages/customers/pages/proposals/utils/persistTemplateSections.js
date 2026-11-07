@@ -15,6 +15,11 @@ const requireId = response => {
  */
 export async function persistTemplateSections(versionId, content, onProgress = () => {}, previous = []) {
   const next = structuredClone(content)
+  const stage = async (label, operation) => {
+    try { return await operation() } catch (error) {
+      throw new Error(`${label}: ${error?.response?.data?.message || error?.message || 'Request failed'}`)
+    }
+  }
   const savedSections = new Set()
   for (let i = 0; i < next.sections.length; i += 1) {
     const section = next.sections[i]
@@ -26,10 +31,10 @@ export async function persistTemplateSections(versionId, content, onProgress = (
       is_visible: section.is_visible ?? true,
     }
     if (!numericId(section.id)) {
-      section.id = requireId(await proposalTemplatesApi.createVersionSection(versionId, sectionPayload), 'section')
+      section.id = requireId(await stage(`Create section ${i + 1}`, () => proposalTemplatesApi.createVersionSection(versionId, sectionPayload)), 'section')
       onProgress(next)
     } else {
-      await proposalTemplatesApi.updateSection(section.id, sectionPayload)
+      await stage(`Update section ${section.id}`, () => proposalTemplatesApi.updateSection(section.id, sectionPayload))
     }
     savedSections.add(String(section.id))
     const savedBlocks = new Set()
@@ -45,27 +50,27 @@ export async function persistTemplateSections(versionId, content, onProgress = (
         is_visible: block.is_visible ?? true,
       }
       if (!numericId(block.id)) {
-        block.id = requireId(await proposalTemplatesApi.createSectionBlock(section.id, blockPayload), 'block')
+        block.id = requireId(await stage(`Create block ${j + 1} in section ${section.id}`, () => proposalTemplatesApi.createSectionBlock(section.id, blockPayload)), 'block')
         onProgress(next)
       } else {
-        await proposalTemplatesApi.updateBlock(block.id, blockPayload)
+        await stage(`Update block ${block.id}`, () => proposalTemplatesApi.updateBlock(block.id, blockPayload))
       }
       savedBlocks.add(String(block.id))
     }
     const prior = previous.find(item => String(item.id) === String(section.id))
     for (const block of prior?.blocks || []) {
-      if (numericId(block.id) && !savedBlocks.has(String(block.id))) await proposalTemplatesApi.deleteBlock(block.id)
+      if (numericId(block.id) && !savedBlocks.has(String(block.id))) await stage(`Delete block ${block.id}`, () => proposalTemplatesApi.deleteBlock(block.id))
     }
     if (section.blocks.length) {
-      await proposalTemplatesApi.reorderSectionBlocks(section.id, section.blocks.map(block => block.id))
+      await stage(`Reorder blocks in section ${section.id}`, () => proposalTemplatesApi.reorderSectionBlocks(section.id, section.blocks.map(block => block.id)))
     }
     onProgress(next)
   }
   for (const section of previous) {
-    if (numericId(section.id) && !savedSections.has(String(section.id))) await proposalTemplatesApi.deleteSection(section.id)
+    if (numericId(section.id) && !savedSections.has(String(section.id))) await stage(`Delete section ${section.id}`, () => proposalTemplatesApi.deleteSection(section.id))
   }
   if (next.sections.length) {
-    await proposalTemplatesApi.reorderVersionSections(versionId, next.sections.map(section => section.id))
+    await stage(`Reorder sections in version ${versionId}`, () => proposalTemplatesApi.reorderVersionSections(versionId, next.sections.map(section => section.id)))
   }
   return next
 }
