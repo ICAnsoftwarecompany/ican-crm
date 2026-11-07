@@ -105,6 +105,13 @@ export function CustomerProposalTemplateCreatePage() {
           const draft = JSON.parse(stored)
           if (draft.templateId) {
             progress.current = { ...progress.current, ...draft }
+            if (draft.content?.sections) {
+              contentRef.current = draft.content
+              setContent(draft.content)
+              historyRef.current = [{ content: draft.content, label: 'Restored draft' }]
+              indexRef.current = 0
+            }
+            if (draft.form) setForm(draft.form)
             if (!draft.versionId) {
               const response = await proposalTemplatesApi.getTemplateInfo(draft.templateId)
               progress.current.versionId = getResponseEntity(response)?.current_version?.id
@@ -122,14 +129,14 @@ export function CustomerProposalTemplateCreatePage() {
         if (!templateId) throw new Error('Draft template ID missing')
         let versionId = created?.current_version?.id || created?.current_version_id
         progress.current.templateId = templateId
-        sessionStorage.setItem('proposal-template-draft', JSON.stringify(progress.current))
+        sessionStorage.setItem('proposal-template-draft', JSON.stringify({ ...progress.current, content: contentRef.current }))
         if (!versionId) {
           const details = getResponseEntity(await proposalTemplatesApi.getTemplateInfo(templateId))
           versionId = details?.current_version?.id || details?.current_version_id
         }
         if (!versionId) throw new Error('Draft version ID missing')
         progress.current.versionId = versionId
-        sessionStorage.setItem('proposal-template-draft', JSON.stringify(progress.current))
+        sessionStorage.setItem('proposal-template-draft', JSON.stringify({ ...progress.current, content: contentRef.current }))
         if (!cancelled) setDraftReady(true)
       } catch (error) {
         if (!cancelled) setDraftError(error?.message || 'Failed to create draft')
@@ -203,9 +210,11 @@ export function CustomerProposalTemplateCreatePage() {
         const updated = { ...partial, sections: partial.sections.map(section => ({ ...section, blocks: [...section.blocks] })) }
         contentRef.current = updated
         setContent(updated)
-        sessionStorage.setItem('proposal-template-draft', JSON.stringify(state))
+        state.savedSections = updated.sections
+        sessionStorage.setItem('proposal-template-draft', JSON.stringify({ ...state, content: updated, form }))
       }, state.savedSections)
       state.savedSections = persisted.sections
+      sessionStorage.setItem('proposal-template-draft', JSON.stringify({ ...state, content: persisted, form }))
       contentRef.current = persisted
       setContent(persisted)
       await mutations.updateVersionBuilder.mutateAsync({
