@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { ArrowRight, Eye, Save, GripVertical, Undo2, Redo2, History } from 'lucide-react'
+import { ArrowRight, Eye, Save, GripVertical, Undo2, Redo2, History, RotateCcw } from 'lucide-react'
 import { useProposalTemplateMutations } from '../../../../features/proposals'
 import { Button } from '../../../../shared/components/ui/Button'
 import { ProposalBuilderSidebar, TemplateHelp } from './components/ProposalBuilderSidebar'
@@ -104,6 +104,16 @@ export function CustomerProposalTemplateCreatePage() {
     setHistoryState({ entries, index: indexRef.current })
     setContent(next)
   }
+  const resetCanvas = () => {
+    if (saving) return
+    const message = ar
+      ? 'هل أنت متأكد من إعادة تعيين تصميم العرض؟ سيتم إلغاء تعديلات الأقسام والبلوكات والألوان والعودة إلى التصميم الافتراضي. يمكنك التراجع عن العملية باستخدام Undo.'
+      : 'Reset the proposal design to its original layout? Section, block and color edits will be replaced. You can undo this action.'
+    if (!window.confirm(message)) return
+    change(historyRef.current[0].content, ar ? 'إعادة تعيين التصميم' : 'Reset design')
+    setSelected(null)
+    setPreview(false)
+  }
   const addSection = () => {
     const section = createDefaultSection({}, t)
     change(old => ({ ...old, sections: [...old.sections, section] }))
@@ -193,6 +203,7 @@ export function CustomerProposalTemplateCreatePage() {
         <span className="me-auto text-xs font-bold text-[var(--text-muted)]">{ar ? 'سجل تعديلات العرض' : 'Proposal edit history'}</span>
           <Button variant="outline" onClick={undo} disabled={saving || historyState.index === 0} title="Undo (Ctrl+Z)" aria-label="Undo"><Undo2 size={16}/></Button>
           <Button variant="outline" onClick={redo} disabled={saving || historyState.index >= (historyState.entries.length || 1) - 1} title="Redo (Ctrl+Y)" aria-label="Redo"><Redo2 size={16}/></Button>
+          <Button variant="outline" onClick={resetCanvas} disabled={saving} title={ar ? 'إعادة تعيين تصميم العرض' : 'Reset proposal design'} aria-label={ar ? 'إعادة تعيين التصميم' : 'Reset design'}><RotateCcw size={16}/><span>{ar ? 'إعادة تعيين' : 'Reset'}</span></Button>
           <History size={16}/>
           <select aria-label={ar ? 'سجل التعديلات' : 'Edit history'} value={historyState.index} disabled={saving} onChange={event => restoreHistory(Number(event.target.value))} className="max-w-48 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 text-xs">
             {(historyState.entries.length ? historyState.entries : historyRef.current).map((entry, index) => <option key={index} value={index}>{index}. {index === 0 ? (ar ? 'البداية' : 'Initial state') : entry.label}</option>)}
