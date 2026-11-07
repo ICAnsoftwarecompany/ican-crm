@@ -155,12 +155,30 @@ function BlockFields({ block, onChangeBlock, t }) {
   )
 }
 
+export function GeneralDesignFields({ content, onChangeContent, guide = false }) {
+  const { t } = useTranslation()
+  const update = (key, value) => onChangeContent(old => ({ ...old, design: { ...(old.design || {}), [key]: value } }))
+  return (
+    <GuideContext.Provider value={guide}>
+      <section className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
+        <div className="mb-3 flex items-center gap-2 text-xs font-black text-[var(--text-muted)]"><Palette size={15}/>{t('proposals.builder.generalDesign')}</div>
+        <div className="space-y-3">
+          <Field label={t('proposals.builder.proposalTitle')} value={content?.title} onChange={value => onChangeContent(old => ({ ...old, title: value }))}/>
+          <Field label={t('proposals.builder.primaryColor')} type="color" value={content?.design?.primary_color || DEFAULT_PROPOSAL_DESIGN.primary_color} onChange={value => update('primary_color', value)}/>
+          <Field label={t('proposals.builder.fontSize')} type="number" value={content?.design?.font_size ?? 14} onChange={value => update('font_size', Number(value) || 14)}/>
+        </div>
+      </section>
+    </GuideContext.Provider>
+  )
+}
+
 export function ProposalPropertiesPanel({
   content,
   selected,
   onChangeContent,
   onDeleteBlock,
   guide = false,
+  selectionOnly = false,
 }) {
   const { t } = useTranslation()
   const sections = content?.sections || []
@@ -170,25 +188,11 @@ export function ProposalPropertiesPanel({
     : null
 
   const updateSection = (sectionId, patch) => {
-    onChangeContent({
-      ...content,
-      sections: sections.map((section) => (section.id === sectionId ? { ...section, ...patch } : section)),
-    })
+    onChangeContent(old => ({ ...old, sections: old.sections.map(section => section.id === sectionId ? { ...section, ...patch } : section) }))
   }
 
   const updateBlock = (nextBlock) => {
-    onChangeContent({
-      ...content,
-      sections: sections.map((section) => (
-        section.id === selectedSection.id
-          ? { ...section, blocks: section.blocks.map((block) => (block.id === nextBlock.id ? nextBlock : block)) }
-          : section
-      )),
-    })
-  }
-
-  const updateDesign = (key, value) => {
-    onChangeContent({ ...content, design: { ...(content?.design || {}), [key]: value } })
+    onChangeContent(old => ({ ...old, sections: old.sections.map(section => section.id === selectedSection.id ? { ...section, blocks: section.blocks.map(block => block.id === nextBlock.id ? nextBlock : block) } : section) }))
   }
 
   return (
@@ -198,23 +202,13 @@ export function ProposalPropertiesPanel({
           <Settings2 size={18} />
         </span>
         <div>
-          <h2 className="text-sm font-black text-[var(--text)]">{t('proposals.builder.propertiesTitle')}</h2>
+          <h2 className="text-sm font-black text-[var(--text)]">{selectionOnly ? (selectedBlock ? getBlockLabel(selectedBlock.type, t) : selectedSection ? t('proposals.builder.sectionFallback') : (t('proposals.builder.propertiesTitle'))) : t('proposals.builder.propertiesTitle')}</h2>
           <p className="text-xs font-semibold text-[var(--text-muted)]">{t('proposals.builder.propertiesSubtitle')}</p>
         </div>
       </div>
 
       <div className="space-y-5">
-        <section className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
-          <div className="mb-3 flex items-center gap-2 text-xs font-black text-[var(--text-muted)]">
-            <Palette size={15} />
-            {t('proposals.builder.generalDesign')}
-          </div>
-          <div className="space-y-3">
-            <Field label={t('proposals.builder.proposalTitle')} value={content?.title} onChange={(value) => onChangeContent({ ...content, title: value })} />
-            <Field label={t('proposals.builder.primaryColor')} type="color" value={content?.design?.primary_color || DEFAULT_PROPOSAL_DESIGN.primary_color} onChange={(value) => updateDesign('primary_color', value)} />
-            <Field label={t('proposals.builder.fontSize')} type="number" value={content?.design?.font_size || 14} onChange={(value) => updateDesign('font_size', Number(value) || 14)} />
-          </div>
-        </section>
+        {!selectionOnly && <GeneralDesignFields content={content} onChangeContent={onChangeContent} guide={guide} />}
 
         {selectedSection ? (
           <section className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
