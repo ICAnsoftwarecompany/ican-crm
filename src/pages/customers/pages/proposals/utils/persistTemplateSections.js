@@ -1,7 +1,7 @@
 import { proposalTemplatesApi } from '../../../../../features/proposals/api/proposalTemplatesApi'
-import { getResponseEntity } from './proposalPayloads'
+import { getEntityId, getResponseEntity } from './proposalPayloads'
 
-const numericId = value => /^\\d+$/.test(String(value ?? ''))
+const numericId = value => /^\d+$/.test(String(value ?? ''))
 const requireId = response => {
   const id = getEntityId(getResponseEntity(response))
   if (!id) throw new Error('The API did not return a saved entity ID')
