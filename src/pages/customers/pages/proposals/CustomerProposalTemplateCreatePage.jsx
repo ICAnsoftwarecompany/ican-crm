@@ -198,7 +198,7 @@ export function CustomerProposalTemplateCreatePage() {
     if (saving || !draftReady || !form.name.trim()) return
     setSaving(true)
     const state = progress.current
-    const snapshot = { ...content, title: content.title?.trim() || form.name.trim() }
+    const snapshot = { ...contentRef.current, title: contentRef.current.title?.trim() || form.name.trim() }
     try {
       await mutations.updateTemplate.mutateAsync({
         templateId: state.templateId,
@@ -209,6 +209,10 @@ export function CustomerProposalTemplateCreatePage() {
         const updated = { ...partial, sections: partial.sections.map(section => ({ ...section, blocks: [...section.blocks] })) }
         contentRef.current = updated
         setContent(updated)
+        // Undo/redo must not restore temporary IDs after the server assigned IDs.
+        historyRef.current = [{ content: updated, label: 'Saved server IDs' }]
+        indexRef.current = 0
+        setHistoryState({ entries: historyRef.current, index: 0 })
         state.savedSections = updated.sections
         sessionStorage.setItem('proposal-template-draft', JSON.stringify({ ...state, content: updated, form }))
       }, state.savedSections)
@@ -216,6 +220,9 @@ export function CustomerProposalTemplateCreatePage() {
       sessionStorage.setItem('proposal-template-draft', JSON.stringify({ ...state, content: persisted, form }))
       contentRef.current = persisted
       setContent(persisted)
+      historyRef.current = [{ content: persisted, label: 'Saved server IDs' }]
+      indexRef.current = 0
+      setHistoryState({ entries: historyRef.current, index: 0 })
       await mutations.updateVersionBuilder.mutateAsync({
         versionId: state.versionId,
         payload: { content: persisted, settings: persisted.settings, design: persisted.design },
