@@ -7,7 +7,7 @@ import { useProposalTemplateMutations } from '../../../../features/proposals'
 import { Button } from '../../../../shared/components/ui/Button'
 import { ProposalBuilderSidebar, TemplateHelp } from './components/ProposalBuilderSidebar'
 import { ProposalCanvas } from './components/ProposalCanvas'
-import { ProposalPropertiesPanel } from './components/ProposalPropertiesPanel'
+import { GeneralDesignFields, ProposalPropertiesPanel } from './components/ProposalPropertiesPanel'
 import { createDefaultBlock, createDefaultBuilderContent, createDefaultSection, moveItem } from './utils/proposalBuilderContent'
 import { getEntityId, getResponseEntity } from './utils/proposalPayloads'
 
@@ -94,7 +94,7 @@ export function CustomerProposalTemplateCreatePage() {
     if (saving || !form.name.trim()) return
     setSaving(true)
     const state = progress.current
-    const snapshot = { ...content, title: form.name.trim() }
+    const snapshot = { ...content, title: content.title?.trim() || form.name.trim() }
     try {
       if (!state.templateId) {
         const response = await mutations.createTemplate.mutateAsync({
@@ -154,7 +154,7 @@ export function CustomerProposalTemplateCreatePage() {
         style={wideLayout && !preview ? { display: 'grid', gridTemplateColumns: `${panelWidths.left}px 8px minmax(0, 1fr) 8px ${panelWidths.right}px`, height: 'min(76vh, 900px)', minHeight: 480 } : undefined}>
         {!preview && (
           <div className={wideLayout ? 'min-h-0 min-w-0 overflow-hidden' : 'h-72 min-w-0 overflow-hidden border-b border-[var(--border)] sm:h-80'}>
-            <ProposalBuilderSidebar guide content={content} selected={selected} selectedSectionId={selectedSectionId}
+            <ProposalBuilderSidebar guide generalDesign={<GeneralDesignFields content={content} onChangeContent={change} guide />} content={content} selected={selected} selectedSectionId={selectedSectionId}
               onSelect={setSelected} onAddSection={addSection} onDeleteSection={deleteSection} onAddBlock={addBlock}
               onSectionDragEnd={reorderSections} onBlockDragEnd={reorderBlocks}/>
           </div>
@@ -170,7 +170,7 @@ export function CustomerProposalTemplateCreatePage() {
           className="flex cursor-col-resize items-center justify-center bg-[var(--surface-2)] hover:bg-[var(--border)]"><GripVertical size={14}/></div>}
         {!preview && (
           <div className={wideLayout ? 'min-h-0 min-w-0 overflow-hidden' : 'h-80 min-w-0 overflow-hidden border-t border-[var(--border)] sm:h-96'}>
-            <ProposalPropertiesPanel guide content={content} selected={selected} onChangeContent={change} onDeleteBlock={deleteBlock}/>
+            <ProposalPropertiesPanel guide selectionOnly content={content} selected={selected} onChangeContent={change} onDeleteBlock={deleteBlock}/>
           </div>
         )}
       </div>
