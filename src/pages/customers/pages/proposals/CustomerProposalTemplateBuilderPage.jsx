@@ -47,6 +47,7 @@ export function CustomerProposalTemplateBuilderPage() {
   const activeVersionId = template?.current_version?.id ?? template?.current_version_id
   const versionHasContent = version => Boolean(getTemplateVersionContent(version)?.sections?.length || version?.sections?.length)
   const selectedSectionId = selected?.type === 'block' ? selected.sectionId : selected?.id || content?.sections?.[0]?.id
+  const versionContentUnavailable = Boolean(currentVersion && !versionHasContent(currentVersion))
   const pending = mutations.updateVersionBuilder.isPending || mutations.createTemplateVersion.isPending || mutations.duplicateVersion.isPending || mutations.setCurrentVersion.isPending
 
   useEffect(() => {
@@ -55,9 +56,9 @@ export function CustomerProposalTemplateBuilderPage() {
     if (hydratedKey.current === key || dirty || saving.current) return
     hydratedKey.current = key
     const raw = getTemplateVersionContent(currentVersion) ?? (currentVersion?.sections ? { sections: currentVersion.sections, settings: currentVersion.settings, styles: currentVersion.styles } : null)
-    const next = normalizeBuilderContent(raw, { title: template.name }, t)
+    const next = raw ? normalizeBuilderContent(raw, { title: template.name }, t) : null
     setContent(next)
-    setSelected({ type: 'section', id: next.sections[0]?.id })
+    setSelected(next ? { type: 'section', id: next.sections[0]?.id } : null)
     setDirty(false)
   }, [template?.id, currentVersion?.id, t, dirty])
 
@@ -67,7 +68,7 @@ export function CustomerProposalTemplateBuilderPage() {
     setDirty(true)
   }
   const save = async () => {
-    if (!currentVersion?.id || !content || saving.current) return
+    if (!currentVersion?.id || !content || versionContentUnavailable || saving.current) return
     saving.current = true
     const revision = editRevision.current
     try {
@@ -117,7 +118,7 @@ export function CustomerProposalTemplateBuilderPage() {
   }
   const publish = async () => {
     if (dirty || saving.current || pending) { toast.error(tr('saveBeforeSwitch')); return }
-    if (!currentVersion?.id || !window.confirm(tr('publishConfirm'))) return
+    if (!currentVersion?.id || versionContentUnavailable || !window.confirm(tr('publishConfirm'))) return
     try {
       await mutations.setCurrentVersion.mutateAsync(currentVersion.id)
       await Promise.all([query.refetch(), versionsQuery.refetch()])
@@ -164,14 +165,14 @@ export function CustomerProposalTemplateBuilderPage() {
           <Button variant="outline" onClick={() => createVersion(false)} disabled={pending}><Plus size={15}/>{tr('newVersion')}</Button>
           <Button variant="outline" onClick={() => createVersion(true)} disabled={pending || !currentVersion}><Copy size={15}/>{tr('duplicate')}</Button>
           <Button variant="outline" onClick={() => setPreview(v => !v)}><Eye size={15}/>{tr('preview')}</Button>
-          <Button onClick={save} disabled={!dirty || pending || !currentVersion}><Save size={15}/>{tr('save')}</Button>
+          <Button onClick={save} disabled={!dirty || pending || !currentVersion || versionContentUnavailable}><Save size={15}/>{tr('save')}</Button>
         </div>
       </header>
       <section id="versions" className="mx-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
         <div className="mb-3 flex items-center gap-2"><Layers size={18}/><h2 className="text-sm font-black">{ar ? 'إدارة إصدارات القالب' : 'Template version management'}</h2></div>
         <p className="mb-3 text-xs leading-6 text-[var(--text-muted)]">{ar ? 'اختار الإصدار اللي عايز تعدّل تصميمه. احفظ التعديلات قبل الانتقال لإصدار آخر، واعتمد الإصدار المناسب لاستخدامه في عروض العملاء الجديدة.' : 'Choose the version to edit. Save before switching, and set a valid version as current for new customer proposals.'}</p>
         {!hasFullVersionList && <p className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><AlertTriangle size={16} className="shrink-0"/>{ar ? 'الـ API رجّع الإصدار الحالي فقط؛ باقي الإصدارات مش ظاهرة في الاستجابة الحالية.' : 'The API returned only the current version; other versions are not available in this response.'}</p>}
-        {currentVersion && !getTemplateVersionContent(currentVersion)?.sections?.length && <p className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><AlertTriangle size={16} className="shrink-0"/>{ar ? 'الإصدار المحدد لا يحتوي على أقسام تصميم محفوظة في الاستجابة الحالية. المعاينة قد تعرض تصميمًا افتراضيًا غير محفوظ؛ راجع الحفظ قبل إنشاء عرض سعر.' : 'No saved design sections were found in this version response. The preview may show an unsaved default layout.'}</p>}
+        {versionContentUnavailable && <p className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><AlertTriangle size={16} className="shrink-0"/>{ar ? 'الإصدار المحدد لا يحتوي على أقسام تصميم محفوظة في الاستجابة الحالية. لا يمكن عرض أو تعديل التصميم حتى يوفر الـ API تفاصيل هذا الإصدار.' : 'No saved design sections were found in this version response. This version cannot be viewed or edited until its design details are available.'}</p>}
       <div className="mb-4 space-y-2">
         {versionsQuery.isLoading && <p className="text-xs text-[var(--text-muted)]">{ar ? 'جاري تحميل الإصدارات...' : 'Loading versions...'}</p>}
         {versionsQuery.isError && <p role="alert" className="text-xs text-amber-700">{ar ? 'تعذر تحميل قائمة الإصدارات من الخادم؛ المعروض هو المتاح من تفاصيل القالب فقط.' : 'Could not fetch the full version list; showing versions included in template details only.'}</p>}
@@ -193,7 +194,7 @@ export function CustomerProposalTemplateBuilderPage() {
           {versions.map(v => <option key={v.id} value={v.id}>{v.name || ('#' + v.id)} {v.is_current ? '✓' : ''}</option>)}
         </select>
         {currentVersion?.is_current ? <span className="text-xs text-emerald-600">{tr('current')}</span> : null}
-        <Button variant="outline" size="sm" onClick={publish} disabled={pending || !currentVersion || dirty || currentVersion.is_current}><GitBranch size={15}/>{tr('setCurrent')}</Button>
+        <Button variant="outline" size="sm" onClick={publish} disabled={pending || !currentVersion || dirty || currentVersion.is_current || versionContentUnavailable}><GitBranch size={15}/>{tr('setCurrent')}</Button>
         {dirty && <span className="text-xs text-amber-600">{tr('unsaved')}</span>}
         {!versions.length && <p className="text-sm text-[var(--text-muted)]">{tr('noVersions')}</p>}
       </div>
