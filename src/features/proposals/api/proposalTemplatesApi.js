@@ -48,6 +48,11 @@ export const proposalTemplatesApi = {
     return res.data
   },
 
+  getTemplateVersionInfo: async (versionId) => {
+    const res = await httpClient.get(`${BASE_PATH}/versions/${versionId}`)
+    return res.data
+  },
+
   createTemplateVersion: async (templateId, payload) => {
     const res = await httpClient.post(`${BASE_PATH}/${templateId}/versions`, payload)
     return res.data
