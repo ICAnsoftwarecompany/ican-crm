@@ -214,11 +214,11 @@ export function CustomerProposalTemplateBuilderPage() {
       </div>
       </section>
       <p className="mx-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 text-xs leading-6 text-[var(--text-muted)]">{tr('help')}</p>
-      {content && <div className="flex min-w-0 flex-col gap-3 xl:flex-row">
+      {content && <div className="grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-[minmax(220px,280px)_minmax(0,1fr)_minmax(250px,320px)] xl:items-start">
         {!preview && <ProposalBuilderSidebar content={content} selected={selected} selectedSectionId={selectedSectionId}
           onSelect={setSelected} onAddSection={addSection} onDeleteSection={deleteSection} onAddBlock={addBlock}
           onSectionDragEnd={reorderSections} onBlockDragEnd={reorderBlocks} />}
-        <ProposalCanvas content={content} proposal={{ title: template.name }} options={[]} products={[]} selected={preview ? null : selected} onSelect={preview ? undefined : setSelected} />
+        <div className="min-w-0 xl:min-h-[680px]"><ProposalCanvas content={content} proposal={{ title: template.name }} options={[]} products={[]} selected={preview ? null : selected} onSelect={preview ? undefined : setSelected} /></div>
         {!preview && <ProposalPropertiesPanel content={content} selected={selected} onChangeContent={change} onDeleteBlock={deleteBlock} />}
       </div>}
     </div>
