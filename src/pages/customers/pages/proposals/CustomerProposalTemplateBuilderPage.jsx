@@ -23,7 +23,9 @@ export function CustomerProposalTemplateBuilderPage() {
   const query = useProposalTemplateInfo(templateId)
   const mutations = useProposalTemplateMutations()
   const template = query.data
-  const versionsQuery = useProposalTemplateVersions(templateId)
+  // The backend currently exposes the current version through template/show.
+  // Do not call the unavailable versions-list endpoint on initial builder load.
+  const versionsQuery = useProposalTemplateVersions(templateId, false)
   const versions = useMemo(() => {
     const embedded = getTemplateVersions(template)
     const listed = versionsQuery.data || []
@@ -35,7 +37,7 @@ export function CustomerProposalTemplateBuilderPage() {
     }
     return [...byId.values()].sort((a, b) => Number(b.version || 0) - Number(a.version || 0))
   }, [template, versionsQuery.data])
-  const hasFullVersionList = versionsQuery.isSuccess || Array.isArray(template?.versions) || Array.isArray(template?.template_versions) || Array.isArray(template?.data?.versions)
+  const hasFullVersionList = Array.isArray(template?.versions) || Array.isArray(template?.template_versions) || Array.isArray(template?.data?.versions)
   const [versionId, setVersionId] = useState(null)
   const selectedVersionDetail = useProposalTemplateVersionInfo(versionId, Boolean(versionId) && String(versionId) !== String(template?.current_version?.id))
   const hydratedKey = useRef(null)
@@ -107,7 +109,7 @@ export function CustomerProposalTemplateBuilderPage() {
         hydratedKey.current = null
         setVersionId(createdId)
       }
-      await Promise.all([query.refetch(), versionsQuery.refetch()])
+      await query.refetch()
       toast.success(tr('versionCreated'))
     } catch { toast.error(tr('versionFailed')) }
   }
@@ -132,7 +134,7 @@ export function CustomerProposalTemplateBuilderPage() {
     if (!currentVersion?.id || versionContentUnavailable || !window.confirm(tr('publishConfirm'))) return
     try {
       await mutations.setCurrentVersion.mutateAsync(currentVersion.id)
-      await Promise.all([query.refetch(), versionsQuery.refetch()])
+      await query.refetch()
       toast.success(tr('published'))
     } catch { toast.error(tr('versionFailed')) }
   }
@@ -182,7 +184,7 @@ export function CustomerProposalTemplateBuilderPage() {
       <section id="versions" className="mx-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
         <div className="mb-3 flex items-center gap-2"><Layers size={18}/><h2 className="text-sm font-black">{ar ? 'إدارة إصدارات القالب' : 'Template version management'}</h2></div>
         <p className="mb-3 text-xs leading-6 text-[var(--text-muted)]">{ar ? 'اختار الإصدار اللي عايز تعدّل تصميمه. احفظ التعديلات قبل الانتقال لإصدار آخر، واعتمد الإصدار المناسب لاستخدامه في عروض العملاء الجديدة.' : 'Choose the version to edit. Save before switching, and set a valid version as current for new customer proposals.'}</p>
-        {!hasFullVersionList && <p className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><AlertTriangle size={16} className="shrink-0"/>{ar ? 'الـ API رجّع الإصدار الحالي فقط؛ باقي الإصدارات مش ظاهرة في الاستجابة الحالية.' : 'The API returned only the current version; other versions are not available in this response.'}</p>}
+        {!hasFullVersionList && versions.length > 1 && <p className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><AlertTriangle size={16} className="shrink-0"/>{ar ? 'الـ API رجّع الإصدار الحالي فقط؛ باقي الإصدارات مش ظاهرة في الاستجابة الحالية.' : 'The API returned only the current version; other versions are not available in this response.'}</p>}
         {selectedVersionDetail.isError && <p role="alert" className="mb-3 text-xs text-amber-700">{ar ? 'تعذر تحميل تفاصيل الإصدار المحدد من الـ API.' : 'Could not load selected version details.'}</p>}
         {versionContentUnavailable && <p className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><AlertTriangle size={16} className="shrink-0"/>{ar ? 'الإصدار المحدد لا يحتوي على أقسام تصميم محفوظة في الاستجابة الحالية. لا يمكن عرض أو تعديل التصميم حتى يوفر الـ API تفاصيل هذا الإصدار.' : 'No saved design sections were found in this version response. This version cannot be viewed or edited until its design details are available.'}</p>}
       <div className="mb-4 space-y-2">
@@ -193,7 +195,7 @@ export function CustomerProposalTemplateBuilderPage() {
             <div className="min-w-0 flex-1">
               <p className="break-words text-sm font-bold text-[var(--text)]">V{version.version ?? '—'} — {version.name || (ar ? 'بدون اسم' : 'Unnamed')}</p>
               {String(version.id) === String(activeVersionId) && <span className="text-xs font-bold text-emerald-600">{ar ? 'الإصدار الحالي' : 'Current'}</span>}
-              {!versionHasContent(version) && <p className="text-xs text-amber-700">{ar ? 'التصميم غير متوفر في بيانات الإصدار' : 'Design not included in version data'}</p>}
+              {!versionHasContent(version) && <p className="text-xs text-[var(--text-muted)]">{ar ? 'الإصدار بدون أقسام محفوظة بعد — يمكنك تصميمه وحفظه.' : 'No saved sections yet — edit and save this version.'}</p>}
             </div>
             <Button variant="outline" size="sm" disabled={pending} onClick={() => selectVersion(version.id, true)}><Eye size={14}/>{ar ? 'عرض' : 'View'}</Button>
             <Button variant="outline" size="sm" disabled={pending} onClick={() => selectVersion(version.id, false)}><Save size={14}/>{ar ? 'تعديل' : 'Edit'}</Button>

@@ -27,11 +27,11 @@ export function useProposalTemplateInfo(templateId, params, options = {}) {
   })
 }
 
-export function useProposalTemplateVersions(templateId) {
+export function useProposalTemplateVersions(templateId, enabled = true) {
   return useQuery({
     queryKey: [...QUERY_KEYS.proposalTemplates.detail(templateId), 'versions-list'],
     queryFn: () => proposalTemplatesApi.getTemplateVersions(templateId),
-    enabled: Boolean(templateId),
+    enabled: Boolean(templateId) && enabled,
     select: response => {
       const payload = extractEntity(response)
       if (Array.isArray(payload)) return payload
