@@ -3,7 +3,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ArrowRight, Copy, Eye, Save, GitBranch, Plus, Layers, AlertTriangle } from 'lucide-react'
-import { useProposalTemplateInfo, useProposalTemplateVersions, useProposalTemplateMutations } from '../../../../features/proposals'
+import { useProposalTemplateInfo, useProposalTemplateVersions, useProposalTemplateVersionInfo, useProposalTemplateMutations } from '../../../../features/proposals'
 import { Button } from '../../../../shared/components/ui/Button'
 import { ProposalBuilderSidebar } from './components/ProposalBuilderSidebar'
 import { ProposalPropertiesPanel } from './components/ProposalPropertiesPanel'
@@ -36,6 +36,7 @@ export function CustomerProposalTemplateBuilderPage() {
   }, [template, versionsQuery.data])
   const hasFullVersionList = versionsQuery.isSuccess || Array.isArray(template?.versions) || Array.isArray(template?.template_versions) || Array.isArray(template?.data?.versions)
   const [versionId, setVersionId] = useState(null)
+  const selectedVersionDetail = useProposalTemplateVersionInfo(versionId, Boolean(versionId) && String(versionId) !== String(template?.current_version?.id))
   const hydratedKey = useRef(null)
   const editRevision = useRef(0)
   const saving = useRef(false)
@@ -43,7 +44,9 @@ export function CustomerProposalTemplateBuilderPage() {
   const [selected, setSelected] = useState(null)
   const [dirty, setDirty] = useState(false)
   const [preview, setPreview] = useState(false)
-  const currentVersion = versions.find(v => String(v.id) === String(versionId)) || getCurrentTemplateVersion(template) || versions[0]
+  const listedVersion = versions.find(v => String(v.id) === String(versionId)) || getCurrentTemplateVersion(template) || versions[0]
+  const detail = selectedVersionDetail.data
+  const currentVersion = detail && String(detail.id) === String(listedVersion?.id) ? { ...listedVersion, ...detail } : listedVersion
   const activeVersionId = template?.current_version?.id ?? template?.current_version_id
   const versionHasContent = version => Boolean(getTemplateVersionContent(version)?.sections?.length || version?.sections?.length)
   const selectedSectionId = selected?.type === 'block' ? selected.sectionId : selected?.id || content?.sections?.[0]?.id
@@ -60,7 +63,7 @@ export function CustomerProposalTemplateBuilderPage() {
     setContent(next)
     setSelected(next ? { type: 'section', id: next.sections[0]?.id } : null)
     setDirty(false)
-  }, [template?.id, currentVersion?.id, t, dirty])
+  }, [template?.id, currentVersion?.id, currentVersion?.sections, currentVersion?.content, t, dirty])
 
   const change = (update) => {
     editRevision.current += 1
@@ -172,6 +175,7 @@ export function CustomerProposalTemplateBuilderPage() {
         <div className="mb-3 flex items-center gap-2"><Layers size={18}/><h2 className="text-sm font-black">{ar ? 'إدارة إصدارات القالب' : 'Template version management'}</h2></div>
         <p className="mb-3 text-xs leading-6 text-[var(--text-muted)]">{ar ? 'اختار الإصدار اللي عايز تعدّل تصميمه. احفظ التعديلات قبل الانتقال لإصدار آخر، واعتمد الإصدار المناسب لاستخدامه في عروض العملاء الجديدة.' : 'Choose the version to edit. Save before switching, and set a valid version as current for new customer proposals.'}</p>
         {!hasFullVersionList && <p className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><AlertTriangle size={16} className="shrink-0"/>{ar ? 'الـ API رجّع الإصدار الحالي فقط؛ باقي الإصدارات مش ظاهرة في الاستجابة الحالية.' : 'The API returned only the current version; other versions are not available in this response.'}</p>}
+        {selectedVersionDetail.isError && <p role="alert" className="mb-3 text-xs text-amber-700">{ar ? 'تعذر تحميل تفاصيل الإصدار المحدد من الـ API.' : 'Could not load selected version details.'}</p>}
         {versionContentUnavailable && <p className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><AlertTriangle size={16} className="shrink-0"/>{ar ? 'الإصدار المحدد لا يحتوي على أقسام تصميم محفوظة في الاستجابة الحالية. لا يمكن عرض أو تعديل التصميم حتى يوفر الـ API تفاصيل هذا الإصدار.' : 'No saved design sections were found in this version response. This version cannot be viewed or edited until its design details are available.'}</p>}
       <div className="mb-4 space-y-2">
         {versionsQuery.isLoading && <p className="text-xs text-[var(--text-muted)]">{ar ? 'جاري تحميل الإصدارات...' : 'Loading versions...'}</p>}
