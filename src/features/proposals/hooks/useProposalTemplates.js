@@ -41,6 +41,15 @@ export function useProposalTemplateVersions(templateId) {
   })
 }
 
+export function useProposalTemplateVersionInfo(versionId, enabled = true) {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.proposalTemplates.version(versionId), 'details'],
+    queryFn: () => proposalTemplatesApi.getTemplateVersionInfo(versionId),
+    enabled: Boolean(versionId) && enabled,
+    select: extractEntity,
+  })
+}
+
 export function useProposalTemplateMutations() {
   const queryClient = useQueryClient()
 
