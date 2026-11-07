@@ -192,7 +192,7 @@ export function ProposalPropertiesPanel({
   }
 
   return (
-    <GuideContext.Provider value={guide}><aside className="h-[calc(100vh-4.5rem)] w-[340px] shrink-0 overflow-y-auto border-s border-[var(--border)] bg-[var(--surface)] p-4">
+    <GuideContext.Provider value={guide}><aside className="h-full min-h-0 w-full min-w-0 overflow-y-auto border-s border-[var(--border)] bg-[var(--surface)] p-4">
       <div className="mb-5 flex items-center gap-2">
         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#E8F9FA] text-[#007A80]">
           <Settings2 size={18} />
