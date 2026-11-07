@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { ArrowRight, Eye, Save, GripVertical } from 'lucide-react'
+import { ArrowRight, Eye, Save, GripVertical, Undo2, Redo2, History } from 'lucide-react'
 import { useProposalTemplateMutations } from '../../../../features/proposals'
 import { Button } from '../../../../shared/components/ui/Button'
 import { ProposalBuilderSidebar, TemplateHelp } from './components/ProposalBuilderSidebar'
@@ -35,6 +35,34 @@ export function CustomerProposalTemplateCreatePage() {
   const [form, setForm] = useState({ name: '', description: '', category: '' })
   const [content, setContent] = useState(() => createDefaultBuilderContent({ title: '' }, null, t))
   const [selected, setSelected] = useState(null)
+  const historyRef = useRef(null)
+  const indexRef = useRef(0)
+  const contentRef = useRef(content)
+  const [historyState, setHistoryState] = useState({ entries: [], index: 0 })
+  if (!historyRef.current) historyRef.current = [{ content, label: 'Initial state' }]
+  const restoreHistory = index => {
+    if (index < 0 || index >= historyRef.current.length) return
+    indexRef.current = index
+    const snapshot = historyRef.current[index].content
+    contentRef.current = snapshot
+    setContent(snapshot)
+    setHistoryState({ entries: historyRef.current, index })
+  }
+  const undo = () => restoreHistory(indexRef.current - 1)
+  const redo = () => restoreHistory(indexRef.current + 1)
+  useEffect(() => {
+    const handleKey = event => {
+      if (!(event.ctrlKey || event.metaKey) || event.altKey) return
+      const key = event.key.toLowerCase()
+      if (key !== 'z' && key !== 'y') return
+      const target = event.target
+      if (target instanceof HTMLElement && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))) return
+      event.preventDefault()
+      restoreHistory(indexRef.current + (key === 'y' || event.shiftKey ? 1 : -1))
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [])
   const [preview, setPreview] = useState(false)
   const [saving, setSaving] = useState(false)
   const [panelWidths, setPanelWidths] = useState({ left: 290, right: 340 })
@@ -63,7 +91,19 @@ export function CustomerProposalTemplateCreatePage() {
   // Preserve IDs across partial failures so retry resumes rather than creating duplicates.
   const progress = useRef({ templateId: null, versionId: null, builderSaved: false, published: false })
   const selectedSectionId = selected?.type === 'block' ? selected.sectionId : selected?.id || content.sections[0]?.id
-  const change = (update) => setContent(old => typeof update === 'function' ? update(old) : update)
+  const change = (update, label) => {
+    const previous = contentRef.current
+    const next = typeof update === 'function' ? update(previous) : update
+    if (next === previous || JSON.stringify(next) === JSON.stringify(previous)) return
+    const entries = historyRef.current.slice(0, indexRef.current + 1)
+    entries.push({ content: next, label: label || (ar ? 'تعديل العرض' : 'Edit proposal') })
+    if (entries.length > 101) entries.shift()
+    historyRef.current = entries
+    indexRef.current = entries.length - 1
+    contentRef.current = next
+    setHistoryState({ entries, index: indexRef.current })
+    setContent(next)
+  }
   const addSection = () => {
     const section = createDefaultSection({}, t)
     change(old => ({ ...old, sections: [...old.sections, section] }))
@@ -137,7 +177,13 @@ export function CustomerProposalTemplateCreatePage() {
           <Link to="/LeadsCenter/proposals/templates" aria-label={t('proposals.templateEditor.back')}><ArrowRight size={20}/></Link>
           <div><h1 className="font-bold text-[var(--text)]">{t('proposals.workspace.createTemplate')}</h1><p className="text-sm text-[var(--text-muted)]">{t('proposals.templateEditor.help')}</p></div>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" onClick={undo} disabled={saving || historyState.index === 0} title="Undo (Ctrl+Z)" aria-label="Undo"><Undo2 size={16}/></Button>
+          <Button variant="outline" onClick={redo} disabled={saving || historyState.index >= (historyState.entries.length || 1) - 1} title="Redo (Ctrl+Y)" aria-label="Redo"><Redo2 size={16}/></Button>
+          <History size={16}/>
+          <select aria-label={ar ? 'سجل التعديلات' : 'Edit history'} value={historyState.index} disabled={saving} onChange={event => restoreHistory(Number(event.target.value))} className="max-w-48 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 text-xs">
+            {(historyState.entries.length ? historyState.entries : historyRef.current).map((entry, index) => <option key={index} value={index}>{index}. {index === 0 ? (ar ? 'البداية' : 'Initial state') : entry.label}</option>)}
+          </select>
           <TemplateHelp enabled description={help.preview}/>
           <Button variant="outline" onClick={() => setPreview(value => !value)} disabled={saving}><Eye size={16}/>{t('proposals.templateEditor.preview')}</Button>
           <TemplateHelp enabled description={help.save}/>
