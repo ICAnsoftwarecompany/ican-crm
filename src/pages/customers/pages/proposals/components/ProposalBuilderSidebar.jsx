@@ -171,7 +171,7 @@ export function ProposalBuilderSidebar({
       {!openedSection && <div className="mb-5 flex items-center justify-between gap-2">
         <div>
           <h2 className="text-sm font-black text-[var(--text)]">{t('proposals.builder.structureTitle')}</h2>
-          <p className="text-xs font-semibold text-[var(--text-muted)]">{t('proposals.builder.structureSubtitle')}</p>
+
         </div>
         <TemplateHelp enabled={guide} topic="addSection" />
         <Button variant="accent" size="icon" onClick={onAddSection} aria-label={t('proposals.builder.addSection')}>

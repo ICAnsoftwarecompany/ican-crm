@@ -175,15 +175,9 @@ export function CustomerProposalTemplateCreatePage() {
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)] p-4">
         <div className="flex items-center gap-3">
           <Link to="/LeadsCenter/proposals/templates" aria-label={t('proposals.templateEditor.back')}><ArrowRight size={20}/></Link>
-          <div><h1 className="font-bold text-[var(--text)]">{t('proposals.workspace.createTemplate')}</h1><p className="text-sm text-[var(--text-muted)]">{t('proposals.templateEditor.help')}</p></div>
+          <div className="flex items-center gap-2"><h1 className="font-bold text-[var(--text)]">{t('proposals.workspace.createTemplate')}</h1><TemplateHelp enabled description={t('proposals.templateEditor.help')}/></div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" onClick={undo} disabled={saving || historyState.index === 0} title="Undo (Ctrl+Z)" aria-label="Undo"><Undo2 size={16}/></Button>
-          <Button variant="outline" onClick={redo} disabled={saving || historyState.index >= (historyState.entries.length || 1) - 1} title="Redo (Ctrl+Y)" aria-label="Redo"><Redo2 size={16}/></Button>
-          <History size={16}/>
-          <select aria-label={ar ? 'سجل التعديلات' : 'Edit history'} value={historyState.index} disabled={saving} onChange={event => restoreHistory(Number(event.target.value))} className="max-w-48 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 text-xs">
-            {(historyState.entries.length ? historyState.entries : historyRef.current).map((entry, index) => <option key={index} value={index}>{index}. {index === 0 ? (ar ? 'البداية' : 'Initial state') : entry.label}</option>)}
-          </select>
           <TemplateHelp enabled description={help.preview}/>
           <Button variant="outline" onClick={() => setPreview(value => !value)} disabled={saving}><Eye size={16}/>{t('proposals.templateEditor.preview')}</Button>
           <TemplateHelp enabled description={help.save}/>
@@ -195,7 +189,15 @@ export function CustomerProposalTemplateCreatePage() {
         <label className="space-y-1 text-sm"><span className="inline-flex items-center gap-1">{t('proposals.workspace.templateCategory')}<TemplateHelp enabled description={help.category}/></span><input disabled={saving || Boolean(progress.current.templateId)} value={form.category} onChange={event => setForm(old => ({ ...old, category: event.target.value }))} className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2"/></label>
         <label className="space-y-1 text-sm md:col-span-2"><span className="inline-flex items-center gap-1">{t('proposals.workspace.templateDescription')}<TemplateHelp enabled description={help.description}/></span><textarea disabled={saving || Boolean(progress.current.templateId)} value={form.description} onChange={event => setForm(old => ({ ...old, description: event.target.value }))} className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2"/></label>
       </div>
-      <div className="mx-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 text-sm text-[var(--text-muted)]">{t('proposals.templateEditor.help')}</div>
+      <div className="mx-2 flex flex-wrap items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 sm:mx-4" role="toolbar" aria-label={ar ? 'سجل وتراجع تعديلات العرض' : 'Proposal history and undo controls'}>
+        <span className="me-auto text-xs font-bold text-[var(--text-muted)]">{ar ? 'سجل تعديلات العرض' : 'Proposal edit history'}</span>
+          <Button variant="outline" onClick={undo} disabled={saving || historyState.index === 0} title="Undo (Ctrl+Z)" aria-label="Undo"><Undo2 size={16}/></Button>
+          <Button variant="outline" onClick={redo} disabled={saving || historyState.index >= (historyState.entries.length || 1) - 1} title="Redo (Ctrl+Y)" aria-label="Redo"><Redo2 size={16}/></Button>
+          <History size={16}/>
+          <select aria-label={ar ? 'سجل التعديلات' : 'Edit history'} value={historyState.index} disabled={saving} onChange={event => restoreHistory(Number(event.target.value))} className="max-w-48 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 text-xs">
+            {(historyState.entries.length ? historyState.entries : historyRef.current).map((entry, index) => <option key={index} value={index}>{index}. {index === 0 ? (ar ? 'البداية' : 'Initial state') : entry.label}</option>)}
+          </select>
+      </div>
       <div ref={workspaceRef} className="mx-2 min-w-0 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] sm:mx-4"
         style={wideLayout && !preview ? { display: 'grid', gridTemplateColumns: `${panelWidths.left}px 8px minmax(0, 1fr) 8px ${panelWidths.right}px`, height: 'min(76vh, 900px)', minHeight: 480 } : undefined}>
         {!preview && (
