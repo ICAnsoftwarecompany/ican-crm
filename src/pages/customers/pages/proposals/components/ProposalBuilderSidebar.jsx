@@ -135,6 +135,7 @@ export function ProposalBuilderSidebar({
   onSectionDragEnd,
   onBlockDragEnd,
   guide = false,
+  generalDesign = null,
 }) {
   const { t } = useTranslation()
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }))
@@ -144,6 +145,7 @@ export function ProposalBuilderSidebar({
 
   return (
     <aside className="h-full min-h-0 w-full min-w-0 overflow-y-auto border-e border-[var(--border)] bg-[var(--surface)] p-4">
+      {generalDesign && <div className="mb-5">{generalDesign}</div>}
       <div className="mb-5 flex items-center justify-between gap-2">
         <div>
           <h2 className="text-sm font-black text-[var(--text)]">{t('proposals.builder.structureTitle')}</h2>
