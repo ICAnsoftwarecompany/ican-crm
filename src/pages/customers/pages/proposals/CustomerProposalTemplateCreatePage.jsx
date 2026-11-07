@@ -40,7 +40,6 @@ export function CustomerProposalTemplateCreatePage() {
   const contentRef = useRef(content)
   const [historyState, setHistoryState] = useState({ entries: [], index: 0 })
   if (!historyRef.current) historyRef.current = [{ content, label: 'Initial state' }]
-  contentRef.current = content
   const restoreHistory = index => {
     if (index < 0 || index >= historyRef.current.length) return
     indexRef.current = index
