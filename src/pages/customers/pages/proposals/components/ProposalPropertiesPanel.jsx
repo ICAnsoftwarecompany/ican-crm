@@ -223,7 +223,6 @@ export function ProposalPropertiesPanel({
         </span>
         <div>
           <h2 className="text-sm font-black text-[var(--text)]">{selectionOnly ? (selectedBlock ? getBlockLabel(selectedBlock.type, t) : selectedSection ? t('proposals.builder.sectionFallback') : (t('proposals.builder.propertiesTitle'))) : t('proposals.builder.propertiesTitle')}</h2>
-          <p className="text-xs font-semibold text-[var(--text-muted)]">{t('proposals.builder.propertiesSubtitle')}</p>
         </div>
       </div>
 
