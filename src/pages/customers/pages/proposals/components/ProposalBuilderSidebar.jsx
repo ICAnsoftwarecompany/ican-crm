@@ -138,6 +138,7 @@ export function ProposalBuilderSidebar({
   generalDesign = null,
 }) {
   const { t } = useTranslation()
+  const [librarySectionId, setLibrarySectionId] = useState(null)
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }))
   const sections = content?.sections || []
   const activeSection = sections.find((section) => section.id === selectedSectionId) || sections[0]
@@ -161,7 +162,7 @@ export function ProposalBuilderSidebar({
         <SortableContext items={sections.map((section) => section.id)} strategy={verticalListSortingStrategy}>
           <div className="space-y-2">
             {sections.map((section) => (
-              <div key={section.id} className="group flex items-center gap-2">
+              <div key={section.id} className="group flex flex-wrap items-center gap-2">
                 <SortableRow
                   id={section.id}
                   guide={guide}
@@ -171,6 +172,7 @@ export function ProposalBuilderSidebar({
                   {section.title}
                   {section.is_visible === false ? <EyeOff size={13} className="inline" /> : null}
                 </SortableRow>
+                <button type="button" aria-label="إضافة بلوك / Add block" aria-expanded={librarySectionId === section.id} onClick={() => { onSelect({ type: 'section', id: section.id }); setLibrarySectionId(old => old === section.id ? null : section.id) }} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] text-[#007A80] hover:bg-[#E8F9FA]"><Plus size={17}/></button>
                 <TemplateHelp enabled={guide} topic="deleteSection" />
                 <Button
                   variant="ghost"
@@ -181,6 +183,10 @@ export function ProposalBuilderSidebar({
                 >
                   <Trash2 size={14} />
                 </Button>
+                {librarySectionId === section.id && <div className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
+                  <div className="mb-3 flex items-center gap-2 text-xs font-bold">{section.title} — {t('proposals.builder.blockLibrary')}<TemplateHelp enabled={guide} topic="blocks"/></div>
+                  {getProposalBlockGroups(t).map(group => <div key={group.id} className="mb-3"><div className="mb-2 text-xs font-semibold text-[var(--text-muted)]">{group.label}</div><div className="grid grid-cols-2 gap-2">{group.blocks.map(block => { const Icon = block.icon; return <div key={block.type} className="flex min-w-0 items-center gap-1"><button type="button" className="flex min-h-12 min-w-0 flex-1 items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 text-xs font-semibold hover:border-[#00C2CB]" onClick={() => { onAddBlock(block.type, section.id); setLibrarySectionId(null) }}><Icon size={16}/><span className="truncate">{block.label}</span></button><TemplateHelp enabled={guide} topic={block.type}/></div> })}</div></div>)}
+                </div>}
               </div>
             ))}
           </div>
@@ -208,33 +214,6 @@ export function ProposalBuilderSidebar({
         </DndContext>
       </div>
 
-      <div className="mt-6 border-t border-[var(--border)] pt-5">
-        <div className="mb-3 flex items-center gap-1"><h3 className="text-xs font-black text-[var(--text-muted)]">{t('proposals.builder.blockLibrary')}</h3><TemplateHelp enabled={guide} topic="blocks" /></div>
-        <div className="space-y-4">
-          {getProposalBlockGroups(t).map((group) => (
-            <div key={group.id}>
-              <div className="mb-2 text-[11px] font-black text-[var(--text-light)]">{group.label}</div>
-              <div className="grid grid-cols-2 gap-2">
-                {group.blocks.map((block) => {
-                  const Icon = block.icon
-                  return (
-                    <div key={block.type} className="relative flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => onAddBlock(block.type, activeSection?.id)}
-                        className="flex min-h-16 min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-2 py-2 text-center text-xs font-black text-[var(--text)] transition hover:border-[#00C2CB] hover:bg-[#E8F9FA] hover:text-[#007A80]"
-                      >
-                        <Icon size={18} />
-                        <span>{block.label}</span>
-                      </button>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
     </aside>
   )
 }
