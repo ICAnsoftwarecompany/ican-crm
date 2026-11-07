@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ArrowRight, Copy, Eye, Save, GitBranch, Plus } from 'lucide-react'
@@ -14,6 +14,8 @@ import { getTemplateVersions, getTemplateVersionContent, getCurrentTemplateVersi
 
 export function CustomerProposalTemplateBuilderPage() {
   const { templateId } = useParams()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const newVersionTriggered = useRef(false)
   const { t } = useTranslation()
   const tr = (key) => t('proposals.templateEditor.' + key)
   const query = useProposalTemplateInfo(templateId)
@@ -82,6 +84,16 @@ export function CustomerProposalTemplateBuilderPage() {
       toast.success(tr('versionCreated'))
     } catch { toast.error(tr('versionFailed')) }
   }
+  useEffect(() => {
+    if (searchParams.get('action') !== 'new-version' || !content || !template || newVersionTriggered.current || pending || dirty) return
+    newVersionTriggered.current = true
+    setSearchParams({}, { replace: true })
+    // Creating a fresh version is explicit; the existing current version is not modified.
+    void createVersion(false)
+  // createVersion is intentionally invoked once after hydration.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, content, template, pending, dirty])
+
   const selectVersion = (id) => {
     if (dirty || saving.current || pending) { toast.error(tr('saveBeforeSwitch')); return }
     hydratedKey.current = null

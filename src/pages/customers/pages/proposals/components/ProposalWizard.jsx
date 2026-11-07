@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { CheckCircle2, FileSignature, UserRound } from 'lucide-react'
 import { toast } from 'sonner'
@@ -34,10 +34,11 @@ export function ProposalWizard({ open, onClose }) {
   const { t } = useTranslation()
   const STEPS = useMemo(() => getWizardSteps(t), [t])
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [stepIndex, setStepIndex] = useState(0)
   const [form, setForm] = useState({
     customer_id: '',
-    template_id: '',
+    template_id: searchParams.get('template_id') || '',
     assigned_to: '',
     title: '',
     description: '',

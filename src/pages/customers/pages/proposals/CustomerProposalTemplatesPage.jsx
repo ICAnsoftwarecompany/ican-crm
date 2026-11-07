@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, Copy, FileSignature, Power, PowerOff, Plus, Info, PencilRuler } from 'lucide-react'
+import { ArrowRight, Copy, FileSignature, Power, PowerOff, Plus, Info, PencilRuler, GitBranch, FilePlus2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { PageToolbar } from '../../../../shared/components/data/PageToolbar'
@@ -55,7 +55,9 @@ export function CustomerProposalTemplatesPage() {
             <h2 className="text-base font-black text-[var(--text)]">{template.name || t('proposals.templates.templateFallback', { id: template.id })}</h2>
             <p className="mt-2 line-clamp-3 min-h-12 text-sm font-semibold leading-6 text-[var(--text-muted)]">{template.description || t('proposals.renderer.noDescription')}</p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
+              {template.is_active && <Link to={`/LeadsCenter/proposals?action=new&template_id=${encodeURIComponent(template.id)}`}><Button size="sm"><FilePlus2 size={15}/>{t('proposals.page.newProposal')}</Button></Link>}
               <Link to={`/LeadsCenter/proposals/templates/${template.id}/builder`}><Button size="sm"><PencilRuler size={15}/>{t('proposals.templateEditor.edit')}</Button></Link>
+              <Link to={`/LeadsCenter/proposals/templates/${template.id}/builder?action=new-version`}><Button variant="outline" size="sm"><GitBranch size={15}/>{t('proposals.templateEditor.newVersion')}</Button></Link>
               <Button variant="outline" size="sm" onClick={() => run(mutations.duplicateTemplate.mutateAsync(template.id), t('proposals.templates.templateDuplicated'))}>
                 <Copy size={15} />
                 {t('proposals.templates.duplicate')}
