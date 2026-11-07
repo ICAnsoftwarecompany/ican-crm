@@ -10,6 +10,7 @@ import { ProposalCanvas } from './components/ProposalCanvas'
 import { GeneralDesignFields, ProposalPropertiesPanel } from './components/ProposalPropertiesPanel'
 import { createDefaultBlock, createDefaultBuilderContent, createDefaultSection, moveItem } from './utils/proposalBuilderContent'
 import { getEntityId, getResponseEntity } from './utils/proposalPayloads'
+import { persistTemplateSections } from './utils/persistTemplateSections'
 
 const slugify = (name) => name.trim().toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now()
 
@@ -89,7 +90,61 @@ export function CustomerProposalTemplateCreatePage() {
     window.addEventListener('pointerup', stop)
   }
   // Preserve IDs across partial failures so retry resumes rather than creating duplicates.
-  const progress = useRef({ templateId: null, versionId: null, builderSaved: false, published: false })
+  const progress = useRef({ templateId: null, versionId: null, builderSaved: false, published: false, savedSections: [] })
+  const initialization = useRef(false)
+  const [draftError, setDraftError] = useState('')
+  const [draftReady, setDraftReady] = useState(false)
+  useEffect(() => {
+    if (initialization.current) return
+    initialization.current = true
+    let cancelled = false
+    const initialize = async () => {
+      try {
+        const stored = sessionStorage.getItem('proposal-template-draft')
+        if (stored) {
+          const draft = JSON.parse(stored)
+          if (draft.templateId) {
+            progress.current = { ...progress.current, ...draft }
+            if (draft.content?.sections) {
+              contentRef.current = draft.content
+              setContent(draft.content)
+              historyRef.current = [{ content: draft.content, label: 'Restored draft' }]
+              indexRef.current = 0
+            }
+            if (draft.form) setForm(draft.form)
+            if (!draft.versionId) {
+              const response = await proposalTemplatesApi.getTemplateInfo(draft.templateId)
+              progress.current.versionId = getResponseEntity(response)?.current_version?.id
+            }
+            if (!progress.current.versionId) throw new Error('Draft version unavailable')
+            if (!cancelled) setDraftReady(true)
+            return
+          }
+        }
+        const response = await proposalTemplatesApi.createTemplate({
+          name: 'Untitled template', slug: slugify('draft'), description: '', category: '', is_active: false,
+        })
+        const created = getResponseEntity(response)
+        const templateId = getEntityId(created)
+        if (!templateId) throw new Error('Draft template ID missing')
+        let versionId = created?.current_version?.id || created?.current_version_id
+        progress.current.templateId = templateId
+        sessionStorage.setItem('proposal-template-draft', JSON.stringify({ ...progress.current, content: contentRef.current }))
+        if (!versionId) {
+          const details = getResponseEntity(await proposalTemplatesApi.getTemplateInfo(templateId))
+          versionId = details?.current_version?.id || details?.current_version_id
+        }
+        if (!versionId) throw new Error('Draft version ID missing')
+        progress.current.versionId = versionId
+        sessionStorage.setItem('proposal-template-draft', JSON.stringify({ ...progress.current, content: contentRef.current }))
+        if (!cancelled) setDraftReady(true)
+      } catch (error) {
+        if (!cancelled) setDraftError(error?.message || 'Failed to create draft')
+      }
+    }
+    initialize()
+    return () => { cancelled = true }
+  }, [])
   const selectedSectionId = selected?.type === 'block' ? selected.sectionId : selected?.id || content.sections[0]?.id
   const change = (update, label) => {
     const previous = contentRef.current
@@ -141,39 +196,38 @@ export function CustomerProposalTemplateCreatePage() {
     if (over && active.id !== over.id) change(old => ({ ...old, sections: old.sections.map(section => section.id === selectedSectionId ? { ...section, blocks: moveItem(section.blocks, active.id, over.id) } : section) }))
   }
   const save = async () => {
-    if (saving || !form.name.trim()) return
+    if (saving || !draftReady || !form.name.trim()) return
     setSaving(true)
     const state = progress.current
     const snapshot = { ...content, title: content.title?.trim() || form.name.trim() }
     try {
-      if (!state.templateId) {
-        const response = await mutations.createTemplate.mutateAsync({
-          ...form, name: form.name.trim(), slug: slugify(form.name), is_active: false,
-        })
-        const created = getResponseEntity(response)
-        state.templateId = getEntityId(created)
-        if (!state.templateId) throw new Error('Template creation returned no ID')
-        // The backend creates V1 automatically when the template is saved.
-        // Prefer the returned version; otherwise load the newly created template.
-        state.versionId = created?.current_version?.id || created?.current_version_id || null
-      }
-      if (!state.versionId) {
-        const detailsResponse = await proposalTemplatesApi.getTemplateInfo(state.templateId)
-        const details = getResponseEntity(detailsResponse)
-        state.versionId = details?.current_version?.id || details?.current_version_id || null
-        if (!state.versionId) throw new Error('Template created but backend did not return its automatic version')
-      }
+      await mutations.updateTemplate.mutateAsync({
+        templateId: state.templateId,
+        payload: { ...form, name: form.name.trim(), is_active: false },
+      })
+      const persisted = await persistTemplateSections(state.versionId, snapshot, partial => {
+        // Store server IDs after each successful creation for safe retries.
+        const updated = { ...partial, sections: partial.sections.map(section => ({ ...section, blocks: [...section.blocks] })) }
+        contentRef.current = updated
+        setContent(updated)
+        state.savedSections = updated.sections
+        sessionStorage.setItem('proposal-template-draft', JSON.stringify({ ...state, content: updated, form }))
+      }, state.savedSections)
+      state.savedSections = persisted.sections
+      sessionStorage.setItem('proposal-template-draft', JSON.stringify({ ...state, content: persisted, form }))
+      contentRef.current = persisted
+      setContent(persisted)
       await mutations.updateVersionBuilder.mutateAsync({
         versionId: state.versionId,
-        payload: { content: snapshot, settings: snapshot.settings, design: snapshot.design },
+        payload: { content: persisted, settings: persisted.settings, design: persisted.design },
       })
       state.builderSaved = true
-      // The version generated by template/save is already the current version.
       await mutations.activateTemplate.mutateAsync(state.templateId)
+      sessionStorage.removeItem('proposal-template-draft')
       toast.success(t('proposals.workspace.created'))
       navigate('/LeadsCenter/proposals/templates')
-    } catch {
-      toast.error(t('proposals.workspace.createFailed'))
+    } catch (error) {
+      toast.error(error?.message || t('proposals.workspace.createFailed'))
     } finally {
       setSaving(false)
     }
@@ -181,6 +235,8 @@ export function CustomerProposalTemplateCreatePage() {
 
   return (
     <div className="min-w-0 space-y-4 bg-[var(--surface-2)] pb-6">
+      {draftError && <p role="alert" className="mx-4 rounded-lg border border-red-400 p-3 text-sm text-red-600">{draftError}</p>}
+      {!draftReady && !draftError && <p className="mx-4 text-sm text-[var(--text-muted)]">{ar ? 'جاري إنشاء القالب والإصدار الأول...' : 'Creating template and first version...'}</p>}
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)] p-4">
         <div className="flex items-center gap-3">
           <Link to="/LeadsCenter/proposals/templates" aria-label={t('proposals.templateEditor.back')}><ArrowRight size={20}/></Link>
@@ -190,7 +246,7 @@ export function CustomerProposalTemplateCreatePage() {
           <TemplateHelp enabled description={help.preview}/>
           <Button variant="outline" onClick={() => setPreview(value => !value)} disabled={saving}><Eye size={16}/>{t('proposals.templateEditor.preview')}</Button>
           <TemplateHelp enabled description={help.save}/>
-          <Button onClick={save} disabled={saving || !form.name.trim()}><Save size={16}/>{saving ? t('proposals.templateEditor.loading') : t('proposals.workspace.saveTemplate')}</Button>
+          <Button onClick={save} disabled={saving || !draftReady || !form.name.trim()}><Save size={16}/>{saving ? t('proposals.templateEditor.loading') : t('proposals.workspace.saveTemplate')}</Button>
         </div>
       </header>
       <div className="mx-4 grid gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 md:grid-cols-2">
