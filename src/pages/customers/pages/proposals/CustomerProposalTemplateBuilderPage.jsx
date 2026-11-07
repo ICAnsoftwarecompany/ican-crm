@@ -11,6 +11,7 @@ import { ProposalCanvas } from './components/ProposalCanvas'
 import { createDefaultBlock, createDefaultBuilderContent, createDefaultSection, moveItem, normalizeBuilderContent } from './utils/proposalBuilderContent'
 import { getEntityId, getResponseEntity } from './utils/proposalPayloads'
 import { getTemplateVersions, getTemplateVersionContent, getCurrentTemplateVersion } from './utils/templateVersionSnapshot'
+import { persistTemplateSections } from './utils/persistTemplateSections'
 
 export function CustomerProposalTemplateBuilderPage() {
   const { templateId } = useParams()
@@ -40,6 +41,7 @@ export function CustomerProposalTemplateBuilderPage() {
   const hydratedKey = useRef(null)
   const editRevision = useRef(0)
   const saving = useRef(false)
+  const savedSectionsRef = useRef([])
   const [content, setContent] = useState(null)
   const [selected, setSelected] = useState(null)
   const [dirty, setDirty] = useState(false)
@@ -50,7 +52,7 @@ export function CustomerProposalTemplateBuilderPage() {
   const activeVersionId = template?.current_version?.id ?? template?.current_version_id
   const versionHasContent = version => Boolean(getTemplateVersionContent(version)?.sections?.length || version?.sections?.length)
   const selectedSectionId = selected?.type === 'block' ? selected.sectionId : selected?.id || content?.sections?.[0]?.id
-  const versionContentUnavailable = Boolean(currentVersion && !versionHasContent(currentVersion))
+  const versionContentUnavailable = !currentVersion?.id
   const pending = mutations.updateVersionBuilder.isPending || mutations.createTemplateVersion.isPending || mutations.duplicateVersion.isPending || mutations.setCurrentVersion.isPending
 
   useEffect(() => {
@@ -59,7 +61,8 @@ export function CustomerProposalTemplateBuilderPage() {
     if (hydratedKey.current === key || dirty || saving.current) return
     hydratedKey.current = key
     const raw = getTemplateVersionContent(currentVersion) ?? (currentVersion?.sections ? { sections: currentVersion.sections, settings: currentVersion.settings, styles: currentVersion.styles } : null)
-    const next = raw ? normalizeBuilderContent(raw, { title: template.name }, t) : null
+    const next = raw && raw.sections?.length ? normalizeBuilderContent(raw, { title: template.name }, t) : createDefaultBuilderContent({ title: template.name }, null, t)
+    savedSectionsRef.current = currentVersion?.sections || []
     setContent(next)
     setSelected(next ? { type: 'section', id: next.sections[0]?.id } : null)
     setDirty(false)
@@ -75,13 +78,18 @@ export function CustomerProposalTemplateBuilderPage() {
     saving.current = true
     const revision = editRevision.current
     try {
-      const savedContent = content
+      const savedContent = await persistTemplateSections(currentVersion.id, content, partial => {
+        setContent({ ...partial, sections: [...partial.sections] })
+        savedSectionsRef.current = partial.sections
+      }, savedSectionsRef.current)
+      savedSectionsRef.current = savedContent.sections
+      setContent(savedContent)
       await mutations.updateVersionBuilder.mutateAsync({ versionId: currentVersion.id, payload: {
         content: savedContent, settings: savedContent.settings, design: savedContent.design,
       } })
       if (editRevision.current === revision) setDirty(false)
       toast.success(tr('saved'))
-    } catch { toast.error(tr('saveFailed')) }
+    } catch (error) { toast.error(error?.response?.data?.message || error?.message || tr('saveFailed')) }
     finally { saving.current = false }
   }
   const createVersion = async (duplicate = false) => {
