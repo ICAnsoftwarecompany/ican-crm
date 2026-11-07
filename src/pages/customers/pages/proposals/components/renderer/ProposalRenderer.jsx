@@ -4,7 +4,9 @@ import { ExternalLink, FileText, Mail, Phone, UserRound } from 'lucide-react'
 import { cn } from '../../../../../../shared/utils/cn'
 import { formatMoney } from '../../utils/proposalPayloads'
 
-function BlockShell({ children, editable, selected, onClick, className }) {
+function BlockShell({ children, editable, selected, onClick, className, styles = {} }) {
+  const width = Number(styles.width) || 12
+  const span = [3, 4, 6, 12].includes(width) ? width : 12
   return (
     <div
       role={editable ? 'button' : undefined}
@@ -13,8 +15,21 @@ function BlockShell({ children, editable, selected, onClick, className }) {
       onKeyDown={(event) => {
         if (editable && (event.key === 'Enter' || event.key === ' ')) onClick?.(event)
       }}
+      style={{
+
+        backgroundColor: styles.background || undefined,
+        color: styles.color || undefined,
+        borderColor: styles.border_color || undefined,
+        borderWidth: styles.border_color ? 1 : undefined,
+        borderStyle: styles.border_color ? 'solid' : undefined,
+        padding: styles.padding !== undefined ? `${Math.max(0, Math.min(80, Number(styles.padding) || 0))}px` : undefined,
+        borderRadius: styles.radius !== undefined ? `${Math.max(0, Math.min(48, Number(styles.radius) || 0))}px` : undefined,
+      }}
       className={cn(
-        'relative rounded-lg transition',
+        'proposal-layout-block relative col-span-12 min-w-0 rounded-lg transition',
+        span === 6 && 'sm:col-span-6',
+        span === 4 && 'sm:col-span-4',
+        span === 3 && 'sm:col-span-3',
         editable && 'cursor-pointer outline outline-1 outline-transparent hover:outline-[#00C2CB]/45',
         selected && 'outline outline-2 outline-[#00C2CB] ring-4 ring-[#00C2CB]/10',
         className
@@ -121,13 +136,13 @@ function renderBlock(block, context) {
 
   if (block.type === 'cover') {
     return (
-      <div className="overflow-hidden rounded-xl border border-[#D7E5F2] bg-[#F0FDFF]">
+      <div className="overflow-hidden rounded-xl border border-[#D7E5F2]" style={{ backgroundColor: styles.background || "#F0FDFF" }}>
         {data.image_url ? (
           <img src={data.image_url} alt="" className="h-56 w-full object-cover" />
         ) : null}
         <div className={cn('px-8 py-10', align === 'center' && 'text-center', align === 'end' && 'text-end')}>
           <div className="text-xs font-black uppercase tracking-wide text-[#007A80]">{data.eyebrow || t('proposals.builder.defaults.coverEyebrow')}</div>
-          <h1 className="mt-3 text-4xl font-black leading-tight text-[#162847]">{data.title || context.title}</h1>
+          <h1 className="mt-3 text-4xl font-black leading-tight" style={{ color: styles.color || "#162847" }}>{data.title || context.title}</h1>
           <p className="mx-auto mt-3 max-w-2xl text-sm font-semibold leading-7 text-slate-600">{data.subtitle}</p>
         </div>
       </div>
@@ -140,7 +155,7 @@ function renderBlock(block, context) {
   }
 
   if (block.type === 'text') {
-    return <p className="whitespace-pre-wrap text-sm font-semibold leading-8 text-slate-700" style={{ textAlign: align }}>{data.content}</p>
+    return <p className="whitespace-pre-wrap text-sm font-semibold leading-8" style={{ textAlign: align, color: styles.color || "#334155" }}>{data.content}</p>
   }
 
   if (block.type === 'image') {
@@ -239,11 +254,12 @@ export function ProposalRenderer({
               {section.description ? <p className="mt-1 text-xs font-semibold text-slate-500">{section.description}</p> : null}
             </div>
           </div>
-          <div className="space-y-4">
+          <div className="grid grid-cols-12 gap-4">
             {(section.blocks || []).filter((block) => block.is_visible !== false).map((block) => (
               <BlockShell
                 key={block.id}
                 editable={editable}
+                styles={block.styles}
                 selected={selected?.type === 'block' && selected?.id === block.id}
                 onClick={(event) => {
                   event.stopPropagation()

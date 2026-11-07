@@ -50,6 +50,7 @@ function BlockFields({ block, onChangeBlock, t }) {
   const setData = (key, value) => onChangeBlock({ ...block, data: { ...data, [key]: value } })
   const setStyle = (key, value) => onChangeBlock({ ...block, styles: { ...styles, [key]: value } })
   const f = (key) => t(`proposals.builder.fields.${key}`)
+  const guide = useContext(GuideContext)
 
   return (
     <div className="space-y-4">
@@ -64,6 +65,25 @@ function BlockFields({ block, onChangeBlock, t }) {
           { value: 'end', label: f('alignEnd') },
         ]}
       />
+
+      <div className="space-y-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3">
+        <div className="text-xs font-black text-[var(--text-muted)]">{t('proposals.builder.generalDesign')} — {t('proposals.builder.propertiesTitle')}</div>
+        <label className="block space-y-1 text-xs font-bold text-[var(--text-muted)]">
+          <span className="inline-flex items-center gap-1">عرض البلوك / Block width <TemplateHelp enabled={guide} description="حدد مساحة البلوك في الصف: كامل، نصف، ثلث أو ربع. في الشاشات الصغيرة سيظهر بعرض كامل." /></span>
+          <select value={String(styles.width || 12)} onChange={event => setStyle('width', Number(event.target.value))}
+            className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 text-sm text-[var(--text)]">
+            <option value="12">100% — كامل / Full</option>
+            <option value="6">50% — نصف / Half</option>
+            <option value="4">33% — ثلث / Third</option>
+            <option value="3">25% — ربع / Quarter</option>
+          </select>
+        </label>
+        <Field label="لون الخلفية / Background color" type="color" value={styles.background || '#ffffff'} onChange={value => setStyle('background', value)} />
+        <Field label="لون النص / Text color" type="color" value={styles.color || '#162847'} onChange={value => setStyle('color', value)} />
+        <Field label="لون الحدود / Border color" type="color" value={styles.border_color || '#e2e8f0'} onChange={value => setStyle('border_color', value)} />
+        <Field label="المسافة الداخلية / Padding (px)" type="number" value={styles.padding ?? 0} onChange={value => setStyle('padding', Math.max(0, Math.min(80, Number(value) || 0)))} />
+        <Field label="استدارة الزوايا / Radius (px)" type="number" value={styles.radius ?? 8} onChange={value => setStyle('radius', Math.max(0, Math.min(48, Number(value) || 0)))} />
+      </div>
 
       {block.type === 'cover' ? (
         <>
