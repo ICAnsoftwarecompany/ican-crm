@@ -139,6 +139,7 @@ export function ProposalBuilderSidebar({
 }) {
   const { t } = useTranslation()
   const [librarySectionId, setLibrarySectionId] = useState(null)
+  const [expandedGroups, setExpandedGroups] = useState({})
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }))
   const sections = content?.sections || []
   const activeSection = sections.find((section) => section.id === selectedSectionId) || sections[0]
@@ -185,7 +186,47 @@ export function ProposalBuilderSidebar({
                 </Button>
                 {librarySectionId === section.id && <div className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
                   <div className="mb-3 flex items-center gap-2 text-xs font-bold">{section.title} — {t('proposals.builder.blockLibrary')}<TemplateHelp enabled={guide} topic="blocks"/></div>
-                  {getProposalBlockGroups(t).map(group => <div key={group.id} className="mb-3"><div className="mb-2 text-xs font-semibold text-[var(--text-muted)]">{group.label}</div><div className="grid grid-cols-2 gap-2">{group.blocks.map(block => { const Icon = block.icon; return <div key={block.type} className="flex min-w-0 items-center gap-1"><button type="button" className="flex min-h-12 min-w-0 flex-1 items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 text-xs font-semibold hover:border-[#00C2CB]" onClick={() => { onAddBlock(block.type, section.id); setLibrarySectionId(null) }}><Icon size={16}/><span className="truncate">{block.label}</span></button><TemplateHelp enabled={guide} topic={block.type}/></div> })}</div></div>)}
+                  <div className="max-h-[min(55vh,440px)] space-y-2 overflow-y-auto overscroll-contain pe-1">
+                    {getProposalBlockGroups(t).map(group => {
+                      const isOpen = Boolean(expandedGroups[group.id])
+                      const panelId = `proposal-block-group-${section.id}-${group.id}`
+                      return (
+                        <div key={group.id} className="overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)]">
+                          <button
+                            type="button"
+                            aria-expanded={isOpen}
+                            aria-controls={panelId}
+                            onClick={() => setExpandedGroups(previous => ({ ...previous, [group.id]: !previous[group.id] }))}
+                            className="flex w-full items-center justify-between gap-2 px-3 py-3 text-start text-xs font-black text-[var(--text)] hover:bg-[var(--surface-2)]"
+                          >
+                            <span className="min-w-0 flex-1 break-words">{group.label}</span>
+                            {isOpen ? <ChevronUp size={16} className="shrink-0" /> : <ChevronDown size={16} className="shrink-0" />}
+                          </button>
+                          {isOpen && (
+                            <div id={panelId} className="space-y-2 border-t border-[var(--border)] p-2">
+                              {group.blocks.map(block => {
+                                const Icon = block.icon
+                                return (
+                                  <div key={block.type} className="flex min-w-0 items-center gap-2">
+                                    <button
+                                      type="button"
+                                      className="flex min-h-11 min-w-0 flex-1 items-center gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2 text-start text-xs font-semibold text-[var(--text)] hover:border-[#00C2CB] hover:bg-[#E8F9FA]"
+                                      onClick={() => { onAddBlock(block.type, section.id); setLibrarySectionId(null) }}
+                                    >
+                                      <Icon size={17} className="shrink-0" />
+                                      <span className="min-w-0 flex-1 whitespace-normal break-words">{block.label}</span>
+                                      <Plus size={14} className="shrink-0 text-[var(--text-muted)]" />
+                                    </button>
+                                    <TemplateHelp enabled={guide} topic={block.type} />
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>}
               </div>
             ))}
