@@ -3,6 +3,7 @@ export { proposalsApi } from './api/proposalsApi'
 export {
   useProposalTemplates,
   useProposalTemplateInfo,
+  useProposalTemplateVersions,
   useProposalTemplateMutations,
 } from './hooks/useProposalTemplates'
 export {
