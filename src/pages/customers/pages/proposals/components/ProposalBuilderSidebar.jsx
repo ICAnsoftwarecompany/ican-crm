@@ -1,14 +1,83 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CSS } from '@dnd-kit/utilities'
 import { DndContext, PointerSensor, KeyboardSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core'
 import { SortableContext, useSortable, verticalListSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import { EyeOff, GripVertical, Plus, Trash2 } from 'lucide-react'
+import { EyeOff, GripVertical, Plus, Trash2, CircleHelp } from 'lucide-react'
 
 import { Button } from '../../../../../shared/components/ui/Button'
 import { cn } from '../../../../../shared/utils/cn'
 import { getBlockLabel, getProposalBlockGroups } from '../constants/proposalBlockTypes'
 
-function SortableRow({ id, selected, children, onClick }) {
+const HELP = {
+  ar: {
+    addSection: 'أضف قسمًا جديدًا في القالب، مثل الغلاف أو نطاق العمل أو الأسعار أو الشروط.',
+    deleteSection: 'يحذف القسم المحدد وكل البلوكات بداخله. لا يمكن حذف آخر قسم.',
+    reorder: 'اضغط باستمرار على مقبض السحب ثم اسحب القسم أو البلوك لتغيير ترتيبه.',
+    blocks: 'حدد قسمًا أولًا ثم اضغط على نوع البلوك لإضافته داخل هذا القسم.',
+    cover: 'غلاف العرض: عنوان رئيسي، وصف مختصر وصورة اختيارية.',
+    heading: 'عنوان لتقسيم المحتوى، مع اختيار الحجم واللون والمحاذاة.',
+    text: 'نص حر لشرح الخدمات أو نطاق العمل أو الملاحظات.',
+    image: 'صورة باستخدام رابط مباشر، مع وصف اختياري.',
+    button: 'زر يحتوي على نص ورابط يمكن للعميل فتحه.',
+    divider: 'خط فاصل بين أجزاء المحتوى.',
+    spacer: 'مسافة فارغة لضبط توزيع العناصر.',
+    customer_info: 'بيانات العميل تُملأ عند إنشاء عرض سعر من القالب.',
+    company_info: 'بيانات شركتك مثل الاسم والبريد والهاتف والعنوان.',
+    products: 'قسم لعرض المنتجات أو الخدمات المرتبطة بالعرض.',
+    pricing: 'بلوك الأسعار: يعرض تفاصيل التسعير داخل العرض؛ تفاصيل الأسعار تُدار في محرر العرض.',
+    terms: 'الشروط والأحكام: اكتب شروط الدفع والتنفيذ والضمان والصلاحية.',
+    signature: 'مكان توقيع العميل أو المسؤول، مع الاسم والصفة.',
+    page_break: 'فاصل لبدء صفحة جديدة في العرض.',
+    video: 'إضافة رابط فيديو مع عنوان.',
+    custom: 'عنصر مخصص لعرض عنوان وقيمة.',
+    link: 'رابط نصي لصفحة أو ملف خارجي.',
+  },
+  en: {
+    addSection: 'Add a section such as cover, scope, pricing or terms.',
+    deleteSection: 'Delete this section and its blocks. The last section cannot be deleted.',
+    reorder: 'Drag this handle to change the order of sections or blocks.',
+    blocks: 'Select a section, then click a block type to insert it.',
+    cover: 'Cover with title, subtitle and optional image.',
+    heading: 'Heading with size, color and alignment settings.',
+    text: 'Free text for scope, services or notes.',
+    image: 'Image URL and optional caption.',
+    button: 'Button with a label and destination URL.',
+    divider: 'Visual divider between content.',
+    spacer: 'Adjustable empty vertical space.',
+    customer_info: 'Customer information populated when using the template.',
+    company_info: 'Your company name, email, phone and address.',
+    products: 'Display products or services.',
+    pricing: 'Pricing block; pricing details are managed in the proposal editor.',
+    terms: 'Payment, delivery, warranty and validity terms.',
+    signature: 'Signature area with signer name and role.',
+    page_break: 'Start a new page.',
+    video: 'Video link with title.',
+    custom: 'Custom label and value.',
+    link: 'Text link to a page or file.',
+  },
+}
+
+export function TemplateHelp({ topic, enabled = false, description }) {
+  const { i18n } = useTranslation()
+  const [open, setOpen] = useState(false)
+  if (!enabled) return null
+  const ar = i18n.language?.startsWith('ar')
+  const help = description || HELP[ar ? 'ar' : 'en'][topic] || (ar ? 'اضغط على العنصر لتعديل إعداداته.' : 'Click this element to edit its settings.')
+  return (
+    <span className="group/help relative inline-flex shrink-0 items-center" onMouseLeave={() => setOpen(false)}>
+      <button type="button" aria-label={ar ? 'شرح الخاصية' : 'Explain this feature'} aria-expanded={open}
+        onClick={event => { event.stopPropagation(); setOpen(value => !value) }}
+        onFocus={() => setOpen(true)} onBlur={() => setOpen(false)}
+        className="rounded-full p-1 text-[var(--text-muted)] hover:text-[var(--brand-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-accent)]">
+        <CircleHelp size={15}/>
+      </button>
+      <span role="tooltip" className={`pointer-events-none absolute bottom-full end-0 z-50 mb-2 w-64 max-w-[75vw] rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 text-start text-xs font-normal leading-6 text-[var(--text)] shadow-xl ${open ? 'block' : 'hidden group-hover/help:block'}`}>{help}</span>
+    </span>
+  )
+}
+
+function SortableRow({ id, selected, children, onClick, guide = false }) {
   const { t } = useTranslation()
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
 
@@ -22,6 +91,7 @@ function SortableRow({ id, selected, children, onClick }) {
       )}
     >
       <button type="button" {...attributes} {...listeners} className="cursor-grab touch-none text-[var(--text-light)]" aria-label={t("proposals.dragToReorder")}><GripVertical size={15} /></button>
+      <TemplateHelp enabled={guide} topic="reorder" />
       <button type="button" onClick={onClick} className="min-w-0 flex-1 truncate text-start">{children}</button>
     </div>
   )
@@ -37,6 +107,7 @@ export function ProposalBuilderSidebar({
   onAddBlock,
   onSectionDragEnd,
   onBlockDragEnd,
+  guide = false,
 }) {
   const { t } = useTranslation()
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }))
@@ -51,6 +122,7 @@ export function ProposalBuilderSidebar({
           <h2 className="text-sm font-black text-[var(--text)]">{t('proposals.builder.structureTitle')}</h2>
           <p className="text-xs font-semibold text-[var(--text-muted)]">{t('proposals.builder.structureSubtitle')}</p>
         </div>
+        <TemplateHelp enabled={guide} topic="addSection" />
         <Button variant="accent" size="icon" onClick={onAddSection} aria-label={t('proposals.builder.addSection')}>
           <Plus size={17} />
         </Button>
@@ -63,12 +135,14 @@ export function ProposalBuilderSidebar({
               <div key={section.id} className="group flex items-center gap-2">
                 <SortableRow
                   id={section.id}
+                  guide={guide}
                   selected={selected?.type === 'section' && selected.id === section.id}
                   onClick={() => onSelect({ type: 'section', id: section.id })}
                 >
                   {section.title}
                   {section.is_visible === false ? <EyeOff size={13} className="inline" /> : null}
                 </SortableRow>
+                <TemplateHelp enabled={guide} topic="deleteSection" />
                 <Button
                   variant="ghost"
                   size="icon"
@@ -93,6 +167,7 @@ export function ProposalBuilderSidebar({
                 <SortableRow
                   key={block.id}
                   id={block.id}
+                  guide={guide}
                   selected={selected?.type === 'block' && selected.id === block.id}
                   onClick={() => onSelect({ type: 'block', id: block.id, sectionId: activeSection?.id })}
                 >
@@ -105,7 +180,7 @@ export function ProposalBuilderSidebar({
       </div>
 
       <div className="mt-6 border-t border-[var(--border)] pt-5">
-        <h3 className="mb-3 text-xs font-black text-[var(--text-muted)]">{t('proposals.builder.blockLibrary')}</h3>
+        <div className="mb-3 flex items-center gap-1"><h3 className="text-xs font-black text-[var(--text-muted)]">{t('proposals.builder.blockLibrary')}</h3><TemplateHelp enabled={guide} topic="blocks" /></div>
         <div className="space-y-4">
           {getProposalBlockGroups(t).map((group) => (
             <div key={group.id}>
@@ -114,11 +189,12 @@ export function ProposalBuilderSidebar({
                 {group.blocks.map((block) => {
                   const Icon = block.icon
                   return (
+                    <div key={block.type} className="relative flex items-center gap-1">
                     <button
-                      key={block.type}
+                      
                       type="button"
                       onClick={() => onAddBlock(block.type, activeSection?.id)}
-                      className="flex min-h-16 flex-col items-center justify-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-2 py-2 text-center text-xs font-black text-[var(--text)] transition hover:border-[#00C2CB] hover:bg-[#E8F9FA] hover:text-[#007A80]"
+                      className="flex min-w-0 flex-1 min-h-16 flex-col items-center justify-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-2 py-2 text-center text-xs font-black text-[var(--text)] transition hover:border-[#00C2CB] hover:bg-[#E8F9FA] hover:text-[#007A80]"
                     >
                       <Icon size={18} />
                       <span>{block.label}</span>

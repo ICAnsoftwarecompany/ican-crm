@@ -1,17 +1,22 @@
+import { createContext, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Eye, EyeOff, Layers, Palette, Settings2, Trash2 } from 'lucide-react'
 
+import { TemplateHelp } from './ProposalBuilderSidebar'
 import { Button } from '../../../../../shared/components/ui/Button'
 import { Input } from '../../../../../shared/components/ui/Input'
 import { Select } from '../../../../../shared/components/ui/Select'
 import { getBlockLabel } from '../constants/proposalBlockTypes'
 import { DEFAULT_PROPOSAL_DESIGN } from '../constants/proposalBuilderDefaults'
 
+const GuideContext = createContext(false)
 function Field({ label, value, onChange, type = 'text', rows }) {
+  const guide = useContext(GuideContext)
+  const help = label + ' — ' + (type === 'color' ? 'اختر لون العنصر / Choose a color.' : type === 'number' ? 'أدخل قيمة رقمية / Enter a number.' : 'عدّل القيمة لتحديث القالب / Edit this value to update the template.')
   if (rows) {
     return (
       <label className="flex flex-col gap-1.5">
-        <span className="text-xs font-black text-[var(--text-muted)]">{label}</span>
+        <span className="inline-flex items-center gap-1 text-xs font-black text-[var(--text-muted)]">{label}<TemplateHelp enabled={guide} description={help}/></span>
         <textarea
           value={value || ''}
           onChange={(event) => onChange(event.target.value)}
@@ -22,17 +27,18 @@ function Field({ label, value, onChange, type = 'text', rows }) {
     )
   }
 
-  return <Input label={label} type={type} value={value || ''} onChange={(event) => onChange(event.target.value)} />
+  return <div className="space-y-1"><div className="flex items-center gap-1 text-xs font-bold text-[var(--text-muted)]">{label}<TemplateHelp enabled={guide} description={help}/></div><Input type={type} value={value || ''} onChange={(event) => onChange(event.target.value)} /></div>
 }
 
 function Toggle({ checked, onChange, label }) {
+  const guide = useContext(GuideContext)
   return (
     <button
       type="button"
       onClick={() => onChange(!checked)}
       className="flex w-full items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-bold text-[var(--text)]"
     >
-      <span>{label}</span>
+      <span className="inline-flex items-center gap-1">{label}<TemplateHelp enabled={guide} description={label + " — إظهار أو إخفاء هذا العنصر / Show or hide this item."}/></span>
       <span className="text-[#007A80]">{checked ? <Eye size={17} /> : <EyeOff size={17} />}</span>
     </button>
   )
@@ -154,6 +160,7 @@ export function ProposalPropertiesPanel({
   selected,
   onChangeContent,
   onDeleteBlock,
+  guide = false,
 }) {
   const { t } = useTranslation()
   const sections = content?.sections || []
@@ -185,7 +192,7 @@ export function ProposalPropertiesPanel({
   }
 
   return (
-    <aside className="h-[calc(100vh-4.5rem)] w-[340px] shrink-0 overflow-y-auto border-s border-[var(--border)] bg-[var(--surface)] p-4">
+    <GuideContext.Provider value={guide}><aside className="h-[calc(100vh-4.5rem)] w-[340px] shrink-0 overflow-y-auto border-s border-[var(--border)] bg-[var(--surface)] p-4">
       <div className="mb-5 flex items-center gap-2">
         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#E8F9FA] text-[#007A80]">
           <Settings2 size={18} />
@@ -240,6 +247,6 @@ export function ProposalPropertiesPanel({
           </div>
         )}
       </div>
-    </aside>
+    </aside></GuideContext.Provider>
   )
 }
