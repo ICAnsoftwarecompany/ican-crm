@@ -2,10 +2,10 @@ import { useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { ArrowRight, Eye, Save, HelpCircle, ChevronLeft, ChevronRight, X, CheckCircle2 } from 'lucide-react'
+import { ArrowRight, Eye, Save } from 'lucide-react'
 import { useProposalTemplateMutations } from '../../../../features/proposals'
 import { Button } from '../../../../shared/components/ui/Button'
-import { ProposalBuilderSidebar } from './components/ProposalBuilderSidebar'
+import { ProposalBuilderSidebar, TemplateHelp } from './components/ProposalBuilderSidebar'
 import { ProposalCanvas } from './components/ProposalCanvas'
 import { ProposalPropertiesPanel } from './components/ProposalPropertiesPanel'
 import { createDefaultBlock, createDefaultBuilderContent, createDefaultSection, moveItem } from './utils/proposalBuilderContent'
@@ -13,30 +13,23 @@ import { getEntityId, getResponseEntity } from './utils/proposalPayloads'
 
 const slugify = (name) => name.trim().toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now()
 
-const GUIDE = {
-  ar: [
-    { title: 'بيانات القالب', description: 'اكتب اسم واضح للقالب، مثل عرض سعر خدمات الصيانة. التصنيف يساعدك تميّز القوالب، والوصف يوضح متى تستخدمه.', tips: ['اسم القالب مطلوب للحفظ، والتصنيف والوصف اختياريان.', 'القالب تصميم قابل لإعادة الاستخدام، وليس عرض سعر لعميل بعينه.'] },
-    { title: 'الأقسام وترتيب الصفحات', description: 'من القائمة الجانبية أضف قسمًا لكل جزء من العرض: غلاف، نطاق العمل، الأسعار، والشروط. اسحب القسم وأفلته لتغيير ترتيبه.', tips: ['اضغط على القسم لتحديده وتعديل خصائصه.', 'لا يمكن حذف آخر قسم حتى لا يصبح القالب فارغًا.'] },
-    { title: 'إضافة البلوكات', description: 'حدد القسم أولًا، ثم أضف البلوك المناسب من القائمة الجانبية. البلوك هو عنصر داخل القسم مثل عنوان أو نص أو صورة.', tips: ['الغلاف والعناوين والنصوص لتنظيم المحتوى.', 'بيانات العميل والشركة تعرض معلومات ديناميكية عند استخدام القالب.', 'بلوك الأسعار يعرض تفاصيل التسعير، وبلوك الشروط يعرض البنود والالتزامات.', 'التوقيع والأزرار والروابط عناصر إضافية حسب نوع العرض.'] },
-    { title: 'تعديل المحتوى والتصميم', description: 'اضغط على أي بلوك في القائمة أو المعاينة، ثم عدّل إعداداته من لوحة الخصائص. يمكنك تغيير النصوص والتنسيق والظهور وفق الخيارات المتاحة.', tips: ['حدد البلوك الصحيح قبل التعديل.', 'اسحب البلوكات داخل القسم لإعادة ترتيبها.', 'راجع الأسعار والشروط قبل نشر القالب.'] },
-    { title: 'المعاينة والحفظ', description: 'اضغط معاينة لمراجعة شكل القالب، ثم حفظ القالب. الحفظ ينشئ القالب وإصداره الأول وينشر الإصدار ويفعّل القالب للاستخدام.', tips: ['تأكد من الاسم، ترتيب الأقسام، ووجود بلوكات الأسعار والشروط عند الحاجة.', 'يمكنك لاحقًا فتح القالب للتعديل أو إنشاء إصدار جديد.', 'إذا فشل الحفظ ستظهر رسالة خطأ، ويمكن إعادة المحاولة.'] },
-  ],
-  en: [
-    { title: 'Template details', description: 'Give the template a recognizable name. Category helps organize templates and description explains when to use it.', tips: ['Name is required; category and description are optional.', 'A template is reusable and not tied to one customer.'] },
-    { title: 'Sections and order', description: 'Add sections from the sidebar for cover, scope, pricing and terms. Drag sections to change their order.', tips: ['Select a section to edit its properties.', 'At least one section must remain.'] },
-    { title: 'Add blocks', description: 'Select a section, then add blocks such as headings, text, images, customer info, pricing, terms and signatures.', tips: ['Use headings and text to structure content.', 'Customer and company blocks use dynamic information.', 'Pricing and terms blocks are important for commercial offers.', 'Buttons, links and signatures are optional.'] },
-    { title: 'Edit and design', description: 'Select a block in the sidebar or canvas and edit it in the properties panel.', tips: ['Select the correct block before editing.', 'Drag blocks within their section to reorder.', 'Review pricing and terms before publishing.'] },
-    { title: 'Preview and save', description: 'Preview the design and then save. Saving creates the template and first version, publishes it and activates the template.', tips: ['Check the name, section order, pricing and terms.', 'You can edit or create new versions later.', 'If saving fails, an error appears and you can retry.'] },
-  ],
-}
-
 /** The form and visual editor share a single unsaved draft until Save is pressed. */
 export function CustomerProposalTemplateCreatePage() {
   const { t, i18n } = useTranslation()
-  const [guideOpen, setGuideOpen] = useState(true)
-  const [guideStep, setGuideStep] = useState(0)
-  const guide = GUIDE[i18n.language?.startsWith('ar') ? 'ar' : 'en']
-  const guideText = i18n.language?.startsWith('ar') ? { help: 'دليل إنشاء القالب', step: 'الخطوة', previous: 'السابق', next: 'التالي', finish: 'إنهاء الدليل', close: 'إخفاء الدليل', name: 'اسم القالب الذي سيظهر في مكتبة القوالب', category: 'تصنيف اختياري لتجميع القوالب المتشابهة', description: 'وصف اختياري يشرح استخدام القالب' } : { help: 'Template guide', step: 'Step', previous: 'Previous', next: 'Next', finish: 'Finish guide', close: 'Hide guide', name: 'Name shown in the template library', category: 'Optional grouping for similar templates', description: 'Optional explanation of when to use this template' }
+  const ar = i18n.language?.startsWith('ar')
+  const help = ar ? {
+    name: 'اسم القالب الذي يظهر في المكتبة ويمكن إعادة استخدامه مع عملاء مختلفين. مطلوب للحفظ.',
+    category: 'تصنيف اختياري لتنظيم القوالب، مثل صيانة أو خدمات أو منتجات.',
+    description: 'وصف داخلي يشرح الغرض من القالب ومتى تستخدمه.',
+    preview: 'اعرض القالب كما سيظهر دون أدوات التحرير، ثم ارجع للتعديل.',
+    save: 'يحفظ القالب مع الأقسام والبلوكات والتصميم، وينشئ الإصدار الأول ويفعّله للاستخدام.',
+  } : {
+    name: 'Reusable template name shown in the library. Required to save.',
+    category: 'Optional category for organizing templates.',
+    description: 'Internal explanation of when to use this template.',
+    preview: 'See the template without editing controls.',
+    save: 'Save the template, sections, blocks and design, create its first version and activate it.',
+  }
   const navigate = useNavigate()
   const mutations = useProposalTemplateMutations()
   const [form, setForm] = useState({ name: '', description: '', category: '' })
@@ -122,39 +115,24 @@ export function CustomerProposalTemplateCreatePage() {
           <div><h1 className="font-bold text-[var(--text)]">{t('proposals.workspace.createTemplate')}</h1><p className="text-sm text-[var(--text-muted)]">{t('proposals.templateEditor.help')}</p></div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={() => setGuideOpen(value => !value)} aria-expanded={guideOpen}><HelpCircle size={16}/>{guideText.help}</Button>
+          <TemplateHelp enabled description={help.preview}/>
           <Button variant="outline" onClick={() => setPreview(value => !value)} disabled={saving}><Eye size={16}/>{t('proposals.templateEditor.preview')}</Button>
+          <TemplateHelp enabled description={help.save}/>
           <Button onClick={save} disabled={saving || !form.name.trim()}><Save size={16}/>{saving ? t('proposals.templateEditor.loading') : t('proposals.workspace.saveTemplate')}</Button>
         </div>
       </header>
-      {guideOpen && (
-        <section aria-label={guideText.help} className="mx-4 rounded-xl border border-[var(--brand-accent)] bg-[var(--surface)] p-4 shadow-sm">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="flex items-center gap-2 text-sm font-bold text-[var(--text)]"><HelpCircle size={18}/>{guideText.help} · {guideText.step} {guideStep + 1}/{guide.length}</div>
-            <button type="button" onClick={() => setGuideOpen(false)} aria-label={guideText.close} className="rounded p-1 text-[var(--text-muted)]"><X size={18}/></button>
-          </div>
-          <div className="mt-3 flex gap-1" aria-hidden="true">{guide.map((item, index) => <button key={item.title} type="button" tabIndex={-1} onClick={() => setGuideStep(index)} className={`h-1.5 flex-1 rounded-full ${index <= guideStep ? 'bg-[var(--brand-accent)]' : 'bg-[var(--border)]'}`}/>)}</div>
-          <h2 className="mt-4 text-lg font-bold text-[var(--text)]">{guide[guideStep].title}</h2>
-          <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{guide[guideStep].description}</p>
-          <ul className="mt-3 space-y-2">{guide[guideStep].tips.map(tip => <li key={tip} className="flex items-start gap-2 text-sm leading-6 text-[var(--text)]"><CheckCircle2 size={16} className="mt-1 shrink-0 text-[var(--brand-accent)]"/>{tip}</li>)}</ul>
-          <div className="mt-4 flex items-center justify-between gap-2">
-            <Button variant="outline" disabled={guideStep === 0} onClick={() => setGuideStep(value => value - 1)}><ChevronRight size={15}/>{guideText.previous}</Button>
-            <Button onClick={() => guideStep === guide.length - 1 ? setGuideOpen(false) : setGuideStep(value => value + 1)}>{guideStep === guide.length - 1 ? guideText.finish : guideText.next}<ChevronLeft size={15}/></Button>
-          </div>
-        </section>
-      )}
       <div className="mx-4 grid gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 md:grid-cols-2">
-        <label className="space-y-1 text-sm">{t('proposals.workspace.templateName')}<input required disabled={saving || Boolean(progress.current.templateId)} value={form.name} onChange={event => setForm(old => ({ ...old, name: event.target.value }))} className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2"/><span className="block text-xs leading-5 text-[var(--text-muted)]">{guideText.name}</span></label>
-        <label className="space-y-1 text-sm">{t('proposals.workspace.templateCategory')}<input disabled={saving || Boolean(progress.current.templateId)} value={form.category} onChange={event => setForm(old => ({ ...old, category: event.target.value }))} className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2"/><span className="block text-xs leading-5 text-[var(--text-muted)]">{guideText.category}</span></label>
-        <label className="space-y-1 text-sm md:col-span-2">{t('proposals.workspace.templateDescription')}<textarea disabled={saving || Boolean(progress.current.templateId)} value={form.description} onChange={event => setForm(old => ({ ...old, description: event.target.value }))} className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2"/><span className="block text-xs leading-5 text-[var(--text-muted)]">{guideText.description}</span></label>
+        <label className="space-y-1 text-sm"><span className="inline-flex items-center gap-1">{t('proposals.workspace.templateName')}<TemplateHelp enabled description={help.name}/></span><input required disabled={saving || Boolean(progress.current.templateId)} value={form.name} onChange={event => setForm(old => ({ ...old, name: event.target.value }))} className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2"/></label>
+        <label className="space-y-1 text-sm"><span className="inline-flex items-center gap-1">{t('proposals.workspace.templateCategory')}<TemplateHelp enabled description={help.category}/></span><input disabled={saving || Boolean(progress.current.templateId)} value={form.category} onChange={event => setForm(old => ({ ...old, category: event.target.value }))} className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2"/></label>
+        <label className="space-y-1 text-sm md:col-span-2"><span className="inline-flex items-center gap-1">{t('proposals.workspace.templateDescription')}<TemplateHelp enabled description={help.description}/></span><textarea disabled={saving || Boolean(progress.current.templateId)} value={form.description} onChange={event => setForm(old => ({ ...old, description: event.target.value }))} className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2"/></label>
       </div>
       <div className="mx-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 text-sm text-[var(--text-muted)]">{t('proposals.templateEditor.help')}</div>
       <div className="flex min-w-0 flex-col gap-3 xl:flex-row">
-        {!preview && <ProposalBuilderSidebar content={content} selected={selected} selectedSectionId={selectedSectionId}
+        {!preview && <ProposalBuilderSidebar guide content={content} selected={selected} selectedSectionId={selectedSectionId}
           onSelect={setSelected} onAddSection={addSection} onDeleteSection={deleteSection} onAddBlock={addBlock}
           onSectionDragEnd={reorderSections} onBlockDragEnd={reorderBlocks}/>}
         <ProposalCanvas content={content} proposal={{ title: form.name }} options={[]} products={[]} selected={preview ? null : selected} onSelect={preview ? undefined : setSelected}/>
-        {!preview && <ProposalPropertiesPanel content={content} selected={selected} onChangeContent={change} onDeleteBlock={deleteBlock}/>}
+        {!preview && <ProposalPropertiesPanel guide content={content} selected={selected} onChangeContent={change} onDeleteBlock={deleteBlock}/>}
       </div>
     </div>
   )
