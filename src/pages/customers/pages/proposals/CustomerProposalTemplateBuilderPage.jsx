@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { ArrowRight, Copy, Eye, Save, GitBranch, Plus } from 'lucide-react'
+import { ArrowRight, Copy, Eye, Save, GitBranch, Plus, Layers, AlertTriangle } from 'lucide-react'
 import { useProposalTemplateInfo, useProposalTemplateMutations } from '../../../../features/proposals'
 import { Button } from '../../../../shared/components/ui/Button'
 import { ProposalBuilderSidebar } from './components/ProposalBuilderSidebar'
@@ -16,12 +16,14 @@ export function CustomerProposalTemplateBuilderPage() {
   const { templateId } = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
   const newVersionTriggered = useRef(false)
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const ar = i18n.language?.startsWith('ar')
   const tr = (key) => t('proposals.templateEditor.' + key)
   const query = useProposalTemplateInfo(templateId)
   const mutations = useProposalTemplateMutations()
   const template = query.data
   const versions = useMemo(() => getTemplateVersions(template), [template])
+  const hasFullVersionList = Array.isArray(template?.versions) || Array.isArray(template?.template_versions) || Array.isArray(template?.data?.versions)
   const [versionId, setVersionId] = useState(null)
   const hydratedKey = useRef(null)
   const editRevision = useRef(0)
@@ -151,7 +153,12 @@ export function CustomerProposalTemplateBuilderPage() {
           <Button onClick={save} disabled={!dirty || pending || !currentVersion}><Save size={15}/>{tr('save')}</Button>
         </div>
       </header>
-      <div className="flex flex-wrap items-center gap-3 px-4">
+      <section id="versions" className="mx-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+        <div className="mb-3 flex items-center gap-2"><Layers size={18}/><h2 className="text-sm font-black">{ar ? 'إدارة إصدارات القالب' : 'Template version management'}</h2></div>
+        <p className="mb-3 text-xs leading-6 text-[var(--text-muted)]">{ar ? 'اختار الإصدار اللي عايز تعدّل تصميمه. احفظ التعديلات قبل الانتقال لإصدار آخر، واعتمد الإصدار المناسب لاستخدامه في عروض العملاء الجديدة.' : 'Choose the version to edit. Save before switching, and set a valid version as current for new customer proposals.'}</p>
+        {!hasFullVersionList && <p className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><AlertTriangle size={16} className="shrink-0"/>{ar ? 'الـ API رجّع الإصدار الحالي فقط؛ باقي الإصدارات مش ظاهرة في الاستجابة الحالية.' : 'The API returned only the current version; other versions are not available in this response.'}</p>}
+        {currentVersion && !getTemplateVersionContent(currentVersion)?.sections?.length && <p className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><AlertTriangle size={16} className="shrink-0"/>{ar ? 'الإصدار المحدد لا يحتوي على أقسام تصميم محفوظة في الاستجابة الحالية. المعاينة قد تعرض تصميمًا افتراضيًا غير محفوظ؛ راجع الحفظ قبل إنشاء عرض سعر.' : 'No saved design sections were found in this version response. The preview may show an unsaved default layout.'}</p>}
+      <div className="flex flex-wrap items-center gap-3">
         <label className="text-sm font-semibold text-[var(--text)]">{tr('versions')}</label>
         <select className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 text-sm text-[var(--text)]" value={currentVersion?.id || ''} onChange={e => selectVersion(e.target.value)}>
           {versions.map(v => <option key={v.id} value={v.id}>{v.name || ('#' + v.id)} {v.is_current ? '✓' : ''}</option>)}
@@ -161,6 +168,7 @@ export function CustomerProposalTemplateBuilderPage() {
         {dirty && <span className="text-xs text-amber-600">{tr('unsaved')}</span>}
         {!versions.length && <p className="text-sm text-[var(--text-muted)]">{tr('noVersions')}</p>}
       </div>
+      </section>
       <p className="mx-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 text-xs leading-6 text-[var(--text-muted)]">{tr('help')}</p>
       {content && <div className="flex min-w-0 flex-col gap-3 xl:flex-row">
         {!preview && <ProposalBuilderSidebar content={content} selected={selected} selectedSectionId={selectedSectionId}
