@@ -27,6 +27,29 @@ export function useProposalTemplateInfo(templateId, params, options = {}) {
   })
 }
 
+export function useProposalTemplateVersions(templateId) {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.proposalTemplates.detail(templateId), 'versions-list'],
+    queryFn: () => proposalTemplatesApi.getTemplateVersions(templateId),
+    enabled: Boolean(templateId),
+    select: response => {
+      const payload = extractEntity(response)
+      if (Array.isArray(payload)) return payload
+      if (Array.isArray(payload?.data)) return payload.data
+      return Array.isArray(payload?.versions) ? payload.versions : []
+    },
+  })
+}
+
+export function useProposalTemplateVersionInfo(versionId, enabled = true) {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.proposalTemplates.version(versionId), 'details'],
+    queryFn: () => proposalTemplatesApi.getTemplateVersionInfo(versionId),
+    enabled: Boolean(versionId) && enabled,
+    select: extractEntity,
+  })
+}
+
 export function useProposalTemplateMutations() {
   const queryClient = useQueryClient()
 
