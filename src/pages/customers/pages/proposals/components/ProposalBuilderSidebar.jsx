@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { CSS } from '@dnd-kit/utilities'
 import { DndContext, PointerSensor, KeyboardSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core'
@@ -61,18 +62,44 @@ const HELP = {
 export function TemplateHelp({ topic, enabled = false, description }) {
   const { i18n } = useTranslation()
   const [open, setOpen] = useState(false)
-  if (!enabled) return null
+  const [position, setPosition] = useState({ top: 0, left: 0 })
+  const triggerRef = useRef(null)
   const ar = i18n.language?.startsWith('ar')
-  const help = description || HELP[ar ? 'ar' : 'en'][topic] || (ar ? 'اضغط على العنصر لتعديل إعداداته.' : 'Click this element to edit its settings.')
+  const help = description || HELP[ar ? 'ar' : 'en'][topic] || (ar ? 'اضغط على العنصر لتعديل إعداداته.' : 'Click to edit this element.')
+  useEffect(() => {
+    if (!open) return
+    const update = () => {
+      const rect = triggerRef.current?.getBoundingClientRect()
+      if (!rect) return
+      const width = Math.min(280, window.innerWidth - 24)
+      setPosition({
+        left: Math.max(12, Math.min(window.innerWidth - width - 12, rect.left + rect.width / 2 - width / 2)),
+        top: rect.bottom + 8,
+      })
+    }
+    update()
+    window.addEventListener('resize', update)
+    window.addEventListener('scroll', update, true)
+    return () => {
+      window.removeEventListener('resize', update)
+      window.removeEventListener('scroll', update, true)
+    }
+  }, [open])
+  if (!enabled) return null
   return (
-    <span className="group/help relative inline-flex shrink-0 items-center" onMouseLeave={() => setOpen(false)}>
-      <button type="button" aria-label={ar ? 'شرح الخاصية' : 'Explain this feature'} aria-expanded={open}
-        onClick={event => { event.stopPropagation(); setOpen(value => !value) }}
+    <span className="inline-flex shrink-0 items-center">
+      <button ref={triggerRef} type="button" aria-label={ar ? 'شرح الخاصية' : 'Explain this feature'} aria-expanded={open}
+        onClick={event => { event.preventDefault(); event.stopPropagation(); setOpen(value => !value) }}
+        onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}
         onFocus={() => setOpen(true)} onBlur={() => setOpen(false)}
         className="rounded-full p-1 text-[var(--text-muted)] hover:text-[var(--brand-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-accent)]">
         <CircleHelp size={15}/>
       </button>
-      <span role="tooltip" className={`pointer-events-none absolute bottom-full end-0 z-50 mb-2 w-64 max-w-[75vw] rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 text-start text-xs font-normal leading-6 text-[var(--text)] shadow-xl ${open ? 'block' : 'hidden group-hover/help:block'}`}>{help}</span>
+      {open && createPortal(
+        <div role="tooltip" dir={ar ? 'rtl' : 'ltr'} style={{ position: 'fixed', top: position.top, left: position.left, width: 'min(280px, calc(100vw - 24px))', zIndex: 9999 }}
+          className="pointer-events-none rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 text-start text-xs font-normal leading-6 text-[var(--text)] shadow-xl">{help}</div>,
+        document.body
+      )}
     </span>
   )
 }
@@ -116,7 +143,7 @@ export function ProposalBuilderSidebar({
   const blocks = activeSection?.blocks || []
 
   return (
-    <aside className="max-h-[70vh] w-full shrink-0 overflow-y-auto xl:h-[calc(100vh-4.5rem)] xl:max-h-none xl:w-[300px] border-e border-[var(--border)] bg-[var(--surface)] p-4">
+    <aside className="h-full min-h-0 w-full min-w-0 overflow-y-auto border-e border-[var(--border)] bg-[var(--surface)] p-4">
       <div className="mb-5 flex items-center justify-between gap-2">
         <div>
           <h2 className="text-sm font-black text-[var(--text)]">{t('proposals.builder.structureTitle')}</h2>
