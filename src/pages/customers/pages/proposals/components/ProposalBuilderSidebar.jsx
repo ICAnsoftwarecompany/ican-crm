@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { CSS } from '@dnd-kit/utilities'
 import { DndContext, PointerSensor, KeyboardSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core'
 import { SortableContext, useSortable, verticalListSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import { EyeOff, GripVertical, Plus, Trash2, CircleHelp, ChevronDown, ChevronUp } from 'lucide-react'
+import { EyeOff, GripVertical, Plus, Trash2, CircleHelp, ChevronDown, ChevronUp, ArrowRight } from 'lucide-react'
 
 import { Button } from '../../../../../shared/components/ui/Button'
 import { cn } from '../../../../../shared/utils/cn'
@@ -139,16 +139,36 @@ export function ProposalBuilderSidebar({
 }) {
   const { t } = useTranslation()
   const [librarySectionId, setLibrarySectionId] = useState(null)
+  const [openedSectionId, setOpenedSectionId] = useState(null)
   const [expandedGroups, setExpandedGroups] = useState({})
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }))
   const sections = content?.sections || []
   const activeSection = sections.find((section) => section.id === selectedSectionId) || sections[0]
   const blocks = activeSection?.blocks || []
+  const openedSection = sections.find(section => section.id === openedSectionId)
+  useEffect(() => {
+    if (selected?.type === 'block' && selected.sectionId) {
+      setOpenedSectionId(selected.sectionId)
+      setLibrarySectionId(null)
+    }
+  }, [selected?.type, selected?.id, selected?.sectionId])
+  useEffect(() => {
+    if (openedSectionId && !sections.some(section => section.id === openedSectionId)) {
+      setOpenedSectionId(null)
+      setLibrarySectionId(null)
+    }
+  }, [openedSectionId, sections])
+  const openSection = id => {
+    setOpenedSectionId(id)
+    setLibrarySectionId(null)
+    onSelect({ type: 'section', id })
+  }
 
   return (
     <aside className="h-full min-h-0 w-full min-w-0 overflow-y-auto border-e border-[var(--border)] bg-[var(--surface)] p-4">
-      {generalDesign && <div className="mb-5">{generalDesign}</div>}
-      <div className="mb-5 flex items-center justify-between gap-2">
+      {!openedSection && generalDesign && <div className="mb-5">{generalDesign}</div>}
+      {openedSection && <button type="button" onClick={() => { setOpenedSectionId(null); setLibrarySectionId(null) }} className="mb-4 flex w-full items-center gap-2 rounded-lg border border-[var(--border)] p-3 text-start text-sm font-bold hover:bg-[var(--surface-2)]"><ArrowRight size={17}/>{t('proposals.builder.structureTitle')}</button>}
+      {!openedSection && <div className="mb-5 flex items-center justify-between gap-2">
         <div>
           <h2 className="text-sm font-black text-[var(--text)]">{t('proposals.builder.structureTitle')}</h2>
           <p className="text-xs font-semibold text-[var(--text-muted)]">{t('proposals.builder.structureSubtitle')}</p>
@@ -157,23 +177,23 @@ export function ProposalBuilderSidebar({
         <Button variant="accent" size="icon" onClick={onAddSection} aria-label={t('proposals.builder.addSection')}>
           <Plus size={17} />
         </Button>
-      </div>
+      </div>}
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onSectionDragEnd}>
         <SortableContext items={sections.map((section) => section.id)} strategy={verticalListSortingStrategy}>
           <div className="space-y-2">
-            {sections.map((section) => (
+            {(openedSection ? [openedSection] : sections).map((section) => (
               <div key={section.id} className="group flex flex-wrap items-center gap-2">
                 <SortableRow
                   id={section.id}
                   guide={guide}
                   selected={selected?.type === 'section' && selected.id === section.id}
-                  onClick={() => onSelect({ type: 'section', id: section.id })}
+                  onClick={() => openSection(section.id)}
                 >
                   {section.title}
                   {section.is_visible === false ? <EyeOff size={13} className="inline" /> : null}
                 </SortableRow>
-                <button type="button" aria-label="إضافة بلوك / Add block" aria-expanded={librarySectionId === section.id} onClick={() => { onSelect({ type: 'section', id: section.id }); setLibrarySectionId(old => old === section.id ? null : section.id) }} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] text-[#007A80] hover:bg-[#E8F9FA]"><Plus size={17}/></button>
+                <button type="button" aria-label="إضافة بلوك / Add block" aria-expanded={librarySectionId === section.id} onClick={() => { setOpenedSectionId(section.id); onSelect({ type: 'section', id: section.id }); setLibrarySectionId(old => old === section.id ? null : section.id) }} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] text-[#007A80] hover:bg-[#E8F9FA]"><Plus size={17}/></button>
                 <TemplateHelp enabled={guide} topic="deleteSection" />
                 <Button
                   variant="ghost"
@@ -234,7 +254,7 @@ export function ProposalBuilderSidebar({
         </SortableContext>
       </DndContext>
 
-      <div className="mt-6 border-t border-[var(--border)] pt-5">
+      {openedSection && <div className="mt-6 border-t border-[var(--border)] pt-5">
         <h3 className="mb-3 text-xs font-black text-[var(--text-muted)]">{t('proposals.builder.selectedSectionBlocks')}</h3>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onBlockDragEnd}>
           <SortableContext items={blocks.map((block) => block.id)} strategy={verticalListSortingStrategy}>
@@ -253,7 +273,7 @@ export function ProposalBuilderSidebar({
             </div>
           </SortableContext>
         </DndContext>
-      </div>
+      </div>}
 
     </aside>
   )
