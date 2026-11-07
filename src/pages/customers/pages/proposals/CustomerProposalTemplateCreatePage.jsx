@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { ArrowRight, Eye, Save } from 'lucide-react'
+import { ArrowRight, Eye, Save, GripVertical } from 'lucide-react'
 import { useProposalTemplateMutations } from '../../../../features/proposals'
 import { Button } from '../../../../shared/components/ui/Button'
 import { ProposalBuilderSidebar, TemplateHelp } from './components/ProposalBuilderSidebar'
@@ -37,6 +37,29 @@ export function CustomerProposalTemplateCreatePage() {
   const [selected, setSelected] = useState(null)
   const [preview, setPreview] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [panelWidths, setPanelWidths] = useState({ left: 290, right: 340 })
+  const [wideLayout, setWideLayout] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1280)
+  const workspaceRef = useRef(null)
+  useEffect(() => {
+    const check = () => setWideLayout(window.innerWidth >= 1280)
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+  const startResize = (side, event) => {
+    if (event.button !== 0) return
+    event.preventDefault()
+    const startX = event.clientX
+    const initial = panelWidths[side]
+    const rtl = document.documentElement.dir === 'rtl'
+    const sign = (side === 'left' ? 1 : -1) * (rtl ? -1 : 1)
+    const onMove = move => {
+      const width = workspaceRef.current?.clientWidth || window.innerWidth
+      setPanelWidths(old => ({ ...old, [side]: Math.max(220, Math.min(Math.min(520, width * 0.36), initial + (move.clientX - startX) * sign)) }))
+    }
+    const stop = () => { window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', stop) }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', stop)
+  }
   // Preserve IDs across partial failures so retry resumes rather than creating duplicates.
   const progress = useRef({ templateId: null, versionId: null, builderSaved: false, published: false })
   const selectedSectionId = selected?.type === 'block' ? selected.sectionId : selected?.id || content.sections[0]?.id
@@ -127,12 +150,29 @@ export function CustomerProposalTemplateCreatePage() {
         <label className="space-y-1 text-sm md:col-span-2"><span className="inline-flex items-center gap-1">{t('proposals.workspace.templateDescription')}<TemplateHelp enabled description={help.description}/></span><textarea disabled={saving || Boolean(progress.current.templateId)} value={form.description} onChange={event => setForm(old => ({ ...old, description: event.target.value }))} className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2"/></label>
       </div>
       <div className="mx-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 text-sm text-[var(--text-muted)]">{t('proposals.templateEditor.help')}</div>
-      <div className="flex min-w-0 flex-col gap-3 xl:flex-row">
-        {!preview && <ProposalBuilderSidebar guide content={content} selected={selected} selectedSectionId={selectedSectionId}
-          onSelect={setSelected} onAddSection={addSection} onDeleteSection={deleteSection} onAddBlock={addBlock}
-          onSectionDragEnd={reorderSections} onBlockDragEnd={reorderBlocks}/>}
-        <ProposalCanvas content={content} proposal={{ title: form.name }} options={[]} products={[]} selected={preview ? null : selected} onSelect={preview ? undefined : setSelected}/>
-        {!preview && <ProposalPropertiesPanel guide content={content} selected={selected} onChangeContent={change} onDeleteBlock={deleteBlock}/>}
+      <div ref={workspaceRef} className="mx-2 min-w-0 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] sm:mx-4"
+        style={wideLayout && !preview ? { display: 'grid', gridTemplateColumns: `${panelWidths.left}px 8px minmax(0, 1fr) 8px ${panelWidths.right}px`, height: 'min(76vh, 900px)', minHeight: 480 } : undefined}>
+        {!preview && (
+          <div className={wideLayout ? 'min-h-0 min-w-0 overflow-hidden' : 'h-72 min-w-0 overflow-hidden border-b border-[var(--border)] sm:h-80'}>
+            <ProposalBuilderSidebar guide content={content} selected={selected} selectedSectionId={selectedSectionId}
+              onSelect={setSelected} onAddSection={addSection} onDeleteSection={deleteSection} onAddBlock={addBlock}
+              onSectionDragEnd={reorderSections} onBlockDragEnd={reorderBlocks}/>
+          </div>
+        )}
+        {wideLayout && !preview && <div role="separator" aria-label={ar ? 'تغيير عرض قائمة البلوكات' : 'Resize block sidebar'} aria-orientation="vertical"
+          onPointerDown={event => startResize('left', event)}
+          className="flex cursor-col-resize items-center justify-center bg-[var(--surface-2)] hover:bg-[var(--border)]"><GripVertical size={14}/></div>}
+        <div className={wideLayout ? 'min-h-0 min-w-0 overflow-y-auto overscroll-contain' : 'min-w-0 overflow-y-auto overscroll-contain'} style={{ height: wideLayout ? '100%' : 'min(70vh, 760px)', minHeight: 320 }}>
+          <ProposalCanvas content={content} proposal={{ title: form.name }} options={[]} products={[]} selected={preview ? null : selected} onSelect={preview ? undefined : setSelected}/>
+        </div>
+        {wideLayout && !preview && <div role="separator" aria-label={ar ? 'تغيير عرض الخصائص' : 'Resize properties sidebar'} aria-orientation="vertical"
+          onPointerDown={event => startResize('right', event)}
+          className="flex cursor-col-resize items-center justify-center bg-[var(--surface-2)] hover:bg-[var(--border)]"><GripVertical size={14}/></div>}
+        {!preview && (
+          <div className={wideLayout ? 'min-h-0 min-w-0 overflow-hidden' : 'h-80 min-w-0 overflow-hidden border-t border-[var(--border)] sm:h-96'}>
+            <ProposalPropertiesPanel guide content={content} selected={selected} onChangeContent={change} onDeleteBlock={deleteBlock}/>
+          </div>
+        )}
       </div>
     </div>
   )
