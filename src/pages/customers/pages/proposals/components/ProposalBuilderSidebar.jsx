@@ -190,15 +190,15 @@ export function ProposalBuilderSidebar({
                   const Icon = block.icon
                   return (
                     <div key={block.type} className="relative flex items-center gap-1">
-                    <button
-                      
-                      type="button"
-                      onClick={() => onAddBlock(block.type, activeSection?.id)}
-                      className="flex min-w-0 flex-1 min-h-16 flex-col items-center justify-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-2 py-2 text-center text-xs font-black text-[var(--text)] transition hover:border-[#00C2CB] hover:bg-[#E8F9FA] hover:text-[#007A80]"
-                    >
-                      <Icon size={18} />
-                      <span>{block.label}</span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => onAddBlock(block.type, activeSection?.id)}
+                        className="flex min-h-16 min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-2 py-2 text-center text-xs font-black text-[var(--text)] transition hover:border-[#00C2CB] hover:bg-[#E8F9FA] hover:text-[#007A80]"
+                      >
+                        <Icon size={18} />
+                        <span>{block.label}</span>
+                      </button>
+                    </div>
                   )
                 })}
               </div>
