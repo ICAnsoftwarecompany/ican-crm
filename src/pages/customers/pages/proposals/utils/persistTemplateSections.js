@@ -2,9 +2,17 @@ import { proposalTemplatesApi } from '../../../../../features/proposals/api/prop
 import { getEntityId, getResponseEntity } from './proposalPayloads'
 
 const numericId = value => /^\d+$/.test(String(value ?? ''))
-const requireId = response => {
-  const id = getEntityId(getResponseEntity(response))
-  if (!id) throw new Error('The API did not return a saved entity ID')
+const requireId = (response, entityType) => {
+  const entity = getResponseEntity(response)
+  const candidates = [
+    getEntityId(entity), entity?.[entityType + '_id'], entity?.[entityType]?.id,
+    entity?.section?.id, entity?.block?.id, response?.id, response?.[entityType + '_id'],
+  ]
+  const id = candidates.find(numericId)
+  if (!id) {
+    const keys = entity && typeof entity === 'object' ? Object.keys(entity).join(', ') : typeof entity
+    throw new Error(`Create ${entityType} succeeded but response has no numeric ID (response fields: ${keys || 'none'}). Check the create ${entityType} API response before retrying; the record may already exist.`)
+  }
   return id
 }
 
@@ -31,7 +39,7 @@ export async function persistTemplateSections(versionId, content, onProgress = (
       is_visible: section.is_visible ?? true,
     }
     if (!numericId(section.id)) {
-      section.id = requireId(await stage(`Create section ${i + 1}`, () => proposalTemplatesApi.createVersionSection(versionId, sectionPayload)), 'section')
+      section.id = await stage(`Create section ${i + 1}`, async () => requireId(await proposalTemplatesApi.createVersionSection(versionId, sectionPayload), 'section'))
       onProgress(next)
     } else {
       await stage(`Update section ${section.id}`, () => proposalTemplatesApi.updateSection(section.id, sectionPayload))
@@ -50,7 +58,7 @@ export async function persistTemplateSections(versionId, content, onProgress = (
         is_visible: block.is_visible ?? true,
       }
       if (!numericId(block.id)) {
-        block.id = requireId(await stage(`Create block ${j + 1} in section ${section.id}`, () => proposalTemplatesApi.createSectionBlock(section.id, blockPayload)), 'block')
+        block.id = await stage(`Create block ${j + 1} in section ${section.id}`, async () => requireId(await proposalTemplatesApi.createSectionBlock(section.id, blockPayload), 'block'))
         onProgress(next)
       } else {
         await stage(`Update block ${block.id}`, () => proposalTemplatesApi.updateBlock(block.id, blockPayload))
