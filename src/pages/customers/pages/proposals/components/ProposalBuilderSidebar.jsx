@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { CSS } from '@dnd-kit/utilities'
 import { DndContext, PointerSensor, KeyboardSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core'
 import { SortableContext, useSortable, verticalListSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import { EyeOff, GripVertical, Plus, Trash2, CircleHelp } from 'lucide-react'
+import { EyeOff, GripVertical, Plus, Trash2, CircleHelp, ChevronDown, ChevronUp } from 'lucide-react'
 
 import { Button } from '../../../../../shared/components/ui/Button'
 import { cn } from '../../../../../shared/utils/cn'
