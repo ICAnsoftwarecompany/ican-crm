@@ -45,6 +45,9 @@ export function ProposalBuilder({ proposalId }) {
   const [saveState, setSaveState] = useState(t('proposals.builder.saveState.ready'))
   const hydratedVersionRef = useRef(null)
   const saveTimerRef = useRef(null)
+  const editRevisionRef = useRef(0)
+  const savingRef = useRef(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   const proposalQuery = useProposalInfo(proposalId)
   const versionsQuery = useProposalVersions(proposalId)
@@ -75,7 +78,7 @@ export function ProposalBuilder({ proposalId }) {
       : content?.sections?.[0]?.id
 
   useEffect(() => {
-    if (!proposal) return
+    if (!proposal || isDirty || savingRef.current) return
     if (!currentVersion) {
       const initialContent = createDefaultBuilderContent(proposal, null, t)
       setContent(initialContent)
@@ -92,9 +95,10 @@ export function ProposalBuilder({ proposalId }) {
     setSelectedVersionId(currentVersion.id)
     setIsDirty(false)
     setSaveState(t('proposals.builder.saveState.saved'))
-  }, [currentVersion, proposal, t])
+  }, [currentVersion, proposal, t, isDirty])
 
   const updateContent = useCallback((updater) => {
+    editRevisionRef.current += 1
     setContent((prev) => {
       const next = typeof updater === 'function' ? updater(prev) : updater
       setIsDirty(true)
@@ -104,16 +108,42 @@ export function ProposalBuilder({ proposalId }) {
   }, [t])
 
   const saveVersion = useCallback(async (nextContent = content) => {
-    if (!proposal?.id || !currentVersion?.id || !nextContent) return
+    if (!proposal?.id || !currentVersion?.id || !nextContent || savingRef.current) return
+    savingRef.current = true
+    setIsSaving(true)
+    const revision = editRevisionRef.current
     setSaveState(t('proposals.builder.saveState.saving'))
-    await mutations.updateProposalVersion.mutateAsync({
-      proposalId: proposal.id,
-      versionId: currentVersion.id,
-      payload: buildVersionPayload(currentVersion, proposal, nextContent),
-    })
-    setIsDirty(false)
-    setSaveState(t('proposals.builder.saveState.saved'))
+    try {
+      await mutations.updateProposalVersion.mutateAsync({
+        proposalId: proposal.id,
+        versionId: currentVersion.id,
+        payload: buildVersionPayload(currentVersion, proposal, nextContent),
+      })
+      if (editRevisionRef.current === revision) {
+        setIsDirty(false)
+        setSaveState(t('proposals.builder.saveState.saved'))
+      } else {
+        setSaveState(t('proposals.builder.saveState.unsavedChanges'))
+      }
+    } catch (error) {
+      setSaveState(t('proposals.builder.saveState.autoSaveFailed'))
+      throw error
+    } finally {
+      savingRef.current = false
+      setIsSaving(false)
+    }
   }, [content, currentVersion, mutations.updateProposalVersion, proposal, t])
+
+  const selectVersionSafely = (versionId) => {
+    if (String(versionId) === String(currentVersion?.id)) return
+    if (isDirty || savingRef.current) {
+      toast.error(t('proposals.templateEditor.saveBeforeSwitch'))
+      return
+    }
+    window.clearTimeout(saveTimerRef.current)
+    hydratedVersionRef.current = null
+    setSelectedVersionId(versionId)
+  }
 
   useEffect(() => {
     if (!isDirty || !currentVersion?.id || !content) return undefined
@@ -125,7 +155,10 @@ export function ProposalBuilder({ proposalId }) {
   }, [content, currentVersion?.id, isDirty, saveVersion, t])
 
   const handleCreateVersion = async () => {
-    if (!proposal?.id) return
+    if (!proposal?.id || isDirty || savingRef.current) {
+      toast.error(t('proposals.templateEditor.saveBeforeSwitch'))
+      return
+    }
     const initialContent = content || createDefaultBuilderContent(proposal, null, t)
     const response = await mutations.createProposalVersion.mutateAsync({
       proposalId: proposal.id,
@@ -222,8 +255,9 @@ export function ProposalBuilder({ proposalId }) {
         onBack={() => navigate('/LeadsCenter/proposals')}
         onPreview={() => setIsPreviewOpen(true)}
         onCreateVersion={handleCreateVersion}
-        onSaveNow={() => saveVersion().then(() => toast.success(t('proposals.builder.saveState.saved')))}
+        onSaveNow={() => saveVersion().then(() => { if (!isDirty || editRevisionRef.current === 0) toast.success(t('proposals.builder.saveState.saved')) }).catch(() => toast.error(t('proposals.builder.saveState.autoSaveFailed')))}
         creatingVersion={mutations.createProposalVersion.isPending}
+        isSaving={isSaving}
       />
 
       <div className="flex">
@@ -295,10 +329,8 @@ export function ProposalBuilder({ proposalId }) {
                 versions={versions}
                 currentVersion={currentVersion}
                 content={content}
-                onSelectVersion={(versionId) => {
-                  hydratedVersionRef.current = null
-                  setSelectedVersionId(versionId)
-                }}
+                onSelectVersion={selectVersionSafely}
+                disableVersionActions={isDirty || isSaving}
               />
             </div>
           ) : null}
