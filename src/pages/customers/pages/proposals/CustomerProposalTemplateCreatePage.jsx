@@ -94,10 +94,10 @@ export function CustomerProposalTemplateCreatePage() {
   const initialization = useRef(false)
   const [draftError, setDraftError] = useState('')
   const [draftReady, setDraftReady] = useState(false)
+  const [draftAttempt, setDraftAttempt] = useState(0)
   useEffect(() => {
     if (initialization.current) return
     initialization.current = true
-    let cancelled = false
     const initialize = async () => {
       try {
         const stored = sessionStorage.getItem('proposal-template-draft')
@@ -117,7 +117,7 @@ export function CustomerProposalTemplateCreatePage() {
               progress.current.versionId = getResponseEntity(response)?.current_version?.id
             }
             if (!progress.current.versionId) throw new Error('Draft version unavailable')
-            if (!cancelled) setDraftReady(true)
+            setDraftReady(true)
             return
           }
         }
@@ -139,12 +139,11 @@ export function CustomerProposalTemplateCreatePage() {
         sessionStorage.setItem('proposal-template-draft', JSON.stringify({ ...progress.current, content: contentRef.current }))
         if (!cancelled) setDraftReady(true)
       } catch (error) {
-        if (!cancelled) setDraftError(error?.message || 'Failed to create draft')
+        setDraftError(error?.response?.data?.message || error?.message || 'Failed to create draft')
       }
     }
     initialize()
-    return () => { cancelled = true }
-  }, [])
+  }, [draftAttempt])
   const selectedSectionId = selected?.type === 'block' ? selected.sectionId : selected?.id || content.sections[0]?.id
   const change = (update, label) => {
     const previous = contentRef.current
@@ -235,7 +234,7 @@ export function CustomerProposalTemplateCreatePage() {
 
   return (
     <div className="min-w-0 space-y-4 bg-[var(--surface-2)] pb-6">
-      {draftError && <p role="alert" className="mx-4 rounded-lg border border-red-400 p-3 text-sm text-red-600">{draftError}</p>}
+      {draftError && <div role="alert" className="mx-4 flex items-center gap-3 rounded-lg border border-red-400 p-3 text-sm text-red-600"><span>{draftError}</span><Button variant="outline" onClick={() => { initialization.current = false; setDraftError(''); setDraftAttempt(value => value + 1) }}>{ar ? 'إعادة المحاولة' : 'Retry'}</Button></div>}
       {!draftReady && !draftError && <p className="mx-4 text-sm text-[var(--text-muted)]">{ar ? 'جاري إنشاء القالب والإصدار الأول...' : 'Creating template and first version...'}</p>}
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)] p-4">
         <div className="flex items-center gap-3">
@@ -250,7 +249,7 @@ export function CustomerProposalTemplateCreatePage() {
         </div>
       </header>
       <div className="mx-4 grid gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 md:grid-cols-2">
-        <label className="space-y-1 text-sm"><span className="inline-flex items-center gap-1">{t('proposals.workspace.templateName')}<TemplateHelp enabled description={help.name}/></span><input required disabled={saving || Boolean(progress.current.templateId)} value={form.name} onChange={event => setForm(old => ({ ...old, name: event.target.value }))} className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2"/></label>
+        <label className="space-y-1 text-sm"><span className="inline-flex items-center gap-1">{t('proposals.workspace.templateName')}<TemplateHelp enabled description={help.name}/></span><input required disabled={saving} value={form.name} onChange={event => setForm(old => ({ ...old, name: event.target.value }))} className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2"/></label>
         <label className="space-y-1 text-sm"><span className="inline-flex items-center gap-1">{t('proposals.workspace.templateCategory')}<TemplateHelp enabled description={help.category}/></span><input disabled={saving || Boolean(progress.current.templateId)} value={form.category} onChange={event => setForm(old => ({ ...old, category: event.target.value }))} className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2"/></label>
         <label className="space-y-1 text-sm md:col-span-2"><span className="inline-flex items-center gap-1">{t('proposals.workspace.templateDescription')}<TemplateHelp enabled description={help.description}/></span><textarea disabled={saving || Boolean(progress.current.templateId)} value={form.description} onChange={event => setForm(old => ({ ...old, description: event.target.value }))} className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2"/></label>
       </div>
