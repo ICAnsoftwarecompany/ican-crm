@@ -36,6 +36,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
   const [optionForm, setOptionForm] = useState(EMPTY_OPTION)
   const [itemForm, setItemForm] = useState(EMPTY_ITEM)
   const [editingItemId, setEditingItemId] = useState(null)
+  const [itemMode, setItemMode] = useState('catalog')
   const itemsRef = useRef(null)
   const [showAlternativeForm, setShowAlternativeForm] = useState(false)
   useEffect(() => { if (focusItems) itemsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }, [focusItems])
@@ -45,6 +46,15 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
   const selectedOption = options.find((option) => String(option.id) === String(selectedOptionId)) || options[0]
   const itemsQuery = useProposalOptionItems(proposal?.id, selectedOption?.id, undefined, { enabled: Boolean(proposal?.id && selectedOption?.id) })
   const products = productsQuery.data || []
+  const validationMessage = (error) => {
+    const body = error?.response?.data
+    const fields = body?.errors
+    if (fields && typeof fields === 'object') {
+      const details = Object.entries(fields).flatMap(([field, messages]) => (Array.isArray(messages) ? messages : [messages]).map(message => `${field}: ${message}`))
+      if (details.length) return details.join(' | ')
+    }
+    return body?.message || error?.message || 'تعذر حفظ البند'
+  }
 
   const productOptions = useMemo(() => products.map((product) => ({
     value: String(product.id),
@@ -109,11 +119,12 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
       toast.error(t('proposals.pricing.chooseOptionFirst'))
       return
     }
+    if (itemMode === 'catalog' && !itemForm.product_id) { toast.error('اختر منتجًا من القائمة أو استخدم إضافة صنف / خدمة غير مسجلة'); return }
     if (!itemForm.name.trim() && !itemForm.product_id) { toast.error('اختر منتجًا أو اكتب اسم الخدمة'); return }
     if (itemForm.unit_price === '' || Number(itemForm.quantity) <= 0 || Number(itemForm.unit_price) < 0 || Number(itemForm.discount) < 0 || Number(itemForm.tax) < 0) { toast.error('راجع الكمية والسعر والخصم والضريبة'); return }
 
     const itemPayload = {
-        product_id: toNumber(itemForm.product_id),
+        ...(itemMode === 'catalog' && itemForm.product_id ? { product_id: toNumber(itemForm.product_id) } : {}),
         name: itemForm.name.trim() || undefined,
         description: itemForm.description.trim() || undefined,
         quantity: toNumber(itemForm.quantity, 1),
@@ -136,7 +147,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
     setItemForm({ ...EMPTY_ITEM })
     setEditingItemId(null)
     toast.success(editingItemId ? 'تم تحديث البند / Item updated' : t('proposals.pricing.itemAdded'))
-    } catch (error) { toast.error(error?.response?.data?.message || error?.message || 'تعذر حفظ البند') }
+    } catch (error) { toast.error(validationMessage(error), { duration: 10000 }) }
   }
 
   return (
@@ -203,7 +214,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
                   {item.quantity ?? 1} × {formatMoney(item.unit_price, proposal?.currency)} · Discount: {formatMoney(item.discount || 0, proposal?.currency)} · Tax: {formatMoney(item.tax || 0, proposal?.currency)}
                 </div>
                 <div className="mt-2 flex gap-2">
-                  <Button type="button" variant="ghost" size="sm" onClick={() => { setEditingItemId(item.id); setItemForm({ product_id: String(item.product_id || ''), name: item.name || '', description: item.description || '', quantity: item.quantity ?? 1, unit_price: item.unit_price ?? '', discount: item.discount ?? 0, tax: item.tax ?? 0 }) }}>تعديل / Edit</Button>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => { setEditingItemId(item.id); setItemMode(item.product_id ? 'catalog' : 'custom'); setItemForm({ product_id: String(item.product_id || ''), name: item.name || '', description: item.description || '', quantity: item.quantity ?? 1, unit_price: item.unit_price ?? '', discount: item.discount ?? 0, tax: item.tax ?? 0 }) }}>تعديل / Edit</Button>
                   <Button type="button" variant="ghost" size="sm" disabled={mutations.deleteProposalOptionItem.isPending} onClick={async () => { if (!window.confirm('حذف البند؟ / Delete this item?')) return; try { await mutations.deleteProposalOptionItem.mutateAsync({ proposalId: proposal.id, optionId: selectedOption.id, itemId: item.id }); try { await syncTotals(selectedOption, (itemsQuery.data || []).filter(row => String(row.id) !== String(item.id))) } catch { toast.warning('تم حذف البند لكن تعذّر تحديث الإجمالي') } } catch { toast.error('تعذر حذف البند') } }}>حذف / Delete</Button>
                 </div>
               </div>
@@ -214,7 +225,17 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
             {(() => { const totals = totalsFor(itemsQuery.data || []); return <><div>الإجمالي الفرعي: {formatMoney(totals.subtotal, proposal?.currency)}</div><div>الخصم: {formatMoney(totals.discount, proposal?.currency)}</div><div>الضريبة: {formatMoney(totals.tax, proposal?.currency)}</div><div className="mt-2 font-black">الإجمالي النهائي: {formatMoney(totals.total, proposal?.currency)}</div></> })()}
           </div>
           <form onSubmit={handleCreateItem} className="space-y-3">
-            <Select label={t('proposals.pricing.productFromSystem')} value={itemForm.product_id} onChange={selectProduct} options={productOptions} placeholder={t('customers.followUp.optionalPlaceholder')} />
+            <div className="grid grid-cols-2 gap-2">
+              <Button type="button" variant={itemMode === 'catalog' ? 'primary' : 'ghost'} size="sm" onClick={() => { setItemMode('catalog'); setItemForm(form => ({ ...form, product_id: '' })) }}>منتج من النظام</Button>
+              <Button type="button" variant={itemMode === 'custom' ? 'primary' : 'ghost'} size="sm" onClick={() => { setItemMode('custom'); setItemForm(form => ({ ...form, product_id: '', name: '', description: '', unit_price: '' })) }}>صنف / خدمة غير مسجلة</Button>
+            </div>
+            {itemMode === 'catalog' && <>
+              <Select label={t('proposals.pricing.productFromSystem')} value={itemForm.product_id} onChange={selectProduct} options={productOptions} placeholder="اختر منتجًا من الكتالوج" />
+              {productsQuery.isLoading && <p className="text-xs text-[var(--text-muted)]">جارٍ تحميل المنتجات...</p>}
+              {productsQuery.isError && <p className="text-xs text-red-600">تعذر تحميل المنتجات من النظام. يمكنك إعادة المحاولة أو إضافة صنف مخصص. <Button type="button" size="sm" variant="ghost" onClick={() => productsQuery.refetch()}>إعادة المحاولة</Button></p>}
+              {!productsQuery.isLoading && !productsQuery.isError && !productOptions.length && <p className="text-xs text-[var(--text-muted)]">لا توجد منتجات متاحة في الكتالوج. استخدم «صنف / خدمة غير مسجلة».</p>}
+            </>}
+            {itemMode === 'custom' && <p className="text-xs text-[var(--text-muted)]">اكتب اسم الصنف أو الخدمة وسعرها يدويًا؛ لن يتم إنشاء منتج جديد في الكتالوج.</p>}
             <Input label={t('proposals.pricing.itemNameLabel')} value={itemForm.name} onChange={(event) => updateItemForm('name', event.target.value)} />
             <Input label={t('proposals.pricing.itemDescLabel')} value={itemForm.description} onChange={(event) => updateItemForm('description', event.target.value)} />
             <div className="grid grid-cols-2 gap-2">
