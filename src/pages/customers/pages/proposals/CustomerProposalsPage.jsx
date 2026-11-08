@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Edit3, Eye, FileSignature, Plus, Search, Trash2, Info, Workflow, Settings2, Files } from 'lucide-react'
+import { Edit3, Eye, FileSignature, Plus, Search, Trash2, Info, Workflow, Settings2, Users } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { PageToolbar } from '../../../../shared/components/data/PageToolbar'
@@ -21,6 +21,7 @@ export function CustomerProposalsPage() {
   const action = searchParams.get('action')
   const [isWizardOpen, setIsWizardOpen] = useState(false)
   const [showTrash, setShowTrash] = useState(false)
+  const [expandedRecipients, setExpandedRecipients] = useState(null)
   const wizardOpen = isWizardOpen || action === 'new'
   const closeWizard = () => { setIsWizardOpen(false); if (action === 'new') setSearchParams({}) }
   const [filters, setFilters] = useState({ search: '', status: '', assigned_to: '' })
@@ -39,7 +40,7 @@ export function CustomerProposalsPage() {
     return proposals.filter((proposal) => {
       const customer = getProposalCustomer(proposal)
       const template = templatesById.get(String(proposal.template_id || proposal.metadata?.source_template_id))
-      const haystack = [proposal.title, proposal.description, customer?.name, customer?.email, template?.name, proposal.metadata?.source_template_name].filter(Boolean).join(' ').toLowerCase()
+      const haystack = [proposal.title, proposal.description, customer?.name, customer?.email, proposal.proposal_number, ...(proposal.recipients || []).flatMap(r => [r.name, r.email, r.phone]), template?.name, proposal.metadata?.source_template_name].filter(Boolean).join(' ').toLowerCase()
       return !search || haystack.includes(search)
     })
   }, [filters.search, proposals, templatesById])
@@ -120,14 +121,17 @@ export function CustomerProposalsPage() {
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)]">
-        <div className="grid grid-cols-[1.3fr_1fr_1fr_.7fr_.8fr_auto] gap-3 border-b border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-xs font-black text-[var(--text-muted)]">
+      <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)]">
+        <div className="overflow-x-auto">
+        <div className="grid grid-cols-[1.4fr_1.1fr_1fr_1fr_.8fr_.8fr_.8fr_auto] min-w-[1150px] gap-3 border-b border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-xs font-black text-[var(--text-muted)]">
           <div>{t('proposals.page.columnProposal')}</div>
-          <div>{t('proposals.wizard.steps.customer')}</div>
+          <div>المستلمون</div>
           <div>القالب / الإصدار</div>
+          <div>خيارات الأسعار</div>
           <div>{t('proposals.pricing.totalLabel')}</div>
+          <div>التسعير</div>
           <div>{t('customers.table.status')}</div>
-          <div>{t('proposals.page.columnActions')}</div>
+          <div>الانتهاء / الإجراءات</div>
         </div>
 
         {proposalsQuery.isLoading ? (
@@ -145,6 +149,10 @@ export function CustomerProposalsPage() {
         ) : null}
 
         {visibleProposals.map((proposal) => {
+          const recipients = Array.isArray(proposal.recipients) ? proposal.recipients : []
+          const options = Array.isArray(proposal.options) ? proposal.options : []
+          const pricedOptions = options.filter(o => Number(o.total) > 0)
+          const hasPricing = Number(proposal.total ?? proposal.current_version?.total ?? 0) > 0 || pricedOptions.length > 0
           const customer = getProposalCustomer(proposal)
           const metadata = proposal.metadata || {}
           const templateId = proposal.template_id || metadata.source_template_id
@@ -152,26 +160,37 @@ export function CustomerProposalsPage() {
           const templateName = metadata.source_template_name || proposal.template?.name || template?.name
           const sourceVersion = metadata.source_template_version_name || proposal.template_version?.name || (metadata.source_template_version_number ? `Version ${metadata.source_template_version_number}` : null)
           return (
-            <div key={proposal.id} className="grid grid-cols-[1.3fr_1fr_1fr_.7fr_.8fr_auto] items-center gap-3 border-b border-[var(--border)] px-4 py-3 last:border-b-0 hover:bg-[var(--surface-2)]">
+            <div key={proposal.id} className="grid grid-cols-[1.4fr_1.1fr_1fr_1fr_.8fr_.8fr_.8fr_auto] min-w-[1150px] items-center gap-3 border-b border-[var(--border)] px-4 py-3 last:border-b-0 hover:bg-[var(--surface-2)]">
               <div className="min-w-0">
                 <div className="truncate text-sm font-black text-[var(--text)]">{proposal.title || t('proposals.page.proposalFallback', { id: proposal.id })}</div>
-                <div className="mt-1 truncate text-xs font-semibold text-[var(--text-muted)]">{proposal.description || t('proposals.page.expiresPrefix', { date: formatDate(proposal.expires_at, i18n.language) })}</div>
+                <div className="mt-1 truncate text-xs font-semibold text-[var(--text-muted)]">{proposal.proposal_number || proposal.description || '-'}</div>
               </div>
-              <div className="min-w-0">
-                <div className="truncate text-sm font-bold text-[var(--text)]">{customer?.name || '-'}</div>
-                <div className="truncate text-xs font-semibold text-[var(--text-muted)]">{customer?.email || customer?.phone || '-'}</div>
+              <div className="relative min-w-0">
+                {recipients.length === 0 ? <div className="text-xs text-[var(--text-muted)]">لا يوجد مستلمون{customer?.name ? ' · العميل: ' + customer.name : ''}</div> : recipients.length === 1 ? (
+                  <div><div className="truncate text-sm font-bold">{recipients[0].name || 'مستلم بدون اسم'}</div><div className="truncate text-xs text-[var(--text-muted)]">{recipients[0].role || recipients[0].email || recipients[0].phone || (recipients[0].is_primary ? 'المستلم الأساسي' : '')}</div></div>
+                ) : (
+                  <div>
+                    <button type="button" aria-expanded={expandedRecipients === proposal.id} onClick={() => setExpandedRecipients(current => current === proposal.id ? null : proposal.id)} className="inline-flex items-center gap-2 rounded-lg border border-[var(--border)] px-2 py-1 text-sm font-bold hover:bg-[var(--surface-2)]"><Users size={15}/>{recipients.length} مستلمين</button>
+                    {expandedRecipients === proposal.id && <div className="absolute start-0 top-full z-30 mt-2 max-h-64 w-72 overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 shadow-xl">
+                      <div className="mb-2 flex items-center justify-between"><strong className="text-sm">مستلمو العرض</strong><button type="button" onClick={() => setExpandedRecipients(null)} aria-label="إغلاق">×</button></div>
+                      {recipients.map((recipient, index) => <div key={recipient.id || index} className="border-t border-[var(--border)] py-2 text-xs"><div className="font-bold">{recipient.name || 'مستلم بدون اسم'} {recipient.is_primary ? '· أساسي' : ''}</div><div className="text-[var(--text-muted)]">{[recipient.role, recipient.email, recipient.phone].filter(Boolean).join(' · ') || 'لا توجد بيانات تواصل'}</div></div>)}
+                    </div>}
+                  </div>
+                )}
               </div>
               <div className="min-w-0">
                 <div className="truncate text-sm font-bold text-[var(--text)]">{templateName || (templateId ? `قالب #${templateId}` : 'غير محدد')}</div>
                 <div className="mt-1 truncate text-xs font-semibold text-[var(--text-muted)]">{sourceVersion || 'الإصدار غير متاح'}</div>
               </div>
+              <div className="text-xs"><div className="font-bold">{options.length} خيارات</div>{pricedOptions.length > 0 && <div className="text-[var(--text-muted)]">يبدأ من {formatMoney(Math.min(...pricedOptions.map(o => Number(o.total))), pricedOptions[0].currency || proposal.currency)}</div>}</div>
               <div className="text-sm font-black text-[var(--text)]" dir="ltr">{formatMoney(proposal.total ?? proposal.current_version?.total, proposal.currency)}</div>
+              <div className="text-xs font-bold">{hasPricing ? 'توجد أسعار' : 'بدون أسعار'}{options.length > pricedOptions.length && <div className="font-normal text-[var(--text-muted)]">بعض الخيارات بلا سعر موجب</div>}</div>
               <div>
                 <span className="rounded-full border border-[#DCE8F3] bg-[var(--surface-2)] px-2 py-1 text-xs font-black text-[var(--text-muted)]">
                   {t(`proposals.page.status.${proposal.status || 'draft'}`, { defaultValue: proposal.status || 'draft' })}
                 </span>
               </div>
-              <div className="flex items-center gap-1">
+              <div><div className="mb-1 whitespace-nowrap text-xs text-[var(--text-muted)]">{proposal.expires_at ? formatDate(proposal.expires_at, i18n.language) : "بدون تاريخ انتهاء"}</div><div className="flex items-center gap-1">
                 <Button variant="ghost" size="icon" onClick={() => navigate(`/LeadsCenter/proposals/${proposal.id}/builder`)} aria-label={t('proposals.page.openBuilder')}>
                   <Edit3 size={16} />
                 </Button>
@@ -181,10 +200,11 @@ export function CustomerProposalsPage() {
                 <Button variant="ghost" size="icon" className="text-[#EF4444]" onClick={() => handleDelete(proposal)} aria-label={t('proposals.page.delete')}>
                   <Trash2 size={16} />
                 </Button>
-              </div>
+              </div></div>
             </div>
           )
         })}
+        </div>
       </section>
 
       </>}
