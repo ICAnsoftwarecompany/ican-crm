@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Plus, UserRound } from 'lucide-react'
+import { Plus, UserRound, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useCustomers } from '../../../../../features/customers/hooks/useCustomers'
@@ -26,8 +26,10 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const [recipients, setRecipients] = useState(() => initialCustomer?.id || initialCustomer?.customer_id || searchParams.get('customer_id') ? [{ customer_id: String(initialCustomer?.id ?? initialCustomer?.customer_id ?? searchParams.get('customer_id')), name: initialCustomer?.name || initialCustomer?.full_name || '', email: initialCustomer?.email || '', role: '', is_primary: true, can_view: true, can_accept: true, can_sign: false, signature_required: false }] : [])
+  const [minimumSignatures, setMinimumSignatures] = useState(1)
+  const [clientName, setClientName] = useState('')
   const [form, setForm] = useState({
-    customer_id: String(initialCustomer?.id ?? initialCustomer?.customer_id ?? searchParams.get('customer_id') ?? ''),
     template_id: searchParams.get('template_id') || '',
     template_version_id: '',
     assigned_to: '',
@@ -50,8 +52,8 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
   const users = usersQuery.data || []
 
   const selectedCustomer = useMemo(() => (
-    customers.find((customer) => String(customer.id) === String(form.customer_id))
-  ), [customers, form.customer_id])
+    customers.find((customer) => String(customer.id) === String(recipients[0]?.customer_id))
+  ), [customers, recipients])
 
   const availableTemplateVersions = getTemplateVersions(selectedTemplateQuery.data).filter(version => {
     const content = getTemplateVersionContent(version)
@@ -65,27 +67,43 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
     setForm((current) => {
       const next = { ...current, [key]: value }
       if (key === 'template_id') next.template_version_id = ''
-      if (key === 'customer_id') {
-        const customer = customers.find((item) => String(item.id) === String(value))
-        if (customer && !current.title) next.title = t('proposals.wizard.newProposalTitleFor', { name: getCustomerName(customer, t) })
-      }
       return next
     })
   }
 
   const handleCreate = async () => {
-    if (mutations.createProposal.isPending || mutations.createProposalVersion.isPending) return
-    if (!form.customer_id || !form.template_id || !form.title.trim()) {
-      toast.error(t('proposals.wizard.chooseCustomerFirst'))
-      return
-    }
-    if (!selectedCustomer) {
-      toast.error(t('proposals.wizard.chooseCustomerFirst'))
+    if (mutations.createProposal.isPending || mutations.createProposalVersion.isPending || mutations.createProposalRecipients.isPending) return
+    if (!form.template_id || !form.title.trim()) {
+      toast.error('عنوان العرض والقالب مطلوبان')
       return
     }
 
     if (!selectedTemplateVersion || !createProposalContentFromTemplate(selectedTemplateVersion, { title: form.title }, selectedCustomer, t)) {
       toast.error(t('proposals.templateEditor.selectPublishedVersion'))
+      return
+    }
+
+    const resolvedRecipients = recipients.map((recipient, index) => ({
+      ...recipient,
+      customer_id: Number(recipient.customer_id),
+      name: recipient.name.trim(),
+      email: recipient.email.trim(),
+      role: recipient.role.trim() || undefined,
+      is_primary: index === 0,
+      signature_sort_order: index + 1,
+      signature_required: Boolean(recipient.can_sign && recipient.signature_required),
+    }))
+    if (resolvedRecipients.some(recipient => !recipient.customer_id || !recipient.name || !recipient.email)) {
+      toast.error('اختر عميلًا صالحًا وتأكد من الاسم والبريد الإلكتروني لكل مستلم')
+      return
+    }
+    if (new Set(resolvedRecipients.map(recipient => recipient.customer_id)).size !== resolvedRecipients.length) {
+      toast.error('لا يمكن إضافة نفس العميل أكثر من مرة')
+      return
+    }
+    const requiredSignatures = resolvedRecipients.filter(recipient => recipient.can_sign && recipient.signature_required).length
+    if (requiredSignatures && (Number(minimumSignatures) < 1 || Number(minimumSignatures) > requiredSignatures)) {
+      toast.error('الحد الأدنى للتوقيعات لا يمكن أن يزيد عن عدد المستلمين المطلوب توقيعهم')
       return
     }
 
@@ -96,12 +114,16 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
       assigned_to: Number(form.assigned_to) || undefined,
       currency: form.currency,
       expires_at: form.expires_at || undefined,
+      minimum_required_signatures: requiredSignatures ? Number(minimumSignatures) : 1,
       metadata: {
-        customer_id: selectedCustomer.id,
-        customer_name: getCustomerName(selectedCustomer, t),
-        customer_email: selectedCustomer.email || '',
-        customer_phone: selectedCustomer.phone || '',
-        company: selectedCustomer.company || '',
+        ...(selectedCustomer ? {
+          customer_id: selectedCustomer.id,
+          customer_name: getCustomerName(selectedCustomer, t),
+          customer_email: selectedCustomer.email || '',
+          customer_phone: selectedCustomer.phone || '',
+          company: selectedCustomer.company || '',
+        } : {}),
+        client_name: clientName.trim() || (selectedCustomer ? getCustomerName(selectedCustomer, t) : ''),
         priority: form.priority,
         source: 'crm_proposal_wizard',
         source_template_id: Number(form.template_id),
@@ -112,7 +134,9 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
       },
     }
 
-    const createdResponse = await mutations.createProposal.mutateAsync(payload)
+    let createdResponse
+    try { createdResponse = await mutations.createProposal.mutateAsync(payload) }
+    catch (error) { toast.error(error?.response?.data?.message || error?.message || 'تعذر إنشاء العرض'); return }
     const createdProposal = getResponseEntity(createdResponse)
     const createdProposalId = createdProposal?.id
     if (!createdProposalId) {
@@ -121,8 +145,19 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
       return
     }
 
+    if (resolvedRecipients.length) {
+      try {
+        await mutations.createProposalRecipients.mutateAsync({ proposal_id: createdProposalId, recipients: resolvedRecipients })
+      } catch (error) {
+        toast.error(`تم إنشاء العرض #${createdProposalId} لكن تعذر ربط المستلمين: ${error?.response?.data?.message || error?.message || 'خطأ غير معروف'}. راجع العرض قبل إعادة المحاولة.`, { duration: 12000 })
+        onClose()
+        navigate(`/LeadsCenter/proposals/${createdProposalId}/builder`)
+        return
+      }
+    }
+
     const visualContent = createProposalContentFromTemplate(selectedTemplateVersion, { ...createdProposal, ...payload }, selectedCustomer, t)
-    await mutations.createProposalVersion.mutateAsync({
+    try { await mutations.createProposalVersion.mutateAsync({
       proposalId: createdProposalId,
       payload: buildVersionPayload(null, { ...createdProposal, ...payload }, visualContent, {
         name: 'Version 1',
@@ -132,13 +167,20 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
       }),
     })
 
+    } catch (error) {
+      toast.error(`تم إنشاء العرض #${createdProposalId} لكن تعذر إنشاء إصدار التصميم: ${error?.response?.data?.message || error?.message || 'خطأ غير معروف'}`, { duration: 12000 })
+      onClose()
+      navigate(`/LeadsCenter/proposals/${createdProposalId}/builder`)
+      return
+    }
+
     toast.success(t('proposals.wizard.createdSuccess'))
     onClose()
     navigate(`/LeadsCenter/proposals/${createdProposalId}/builder`)
   }
 
-  const isSubmitting = mutations.createProposal.isPending || mutations.createProposalVersion.isPending
-  const canCreate = Boolean(form.customer_id && form.template_id && form.title.trim() && selectedTemplateVersion && !selectedTemplateQuery.isLoading)
+  const isSubmitting = mutations.createProposal.isPending || mutations.createProposalVersion.isPending || mutations.createProposalRecipients.isPending
+  const canCreate = Boolean(form.template_id && form.title.trim() && selectedTemplateVersion && !selectedTemplateQuery.isLoading)
 
   const footer = (
     <div className="flex items-center justify-end gap-3">
@@ -152,17 +194,40 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
   return (
     <ProposalModal open={open} onClose={onClose} title={t('proposals.wizard.modalTitle')} footer={footer}>
       <div className="grid gap-4 md:grid-cols-2">
-        <Select
-          label={t('proposals.wizard.chooseCustomerLabel')}
-          value={form.customer_id}
-          onChange={(value) => updateForm('customer_id', value)}
-          options={customers.map(customer => ({
-            value: String(customer.id),
-            label: `${getCustomerName(customer, t)} - ${customer.phone || customer.email || customer.id}`,
-          }))}
-          placeholder={customersQuery.isLoading ? t('proposals.wizard.loadingCustomers') : t('proposals.wizard.chooseCustomerPlaceholder')}
-        />
-        {form.customer_id && !selectedCustomer && !customersQuery.isLoading && <p className="text-xs text-red-600 md:col-span-2">العميل المحدد غير موجود في قائمة العملاء المحمّلة. ابحث عنه أو اختره من القائمة قبل إنشاء العرض.</p>}
+        <div className="md:col-span-2 space-y-3 rounded-xl border border-[var(--border)] p-3">
+          <div>
+            <h3 className="text-sm font-black">مستلمو عرض السعر (اختياري)</h3>
+            <p className="text-xs text-[var(--text-muted)]">يمكن إنشاء العرض دون عميل، أو إضافة أكثر من عميل مع صلاحيات مختلفة.</p>
+          </div>
+          <Input label="اسم الجهة / العميل الحر (اختياري)" value={clientName} onChange={event => setClientName(event.target.value)} />
+          {recipients.map((recipient, index) => (
+            <div key={index} className="space-y-3 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
+              <div className="flex items-center justify-between">
+                <strong className="text-xs">مستلم {index + 1}{index === 0 ? ' — أساسي' : ''}</strong>
+                <Button type="button" variant="ghost" size="sm" onClick={() => setRecipients(rows => rows.filter((_, i) => i !== index))}><Trash2 size={14} /> حذف</Button>
+              </div>
+              <Select label="العميل" value={recipient.customer_id} options={customers.map(customer => ({ value: String(customer.id), label: getCustomerName(customer, t) }))} placeholder="اختر العميل" onChange={value => {
+                const customer = customers.find(item => String(item.id) === String(value))
+                setRecipients(rows => rows.map((row, i) => i === index ? { ...row, customer_id: value, name: customer ? getCustomerName(customer, t) : '', email: customer?.email || '' } : row))
+                      }} />
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <Input label="الاسم" value={recipient.name} onChange={event => setRecipients(rows => rows.map((row, i) => i === index ? { ...row, name: event.target.value } : row))} />
+                <Input label="البريد الإلكتروني" type="email" value={recipient.email} onChange={event => setRecipients(rows => rows.map((row, i) => i === index ? { ...row, email: event.target.value } : row))} />
+              </div>
+              <Input label="الدور (اختياري)" value={recipient.role} onChange={event => setRecipients(rows => rows.map((row, i) => i === index ? { ...row, role: event.target.value } : row))} />
+              <div className="flex flex-wrap gap-3 text-xs">
+                {[['can_view', 'عرض'], ['can_accept', 'موافقة'], ['can_sign', 'توقيع'], ['signature_required', 'التوقيع إلزامي']].map(([key, label]) => (
+                  <label key={key} className="flex items-center gap-1">
+                    <input type="checkbox" checked={Boolean(recipient[key])} disabled={key === 'signature_required' && !recipient.can_sign} onChange={event => setRecipients(rows => rows.map((row, i) => i === index ? { ...row, [key]: event.target.checked, ...(key === 'can_sign' && !event.target.checked ? { signature_required: false } : {}) } : row))} />
+                    {label}
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
+          <Button type="button" variant="outline" size="sm" onClick={() => setRecipients(rows => [...rows, { customer_id: '', name: '', email: '', role: '', is_primary: false, can_view: true, can_accept: true, can_sign: false, signature_required: false }])}><Plus size={15} /> إضافة مستلم</Button>
+          {recipients.some(recipient => recipient.signature_required) && <Input label="الحد الأدنى للتوقيعات المطلوبة" type="number" min="1" value={minimumSignatures} onChange={event => setMinimumSignatures(event.target.value)} />}
+        </div>
         <Select
           label={t('proposals.wizard.steps.template')}
           value={form.template_id}

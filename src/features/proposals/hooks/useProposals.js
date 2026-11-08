@@ -106,6 +106,11 @@ export function useProposalMutations() {
       onSuccess: invalidateAll,
     }),
 
+    createProposalRecipients: useMutation({
+      mutationFn: proposalsApi.createProposalRecipients,
+      onSuccess: (_data, variables = {}) => invalidateProposal(variables.proposal_id),
+    }),
+
     updateProposal: useMutation({
       mutationFn: ({ proposalId, payload }) => proposalsApi.updateProposal(proposalId, payload),
       onSuccess: (_data, variables = {}) => invalidateProposal(variables.proposalId),

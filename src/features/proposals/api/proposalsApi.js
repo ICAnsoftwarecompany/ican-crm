@@ -34,6 +34,11 @@ export const proposalsApi = {
     return res.data
   },
 
+  createProposalRecipients: async (payload) => {
+    const res = await httpClient.post(`${BASE_PATH}/create/recipients`, payload)
+    return res.data
+  },
+
   updateProposal: async (proposalId, payload) => {
     const res = await httpClient.put(`${BASE_PATH}/update/${proposalId}`, payload)
     return res.data
