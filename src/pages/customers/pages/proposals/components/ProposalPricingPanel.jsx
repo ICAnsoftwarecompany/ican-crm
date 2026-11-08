@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import { Button } from '../../../../../shared/components/ui/Button'
 import { Input } from '../../../../../shared/components/ui/Input'
 import { Select } from '../../../../../shared/components/ui/Select'
-import { useProposalMutations, useProposalOptionItems } from '../../../../../features/proposals'
+import { useProposalMutations } from '../../../../../features/proposals'
 import { useProducts } from '../../../../../features/products/hooks/useProducts'
 import { formatMoney } from '../utils/proposalPayloads'
 
@@ -46,8 +46,8 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
   const productsQuery = useProducts()
 
   const selectedOption = options.find((option) => String(option.id) === String(selectedOptionId)) || options[0]
-  const itemsQuery = useProposalOptionItems(proposal?.id, selectedOption?.id, undefined, { enabled: Boolean(proposal?.id && selectedOption?.id) })
   const products = productsQuery.data || []
+  const displayedItems = selectedOption?.items || []
   const validationMessage = (error) => {
     const body = error?.response?.data
     const fields = body?.errors
@@ -132,7 +132,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
         unit_price: toNumber(itemForm.unit_price, 0),
         discount: toNumber(itemForm.discount, 0),
         tax: toNumber(itemForm.tax, 0),
-        sort_order: editingItemId ? (itemsQuery.data || []).find(item => item.id === editingItemId)?.sort_order ?? 0 : itemsQuery.data?.length || 0,
+        sort_order: editingItemId ? displayedItems.find(item => item.id === editingItemId)?.sort_order ?? 0 : displayedItems.length || 0,
         is_optional: false,
         metadata: {},
     }
@@ -150,8 +150,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
       await mutations.createProposalOptionItem.mutateAsync({ proposalId: proposal.id, optionId: selectedOption.id, payload: itemPayload })
     }
     // Always use the canonical persisted rows to avoid overwriting totals from stale local data.
-    const updatedRows = (await itemsQuery.refetch()).data || []
-    try { await syncTotals(selectedOption, updatedRows) } catch { toast.warning('تم حفظ البند، لكن تعذّر تحديث إجمالي خيار السعر؛ راجع الإجمالي قبل الإرسال') }
+    // The options query is invalidated by the item mutation; its embedded items are the canonical read source.
     setItemForm({ ...EMPTY_ITEM })
     setEditingItemId(null)
     toast.success(editingItemId ? 'تم تحديث البند / Item updated' : t('proposals.pricing.itemAdded'))
@@ -206,7 +205,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
           </div>
 
           <div className="mb-4 space-y-2">
-            {(selectedOption && !showAlternativeForm ? (itemsQuery.data || []) : draftItems).map((item, index) => (
+            {(selectedOption && !showAlternativeForm ? displayedItems : draftItems).map((item, index) => (
               <div key={item.id || `${item.product_id || item.name}-${index}`} className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2">
                 <div className="font-black text-[var(--text)]">{item.name || item.product?.name || t('proposals.pricing.itemFallback', { id: item.id })}</div>
                 <div className="mt-1 text-xs font-bold text-[var(--text-muted)]" dir="ltr">
@@ -214,14 +213,14 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
                 </div>
                 <div className="mt-2 flex gap-2">
                   {selectedOption && !showAlternativeForm && <Button type="button" variant="ghost" size="sm" onClick={() => { setEditingItemId(item.id); setShowItemForm(true); setItemMode(item.product_id ? 'catalog' : 'custom'); setItemForm({ product_id: String(item.product_id || ''), name: item.name || '', description: item.description || '', quantity: item.quantity ?? 1, unit_price: item.unit_price ?? '', discount: item.discount ?? 0, tax: item.tax ?? 0 }) }}>تعديل / Edit</Button>}
-                  <Button type="button" variant="ghost" size="sm" disabled={mutations.deleteProposalOptionItem.isPending} onClick={async () => { if (!selectedOption || showAlternativeForm) { setDraftItems(rows => rows.filter((_, i) => i !== index)); return } if (!window.confirm('حذف البند؟ / Delete this item?')) return; try { await mutations.deleteProposalOptionItem.mutateAsync({ proposalId: proposal.id, optionId: selectedOption.id, itemId: item.id }); try { await syncTotals(selectedOption, (itemsQuery.data || []).filter(row => String(row.id) !== String(item.id))) } catch { toast.warning('تم حذف البند لكن تعذّر تحديث الإجمالي') } } catch { toast.error('تعذر حذف البند') } }}>حذف / Delete</Button>
+                  <Button type="button" variant="ghost" size="sm" disabled={mutations.deleteProposalOptionItem.isPending} onClick={async () => { if (!selectedOption || showAlternativeForm) { setDraftItems(rows => rows.filter((_, i) => i !== index)); return } if (!window.confirm('حذف البند؟ / Delete this item?')) return; try { await mutations.deleteProposalOptionItem.mutateAsync({ proposalId: proposal.id, optionId: selectedOption.id, itemId: item.id }); } catch { toast.error('تعذر حذف البند') } }}>حذف / Delete</Button>
                 </div>
               </div>
             ))}
           </div>
 
           <div className="mb-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 text-sm space-y-1">
-            {(() => { const totals = totalsFor(selectedOption && !showAlternativeForm ? (itemsQuery.data || []) : draftItems); return <><div>الإجمالي الفرعي: {formatMoney(totals.subtotal, proposal?.currency)}</div><div>الخصم: {formatMoney(totals.discount, proposal?.currency)}</div><div>الضريبة: {formatMoney(totals.tax, proposal?.currency)}</div><div className="mt-2 font-black">الإجمالي النهائي: {formatMoney(totals.total, proposal?.currency)}</div></> })()}
+            {(() => { const totals = totalsFor(selectedOption && !showAlternativeForm ? displayedItems : draftItems); return <><div>الإجمالي الفرعي: {formatMoney(totals.subtotal, proposal?.currency)}</div><div>الخصم: {formatMoney(totals.discount, proposal?.currency)}</div><div>الضريبة: {formatMoney(totals.tax, proposal?.currency)}</div><div className="mt-2 font-black">الإجمالي النهائي: {formatMoney(totals.total, proposal?.currency)}</div></> })()}
           </div>
           <Button type="button" variant="ghost" className="w-full" onClick={() => { setShowItemForm(value => !value); setEditingItemId(null); setItemForm({ ...EMPTY_ITEM }) }}>{showItemForm ? "إغلاق نموذج الإضافة" : "+ إضافة منتج أو خدمة"}</Button>
           {showItemForm && <form onSubmit={handleCreateItem} className="space-y-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
