@@ -8,6 +8,7 @@ import {
   useProposalInfo,
   useProposalMutations,
   useProposalOptions,
+  useProposalOptionItems,
   useProposalVersions,
 } from '../../../../../features/proposals'
 import { useProducts } from '../../../../../features/products/hooks/useProducts'
@@ -70,6 +71,9 @@ export function ProposalBuilder({ proposalId }) {
       || versions.find((version) => version.is_current)
       || versions[0]
   }, [selectedVersionId, versions])
+
+  const activeOption = options.find(option => String(option.id) === String(selectedOptionId)) || options[0]
+  const activeItemsQuery = useProposalOptionItems(proposalId, activeOption?.id)
 
   const selectedSectionId = selected?.type === 'block'
     ? selected.sectionId
@@ -281,6 +285,7 @@ export function ProposalBuilder({ proposalId }) {
           proposal={proposal}
           options={options}
           products={products}
+          items={activeItemsQuery.data || []}
           selected={selected}
           onSelect={setSelected}
         />
