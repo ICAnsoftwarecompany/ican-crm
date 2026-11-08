@@ -246,6 +246,7 @@ export function ProposalRenderer({
   proposal,
   options = [],
   products = [],
+  items = [],
   editable = false,
   selected,
   onSelect,
@@ -287,6 +288,7 @@ export function ProposalRenderer({
                   customer,
                   options,
                   products,
+                  items,
                   currency: proposal?.currency,
                   t,
                 })}
