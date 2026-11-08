@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { UserRound } from 'lucide-react'
+import { Plus, UserRound } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useCustomers } from '../../../../../features/customers/hooks/useCustomers'
@@ -14,7 +14,7 @@ import { CURRENCY_OPTIONS } from '../constants/proposalBuilderDefaults'
 import { buildVersionPayload } from '../utils/proposalBuilderContent'
 import { extractCustomersFromInfinite, getCustomerName, getResponseEntity } from '../utils/proposalPayloads'
 import { ProposalModal } from './ProposalModal'
-import { createProposalContentFromTemplate, getCurrentTemplateVersion } from '../utils/templateVersionSnapshot'
+import { createProposalContentFromTemplate, getTemplateVersions, getCurrentTemplateVersion, getTemplateVersionContent } from '../utils/templateVersionSnapshot'
 
 function defaultExpiryDate() {
   const date = new Date()
@@ -29,6 +29,7 @@ export function ProposalWizard({ open, onClose }) {
   const [form, setForm] = useState({
     customer_id: '',
     template_id: searchParams.get('template_id') || '',
+    template_version_id: '',
     assigned_to: '',
     title: '',
     description: '',
@@ -51,12 +52,18 @@ export function ProposalWizard({ open, onClose }) {
     customers.find((customer) => String(customer.id) === String(form.customer_id))
   ), [customers, form.customer_id])
 
+  const availableTemplateVersions = getTemplateVersions(selectedTemplateQuery.data).filter(version => {
+    const content = getTemplateVersionContent(version)
+    return Array.isArray(content?.sections) && content.sections.length > 0
+  })
   const currentTemplateVersion = getCurrentTemplateVersion(selectedTemplateQuery.data)
+  const selectedTemplateVersion = availableTemplateVersions.find(version => String(version.id) === String(form.template_version_id)) || (!form.template_version_id ? availableTemplateVersions.find(version => String(version.id) === String(currentTemplateVersion?.id)) : null)
   const selectedTemplate = templates.find(template => String(template.id) === String(form.template_id))
 
   const updateForm = (key, value) => {
     setForm((current) => {
       const next = { ...current, [key]: value }
+      if (key === 'template_id') next.template_version_id = ''
       if (key === 'customer_id') {
         const customer = customers.find((item) => String(item.id) === String(value))
         if (customer && !current.title) next.title = t('proposals.wizard.newProposalTitleFor', { name: getCustomerName(customer, t) })
@@ -76,7 +83,7 @@ export function ProposalWizard({ open, onClose }) {
       return
     }
 
-    if (!currentTemplateVersion || !createProposalContentFromTemplate(currentTemplateVersion, { title: form.title }, selectedCustomer, t)) {
+    if (!selectedTemplateVersion || !createProposalContentFromTemplate(selectedTemplateVersion, { title: form.title }, selectedCustomer, t)) {
       toast.error(t('proposals.templateEditor.selectPublishedVersion'))
       return
     }
@@ -98,9 +105,9 @@ export function ProposalWizard({ open, onClose }) {
         source: 'crm_proposal_wizard',
         source_template_id: Number(form.template_id),
         source_template_name: selectedTemplate?.name || selectedTemplateQuery.data?.name || '',
-        source_template_version_id: currentTemplateVersion.id,
-        source_template_version_name: currentTemplateVersion.name || `Version ${currentTemplateVersion.version || 1}`,
-        source_template_version_number: currentTemplateVersion.version ?? null,
+        source_template_version_id: selectedTemplateVersion.id,
+        source_template_version_name: selectedTemplateVersion.name || `Version ${selectedTemplateVersion.version || 1}`,
+        source_template_version_number: selectedTemplateVersion.version ?? null,
       },
     }
 
@@ -113,7 +120,7 @@ export function ProposalWizard({ open, onClose }) {
       return
     }
 
-    const visualContent = createProposalContentFromTemplate(currentTemplateVersion, { ...createdProposal, ...payload }, selectedCustomer, t)
+    const visualContent = createProposalContentFromTemplate(selectedTemplateVersion, { ...createdProposal, ...payload }, selectedCustomer, t)
     await mutations.createProposalVersion.mutateAsync({
       proposalId: createdProposalId,
       payload: buildVersionPayload(null, { ...createdProposal, ...payload }, visualContent, {
@@ -130,7 +137,7 @@ export function ProposalWizard({ open, onClose }) {
   }
 
   const isSubmitting = mutations.createProposal.isPending || mutations.createProposalVersion.isPending
-  const canCreate = Boolean(form.customer_id && form.template_id && form.title.trim() && currentTemplateVersion && !selectedTemplateQuery.isLoading)
+  const canCreate = Boolean(form.customer_id && form.template_id && form.title.trim() && selectedTemplateVersion && !selectedTemplateQuery.isLoading)
 
   const footer = (
     <div className="flex items-center justify-end gap-3">
@@ -164,6 +171,24 @@ export function ProposalWizard({ open, onClose }) {
           }))}
           placeholder={templatesQuery.isLoading ? t('proposals.wizard.loadingTemplates') : t('proposals.wizard.chooseTemplatePlaceholder')}
         />
+        <div className="space-y-2 md:col-span-2">
+          <Select
+            label="إصدار القالب"
+            value={form.template_version_id || String(selectedTemplateVersion?.id || '')}
+            onChange={value => updateForm('template_version_id', value)}
+            options={availableTemplateVersions.map(version => ({
+              value: String(version.id),
+              label: `${version.name || `Version ${version.version || version.id}`}${String(version.id) === String(currentTemplateVersion?.id) ? ' — الحالي' : ''}`,
+            }))}
+            placeholder={selectedTemplateQuery.isLoading ? 'جارٍ تحميل إصدارات القالب...' : 'اختر إصدار القالب'}
+          />
+          {form.template_id && !selectedTemplateQuery.isLoading && !availableTemplateVersions.length && (
+            <p className="text-xs text-[var(--text-muted)]">لا توجد إصدارات محفوظة بتصميم صالح لهذا القالب.</p>
+          )}
+          <Button type="button" variant="outline" size="sm" onClick={() => { onClose(); navigate('/LeadsCenter/proposals/templates/new') }}>
+            <Plus size={16} /> إنشاء قالب جديد
+          </Button>
+        </div>
         <Input label={t('proposals.builder.proposalTitle')} value={form.title} onChange={event => updateForm('title', event.target.value)} />
         <Input label={t('proposals.wizard.expiryDateLabel')} type="date" value={form.expires_at} onChange={event => updateForm('expires_at', event.target.value)} />
         <Select label={t('proposals.wizard.currencyLabel')} value={form.currency} onChange={value => updateForm('currency', value)} options={CURRENCY_OPTIONS} />
@@ -186,8 +211,8 @@ export function ProposalWizard({ open, onClose }) {
           <p role="status" className="md:col-span-2 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm">
             {selectedTemplateQuery.isLoading
               ? t('proposals.templateEditor.loading')
-              : currentTemplateVersion
-                ? t('proposals.templateEditor.usingVersion', { name: currentTemplateVersion.name || currentTemplateVersion.id })
+              : selectedTemplateVersion
+                ? t('proposals.templateEditor.usingVersion', { name: selectedTemplateVersion.name || selectedTemplateVersion.id })
                 : t('proposals.templateEditor.selectPublishedVersion')}
           </p>
         )}
