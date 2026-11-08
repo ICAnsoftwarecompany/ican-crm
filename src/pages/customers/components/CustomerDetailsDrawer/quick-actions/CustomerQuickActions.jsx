@@ -14,7 +14,7 @@ import { WhatsappQuickAction } from './WhatsappQuickAction'
 import { QuickActionButton } from './QuickActionButton'
 import { useLeadTaskAction } from '../../../../../features/lead-tasks'
 import { AtSign, ListTodo, FileText } from 'lucide-react'
-import { ProposalWizard } from '../../../proposals/components/ProposalWizard'
+import { ProposalWizard } from '../../../pages/proposals/components/ProposalWizard'
 import { MentionComposer } from '../../../../../features/mentions/components/MentionComposer'
 import { useTranslation } from 'react-i18next'
 
