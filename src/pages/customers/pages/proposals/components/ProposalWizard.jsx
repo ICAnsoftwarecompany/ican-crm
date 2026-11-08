@@ -22,16 +22,16 @@ function defaultExpiryDate() {
   return date.toISOString().slice(0, 10)
 }
 
-export function ProposalWizard({ open, onClose }) {
+export function ProposalWizard({ open, onClose, initialCustomer = null }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [form, setForm] = useState({
-    customer_id: searchParams.get('customer_id') || '',
+    customer_id: String(initialCustomer?.id ?? initialCustomer?.customer_id ?? searchParams.get('customer_id') ?? ''),
     template_id: searchParams.get('template_id') || '',
     template_version_id: '',
     assigned_to: '',
-    title: '',
+    title: initialCustomer?.name ? t('proposals.wizard.newProposalTitleFor', { name: getCustomerName(initialCustomer, t) }) : '',
     description: '',
     currency: 'egp',
     expires_at: defaultExpiryDate(),
@@ -44,7 +44,8 @@ export function ProposalWizard({ open, onClose }) {
   const selectedTemplateQuery = useProposalTemplateInfo(form.template_id, undefined, { enabled: Boolean(open && form.template_id) })
   const mutations = useProposalMutations()
 
-  const customers = extractCustomersFromInfinite(customersQuery.data)
+  const loadedCustomers = extractCustomersFromInfinite(customersQuery.data)
+  const customers = initialCustomer?.id != null && !loadedCustomers.some(customer => String(customer.id) === String(initialCustomer.id)) ? [initialCustomer, ...loadedCustomers] : loadedCustomers
   const templates = templatesQuery.data || []
   const users = usersQuery.data || []
 
