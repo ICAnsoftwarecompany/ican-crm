@@ -50,7 +50,7 @@ export function CustomerProposalsPage() {
 
   return (
     <div className="space-y-6">
-      <PageToolbar title={t('proposals.page.pageTitle')} description={t('proposals.page.pageDescription')}>
+      <PageToolbar title={t('proposals.page.pageTitle')}>
         <Link to="/LeadsCenter/proposals/templates">
           <Button variant="outline">
             <FileSignature size={16} />
@@ -134,7 +134,7 @@ export function CustomerProposalsPage() {
           const templateName = metadata.source_template_name || proposal.template?.name || template?.name
           const sourceVersion = metadata.source_template_version_name || proposal.template_version?.name || (metadata.source_template_version_number ? `Version ${metadata.source_template_version_number}` : null)
           return (
-            <div key={proposal.id} className="grid grid-cols-[1.4fr_1fr_.7fr_.8fr_auto] items-center gap-3 border-b border-[var(--border)] px-4 py-3 last:border-b-0 hover:bg-[var(--surface-2)]">
+            <div key={proposal.id} className="grid grid-cols-[1.3fr_1fr_1fr_.7fr_.8fr_auto] items-center gap-3 border-b border-[var(--border)] px-4 py-3 last:border-b-0 hover:bg-[var(--surface-2)]">
               <div className="min-w-0">
                 <div className="truncate text-sm font-black text-[var(--text)]">{proposal.title || t('proposals.page.proposalFallback', { id: proposal.id })}</div>
                 <div className="mt-1 truncate text-xs font-semibold text-[var(--text-muted)]">{proposal.description || t('proposals.page.expiresPrefix', { date: formatDate(proposal.expires_at, i18n.language) })}</div>
