@@ -110,7 +110,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
       return
     }
     if (!itemForm.name.trim() && !itemForm.product_id) { toast.error('اختر منتجًا أو اكتب اسم الخدمة'); return }
-    if (Number(itemForm.quantity) <= 0 || Number(itemForm.unit_price) < 0 || Number(itemForm.discount) < 0 || Number(itemForm.tax) < 0) { toast.error('راجع الكمية والسعر والخصم والضريبة'); return }
+    if (itemForm.unit_price === '' || Number(itemForm.quantity) <= 0 || Number(itemForm.unit_price) < 0 || Number(itemForm.discount) < 0 || Number(itemForm.tax) < 0) { toast.error('راجع الكمية والسعر والخصم والضريبة'); return }
 
     const itemPayload = {
         product_id: toNumber(itemForm.product_id),
@@ -130,9 +130,8 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
     } else {
       await mutations.createProposalOptionItem.mutateAsync({ proposalId: proposal.id, optionId: selectedOption.id, payload: itemPayload })
     }
-    const rows = editingItemId ? (itemsQuery.data || []).map(item => String(item.id) === String(editingItemId) ? { ...item, ...itemPayload } : item) : null
-    // Fetch canonical rows after a successful create: the server assigns the new ID.
-    const updatedRows = rows || (await itemsQuery.refetch()).data || []
+    // Always use the canonical persisted rows to avoid overwriting totals from stale local data.
+    const updatedRows = (await itemsQuery.refetch()).data || []
     try { await syncTotals(selectedOption, updatedRows) } catch { toast.warning('تم حفظ البند، لكن تعذّر تحديث إجمالي خيار السعر؛ راجع الإجمالي قبل الإرسال') }
     setItemForm({ ...EMPTY_ITEM })
     setEditingItemId(null)
