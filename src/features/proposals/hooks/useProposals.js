@@ -26,6 +26,16 @@ export function useProposals(params, options = {}) {
   })
 }
 
+export function useTrashedProposals(enabled = true) {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.proposals.all, 'trash'],
+    queryFn: proposalsApi.getTrashedProposals,
+    enabled,
+    select: (data) => extractList(data, ['data', 'proposals', 'items']),
+    retry: false,
+  })
+}
+
 export function useProposalInfo(proposalId, params, options = {}) {
   return useQuery({
     queryKey: [...QUERY_KEYS.proposals.detail(proposalId), params],
@@ -99,6 +109,11 @@ export function useProposalMutations() {
     updateProposal: useMutation({
       mutationFn: ({ proposalId, payload }) => proposalsApi.updateProposal(proposalId, payload),
       onSuccess: (_data, variables = {}) => invalidateProposal(variables.proposalId),
+    }),
+
+    restoreProposal: useMutation({
+      mutationFn: proposalsApi.restoreProposal,
+      onSuccess: invalidateAll,
     }),
 
     deleteProposal: useMutation({

@@ -13,6 +13,17 @@ export const proposalsApi = {
     return res.data
   },
 
+  // Trash routes require backend support. Errors are surfaced to the UI; never imply an empty trash on failure.
+  getTrashedProposals: async () => {
+    const res = await httpClient.get(`${BASE_PATH}/trash`)
+    return res.data
+  },
+
+  restoreProposal: async (proposalId) => {
+    const res = await httpClient.post(`${BASE_PATH}/restore/${proposalId}`)
+    return res.data
+  },
+
   getProposalInfo: async (proposalId, params) => {
     const res = await httpClient.get(`${BASE_PATH}/show/${proposalId}`, { params })
     return res.data

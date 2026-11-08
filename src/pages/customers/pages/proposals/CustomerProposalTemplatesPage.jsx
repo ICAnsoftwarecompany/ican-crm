@@ -1,19 +1,29 @@
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
 
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, Copy, FileSignature, Power, PowerOff, Plus, Info, PencilRuler, GitBranch, FilePlus2, Layers, AlertCircle } from 'lucide-react'
+import { ArrowRight, Copy, FileSignature, Power, PowerOff, Plus, Info, PencilRuler, GitBranch, FilePlus2, Layers, AlertCircle, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { PageToolbar } from '../../../../shared/components/data/PageToolbar'
 import { Button } from '../../../../shared/components/ui/Button'
-import { useProposalTemplateMutations, useProposalTemplates } from '../../../../features/proposals'
+import { useProposalTemplateMutations, useProposalTemplates, useTrashedProposalTemplates } from '../../../../features/proposals'
 
 export function CustomerProposalTemplatesPage() {
   const { t, i18n } = useTranslation()
   const ar = i18n.language?.startsWith('ar')
+  const [showTrash, setShowTrash] = useState(false)
   const templatesQuery = useProposalTemplates()
+  const trashQuery = useTrashedProposalTemplates(showTrash)
   const mutations = useProposalTemplateMutations()
   const templates = templatesQuery.data || []
+
+  const restore = async (template) => {
+    try {
+      await mutations.restoreTemplate.mutateAsync(template.id)
+      toast.success('تم استعادة القالب')
+    } catch (error) { toast.error(error?.response?.data?.message || 'تعذرت الاستعادة. تأكد من دعم API للمهملات والاستعادة.') }
+  }
 
   const run = async (promise, message) => {
     await promise
@@ -23,7 +33,8 @@ export function CustomerProposalTemplatesPage() {
 
   return (
     <div className="space-y-6">
-      <PageToolbar title={t('proposals.templates.pageTitle')} description={t('proposals.templates.pageDescription')}>
+      <PageToolbar title={t('proposals.templates.pageTitle')}>
+        <Button variant={showTrash ? 'primary' : 'outline'} onClick={() => setShowTrash(value => !value)}><Trash2 size={16}/>{showTrash ? 'العودة للقوالب' : 'المهملات'}</Button>
         <Link to="/LeadsCenter/proposals">
           <Button variant="outline">
             <ArrowRight size={16} />
@@ -32,7 +43,15 @@ export function CustomerProposalTemplatesPage() {
         </Link>
       </PageToolbar>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4"><div className="flex items-start gap-2 text-sm text-[var(--text-muted)]"><Info size={18} className="mt-1 shrink-0"/><p>{t('proposals.workspace.templatesHelp')}</p></div><Link to="/LeadsCenter/proposals/templates/new"><Button><Plus size={16}/>{t('proposals.workspace.createTemplate')}</Button></Link></div>
+      {!showTrash && <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4"><div className="flex items-start gap-2 text-sm text-[var(--text-muted)]"><Info size={18} className="mt-1 shrink-0"/><p>{t('proposals.workspace.templatesHelp')}</p></div><Link to="/LeadsCenter/proposals/templates/new"><Button><Plus size={16}/>{t('proposals.workspace.createTemplate')}</Button></Link></div>}
+
+      {showTrash ? <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+        <h2 className="mb-4 text-lg font-black">مهملات قوالب عروض الأسعار</h2>
+        {trashQuery.isLoading && <p>جارٍ تحميل المحذوفات...</p>}
+        {trashQuery.isError && <p role="alert" className="text-red-600">تعذر تحميل المهملات. قد يحتاج السيرفر إلى تفعيل واجهات جلب المحذوفات واستعادتها.</p>}
+        {trashQuery.isSuccess && !trashQuery.data?.length && <p className="text-sm text-[var(--text-muted)]">لا توجد قوالب محذوفة.</p>}
+        {trashQuery.isSuccess && (trashQuery.data || []).map(template => <div key={template.id} className="flex items-center justify-between gap-3 border-b border-[var(--border)] py-3"><div><div className="font-bold">{template.name || `قالب #${template.id}`}</div><div className="text-xs text-[var(--text-muted)]">{template.deleted_at ? `تاريخ الحذف: ${template.deleted_at}` : ''}</div></div><Button variant="outline" size="sm" disabled={mutations.restoreTemplate.isPending} onClick={() => restore(template)}>استعادة</Button></div>)}
+      </section> : <>
 
       {templatesQuery.isError && <p role="alert" className="rounded-lg border border-[var(--border)] p-4 text-sm text-red-600">{t('proposals.workspace.loadFailed')}</p>}
       {!templatesQuery.isLoading && !templatesQuery.isError && !templates.length && <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-8 text-center text-[var(--text-muted)]">{t('proposals.workspace.emptyTemplates')}</div>}
@@ -90,6 +109,7 @@ export function CustomerProposalTemplatesPage() {
           </article>
         ))}
       </div>
+      </>}
     </div>
   )
 }

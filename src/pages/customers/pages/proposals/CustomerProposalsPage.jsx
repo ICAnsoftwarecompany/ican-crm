@@ -8,7 +8,7 @@ import { PageToolbar } from '../../../../shared/components/data/PageToolbar'
 import { Button } from '../../../../shared/components/ui/Button'
 import { Input } from '../../../../shared/components/ui/Input'
 import { Select } from '../../../../shared/components/ui/Select'
-import { useProposalMutations, useProposals, useProposalTemplates } from '../../../../features/proposals'
+import { useProposalMutations, useProposals, useTrashedProposals, useProposalTemplates } from '../../../../features/proposals'
 import { useUsers } from '../../../../features/users/hooks/useUsers'
 import { formatDate, formatMoney, getProposalCustomer } from './utils/proposalPayloads'
 import { ProposalWizard } from './components/ProposalWizard'
@@ -20,10 +20,12 @@ export function CustomerProposalsPage() {
   const view = searchParams.get('view')
   const action = searchParams.get('action')
   const [isWizardOpen, setIsWizardOpen] = useState(false)
+  const [showTrash, setShowTrash] = useState(false)
   const wizardOpen = isWizardOpen || action === 'new'
   const closeWizard = () => { setIsWizardOpen(false); if (action === 'new') setSearchParams({}) }
   const [filters, setFilters] = useState({ search: '', status: '', assigned_to: '' })
   const proposalsQuery = useProposals(filters)
+  const trashQuery = useTrashedProposals(showTrash)
   const usersQuery = useUsers()
   const templatesQuery = useProposalTemplates()
   const mutations = useProposalMutations()
@@ -42,6 +44,13 @@ export function CustomerProposalsPage() {
     })
   }, [filters.search, proposals, templatesById])
 
+  const handleRestore = async (proposal) => {
+    try {
+      await mutations.restoreProposal.mutateAsync(proposal.id)
+      toast.success('تم استعادة عرض السعر')
+    } catch (error) { toast.error(error?.response?.data?.message || 'تعذرت الاستعادة. تأكد من دعم API للمهملات والاستعادة.') }
+  }
+
   const handleDelete = async (proposal) => {
     if (!window.confirm(t('proposals.page.confirmDelete', { title: proposal.title || proposal.id }))) return
     await mutations.deleteProposal.mutateAsync(proposal.id)
@@ -51,6 +60,7 @@ export function CustomerProposalsPage() {
   return (
     <div className="space-y-6">
       <PageToolbar title={t('proposals.page.pageTitle')}>
+        <Button variant={showTrash ? 'primary' : 'outline'} onClick={() => setShowTrash(value => !value)}><Trash2 size={16}/>{showTrash ? 'العودة لعروض الأسعار' : 'المهملات'}</Button>
         <Link to="/LeadsCenter/proposals/templates">
           <Button variant="outline">
             <FileSignature size={16} />
@@ -63,7 +73,15 @@ export function CustomerProposalsPage() {
         </Button>
       </PageToolbar>
 
-      {view === 'settings' || view === 'automation' ? (
+      {showTrash ? (
+        <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+          <h2 className="mb-4 text-lg font-black">مهملات عروض الأسعار</h2>
+          {trashQuery.isLoading && <p>جارٍ تحميل المحذوفات...</p>}
+          {trashQuery.isError && <p role="alert" className="text-red-600">تعذر تحميل المهملات. قد يحتاج السيرفر إلى تفعيل واجهات جلب المحذوفات واستعادتها.</p>}
+          {trashQuery.isSuccess && !trashQuery.data?.length && <p className="text-sm text-[var(--text-muted)]">لا توجد عروض أسعار محذوفة.</p>}
+          {trashQuery.isSuccess && (trashQuery.data || []).map(proposal => <div key={proposal.id} className="flex items-center justify-between gap-3 border-b border-[var(--border)] py-3"><div><div className="font-bold">{proposal.title || `عرض #${proposal.id}`}</div><div className="text-xs text-[var(--text-muted)]">{proposal.deleted_at ? `تاريخ الحذف: ${formatDate(proposal.deleted_at, i18n.language)}` : ''}</div></div><Button variant="outline" size="sm" disabled={mutations.restoreProposal.isPending} onClick={() => handleRestore(proposal)}>استعادة</Button></div>)}
+        </section>
+      ) : view === 'settings' || view === 'automation' ? (
         <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm">
           <div className="flex items-center gap-3"><span className="rounded-xl bg-[var(--surface-2)] p-3">{view === 'settings' ? <Settings2 size={22}/> : <Workflow size={22}/>}</span><div><h2 className="font-bold text-[var(--text)]">{t('proposals.workspace.' + view)}</h2><p className="mt-1 text-sm text-[var(--text-muted)]">{t('proposals.workspace.' + view + 'Help')}</p></div></div>
           <div className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4 text-sm leading-7 text-[var(--text-muted)]">{t('proposals.workspace.notConfigured')}</div>
