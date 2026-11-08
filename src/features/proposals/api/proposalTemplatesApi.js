@@ -8,6 +8,17 @@ export const proposalTemplatesApi = {
     return res.data
   },
 
+  // Requires corresponding backend trash/restore routes.
+  getTrashedTemplates: async () => {
+    const res = await httpClient.get(`${BASE_PATH}/trash`)
+    return res.data
+  },
+
+  restoreTemplate: async (templateId) => {
+    const res = await httpClient.post(`${BASE_PATH}/restore/${templateId}`)
+    return res.data
+  },
+
   getTemplateInfo: async (templateId, params) => {
     const res = await httpClient.get(`${BASE_PATH}/show/${templateId}`, { params })
     return res.data
