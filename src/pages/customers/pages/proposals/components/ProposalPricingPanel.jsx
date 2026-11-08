@@ -195,7 +195,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
         </div>
       </form>}
 
-      {(
+      {
         <section ref={itemsRef} className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="text-xs font-black text-[var(--text-muted)]">{selectedOption ? t('proposals.pricing.itemsOf', { name: selectedOption.name }) : 'بنود خيار التسعير الجديد'}</div>
@@ -258,7 +258,6 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
             </Button>
           </form>
         </section>
-      ) : null}
     </div>
   )
 }
