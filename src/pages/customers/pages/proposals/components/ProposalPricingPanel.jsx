@@ -73,7 +73,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
   const createOption = async (name, description = '', items = []) => {
     const response = await mutations.createProposalOption.mutateAsync({
       proposalId: proposal.id,
-      payload: { code: `OPT-${Date.now()}`, name, description: description || undefined, currency: proposal?.currency || 'EGP', is_visible: true, is_recommended: !options.length, items },
+      payload: { code: `O${Date.now().toString(36).slice(-7).toUpperCase()}`, name, description: description || undefined, currency: proposal?.currency || 'EGP', is_visible: true, is_recommended: !options.length, items },
     })
     const created = response?.data?.data || response?.data || response
     if (!created?.id) throw new Error('لم يرجع السيرفر رقم خيار السعر؛ حدّث الصفحة قبل إعادة المحاولة')
@@ -96,7 +96,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
       setShowAlternativeForm(false)
       setShowItemForm(false)
       toast.success(t('proposals.pricing.optionAdded'))
-    } catch (error) { toast.error(error?.message || 'تعذر إنشاء خيار السعر') }
+    } catch (error) { toast.error(validationMessage(error)) }
   }
 
   const totalsFor = (rows) => rows.reduce((sum, item) => {
