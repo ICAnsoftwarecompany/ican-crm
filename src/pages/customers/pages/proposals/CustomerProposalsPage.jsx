@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Edit3, Eye, FileSignature, Plus, Search, Trash2, Info, Workflow, Settings2, Files } from 'lucide-react'
+import { Edit3, Eye, FileSignature, Plus, Search, Trash2, Info, Workflow, Settings2, Files, UsersRound } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { PageToolbar } from '../../../../shared/components/data/PageToolbar'
@@ -12,6 +12,35 @@ import { useProposalMutations, useProposals, useTrashedProposals, useProposalTem
 import { useUsers } from '../../../../features/users/hooks/useUsers'
 import { formatDate, formatMoney, getProposalCustomer } from './utils/proposalPayloads'
 import { ProposalWizard } from './components/ProposalWizard'
+
+function getRecipientsSummary(proposal) {
+  const recipients = Array.isArray(proposal.recipients) ? proposal.recipients : []
+  if (!recipients.length) return { count: 0, label: 'بدون مستلمين', detail: '', names: '' }
+  const names = recipients.map(recipient => recipient.name || recipient.customer?.name || `عميل #${recipient.customer_id || recipient.id}`)
+  if (recipients.length === 1) {
+    return { count: 1, label: names[0], detail: recipients[0].email || recipients[0].phone || recipients[0].role || '', names: names[0] }
+  }
+  return { count: recipients.length, label: `${recipients.length} مستلمين`, detail: names.slice(0, 2).join('، ') + (names.length > 2 ? `، +${names.length - 2}` : ''), names: names.join('، ') }
+}
+
+function getPricingSummary(proposal) {
+  const options = Array.isArray(proposal.options) ? proposal.options.filter(option => option.is_visible !== false) : []
+  const pricedOptions = options.filter(option => Number(option.total) > 0)
+  if (options.length) {
+    const amounts = pricedOptions.map(option => Number(option.total))
+    const currency = options[0]?.currency || proposal.currency
+    const total = amounts.length ? Math.min(...amounts) : 0
+    return {
+      amount: total, currency,
+      label: !pricedOptions.length ? 'بدون أسعار' : pricedOptions.length < options.length ? 'تسعير غير مكتمل' : 'تم إدخال الأسعار',
+      detail: options.length === 1 ? options[0].name || 'باقة واحدة' : `${pricedOptions.length} من ${options.length} باقات مسعّرة`,
+      hasOptions: true,
+      multiple: pricedOptions.length > 1,
+    }
+  }
+  const total = Number(proposal.total ?? proposal.current_version?.total ?? 0)
+  return { amount: total, currency: proposal.currency, label: total > 0 ? 'تم إدخال الأسعار' : 'بدون تسعير', detail: total > 0 ? 'إجمالي العرض' : 'لم تُضف باقات بعد', hasOptions: false, multiple: false }
+}
 
 export function CustomerProposalsPage() {
   const { t, i18n } = useTranslation()
@@ -39,7 +68,7 @@ export function CustomerProposalsPage() {
     return proposals.filter((proposal) => {
       const customer = getProposalCustomer(proposal)
       const template = templatesById.get(String(proposal.template_id || proposal.metadata?.source_template_id))
-      const haystack = [proposal.title, proposal.description, customer?.name, customer?.email, template?.name, proposal.metadata?.source_template_name].filter(Boolean).join(' ').toLowerCase()
+      const haystack = [proposal.title, proposal.description, customer?.name, customer?.email, ...(proposal.recipients || []).flatMap(recipient => [recipient.name, recipient.email, recipient.phone]), template?.name, proposal.metadata?.source_template_name].filter(Boolean).join(' ').toLowerCase()
       return !search || haystack.includes(search)
     })
   }, [filters.search, proposals, templatesById])
@@ -121,11 +150,11 @@ export function CustomerProposalsPage() {
       </section>
 
       <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)]">
-        <div className="grid grid-cols-[1.3fr_1fr_1fr_.7fr_.8fr_auto] gap-3 border-b border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-xs font-black text-[var(--text-muted)]">
+        <div className="grid grid-cols-[1.3fr_1fr_1fr_1fr_.8fr_auto] gap-3 border-b border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-xs font-black text-[var(--text-muted)]">
           <div>{t('proposals.page.columnProposal')}</div>
-          <div>{t('proposals.wizard.steps.customer')}</div>
+          <div>المستلمون</div>
           <div>القالب / الإصدار</div>
-          <div>{t('proposals.pricing.totalLabel')}</div>
+          <div>الأسعار / الاكتمال</div>
           <div>{t('customers.table.status')}</div>
           <div>{t('proposals.page.columnActions')}</div>
         </div>
@@ -146,6 +175,8 @@ export function CustomerProposalsPage() {
 
         {visibleProposals.map((proposal) => {
           const customer = getProposalCustomer(proposal)
+          const recipientsSummary = getRecipientsSummary(proposal)
+          const pricingSummary = getPricingSummary(proposal)
           const metadata = proposal.metadata || {}
           const templateId = proposal.template_id || metadata.source_template_id
           const template = templatesById.get(String(templateId))
@@ -158,14 +189,18 @@ export function CustomerProposalsPage() {
                 <div className="mt-1 truncate text-xs font-semibold text-[var(--text-muted)]">{proposal.description || t('proposals.page.expiresPrefix', { date: formatDate(proposal.expires_at, i18n.language) })}</div>
               </div>
               <div className="min-w-0">
-                <div className="truncate text-sm font-bold text-[var(--text)]">{customer?.name || '-'}</div>
-                <div className="truncate text-xs font-semibold text-[var(--text-muted)]">{customer?.email || customer?.phone || '-'}</div>
+                <div className="flex items-center gap-1.5 truncate text-sm font-bold text-[var(--text)]" title={recipientsSummary.names}><UsersRound size={14} className="shrink-0" /><span className="truncate">{recipientsSummary.label}</span></div>
+                <div className="truncate text-xs font-semibold text-[var(--text-muted)]" title={recipientsSummary.names}>{recipientsSummary.detail || (recipientsSummary.count === 0 ? 'يمكن إضافة مستلمين من المحرر' : 'مستلم واحد')}</div>
               </div>
               <div className="min-w-0">
                 <div className="truncate text-sm font-bold text-[var(--text)]">{templateName || (templateId ? `قالب #${templateId}` : 'غير محدد')}</div>
                 <div className="mt-1 truncate text-xs font-semibold text-[var(--text-muted)]">{sourceVersion || 'الإصدار غير متاح'}</div>
               </div>
-              <div className="text-sm font-black text-[var(--text)]" dir="ltr">{formatMoney(proposal.total ?? proposal.current_version?.total, proposal.currency)}</div>
+              <div className="min-w-0">
+                <div className="text-sm font-black text-[var(--text)]" dir="ltr">{pricingSummary.multiple ? 'من ' : ''}{formatMoney(pricingSummary.amount, pricingSummary.currency)}</div>
+                <div className={`mt-1 text-xs font-bold ${pricingSummary.label === 'تم إدخال الأسعار' ? 'text-emerald-700' : 'text-amber-700'}`}>{pricingSummary.label}</div>
+                <div className="truncate text-xs text-[var(--text-muted)]" title={pricingSummary.detail}>{pricingSummary.detail}</div>
+              </div>
               <div>
                 <span className="rounded-full border border-[#DCE8F3] bg-[var(--surface-2)] px-2 py-1 text-xs font-black text-[var(--text-muted)]">
                   {t(`proposals.page.status.${proposal.status || 'draft'}`, { defaultValue: proposal.status || 'draft' })}
