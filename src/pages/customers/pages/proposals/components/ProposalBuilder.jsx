@@ -263,7 +263,7 @@ export function ProposalBuilder({ proposalId }) {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--brand-bg)]">
+    <div className="min-w-0 bg-[var(--brand-bg)] xl:flex xl:h-[calc(100dvh-3.25rem)] xl:min-h-0 xl:flex-col xl:overflow-hidden">
       <div className="flex items-start gap-2 border-b border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-xs leading-6 text-[var(--text-muted)]"><Info size={17} className="mt-0.5 shrink-0 text-[var(--brand-accent)]"/><span>{t('proposals.workspace.builderHelp')}</span></div>
       <ProposalBuilderHeader
         proposal={proposal}
@@ -277,8 +277,8 @@ export function ProposalBuilder({ proposalId }) {
         isSaving={isSaving}
       />
 
-      <div className="grid min-w-0 grid-cols-1 gap-0 xl:grid-cols-[minmax(220px,280px)_minmax(0,1fr)_minmax(280px,340px)]">
-        <div className="min-w-0 max-h-[55vh] overflow-y-auto xl:max-h-none xl:min-h-[680px]">
+      <div className="grid min-w-0 grid-cols-1 gap-0 xl:min-h-0 xl:flex-1 xl:overflow-hidden xl:grid-cols-[minmax(220px,280px)_minmax(0,1fr)_minmax(280px,340px)]">
+        <div className="min-w-0 max-h-[55vh] overflow-y-auto xl:h-full xl:min-h-0 xl:max-h-none">
         <ProposalBuilderSidebar
           content={content}
           selected={selected}
@@ -292,7 +292,7 @@ export function ProposalBuilder({ proposalId }) {
         />
         </div>
 
-        <div className="min-w-0 min-h-[540px] xl:min-h-[680px]">
+        <div className="min-w-0 min-h-[540px] xl:h-full xl:min-h-0 xl:overflow-hidden">
         <ProposalCanvas
           content={content}
           proposal={proposal}
@@ -304,8 +304,8 @@ export function ProposalBuilder({ proposalId }) {
         />
         </div>
 
-        <div className="min-w-0 h-[calc(100vh-4.5rem)] overflow-hidden border-s border-[var(--border)] bg-[var(--surface)]">
-          <div className="grid grid-cols-4 border-b border-[var(--border)]">
+        <div className="flex min-w-0 min-h-[480px] flex-col overflow-hidden border-s border-[var(--border)] bg-[var(--surface)] xl:h-full xl:min-h-0">
+          <div className="grid shrink-0 grid-cols-4 border-b border-[var(--border)]">
             {RIGHT_TABS.map((tab) => {
               const Icon = tab.icon
               return (
@@ -325,16 +325,18 @@ export function ProposalBuilder({ proposalId }) {
           </div>
 
           {rightTab === 'properties' ? (
+            <div className="min-h-0 flex-1 overflow-y-auto">
             <ProposalPropertiesPanel
               content={content}
               selected={selected}
               onChangeContent={updateContent}
               onDeleteBlock={handleDeleteBlock}
             />
+            </div>
           ) : null}
 
           {rightTab === 'pricing' ? (
-            <div className="h-[calc(100vh-7.5rem)] overflow-y-auto p-4">
+            <div className="min-h-0 flex-1 overflow-y-auto p-4">
               <ProposalPricingPanel
                 proposal={proposal}
                 options={options}
