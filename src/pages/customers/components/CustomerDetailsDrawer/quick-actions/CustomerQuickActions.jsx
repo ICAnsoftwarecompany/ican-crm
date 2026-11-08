@@ -14,7 +14,7 @@ import { WhatsappQuickAction } from './WhatsappQuickAction'
 import { QuickActionButton } from './QuickActionButton'
 import { useLeadTaskAction } from '../../../../../features/lead-tasks'
 import { AtSign, ListTodo, FileText } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { ProposalWizard } from '../../../proposals/components/ProposalWizard'
 import { MentionComposer } from '../../../../../features/mentions/components/MentionComposer'
 import { useTranslation } from 'react-i18next'
 
@@ -25,9 +25,12 @@ function TaskQuickAction({ customer }) {
 }
 
 function ProposalQuickAction({ customer }) {
-  const navigate = useNavigate()
+  const [open, setOpen] = useState(false)
   const customerId = customer?.id ?? customer?.customer_id
-  return <QuickActionButton icon={FileText} label="إصدار عرض سعر" disabled={!customerId} onClick={() => navigate(`/LeadsCenter/proposals?action=new&customer_id=${encodeURIComponent(customerId)}`)} />
+  return <>
+    <QuickActionButton icon={FileText} label="إصدار عرض سعر" disabled={!customerId} onClick={() => setOpen(true)} />
+    {open && <ProposalWizard key={customerId} open initialCustomer={customer} onClose={() => setOpen(false)} />}
+  </>
 }
 
 function MentionQuickAction({ customer, onOpen }) {
