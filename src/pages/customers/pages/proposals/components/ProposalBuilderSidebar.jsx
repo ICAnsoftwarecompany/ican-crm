@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { CSS } from '@dnd-kit/utilities'
 import { DndContext, PointerSensor, KeyboardSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core'
 import { SortableContext, useSortable, verticalListSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import { EyeOff, GripVertical, Plus, Trash2, CircleHelp, ChevronDown, ChevronUp, ArrowRight } from 'lucide-react'
+import { EyeOff, GripVertical, Plus, Trash2, CircleHelp, ChevronDown, ChevronUp, ArrowRight, Settings2 } from 'lucide-react'
 
 import { Button } from '../../../../../shared/components/ui/Button'
 import { cn } from '../../../../../shared/utils/cn'
@@ -136,11 +136,13 @@ export function ProposalBuilderSidebar({
   onBlockDragEnd,
   guide = false,
   generalDesign = null,
+  propertiesPanel = null,
 }) {
   const { t } = useTranslation()
   const [librarySectionId, setLibrarySectionId] = useState(null)
   const [openedSectionId, setOpenedSectionId] = useState(null)
   const [expandedGroups, setExpandedGroups] = useState({})
+  const [showProperties, setShowProperties] = useState(false)
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }))
   const sections = content?.sections || []
   const activeSection = sections.find((section) => section.id === selectedSectionId) || sections[0]
@@ -166,6 +168,13 @@ export function ProposalBuilderSidebar({
 
   return (
     <aside className="h-full min-h-0 w-full min-w-0 overflow-y-auto border-e border-[var(--border)] bg-[var(--surface)] p-4">
+      {propertiesPanel && <div className="mb-4 rounded-xl border border-[var(--border)] bg-[var(--surface-2)]">
+        <button type="button" aria-expanded={showProperties} onClick={() => setShowProperties(value => !value)} className="flex w-full items-center justify-between gap-2 p-3 text-start text-sm font-black">
+          <span className="flex items-center gap-2"><Settings2 size={16} />{t('proposals.builder.tabs.properties')}</span>
+          {showProperties ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+        {showProperties && <div className="max-h-[65vh] overflow-y-auto border-t border-[var(--border)]">{propertiesPanel}</div>}
+      </div>}
       {!openedSection && generalDesign && <div className="mb-5">{generalDesign}</div>}
       {openedSection && <button type="button" onClick={() => { setOpenedSectionId(null); setLibrarySectionId(null) }} className="mb-4 flex w-full items-center gap-2 rounded-lg border border-[var(--border)] p-3 text-start text-sm font-bold hover:bg-[var(--surface-2)]"><ArrowRight size={17}/>{t('proposals.builder.structureTitle')}</button>}
       {!openedSection && <div className="mb-5 flex items-center justify-between gap-2">
