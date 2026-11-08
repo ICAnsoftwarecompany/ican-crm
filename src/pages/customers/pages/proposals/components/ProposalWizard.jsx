@@ -52,6 +52,7 @@ export function ProposalWizard({ open, onClose }) {
   ), [customers, form.customer_id])
 
   const currentTemplateVersion = getCurrentTemplateVersion(selectedTemplateQuery.data)
+  const selectedTemplate = templates.find(template => String(template.id) === String(form.template_id))
 
   const updateForm = (key, value) => {
     setForm((current) => {
@@ -95,6 +96,11 @@ export function ProposalWizard({ open, onClose }) {
         company: selectedCustomer.company || '',
         priority: form.priority,
         source: 'crm_proposal_wizard',
+        source_template_id: Number(form.template_id),
+        source_template_name: selectedTemplate?.name || selectedTemplateQuery.data?.name || '',
+        source_template_version_id: currentTemplateVersion.id,
+        source_template_version_name: currentTemplateVersion.name || `Version ${currentTemplateVersion.version || 1}`,
+        source_template_version_number: currentTemplateVersion.version ?? null,
       },
     }
 
