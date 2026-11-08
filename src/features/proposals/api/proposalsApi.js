@@ -34,6 +34,26 @@ export const proposalsApi = {
     return res.data
   },
 
+  getProposalRecipients: async (proposalId, params) => {
+    const res = await httpClient.get(`${BASE_PATH}/${proposalId}/recipients`, { params })
+    return res.data
+  },
+
+  updateProposalRecipient: async (recipientId, payload) => {
+    const res = await httpClient.put(`${BASE_PATH}/recipients/${recipientId}`, payload)
+    return res.data
+  },
+
+  deleteProposalRecipient: async (recipientId) => {
+    const res = await httpClient.delete(`${BASE_PATH}/recipients/${recipientId}`)
+    return res.data
+  },
+
+  revokeProposalRecipient: async (recipientId) => {
+    const res = await httpClient.post(`${BASE_PATH}/recipients/${recipientId}/revoke`)
+    return res.data
+  },
+
   createProposalRecipients: async (payload) => {
     const res = await httpClient.post(`${BASE_PATH}/create/recipients`, payload)
     return res.data
