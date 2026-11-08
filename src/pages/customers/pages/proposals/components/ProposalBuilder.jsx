@@ -75,6 +75,7 @@ export function ProposalBuilder({ proposalId }) {
 
   const activeOption = options.find(option => String(option.id) === String(selectedOptionId)) || options[0]
   const activeItemsQuery = useProposalOptionItems(proposalId, activeOption?.id)
+  const activeItems = (activeItemsQuery.data?.length ? activeItemsQuery.data : (activeOption?.items || activeOption?.option_items || []))
 
   const handleSelect = useCallback((selection) => {
     setSelected(selection)
@@ -297,7 +298,7 @@ export function ProposalBuilder({ proposalId }) {
           proposal={proposal}
           options={options}
           products={products}
-          items={activeItemsQuery.data || []}
+          items={activeItems}
           selected={selected}
           onSelect={handleSelect}
         />
@@ -366,7 +367,7 @@ export function ProposalBuilder({ proposalId }) {
         proposal={proposal}
         options={options}
         products={products}
-        items={activeItemsQuery.data || []}
+        items={activeItems}
       />
     </div>
   )
