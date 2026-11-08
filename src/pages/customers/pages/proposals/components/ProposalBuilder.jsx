@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { BadgeDollarSign, Layers, Settings2, Info } from 'lucide-react'
+import { BadgeDollarSign, Layers, Settings2, Info, UsersRound } from 'lucide-react'
 
 import {
   useProposalInfo,
@@ -19,6 +19,7 @@ import { ProposalBuilderSidebar } from './ProposalBuilderSidebar'
 import { ProposalCanvas } from './ProposalCanvas'
 import { ProposalPreviewDialog } from './ProposalPreviewDialog'
 import { ProposalPricingPanel } from './ProposalPricingPanel'
+import { ProposalRecipientsPanel } from './ProposalRecipientsPanel'
 import { ProposalPropertiesPanel } from './ProposalPropertiesPanel'
 import { ProposalVersionsPanel } from './ProposalVersionsPanel'
 
@@ -26,6 +27,7 @@ function getRightTabs(t) {
   return [
     { id: 'properties', label: t('proposals.builder.tabs.properties'), icon: Settings2 },
     { id: 'pricing', label: t('proposals.builder.tabs.pricing'), icon: BadgeDollarSign },
+    { id: 'recipients', label: 'المستلمون', icon: UsersRound },
     { id: 'versions', label: t('proposals.builder.tabs.versions'), icon: Layers },
   ]
 }
@@ -303,7 +305,7 @@ export function ProposalBuilder({ proposalId }) {
         </div>
 
         <div className="min-w-0 h-[calc(100vh-4.5rem)] overflow-hidden border-s border-[var(--border)] bg-[var(--surface)]">
-          <div className="grid grid-cols-3 border-b border-[var(--border)]">
+          <div className="grid grid-cols-4 border-b border-[var(--border)]">
             {RIGHT_TABS.map((tab) => {
               const Icon = tab.icon
               return (
@@ -340,6 +342,12 @@ export function ProposalBuilder({ proposalId }) {
                 onSelectOption={setSelectedOptionId}
                 focusItems={pricingFocus}
               />
+            </div>
+          ) : null}
+
+          {rightTab === 'recipients' ? (
+            <div className="h-[calc(100vh-7.5rem)] overflow-y-auto p-4">
+              <ProposalRecipientsPanel proposalId={proposalId} />
             </div>
           ) : null}
 
