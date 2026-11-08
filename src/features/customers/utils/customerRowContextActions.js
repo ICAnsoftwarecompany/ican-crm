@@ -1,10 +1,10 @@
-import { CalendarPlus, HeartHandshake, MessageSquarePlus, PhoneCall, SquareMousePointer, ThumbsDown, Trophy, ListTodo, UserRound } from 'lucide-react'
+import { CalendarPlus, HeartHandshake, MessageSquarePlus, PhoneCall, SquareMousePointer, ThumbsDown, Trophy, ListTodo, UserRound, FileText } from 'lucide-react'
 
 /**
  * Right-click menu of a Leads Center table row (moved out of CustomersPage 2026-10-15, when "Add interest" was
  * added; won / lost added the same day). Pure: returns the DataTable `getRowContextActions` items; the page passes the handlers.
  */
-export function buildCustomerRowContextActions({ row, t, showTrash, onCustomizeTable, onSchedule, onAddFollowUp, onAddInterest, onAssignOwner, onMarkWon, onMarkLost, onAddTask }) {
+export function buildCustomerRowContextActions({ row, t, showTrash, onCustomizeTable, onSchedule, onAddFollowUp, onAddInterest, onAssignOwner, onMarkWon, onMarkLost, onAddTask, onIssueProposal }) {
   if (!row || showTrash) return []
 
   const customerName = row?.lead?.name || row?.name || row?.email || row?.phone || `#${row?.id || row?.customer_id || ''}`
@@ -21,6 +21,7 @@ export function buildCustomerRowContextActions({ row, t, showTrash, onCustomizeT
     }] : []),
     ...(onMarkWon ? [action('customers-row-mark-won', t('customers.leadOutcome.contextWon'), () => onMarkWon(row), Trophy, t('customers.leadOutcome.won.action'), 'success')] : []),
     ...(onMarkLost ? [action('customers-row-mark-lost', t('customers.leadOutcome.contextLost'), () => onMarkLost(row), ThumbsDown, t('customers.leadOutcome.lost.action'), 'danger')] : []),
+    ...(onIssueProposal ? [action('customers-row-issue-proposal', 'إصدار عرض سعر', () => onIssueProposal(row), FileText, 'عرض سعر')] : []),
     ...(onAddTask ? [action('customers-row-add-task', t('customers.leadTasks.add'), () => onAddTask(row), ListTodo, t('customers.leadTasks.add'))] : []),
     action('customers-row-add-meeting', t('customers.page.actions.addMeeting'), () => onSchedule(row, 'meeting'), CalendarPlus, t('customers.contextTiles.meeting')),
     action('customers-row-add-call', t('customers.page.actions.addCall'), () => onSchedule(row, 'call'), PhoneCall, t('customers.contextTiles.call')),

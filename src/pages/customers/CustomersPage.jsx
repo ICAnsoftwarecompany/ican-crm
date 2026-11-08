@@ -1199,7 +1199,8 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
     onMarkWon: leadActions.openWon,
     onMarkLost: leadActions.openLost,
     onAddTask: taskAction.open,
-  }), [handleOpenLeadNoteDialog, handleOpenScheduledActivityDialog, leadActions, taskAction.open, setIsTableSettingsOpen, showTrash, t])
+    onIssueProposal: (row) => { const id = row?.id ?? row?.customer_id; if (id) navigate(`/LeadsCenter/proposals?action=new&customer_id=${encodeURIComponent(id)}`) },
+  }), [handleOpenLeadNoteDialog, handleOpenScheduledActivityDialog, leadActions, taskAction.open, setIsTableSettingsOpen, showTrash, t, navigate])
 
   const submitAssignOwner = useCallback(async () => {
     if (!assignOwnerCustomer || !assignOwnerUserId) return

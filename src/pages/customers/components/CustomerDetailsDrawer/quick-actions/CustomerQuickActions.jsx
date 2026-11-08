@@ -13,7 +13,8 @@ import { StatusQuickAction } from './StatusQuickAction'
 import { WhatsappQuickAction } from './WhatsappQuickAction'
 import { QuickActionButton } from './QuickActionButton'
 import { useLeadTaskAction } from '../../../../../features/lead-tasks'
-import { AtSign, ListTodo } from 'lucide-react'
+import { AtSign, ListTodo, FileText } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { MentionComposer } from '../../../../../features/mentions/components/MentionComposer'
 import { useTranslation } from 'react-i18next'
 
@@ -21,6 +22,12 @@ function TaskQuickAction({ customer }) {
   const { t } = useTranslation()
   const task = useLeadTaskAction()
   return <><QuickActionButton icon={ListTodo} label={t('customers.leadTasks.add')} onClick={() => task.open(customer)} disabled={!customer?.lead_id && !customer?.lead?.id} />{task.dialog}</>
+}
+
+function ProposalQuickAction({ customer }) {
+  const navigate = useNavigate()
+  const customerId = customer?.id ?? customer?.customer_id
+  return <QuickActionButton icon={FileText} label="إصدار عرض سعر" disabled={!customerId} onClick={() => navigate(`/LeadsCenter/proposals?action=new&customer_id=${encodeURIComponent(customerId)}`)} />
 }
 
 function MentionQuickAction({ customer, onOpen }) {
@@ -54,6 +61,7 @@ const STORAGE_KEY = 'customer-details-quick-actions-order:v2'
 const LONG_PRESS_MS = 280
 
 const ACTIONS = [
+  { id: 'proposal', render: (props) => <ProposalQuickAction customer={props.customer} /> },
   { id: 'mention', render: (props) => <MentionQuickAction customer={props.customer} onOpen={props.onOpenMention} /> },
   { id: 'task', render: (props) => <TaskQuickAction customer={props.customer} /> },
   {
