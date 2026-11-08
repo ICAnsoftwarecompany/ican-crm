@@ -48,6 +48,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
   const selectedOption = options.find((option) => String(option.id) === String(selectedOptionId)) || options[0]
   const itemsQuery = useProposalOptionItems(proposal?.id, selectedOption?.id, undefined, { enabled: Boolean(proposal?.id && selectedOption?.id) })
   const products = productsQuery.data || []
+  const displayedItems = itemsQuery.data?.length ? itemsQuery.data : (selectedOption?.items || selectedOption?.option_items || [])
   const validationMessage = (error) => {
     const body = error?.response?.data
     const fields = body?.errors
@@ -206,7 +207,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
           </div>
 
           <div className="mb-4 space-y-2">
-            {(selectedOption && !showAlternativeForm ? (itemsQuery.data || []) : draftItems).map((item, index) => (
+            {(selectedOption && !showAlternativeForm ? displayedItems : draftItems).map((item, index) => (
               <div key={item.id || `${item.product_id || item.name}-${index}`} className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2">
                 <div className="font-black text-[var(--text)]">{item.name || item.product?.name || t('proposals.pricing.itemFallback', { id: item.id })}</div>
                 <div className="mt-1 text-xs font-bold text-[var(--text-muted)]" dir="ltr">
@@ -221,7 +222,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
           </div>
 
           <div className="mb-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 text-sm space-y-1">
-            {(() => { const totals = totalsFor(selectedOption && !showAlternativeForm ? (itemsQuery.data || []) : draftItems); return <><div>الإجمالي الفرعي: {formatMoney(totals.subtotal, proposal?.currency)}</div><div>الخصم: {formatMoney(totals.discount, proposal?.currency)}</div><div>الضريبة: {formatMoney(totals.tax, proposal?.currency)}</div><div className="mt-2 font-black">الإجمالي النهائي: {formatMoney(totals.total, proposal?.currency)}</div></> })()}
+            {(() => { const totals = totalsFor(selectedOption && !showAlternativeForm ? displayedItems : draftItems); return <><div>الإجمالي الفرعي: {formatMoney(totals.subtotal, proposal?.currency)}</div><div>الخصم: {formatMoney(totals.discount, proposal?.currency)}</div><div>الضريبة: {formatMoney(totals.tax, proposal?.currency)}</div><div className="mt-2 font-black">الإجمالي النهائي: {formatMoney(totals.total, proposal?.currency)}</div></> })()}
           </div>
           <Button type="button" variant="ghost" className="w-full" onClick={() => { setShowItemForm(value => !value); setEditingItemId(null); setItemForm({ ...EMPTY_ITEM }) }}>{showItemForm ? "إغلاق نموذج الإضافة" : "+ إضافة منتج أو خدمة"}</Button>
           {showItemForm && <form onSubmit={handleCreateItem} className="space-y-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
