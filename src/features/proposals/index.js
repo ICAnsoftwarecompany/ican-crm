@@ -15,6 +15,7 @@ export {
   useProposalVersions,
   useProposalVersionInfo,
   useProposalOptions,
+  useProposalRecipients,
   useProposalOptionItems,
   useProposalMutations,
 } from './hooks/useProposals'
