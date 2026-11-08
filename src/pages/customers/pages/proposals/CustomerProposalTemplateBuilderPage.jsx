@@ -43,6 +43,8 @@ export function CustomerProposalTemplateBuilderPage() {
   const hydratedKey = useRef(null)
   const editRevision = useRef(0)
   const saving = useRef(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveBlocked, setSaveBlocked] = useState(false)
   const savedSectionsRef = useRef([])
   const [content, setContent] = useState(null)
   const [selected, setSelected] = useState(null)
@@ -55,34 +57,40 @@ export function CustomerProposalTemplateBuilderPage() {
   const versionHasContent = version => Boolean(getTemplateVersionContent(version)?.sections?.length || version?.sections?.length)
   const selectedSectionId = selected?.type === 'block' ? selected.sectionId : selected?.id || content?.sections?.[0]?.id
   const versionContentUnavailable = !currentVersion?.id
-  const pending = mutations.updateVersionBuilder.isPending || mutations.createTemplateVersion.isPending || mutations.duplicateVersion.isPending || mutations.setCurrentVersion.isPending
+  const pending = isSaving || mutations.updateVersionBuilder.isPending || mutations.createTemplateVersion.isPending || mutations.duplicateVersion.isPending || mutations.setCurrentVersion.isPending
 
   useEffect(() => {
     if (!template) return
     const key = String(template.id) + ':' + String(currentVersion?.id || 'none')
     if (hydratedKey.current === key || dirty || saving.current) return
     hydratedKey.current = key
-    const raw = getTemplateVersionContent(currentVersion) ?? (currentVersion?.sections ? { sections: currentVersion.sections, settings: currentVersion.settings, styles: currentVersion.styles } : null)
+    const embedded = getTemplateVersionContent(currentVersion)
+    const raw = embedded?.sections?.length ? embedded : currentVersion?.sections?.length
+      ? { ...embedded, sections: currentVersion.sections, settings: currentVersion.settings, design: currentVersion.styles }
+      : embedded
     const next = raw && raw.sections?.length ? normalizeBuilderContent(raw, { title: template.name }, t) : createDefaultBuilderContent({ title: template.name }, null, t)
-    savedSectionsRef.current = currentVersion?.sections || []
+    savedSectionsRef.current = structuredClone(currentVersion?.sections?.length ? currentVersion.sections : (raw?.sections || []))
     setContent(next)
     setSelected(next ? { type: 'section', id: next.sections[0]?.id } : null)
     setDirty(false)
+    setSaveBlocked(false)
   }, [template?.id, currentVersion?.id, currentVersion?.sections, currentVersion?.content, t, dirty])
 
   const change = (update) => {
+    if (saving.current) return
     editRevision.current += 1
     setContent(old => typeof update === 'function' ? update(old) : update)
     setDirty(true)
   }
   const save = async () => {
-    if (!currentVersion?.id || !content || versionContentUnavailable || saving.current) return
+    if (!currentVersion?.id || !content || versionContentUnavailable || saving.current || saveBlocked) return
     saving.current = true
+    setIsSaving(true)
     const revision = editRevision.current
     try {
       const savedContent = await persistTemplateSections(currentVersion.id, content, partial => {
-        setContent({ ...partial, sections: [...partial.sections] })
-        savedSectionsRef.current = partial.sections
+        setContent(partial)
+        savedSectionsRef.current = structuredClone(partial.sections)
       }, savedSectionsRef.current)
       savedSectionsRef.current = savedContent.sections
       setContent(savedContent)
@@ -91,11 +99,14 @@ export function CustomerProposalTemplateBuilderPage() {
       } })
       if (editRevision.current === revision) setDirty(false)
       toast.success(tr('saved'))
-    } catch (error) { toast.error(error?.response?.data?.message || error?.message || tr('saveFailed')) }
-    finally { saving.current = false }
+    } catch (error) {
+      // A POST can succeed even if the response lacks an ID. Never replay it blindly.
+      if (/returned no numeric ID/.test(error?.message || '')) setSaveBlocked(true)
+      toast.error(error?.response?.data?.message || error?.message || tr('saveFailed'))
+    } finally { saving.current = false; setIsSaving(false) }
   }
   const createVersion = async (duplicate = false) => {
-    if (dirty || saving.current || pending) { toast.error(tr('saveBeforeSwitch')); return }
+    if (dirty || saving.current || pending || saveBlocked) { toast.error(tr('saveBeforeSwitch')); return }
     try {
       const response = duplicate && currentVersion?.id
         ? await mutations.duplicateVersion.mutateAsync(currentVersion.id)
@@ -178,7 +189,7 @@ export function CustomerProposalTemplateBuilderPage() {
           <Button variant="outline" onClick={() => createVersion(false)} disabled={pending}><Plus size={15}/>{tr('newVersion')}</Button>
           <Button variant="outline" onClick={() => createVersion(true)} disabled={pending || !currentVersion}><Copy size={15}/>{tr('duplicate')}</Button>
           <Button variant="outline" onClick={() => setPreview(v => !v)}><Eye size={15}/>{tr('preview')}</Button>
-          <Button onClick={save} disabled={!dirty || pending || !currentVersion || versionContentUnavailable}><Save size={15}/>{tr('save')}</Button>
+          <Button onClick={save} disabled={!dirty || pending || saveBlocked || !currentVersion || versionContentUnavailable}><Save size={15}/>{tr('save')}</Button>
         </div>
       </header>
       <section id="versions" className="mx-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
@@ -214,6 +225,7 @@ export function CustomerProposalTemplateBuilderPage() {
       </div>
       </section>
       <p className="mx-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 text-xs leading-6 text-[var(--text-muted)]">{tr('help')}</p>
+      {saveBlocked && <p role="alert" className="mx-4 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">{ar ? 'قد يكون السيرفر أنشأ عنصرًا بدون إرجاع معرّفه. تم إيقاف الحفظ لمنع التكرار؛ راجع الطلب في Network ثم أعد تحميل القالب قبل المحاولة مرة أخرى.' : 'The server may have created an item without returning its ID. Saving is blocked to prevent duplicates. Inspect the Network response and reload the template before retrying.'}</p>}
       {content && <div className="grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-[minmax(220px,280px)_minmax(0,1fr)_minmax(250px,320px)] xl:items-start">
         {!preview && <ProposalBuilderSidebar content={content} selected={selected} selectedSectionId={selectedSectionId}
           onSelect={setSelected} onAddSection={addSection} onDeleteSection={deleteSection} onAddBlock={addBlock}
