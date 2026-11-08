@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import { Button } from '../../../../../shared/components/ui/Button'
 import { Input } from '../../../../../shared/components/ui/Input'
 import { Select } from '../../../../../shared/components/ui/Select'
-import { useProposalMutations, useProposalOptionItems } from '../../../../../features/proposals'
+import { useProposalMutations } from '../../../../../features/proposals'
 import { useProducts } from '../../../../../features/products/hooks/useProducts'
 import { formatMoney } from '../utils/proposalPayloads'
 
@@ -46,9 +46,8 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
   const productsQuery = useProducts()
 
   const selectedOption = options.find((option) => String(option.id) === String(selectedOptionId)) || options[0]
-  const itemsQuery = useProposalOptionItems(proposal?.id, selectedOption?.id, undefined, { enabled: Boolean(proposal?.id && selectedOption?.id) })
   const products = productsQuery.data || []
-  const displayedItems = itemsQuery.data?.length ? itemsQuery.data : (selectedOption?.items || selectedOption?.option_items || [])
+  const displayedItems = selectedOption?.items || []
   const validationMessage = (error) => {
     const body = error?.response?.data
     const fields = body?.errors
@@ -133,7 +132,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
         unit_price: toNumber(itemForm.unit_price, 0),
         discount: toNumber(itemForm.discount, 0),
         tax: toNumber(itemForm.tax, 0),
-        sort_order: editingItemId ? (itemsQuery.data || []).find(item => item.id === editingItemId)?.sort_order ?? 0 : itemsQuery.data?.length || 0,
+        sort_order: editingItemId ? displayedItems.find(item => item.id === editingItemId)?.sort_order ?? 0 : displayedItems.length || 0,
         is_optional: false,
         metadata: {},
     }
@@ -151,8 +150,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
       await mutations.createProposalOptionItem.mutateAsync({ proposalId: proposal.id, optionId: selectedOption.id, payload: itemPayload })
     }
     // Always use the canonical persisted rows to avoid overwriting totals from stale local data.
-    const updatedRows = (await itemsQuery.refetch()).data || []
-    try { await syncTotals(selectedOption, updatedRows) } catch { toast.warning('تم حفظ البند، لكن تعذّر تحديث إجمالي خيار السعر؛ راجع الإجمالي قبل الإرسال') }
+    // The options query is invalidated by the item mutation; its embedded items are the canonical read source.
     setItemForm({ ...EMPTY_ITEM })
     setEditingItemId(null)
     toast.success(editingItemId ? 'تم تحديث البند / Item updated' : t('proposals.pricing.itemAdded'))
