@@ -143,13 +143,13 @@ function normalizeOldSection(section, index, t) {
   if (Array.isArray(section?.blocks)) {
     return {
       ...section,
-      id: String(section.id || createUid(`section_${index}`)),
+      id: String(section.id ?? createUid(`section_${index}`)),
       title: section.title || section.name || sectionFallback,
       description: section.description || '',
       is_visible: section.is_visible ?? true,
       blocks: section.blocks.map((block, blockIndex) => createDefaultBlock(block.type || 'text', {
         ...block,
-        id: String(block.id || createUid(`block_${index}_${blockIndex}`)),
+        id: String(block.id ?? createUid(`block_${index}_${blockIndex}`)),
       }, t)),
     }
   }
@@ -184,7 +184,7 @@ export function normalizeBuilderContent(rawContent, proposal = {}, t) {
     schema_version: content?.schema_version || 1,
     title: content?.title || proposal?.title || (t ? t('proposals.builder.defaults.coverEyebrow') : 'Price Quote'),
     settings: { ...DEFAULT_PROPOSAL_SETTINGS, ...(content?.settings || {}) },
-    design: { ...DEFAULT_PROPOSAL_DESIGN, ...(content?.design || {}) },
+    design: { ...DEFAULT_PROPOSAL_DESIGN, ...(content?.styles || {}), ...(content?.design || {}) },
     customer: content?.customer || proposal?.metadata?.customer || {
       id: proposal?.metadata?.customer_id || null,
       name: proposal?.metadata?.customer_name || proposal?.metadata?.client_name || '',
