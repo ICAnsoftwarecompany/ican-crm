@@ -27,7 +27,7 @@ export function ProposalWizard({ open, onClose }) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [form, setForm] = useState({
-    customer_id: '',
+    customer_id: searchParams.get('customer_id') || '',
     template_id: searchParams.get('template_id') || '',
     template_version_id: '',
     assigned_to: '',
@@ -161,6 +161,7 @@ export function ProposalWizard({ open, onClose }) {
           }))}
           placeholder={customersQuery.isLoading ? t('proposals.wizard.loadingCustomers') : t('proposals.wizard.chooseCustomerPlaceholder')}
         />
+        {form.customer_id && !selectedCustomer && !customersQuery.isLoading && <p className="text-xs text-red-600 md:col-span-2">العميل المحدد غير موجود في قائمة العملاء المحمّلة. ابحث عنه أو اختره من القائمة قبل إنشاء العرض.</p>}
         <Select
           label={t('proposals.wizard.steps.template')}
           value={form.template_id}
