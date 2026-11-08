@@ -87,6 +87,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
       return
     }
 
+    if (!options.length && !draftItems.length) { toast.error('أضف منتجًا أو خدمة واحدة على الأقل قبل حفظ التسعيرة'); return }
     try {
       await createOption(optionForm.name.trim(), optionForm.description.trim(), draftItems)
       setDraftItems([])
