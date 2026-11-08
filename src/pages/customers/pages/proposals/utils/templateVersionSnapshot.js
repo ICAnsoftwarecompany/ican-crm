@@ -15,7 +15,19 @@ export function getCurrentTemplateVersion(template) {
 }
 
 export function getTemplateVersionContent(version) {
-  return version?.content ?? version?.builder_content ?? version?.builder?.content ?? version?.builder ?? null
+  const raw = version?.content ?? version?.builder_content ?? version?.builder?.content ?? version?.builder ?? null
+  // The template/show API persists the version tree in `sections`, not necessarily
+  // in a separate `content` JSON column. Prefer the persisted tree over stale drafts.
+  if (Array.isArray(version?.sections) && version.sections.length) {
+    const metadata = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {}
+    return {
+      ...metadata,
+      sections: version.sections,
+      settings: version.settings ?? metadata.settings,
+      design: version.styles ?? version.design ?? metadata.design,
+    }
+  }
+  return raw
 }
 
 function freshIds(content) {
