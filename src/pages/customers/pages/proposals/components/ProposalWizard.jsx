@@ -93,8 +93,8 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
       signature_sort_order: index + 1,
       signature_required: Boolean(recipient.can_sign && recipient.signature_required),
     }))
-    if (resolvedRecipients.some(recipient => !recipient.customer_id || !recipient.name || !recipient.email)) {
-      toast.error('اختر عميلًا صالحًا وتأكد من الاسم والبريد الإلكتروني لكل مستلم')
+    if (resolvedRecipients.some(recipient => !recipient.customer_id)) {
+      toast.error('اختر عميلًا صالحًا لكل مستلم')
       return
     }
     if (new Set(resolvedRecipients.map(recipient => recipient.customer_id)).size !== resolvedRecipients.length) {
