@@ -86,6 +86,18 @@ export function useProposalOptionItems(proposalId, optionId, params, options = {
   })
 }
 
+export function useProposalRecipients(proposalId, page = 1) {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.proposals.detail(proposalId), 'recipients', page],
+    queryFn: () => proposalsApi.getProposalRecipients(proposalId, { page }),
+    enabled: Boolean(proposalId),
+    select: (response) => {
+      const result = response?.data ?? response
+      return { rows: Array.isArray(result?.data) ? result.data : [], currentPage: result?.current_page || 1, lastPage: result?.last_page || 1, total: result?.total || 0 }
+    },
+  })
+}
+
 export function useProposalMutations() {
   const queryClient = useQueryClient()
 
@@ -104,6 +116,21 @@ export function useProposalMutations() {
     createProposal: useMutation({
       mutationFn: proposalsApi.createProposal,
       onSuccess: invalidateAll,
+    }),
+
+    updateProposalRecipient: useMutation({
+      mutationFn: ({ recipientId, payload }) => proposalsApi.updateProposalRecipient(recipientId, payload),
+      onSuccess: (_data, variables) => invalidateProposal(variables.proposalId),
+    }),
+
+    deleteProposalRecipient: useMutation({
+      mutationFn: ({ recipientId }) => proposalsApi.deleteProposalRecipient(recipientId),
+      onSuccess: (_data, variables) => invalidateProposal(variables.proposalId),
+    }),
+
+    revokeProposalRecipient: useMutation({
+      mutationFn: ({ recipientId }) => proposalsApi.revokeProposalRecipient(recipientId),
+      onSuccess: (_data, variables) => invalidateProposal(variables.proposalId),
     }),
 
     createProposalRecipients: useMutation({
