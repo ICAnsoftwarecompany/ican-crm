@@ -2,6 +2,7 @@ export { proposalTemplatesApi } from './api/proposalTemplatesApi'
 export { proposalsApi } from './api/proposalsApi'
 export {
   useProposalTemplates,
+  useTrashedProposalTemplates,
   useProposalTemplateInfo,
   useProposalTemplateVersions,
   useProposalTemplateVersionInfo,
@@ -9,6 +10,7 @@ export {
 } from './hooks/useProposalTemplates'
 export {
   useProposals,
+  useTrashedProposals,
   useProposalInfo,
   useProposalVersions,
   useProposalVersionInfo,
