@@ -1,5 +1,5 @@
 import { Check, PackagePlus, Star, Trash2 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -35,11 +35,13 @@ function toNumber(value, fallback = undefined) {
   return Number.isNaN(numberValue) ? fallback : numberValue
 }
 
-export function ProposalPricingPanel({ proposal, options = [], selectedOptionId, onSelectOption }) {
+export function ProposalPricingPanel({ proposal, options = [], selectedOptionId, onSelectOption, focusItems = false }) {
   const { t } = useTranslation()
   const [optionForm, setOptionForm] = useState(EMPTY_OPTION)
   const [itemForm, setItemForm] = useState(EMPTY_ITEM)
   const [editingItemId, setEditingItemId] = useState(null)
+  const itemsRef = useRef(null)
+  useEffect(() => { if (focusItems) itemsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }, [focusItems])
   const mutations = useProposalMutations()
   const productsQuery = useProducts()
 
@@ -54,6 +56,10 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
 
   const updateOptionForm = (key, value) => setOptionForm((form) => ({ ...form, [key]: value }))
   const updateItemForm = (key, value) => setItemForm((form) => ({ ...form, [key]: value }))
+  const selectProduct = (value) => {
+    const product = products.find(item => String(item.id) === String(value))
+    setItemForm(form => ({ ...form, product_id: value, name: product?.name || form.name, description: product?.description || form.description, unit_price: product?.selling_price ?? product?.sale_price ?? product?.price ?? form.unit_price }))
+  }
 
   const handleCreateOption = async (event) => {
     event.preventDefault()
@@ -163,7 +169,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
       </form>
 
       {selectedOption ? (
-        <section className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
+        <section ref={itemsRef} className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="text-xs font-black text-[var(--text-muted)]">{t('proposals.pricing.itemsOf', { name: selectedOption.name })}</div>
             <Button
@@ -193,7 +199,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
           </div>
 
           <form onSubmit={handleCreateItem} className="space-y-3">
-            <Select label={t('proposals.pricing.productFromSystem')} value={itemForm.product_id} onChange={(value) => updateItemForm('product_id', value)} options={productOptions} placeholder={t('customers.followUp.optionalPlaceholder')} />
+            <Select label={t('proposals.pricing.productFromSystem')} value={itemForm.product_id} onChange={selectProduct} options={productOptions} placeholder={t('customers.followUp.optionalPlaceholder')} />
             <Input label={t('proposals.pricing.itemNameLabel')} value={itemForm.name} onChange={(event) => updateItemForm('name', event.target.value)} />
             <Input label={t('proposals.pricing.itemDescLabel')} value={itemForm.description} onChange={(event) => updateItemForm('description', event.target.value)} />
             <div className="grid grid-cols-2 gap-2">

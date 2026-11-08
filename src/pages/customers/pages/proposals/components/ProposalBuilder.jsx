@@ -41,6 +41,7 @@ export function ProposalBuilder({ proposalId }) {
   const [selectedVersionId, setSelectedVersionId] = useState(null)
   const [selectedOptionId, setSelectedOptionId] = useState(null)
   const [rightTab, setRightTab] = useState('properties')
+  const [pricingFocus, setPricingFocus] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [isDirty, setIsDirty] = useState(false)
   const [saveState, setSaveState] = useState(t('proposals.builder.saveState.ready'))
@@ -74,6 +75,17 @@ export function ProposalBuilder({ proposalId }) {
 
   const activeOption = options.find(option => String(option.id) === String(selectedOptionId)) || options[0]
   const activeItemsQuery = useProposalOptionItems(proposalId, activeOption?.id)
+
+  const handleSelect = useCallback((selection) => {
+    setSelected(selection)
+    const block = selection?.type === 'block' ? content?.sections?.find(section => section.id === selection.sectionId)?.blocks?.find(item => item.id === selection.id) : null
+    if (block?.type === 'products' || block?.type === 'pricing') {
+      setRightTab('pricing')
+      setPricingFocus(true)
+    } else {
+      setPricingFocus(false)
+    }
+  }, [content])
 
   const selectedSectionId = selected?.type === 'block'
     ? selected.sectionId
@@ -270,7 +282,7 @@ export function ProposalBuilder({ proposalId }) {
           content={content}
           selected={selected}
           selectedSectionId={selectedSectionId}
-          onSelect={setSelected}
+          onSelect={handleSelect}
           onAddSection={handleAddSection}
           onDeleteSection={handleDeleteSection}
           onAddBlock={handleAddBlock}
@@ -287,7 +299,7 @@ export function ProposalBuilder({ proposalId }) {
           products={products}
           items={activeItemsQuery.data || []}
           selected={selected}
-          onSelect={setSelected}
+          onSelect={handleSelect}
         />
         </div>
 
@@ -327,6 +339,7 @@ export function ProposalBuilder({ proposalId }) {
                 options={options}
                 selectedOptionId={selectedOptionId}
                 onSelectOption={setSelectedOptionId}
+                focusItems={pricingFocus}
               />
             </div>
           ) : null}
@@ -353,6 +366,7 @@ export function ProposalBuilder({ proposalId }) {
         proposal={proposal}
         options={options}
         products={products}
+        items={activeItemsQuery.data || []}
       />
     </div>
   )
