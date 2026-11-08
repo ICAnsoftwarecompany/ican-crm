@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import i18n from 'i18next'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ProposalWizard } from './pages/proposals/components/ProposalWizard'
 import { toast } from 'sonner'
 import { ArchiveRestore, Trash2 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
@@ -552,6 +553,7 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
   const [showTrash] = useState(defaultShowTrash)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedCustomer, setSelectedCustomer] = useState(null)
+  const [proposalCustomer, setProposalCustomer] = useState(null)
   const [assignOwnerCustomer, setAssignOwnerCustomer] = useState(null)
   const [assignOwnerUserId, setAssignOwnerUserId] = useState('')
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
@@ -1199,7 +1201,7 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
     onMarkWon: leadActions.openWon,
     onMarkLost: leadActions.openLost,
     onAddTask: taskAction.open,
-    onIssueProposal: (row) => { const id = row?.id ?? row?.customer_id; if (id) navigate(`/LeadsCenter/proposals?action=new&customer_id=${encodeURIComponent(id)}`) },
+    onIssueProposal: (row) => setProposalCustomer(row),
   }), [handleOpenLeadNoteDialog, handleOpenScheduledActivityDialog, leadActions, taskAction.open, setIsTableSettingsOpen, showTrash, t, navigate])
 
   const submitAssignOwner = useCallback(async () => {
@@ -1457,6 +1459,8 @@ export function CustomersPage({ defaultShowTrash = false, pageTitle, selectionTo
           allowComplete
         />
       ) : null}
+
+      {proposalCustomer && <ProposalWizard key={proposalCustomer.id ?? proposalCustomer.customer_id} open initialCustomer={proposalCustomer} onClose={() => setProposalCustomer(null)} />}
 
       <CustomerDetailsDrawer
         customer={selectedCustomer}
