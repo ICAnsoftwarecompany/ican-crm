@@ -37,12 +37,14 @@ export function ProposalRecipientsPanel({ proposalId }) {
 
   const addRecipients = async () => {
     if (!drafts.length) return
-    if (drafts.some(row => !row.customer_id || !row.name.trim() || !row.email.trim())) { toast.error('اختر العميل واكتب الاسم والبريد الإلكتروني لكل مستلم'); return }
+    if (drafts.some(row => !row.customer_id)) { toast.error('اختر عميلًا لكل مستلم'); return }
     const ids = drafts.map(row => String(row.customer_id))
     if (new Set(ids).size !== ids.length || ids.some(id => rows.some(row => String(row.customer_id) === id))) { toast.error('لا يمكن تكرار نفس العميل ضمن مستلمي العرض'); return }
     const hasPrimary = rows.some(row => row.is_primary)
     const recipients = drafts.map((row, index) => ({
-      customer_id: Number(row.customer_id), name: row.name.trim(), email: row.email.trim(),
+      customer_id: Number(row.customer_id),
+      ...(row.name.trim() ? { name: row.name.trim() } : {}),
+      ...(row.email.trim() ? { email: row.email.trim() } : {}),
       ...(row.phone.trim() ? { phone: row.phone.trim() } : {}),
       role: row.role.trim() || null, is_primary: !hasPrimary && index === 0,
       can_view: row.can_view, can_accept: row.can_accept, can_sign: row.can_sign,
