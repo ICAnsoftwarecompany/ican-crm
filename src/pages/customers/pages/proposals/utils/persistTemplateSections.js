@@ -1,13 +1,15 @@
 import { proposalTemplatesApi } from '../../../../../features/proposals/api/proposalTemplatesApi'
-import { getEntityId, getResponseEntity } from './proposalPayloads'
 
 const numericId = value => /^\d+$/.test(String(value ?? ''))
+// API methods already return res.data. A saved block also has a nested `data`
+// field containing its editable content; that field is NOT a response envelope.
 const requireId = (response, type) => {
-  const entity = getResponseEntity(response)
-  const id = [getEntityId(entity), entity?.[type]?.id, entity?.[`${type}_id`], response?.id].find(numericId)
+  const candidates = [response, response?.data, response?.data?.data, response?.[type], response?.data?.[type]]
+  const id = candidates.flatMap(entity => [entity?.id, entity?.[`${type}_id`]]).find(numericId)
   if (!id) {
-    const keys = entity && typeof entity === 'object' ? Object.keys(entity).join(', ') : 'none'
-    throw new Error(`Create ${type} returned no numeric ID (fields: ${keys}). The record may already exist; reload before retrying.`)
+    const keys = candidates.filter(entity => entity && typeof entity === 'object')
+      .map(entity => Object.keys(entity).join(', ')).join(' | ')
+    throw new Error(`Create ${type} returned no numeric ID (response fields: ${keys || 'none'}). The record may already exist; reload before retrying.`)
   }
   return id
 }
