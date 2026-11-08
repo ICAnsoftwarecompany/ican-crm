@@ -286,8 +286,6 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
           ))}
           <Button type="button" variant="outline" size="sm" onClick={() => setRecipients(rows => [...rows, { customer_id: '', name: '', email: '', role: '', is_primary: false, can_view: true, can_accept: true, can_sign: false, signature_required: false }])}><Plus size={15} /> إضافة مستلم</Button>
           {recipients.some(recipient => recipient.signature_required) && <Input label="الحد الأدنى للتوقيعات المطلوبة" type="number" min="1" value={minimumSignatures} onChange={event => setMinimumSignatures(event.target.value)} />}
-        </div>
-
         </section>
       </div>
     </ProposalModal>
