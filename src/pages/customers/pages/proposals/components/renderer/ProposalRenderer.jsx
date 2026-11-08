@@ -70,7 +70,7 @@ function CustomerInfo({ customer, data }) {
   )
 }
 
-function PricingBlock({ options = [], currency }) {
+function PricingBlock({ options = [], items = [], currency }) {
   const { t } = useTranslation()
 
   if (!options.length) {
@@ -82,7 +82,21 @@ function PricingBlock({ options = [], currency }) {
   }
 
   return (
-    <div className="grid gap-3 md:grid-cols-2">
+    <div className="space-y-4">
+      {items.length > 0 && <div className="overflow-x-auto rounded-lg border border-[#DCE8F3] bg-white">
+        <table className="w-full min-w-[480px] text-sm">
+          <thead className="bg-[#F6F9FC]"><tr>{['المنتج / الخدمة', 'الكمية', 'سعر الوحدة', 'الخصم', 'الضريبة', 'الإجمالي'].map(label => <th key={label} className="p-2 text-start">{label}</th>)}</tr></thead>
+          <tbody>{items.map(item => <tr key={item.id} className="border-t border-[#DCE8F3]">
+            <td className="p-2">{item.name || item.product?.name || '—'}</td>
+            <td className="p-2">{item.quantity ?? 1}</td>
+            <td className="p-2">{formatMoney(item.unit_price || 0, currency)}</td>
+            <td className="p-2">{formatMoney(item.discount || 0, currency)}</td>
+            <td className="p-2">{formatMoney(item.tax || 0, currency)}</td>
+            <td className="p-2">{formatMoney((Number(item.quantity) || 0) * (Number(item.unit_price) || 0) - (Number(item.discount) || 0) + (Number(item.tax) || 0), currency)}</td>
+          </tr>)}</tbody>
+        </table>
+      </div>}
+      <div className="grid gap-3 md:grid-cols-2">
       {options.map((option) => (
         <div key={option.id || option.name} className="rounded-lg border border-[#DCE8F3] bg-white p-4">
           <div className="flex items-start justify-between gap-3">
@@ -99,14 +113,16 @@ function PricingBlock({ options = [], currency }) {
           </div>
         </div>
       ))}
+      </div>
     </div>
   )
 }
 
-function ProductsBlock({ products = [], title }) {
+function ProductsBlock({ products = [], items = [], title }) {
   const { t } = useTranslation()
 
-  if (!products.length) {
+  const displayedProducts = items.length ? items : products
+  if (!displayedProducts.length) {
     return (
       <div className="rounded-lg border border-dashed border-[#C9D8E8] bg-[#F8FAFC] px-4 py-5 text-sm font-bold text-slate-500">
         {t('proposals.renderer.chooseProductsHint')}
@@ -118,7 +134,7 @@ function ProductsBlock({ products = [], title }) {
     <div>
       {title ? <h3 className="mb-3 text-lg font-black text-slate-950">{title}</h3> : null}
       <div className="flex flex-wrap gap-2">
-        {products.slice(0, 8).map((product) => (
+        {displayedProducts.slice(0, 8).map((product) => (
           <span key={product.id || product.name} className="rounded-full border border-[#BFDBFE] bg-[#EFF6FF] px-3 py-1 text-xs font-black text-[#1D4ED8]">
             {product.name || product.product?.name || t('proposals.pricing.productFallback', { id: product.id })}
           </span>
@@ -194,8 +210,8 @@ function renderBlock(block, context) {
     )
   }
 
-  if (block.type === 'products') return <ProductsBlock products={context.products} title={data.title} />
-  if (block.type === 'pricing') return <PricingBlock options={context.options} currency={context.currency} />
+  if (block.type === 'products') return <ProductsBlock products={context.products} items={context.items} title={data.title} />
+  if (block.type === 'pricing') return <PricingBlock options={context.options} items={context.items} currency={context.currency} />
   if (block.type === 'terms') return <p className="rounded-lg bg-[#FFFBEB] p-4 text-sm font-semibold leading-8 text-[#92400E]">{data.content}</p>
 
   if (block.type === 'signature') {
@@ -230,6 +246,7 @@ export function ProposalRenderer({
   proposal,
   options = [],
   products = [],
+  items = [],
   editable = false,
   selected,
   onSelect,
@@ -271,6 +288,7 @@ export function ProposalRenderer({
                   customer,
                   options,
                   products,
+                  items,
                   currency: proposal?.currency,
                   t,
                 })}

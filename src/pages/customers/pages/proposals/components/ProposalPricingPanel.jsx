@@ -39,6 +39,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
   const { t } = useTranslation()
   const [optionForm, setOptionForm] = useState(EMPTY_OPTION)
   const [itemForm, setItemForm] = useState(EMPTY_ITEM)
+  const [editingItemId, setEditingItemId] = useState(null)
   const mutations = useProposalMutations()
   const productsQuery = useProducts()
 
@@ -94,10 +95,7 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
       return
     }
 
-    await mutations.createProposalOptionItem.mutateAsync({
-      proposalId: proposal.id,
-      optionId: selectedOption.id,
-      payload: {
+    const itemPayload = {
         product_id: toNumber(itemForm.product_id),
         name: itemForm.name.trim() || undefined,
         description: itemForm.description.trim() || undefined,
@@ -105,13 +103,18 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
         unit_price: toNumber(itemForm.unit_price, 0),
         discount: toNumber(itemForm.discount, 0),
         tax: toNumber(itemForm.tax, 0),
-        sort_order: itemsQuery.data?.length || 0,
+        sort_order: editingItemId ? (itemsQuery.data || []).find(item => item.id === editingItemId)?.sort_order ?? 0 : itemsQuery.data?.length || 0,
         is_optional: false,
         metadata: {},
-      },
-    })
-    setItemForm(EMPTY_ITEM)
-    toast.success(t('proposals.pricing.itemAdded'))
+    }
+    if (editingItemId) {
+      await mutations.updateProposalOptionItem.mutateAsync({ proposalId: proposal.id, optionId: selectedOption.id, itemId: editingItemId, payload: itemPayload })
+    } else {
+      await mutations.createProposalOptionItem.mutateAsync({ proposalId: proposal.id, optionId: selectedOption.id, payload: itemPayload })
+    }
+    setItemForm({ ...EMPTY_ITEM })
+    setEditingItemId(null)
+    toast.success(editingItemId ? 'تم تحديث البند / Item updated' : t('proposals.pricing.itemAdded'))
   }
 
   return (
@@ -179,7 +182,11 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
               <div key={item.id || item.name} className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2">
                 <div className="font-black text-[var(--text)]">{item.name || item.product?.name || t('proposals.pricing.itemFallback', { id: item.id })}</div>
                 <div className="mt-1 text-xs font-bold text-[var(--text-muted)]" dir="ltr">
-                  {item.quantity || 1} x {formatMoney(item.unit_price, proposal?.currency)}
+                  {item.quantity ?? 1} × {formatMoney(item.unit_price, proposal?.currency)} · Discount: {formatMoney(item.discount || 0, proposal?.currency)} · Tax: {formatMoney(item.tax || 0, proposal?.currency)}
+                </div>
+                <div className="mt-2 flex gap-2">
+                  <Button type="button" variant="ghost" size="sm" onClick={() => { setEditingItemId(item.id); setItemForm({ product_id: String(item.product_id || ''), name: item.name || '', description: item.description || '', quantity: item.quantity ?? 1, unit_price: item.unit_price ?? '', discount: item.discount ?? 0, tax: item.tax ?? 0 }) }}>تعديل / Edit</Button>
+                  <Button type="button" variant="ghost" size="sm" disabled={mutations.deleteProposalOptionItem.isPending} onClick={() => { if (window.confirm('حذف البند؟ / Delete this item?')) mutations.deleteProposalOptionItem.mutate({ proposalId: proposal.id, optionId: selectedOption.id, itemId: item.id }) }}>حذف / Delete</Button>
                 </div>
               </div>
             ))}
@@ -193,9 +200,15 @@ export function ProposalPricingPanel({ proposal, options = [], selectedOptionId,
               <Input label={t('proposals.pricing.quantityLabel')} type="number" value={itemForm.quantity} onChange={(event) => updateItemForm('quantity', event.target.value)} />
               <Input label={t('proposals.pricing.unitPriceLabel')} type="number" value={itemForm.unit_price} onChange={(event) => updateItemForm('unit_price', event.target.value)} />
             </div>
-            <Button type="submit" variant="primary" size="sm" className="w-full" loading={mutations.createProposalOptionItem.isPending}>
+            <div className="grid grid-cols-2 gap-2">
+              <Input label="الخصم / Discount (amount)" type="number" value={itemForm.discount} onChange={event => updateItemForm('discount', event.target.value)} />
+              <Input label="الضريبة / Tax (amount)" type="number" value={itemForm.tax} onChange={event => updateItemForm('tax', event.target.value)} />
+            </div>
+            <div className="text-sm font-bold" dir="ltr">Total: {formatMoney(Math.max(0, (Number(itemForm.quantity) || 0) * (Number(itemForm.unit_price) || 0) - (Number(itemForm.discount) || 0) + (Number(itemForm.tax) || 0)), proposal?.currency)}</div>
+            {editingItemId && <Button type="button" variant="ghost" size="sm" onClick={() => { setEditingItemId(null); setItemForm({ ...EMPTY_ITEM }) }}>إلغاء التعديل / Cancel edit</Button>}
+            <Button type="submit" variant="primary" size="sm" className="w-full" loading={mutations.createProposalOptionItem.isPending || mutations.updateProposalOptionItem.isPending}>
               <PackagePlus size={15} />
-              {t('proposals.pricing.addItem')}
+              {editingItemId ? 'حفظ التعديل / Save changes' : t('proposals.pricing.addItem')}
             </Button>
           </form>
         </section>
