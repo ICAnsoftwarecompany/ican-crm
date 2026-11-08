@@ -69,7 +69,7 @@ export function CustomerProposalTemplateBuilderPage() {
       ? { ...embedded, sections: currentVersion.sections, settings: currentVersion.settings, design: currentVersion.styles }
       : embedded
     const next = raw && raw.sections?.length ? normalizeBuilderContent(raw, { title: template.name }, t) : createDefaultBuilderContent({ title: template.name }, null, t)
-    savedSectionsRef.current = currentVersion?.sections || []
+    savedSectionsRef.current = structuredClone(currentVersion?.sections?.length ? currentVersion.sections : (raw?.sections || []))
     setContent(next)
     setSelected(next ? { type: 'section', id: next.sections[0]?.id } : null)
     setDirty(false)
