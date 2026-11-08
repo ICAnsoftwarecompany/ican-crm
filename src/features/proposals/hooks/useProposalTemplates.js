@@ -17,6 +17,16 @@ export function useProposalTemplates(params, options = {}) {
   })
 }
 
+export function useTrashedProposalTemplates(enabled = true) {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.proposalTemplates.all, 'trash'],
+    queryFn: proposalTemplatesApi.getTrashedTemplates,
+    enabled,
+    select: (data) => extractList(data, ['data', 'templates', 'items']),
+    retry: false,
+  })
+}
+
 export function useProposalTemplateInfo(templateId, params, options = {}) {
   return useQuery({
     queryKey: [...QUERY_KEYS.proposalTemplates.detail(templateId), params],
@@ -87,6 +97,11 @@ export function useProposalTemplateMutations() {
     updateTemplate: useMutation({
       mutationFn: ({ templateId, payload }) => proposalTemplatesApi.updateTemplate(templateId, payload),
       onSuccess: (_data, variables = {}) => invalidateTemplate(variables.templateId),
+    }),
+
+    restoreTemplate: useMutation({
+      mutationFn: proposalTemplatesApi.restoreTemplate,
+      onSuccess: invalidateTemplates,
     }),
 
     deleteTemplate: useMutation({
