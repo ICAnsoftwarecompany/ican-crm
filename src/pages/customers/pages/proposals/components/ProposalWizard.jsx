@@ -26,11 +26,10 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const [recipients, setRecipients] = useState(() => initialCustomer?.id || initialCustomer?.customer_id || searchParams.get('customer_id') ? [{ customer_id: String(initialCustomer?.id ?? initialCustomer?.customer_id ?? searchParams.get('customer_id')), name: initialCustomer?.name || '', email: initialCustomer?.email || '', role: '', is_primary: true, can_view: true, can_accept: true, can_sign: false, signature_required: false }] : [])
+  const [recipients, setRecipients] = useState(() => initialCustomer?.id || initialCustomer?.customer_id || searchParams.get('customer_id') ? [{ customer_id: String(initialCustomer?.id ?? initialCustomer?.customer_id ?? searchParams.get('customer_id')), name: initialCustomer?.name || initialCustomer?.full_name || '', email: initialCustomer?.email || '', role: '', is_primary: true, can_view: true, can_accept: true, can_sign: false, signature_required: false }] : [])
   const [minimumSignatures, setMinimumSignatures] = useState(1)
   const [clientName, setClientName] = useState('')
   const [form, setForm] = useState({
-    customer_id: String(initialCustomer?.id ?? initialCustomer?.customer_id ?? searchParams.get('customer_id') ?? ''),
     template_id: searchParams.get('template_id') || '',
     template_version_id: '',
     assigned_to: '',
@@ -53,8 +52,8 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
   const users = usersQuery.data || []
 
   const selectedCustomer = useMemo(() => (
-    customers.find((customer) => String(customer.id) === String(form.customer_id))
-  ), [customers, form.customer_id])
+    customers.find((customer) => String(customer.id) === String(recipients[0]?.customer_id))
+  ), [customers, recipients])
 
   const availableTemplateVersions = getTemplateVersions(selectedTemplateQuery.data).filter(version => {
     const content = getTemplateVersionContent(version)
@@ -68,16 +67,12 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
     setForm((current) => {
       const next = { ...current, [key]: value }
       if (key === 'template_id') next.template_version_id = ''
-      if (key === 'customer_id') {
-        const customer = customers.find((item) => String(item.id) === String(value))
-        if (customer && !current.title) next.title = t('proposals.wizard.newProposalTitleFor', { name: getCustomerName(customer, t) })
-      }
       return next
     })
   }
 
   const handleCreate = async () => {
-    if (mutations.createProposal.isPending || mutations.createProposalVersion.isPending) return
+    if (mutations.createProposal.isPending || mutations.createProposalVersion.isPending || mutations.createProposalRecipients.isPending) return
     if (!form.template_id || !form.title.trim()) {
       toast.error('عنوان العرض والقالب مطلوبان')
       return
@@ -100,6 +95,10 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
     }))
     if (resolvedRecipients.some(recipient => !recipient.customer_id || !recipient.name || !recipient.email)) {
       toast.error('اختر عميلًا صالحًا وتأكد من الاسم والبريد الإلكتروني لكل مستلم')
+      return
+    }
+    if (new Set(resolvedRecipients.map(recipient => recipient.customer_id)).size !== resolvedRecipients.length) {
+      toast.error('لا يمكن إضافة نفس العميل أكثر من مرة')
       return
     }
     const requiredSignatures = resolvedRecipients.filter(recipient => recipient.can_sign && recipient.signature_required).length
@@ -210,8 +209,7 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
               <Select label="العميل" value={recipient.customer_id} options={customers.map(customer => ({ value: String(customer.id), label: getCustomerName(customer, t) }))} placeholder="اختر العميل" onChange={value => {
                 const customer = customers.find(item => String(item.id) === String(value))
                 setRecipients(rows => rows.map((row, i) => i === index ? { ...row, customer_id: value, name: customer ? getCustomerName(customer, t) : '', email: customer?.email || '' } : row))
-                if (index === 0) updateForm('customer_id', value)
-              }} />
+                      }} />
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <Input label="الاسم" value={recipient.name} onChange={event => setRecipients(rows => rows.map((row, i) => i === index ? { ...row, name: event.target.value } : row))} />
                 <Input label="البريد الإلكتروني" type="email" value={recipient.email} onChange={event => setRecipients(rows => rows.map((row, i) => i === index ? { ...row, email: event.target.value } : row))} />
