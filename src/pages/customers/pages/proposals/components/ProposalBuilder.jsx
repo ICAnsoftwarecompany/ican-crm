@@ -260,7 +260,8 @@ export function ProposalBuilder({ proposalId }) {
         isSaving={isSaving}
       />
 
-      <div className="flex">
+      <div className="grid min-w-0 grid-cols-1 gap-0 xl:grid-cols-[minmax(220px,280px)_minmax(0,1fr)_minmax(280px,340px)]">
+        <div className="min-w-0 max-h-[55vh] overflow-y-auto xl:max-h-none xl:min-h-[680px]">
         <ProposalBuilderSidebar
           content={content}
           selected={selected}
@@ -272,7 +273,9 @@ export function ProposalBuilder({ proposalId }) {
           onSectionDragEnd={handleSectionDragEnd}
           onBlockDragEnd={handleBlockDragEnd}
         />
+        </div>
 
+        <div className="min-w-0 min-h-[540px] xl:min-h-[680px]">
         <ProposalCanvas
           content={content}
           proposal={proposal}
@@ -281,8 +284,9 @@ export function ProposalBuilder({ proposalId }) {
           selected={selected}
           onSelect={setSelected}
         />
+        </div>
 
-        <div className="h-[calc(100vh-4.5rem)] w-[360px] shrink-0 overflow-hidden border-s border-[var(--border)] bg-[var(--surface)]">
+        <div className="min-w-0 h-[calc(100vh-4.5rem)] overflow-hidden border-s border-[var(--border)] bg-[var(--surface)]">
           <div className="grid grid-cols-3 border-b border-[var(--border)]">
             {RIGHT_TABS.map((tab) => {
               const Icon = tab.icon
