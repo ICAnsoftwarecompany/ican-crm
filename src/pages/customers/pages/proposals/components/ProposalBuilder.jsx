@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -22,6 +23,7 @@ import { ProposalPricingPanel } from './ProposalPricingPanel'
 import { ProposalRecipientsPanel } from './ProposalRecipientsPanel'
 import { ProposalPropertiesPanel } from './ProposalPropertiesPanel'
 import { ProposalVersionsPanel } from './ProposalVersionsPanel'
+import { ProposalRenderer } from './renderer/ProposalRenderer'
 
 function getRightTabs(t) {
   return [
@@ -50,6 +52,7 @@ export function ProposalBuilder({ proposalId }) {
   const editRevisionRef = useRef(0)
   const savingRef = useRef(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
 
   const proposalQuery = useProposalInfo(proposalId)
   const versionsQuery = useProposalVersions(proposalId)
@@ -149,6 +152,58 @@ export function ProposalBuilder({ proposalId }) {
       setIsSaving(false)
     }
   }, [content, currentVersion, mutations.updateProposalVersion, proposal, t])
+
+  const exportProposal = async (format) => {
+    if (!content || !currentVersion || isExporting || savingRef.current) return
+    // Open the print window synchronously to avoid popup blockers after awaiting save.
+    const printWindow = format === 'pdf' ? window.open('', '_blank') : null
+    if (format === 'pdf' && !printWindow) {
+      toast.error('اسمح بفتح نافذة الطباعة من المتصفح')
+      return
+    }
+    setIsExporting(true)
+    try {
+      window.clearTimeout(saveTimerRef.current)
+      if (isDirty) await saveVersion(content)
+      const html = renderToStaticMarkup(
+        <ProposalRenderer content={content} proposal={proposal} options={options} products={products} items={activeItems} />
+      )
+      const title = (proposal.title || 'proposal').replace(/[\\/:*?"<>|]/g, '-')
+      const css = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+        .map(node => node.outerHTML).join('')
+      const documentHtml = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"/><title>${title}</title>${css}<style>
+        @page { size: A4; margin: 12mm; }
+        body { margin: 0; background: white; font-family: Arial, sans-serif; direction: rtl; }
+        article { max-width: 100% !important; min-height: 0 !important; box-shadow: none !important; }
+        section { break-inside: avoid-page; }
+        table { border-collapse: collapse; width: 100%; }
+        th,td { border: 1px solid #dce8f3; padding: 7px; }
+        img { max-width: 100%; }
+      </style></head><body>${html}</body></html>`
+      if (format === 'pdf') {
+        printWindow.document.open()
+        printWindow.document.write(documentHtml)
+        printWindow.document.close()
+        printWindow.onload = () => { printWindow.focus(); printWindow.print() }
+      } else {
+        // Word-compatible HTML document, editable in Microsoft Word.
+        const blob = new Blob(['\\ufeff', documentHtml], { type: 'application/msword;charset=utf-8' })
+        const url = URL.createObjectURL(blob)
+        const anchor = document.createElement('a')
+        anchor.href = url
+        anchor.download = `${title}.doc`
+        document.body.appendChild(anchor)
+        anchor.click()
+        anchor.remove()
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+      }
+    } catch (error) {
+      printWindow?.close()
+      toast.error(error?.message || 'تعذر تصدير العرض. تأكد من حفظه أولًا.')
+    } finally {
+      setIsExporting(false)
+    }
+  }
 
   const selectVersionSafely = (versionId) => {
     if (String(versionId) === String(currentVersion?.id)) return
@@ -271,6 +326,9 @@ export function ProposalBuilder({ proposalId }) {
         onBack={() => navigate('/LeadsCenter/proposals')}
         onPreview={() => setIsPreviewOpen(true)}
         onCreateVersion={handleCreateVersion}
+        onExportPdf={() => exportProposal('pdf')}
+        onExportWord={() => exportProposal('word')}
+        isExporting={isExporting}
         onSaveNow={() => saveVersion().then(() => { if (!isDirty || editRevisionRef.current === 0) toast.success(t('proposals.builder.saveState.saved')) }).catch(() => toast.error(t('proposals.builder.saveState.autoSaveFailed')))}
         creatingVersion={mutations.createProposalVersion.isPending}
         isSaving={isSaving}
