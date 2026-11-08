@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { BadgeDollarSign, Layers, Settings2, Info, UsersRound } from 'lucide-react'
+import { BadgeDollarSign, Layers, Info, UsersRound } from 'lucide-react'
 
 import {
   useProposalInfo,
@@ -25,7 +25,6 @@ import { ProposalVersionsPanel } from './ProposalVersionsPanel'
 
 function getRightTabs(t) {
   return [
-    { id: 'properties', label: t('proposals.builder.tabs.properties'), icon: Settings2 },
     { id: 'pricing', label: t('proposals.builder.tabs.pricing'), icon: BadgeDollarSign },
     { id: 'recipients', label: 'المستلمون', icon: UsersRound },
     { id: 'versions', label: t('proposals.builder.tabs.versions'), icon: Layers },
@@ -41,7 +40,7 @@ export function ProposalBuilder({ proposalId }) {
   const [selected, setSelected] = useState(null)
   const [selectedVersionId, setSelectedVersionId] = useState(null)
   const [selectedOptionId, setSelectedOptionId] = useState(null)
-  const [rightTab, setRightTab] = useState('properties')
+  const [rightTab, setRightTab] = useState('pricing')
   const [pricingFocus, setPricingFocus] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [isDirty, setIsDirty] = useState(false)
@@ -289,6 +288,7 @@ export function ProposalBuilder({ proposalId }) {
           onAddBlock={handleAddBlock}
           onSectionDragEnd={handleSectionDragEnd}
           onBlockDragEnd={handleBlockDragEnd}
+          propertiesPanel={<ProposalPropertiesPanel content={content} selected={selected} onChangeContent={updateContent} onDeleteBlock={handleDeleteBlock} />}
         />
         </div>
 
@@ -305,7 +305,7 @@ export function ProposalBuilder({ proposalId }) {
         </div>
 
         <div className="flex min-w-0 min-h-[480px] flex-col overflow-hidden border-s border-[var(--border)] bg-[var(--surface)] xl:h-full xl:min-h-0">
-          <div className="grid shrink-0 grid-cols-4 border-b border-[var(--border)]">
+          <div className="grid shrink-0 grid-cols-3 border-b border-[var(--border)]">
             {RIGHT_TABS.map((tab) => {
               const Icon = tab.icon
               return (
@@ -324,19 +324,8 @@ export function ProposalBuilder({ proposalId }) {
             })}
           </div>
 
-          {rightTab === 'properties' ? (
-            <div className="min-h-0 flex-1 overflow-y-auto">
-            <ProposalPropertiesPanel
-              content={content}
-              selected={selected}
-              onChangeContent={updateContent}
-              onDeleteBlock={handleDeleteBlock}
-            />
-            </div>
-          ) : null}
-
           {rightTab === 'pricing' ? (
-            <div className="min-h-0 flex-1 overflow-y-auto p-4">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">
               <ProposalPricingPanel
                 proposal={proposal}
                 options={options}
@@ -348,7 +337,7 @@ export function ProposalBuilder({ proposalId }) {
           ) : null}
 
           {rightTab === 'recipients' ? (
-            <div className="h-[calc(100vh-7.5rem)] overflow-y-auto p-4">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">
               <ProposalRecipientsPanel proposalId={proposalId} />
             </div>
           ) : null}
