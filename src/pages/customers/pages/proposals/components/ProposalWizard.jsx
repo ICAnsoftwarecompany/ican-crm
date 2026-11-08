@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Plus, UserRound, Trash2 } from 'lucide-react'
+import { Plus, UserRound, Trash2, FileText, LayoutTemplate, Users } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useCustomers } from '../../../../../features/customers/hooks/useCustomers'
@@ -28,7 +28,6 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
   const [searchParams] = useSearchParams()
   const [recipients, setRecipients] = useState(() => initialCustomer?.id || initialCustomer?.customer_id || searchParams.get('customer_id') ? [{ customer_id: String(initialCustomer?.id ?? initialCustomer?.customer_id ?? searchParams.get('customer_id')), name: initialCustomer?.name || initialCustomer?.full_name || '', email: initialCustomer?.email || '', role: '', is_primary: true, can_view: true, can_accept: true, can_sign: false, signature_required: false }] : [])
   const [minimumSignatures, setMinimumSignatures] = useState(1)
-  const [clientName, setClientName] = useState('')
   const [form, setForm] = useState({
     template_id: searchParams.get('template_id') || '',
     template_version_id: '',
@@ -123,7 +122,7 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
           customer_phone: selectedCustomer.phone || '',
           company: selectedCustomer.company || '',
         } : {}),
-        client_name: clientName.trim() || (selectedCustomer ? getCustomerName(selectedCustomer, t) : ''),
+        client_name: selectedCustomer ? getCustomerName(selectedCustomer, t) : '',
         priority: form.priority,
         source: 'crm_proposal_wizard',
         source_template_id: Number(form.template_id),
@@ -193,41 +192,27 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
 
   return (
     <ProposalModal open={open} onClose={onClose} title={t('proposals.wizard.modalTitle')} footer={footer}>
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="md:col-span-2 space-y-3 rounded-xl border border-[var(--border)] p-3">
-          <div>
-            <h3 className="text-sm font-black">مستلمو عرض السعر (اختياري)</h3>
-            <p className="text-xs text-[var(--text-muted)]">يمكن إنشاء العرض دون عميل، أو إضافة أكثر من عميل مع صلاحيات مختلفة.</p>
+      <div className="space-y-5" dir="rtl">
+        <section className="space-y-3 rounded-xl border border-[var(--border)] p-4">
+          <div className="flex items-center gap-2 border-b border-[var(--border)] pb-3"><FileText size={18} className="text-[var(--brand-accent)]" /><h3 className="text-sm font-black">1. بيانات العرض</h3></div>
+          <div className="grid gap-3 md:grid-cols-2">
+        <Input label={t('proposals.builder.proposalTitle')} value={form.title} onChange={event => updateForm('title', event.target.value)} />
+        <Input label={t('proposals.wizard.expiryDateLabel')} type="date" value={form.expires_at} onChange={event => updateForm('expires_at', event.target.value)} />
+        <Select label={t('proposals.wizard.currencyLabel')} value={form.currency} onChange={value => updateForm('currency', value)} options={CURRENCY_OPTIONS} />
+        <Select
+          label={t('customers.table.assignedTo')}
+          value={form.assigned_to}
+          onChange={value => updateForm('assigned_to', value)}
+          options={users.map(user => ({ value: String(user.id), label: user.name || user.email || `User #${user.id}` }))}
+          placeholder={t('customers.followUp.optionalPlaceholder')}
+        />
+        <Input label={t('proposals.wizard.shortDescriptionLabel')} value={form.description} onChange={event => updateForm('description', event.target.value)} className="md:col-span-2" />
+
           </div>
-          <Input label="اسم الجهة / العميل الحر (اختياري)" value={clientName} onChange={event => setClientName(event.target.value)} />
-          {recipients.map((recipient, index) => (
-            <div key={index} className="space-y-3 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
-              <div className="flex items-center justify-between">
-                <strong className="text-xs">مستلم {index + 1}{index === 0 ? ' — أساسي' : ''}</strong>
-                <Button type="button" variant="ghost" size="sm" onClick={() => setRecipients(rows => rows.filter((_, i) => i !== index))}><Trash2 size={14} /> حذف</Button>
-              </div>
-              <Select label="العميل" value={recipient.customer_id} options={customers.map(customer => ({ value: String(customer.id), label: getCustomerName(customer, t) }))} placeholder="اختر العميل" onChange={value => {
-                const customer = customers.find(item => String(item.id) === String(value))
-                setRecipients(rows => rows.map((row, i) => i === index ? { ...row, customer_id: value, name: customer ? getCustomerName(customer, t) : '', email: customer?.email || '' } : row))
-                      }} />
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                <Input label="الاسم" value={recipient.name} onChange={event => setRecipients(rows => rows.map((row, i) => i === index ? { ...row, name: event.target.value } : row))} />
-                <Input label="البريد الإلكتروني" type="email" value={recipient.email} onChange={event => setRecipients(rows => rows.map((row, i) => i === index ? { ...row, email: event.target.value } : row))} />
-              </div>
-              <Input label="الدور (اختياري)" value={recipient.role} onChange={event => setRecipients(rows => rows.map((row, i) => i === index ? { ...row, role: event.target.value } : row))} />
-              <div className="flex flex-wrap gap-3 text-xs">
-                {[['can_view', 'عرض'], ['can_accept', 'موافقة'], ['can_sign', 'توقيع'], ['signature_required', 'التوقيع إلزامي']].map(([key, label]) => (
-                  <label key={key} className="flex items-center gap-1">
-                    <input type="checkbox" checked={Boolean(recipient[key])} disabled={key === 'signature_required' && !recipient.can_sign} onChange={event => setRecipients(rows => rows.map((row, i) => i === index ? { ...row, [key]: event.target.checked, ...(key === 'can_sign' && !event.target.checked ? { signature_required: false } : {}) } : row))} />
-                    {label}
-                  </label>
-                ))}
-              </div>
-            </div>
-          ))}
-          <Button type="button" variant="outline" size="sm" onClick={() => setRecipients(rows => [...rows, { customer_id: '', name: '', email: '', role: '', is_primary: false, can_view: true, can_accept: true, can_sign: false, signature_required: false }])}><Plus size={15} /> إضافة مستلم</Button>
-          {recipients.some(recipient => recipient.signature_required) && <Input label="الحد الأدنى للتوقيعات المطلوبة" type="number" min="1" value={minimumSignatures} onChange={event => setMinimumSignatures(event.target.value)} />}
-        </div>
+        </section>
+        <section className="space-y-3 rounded-xl border border-[var(--border)] p-4">
+          <div className="flex items-center gap-2 border-b border-[var(--border)] pb-3"><LayoutTemplate size={18} className="text-[var(--brand-accent)]" /><h3 className="text-sm font-black">2. القالب وإصداره</h3></div>
+          <div className="grid gap-3 md:grid-cols-2">
         <Select
           label={t('proposals.wizard.steps.template')}
           value={form.template_id}
@@ -256,24 +241,8 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
             <Plus size={16} /> إنشاء قالب جديد
           </Button>
         </div>
-        <Input label={t('proposals.builder.proposalTitle')} value={form.title} onChange={event => updateForm('title', event.target.value)} />
-        <Input label={t('proposals.wizard.expiryDateLabel')} type="date" value={form.expires_at} onChange={event => updateForm('expires_at', event.target.value)} />
-        <Select label={t('proposals.wizard.currencyLabel')} value={form.currency} onChange={value => updateForm('currency', value)} options={CURRENCY_OPTIONS} />
-        <Select
-          label={t('customers.table.assignedTo')}
-          value={form.assigned_to}
-          onChange={value => updateForm('assigned_to', value)}
-          options={users.map(user => ({ value: String(user.id), label: user.name || user.email || `User #${user.id}` }))}
-          placeholder={t('customers.followUp.optionalPlaceholder')}
-        />
-        <Input label={t('proposals.wizard.shortDescriptionLabel')} value={form.description} onChange={event => updateForm('description', event.target.value)} className="md:col-span-2" />
-        {selectedCustomer && (
-          <div className="md:col-span-2 flex flex-wrap items-center gap-2 rounded-lg border border-[var(--border)] p-3 text-sm">
-            <UserRound size={18} />
-            <strong>{getCustomerName(selectedCustomer, t)}</strong>
-            {[selectedCustomer.email, selectedCustomer.phone, selectedCustomer.company].filter(Boolean).map(value => <span key={value}>{value}</span>)}
+
           </div>
-        )}
         {form.template_id && (
           <p role="status" className="md:col-span-2 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm">
             {selectedTemplateQuery.isLoading
@@ -283,6 +252,41 @@ export function ProposalWizard({ open, onClose, initialCustomer = null }) {
                 : t('proposals.templateEditor.selectPublishedVersion')}
           </p>
         )}
+
+        </section>
+        <section className="space-y-3 rounded-xl border border-[var(--border)] p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
+            <div className="flex items-center gap-2"><Users size={18} className="text-[var(--brand-accent)]" /><h3 className="text-sm font-black">3. المستلمون (اختياري)</h3><span className="text-xs text-[var(--text-muted)]">({recipients.length})</span></div>
+          </div>
+          {recipients.length === 0 && <p className="rounded-lg bg-[var(--surface-2)] p-3 text-xs text-[var(--text-muted)]">يمكنك إنشاء العرض بدون مستلمين وإضافتهم لاحقًا.</p>}
+          {recipients.map((recipient, index) => (
+            <div key={index} className="space-y-3 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
+              <div className="flex items-center justify-between">
+                <strong className="text-xs">مستلم {index + 1}{index === 0 ? ' — أساسي' : ''}</strong>
+                <Button type="button" variant="ghost" size="sm" onClick={() => setRecipients(rows => rows.filter((_, i) => i !== index))}><Trash2 size={14} /> حذف</Button>
+              </div>
+              <Select label="العميل" value={recipient.customer_id} options={customers.map(customer => ({ value: String(customer.id), label: getCustomerName(customer, t) }))} placeholder="اختر العميل" onChange={value => {
+                const customer = customers.find(item => String(item.id) === String(value))
+                setRecipients(rows => rows.map((row, i) => i === index ? { ...row, customer_id: value, name: customer ? getCustomerName(customer, t) : '', email: customer?.email || '' } : row))
+                      }} />
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <Input label="الاسم" value={recipient.name} onChange={event => setRecipients(rows => rows.map((row, i) => i === index ? { ...row, name: event.target.value } : row))} />
+                <Input label="البريد الإلكتروني" type="email" value={recipient.email} onChange={event => setRecipients(rows => rows.map((row, i) => i === index ? { ...row, email: event.target.value } : row))} />
+              </div>
+              <Input label="الدور (اختياري)" value={recipient.role} onChange={event => setRecipients(rows => rows.map((row, i) => i === index ? { ...row, role: event.target.value } : row))} />
+              <div className="flex flex-wrap gap-3 text-xs">
+                {[['can_view', 'عرض'], ['can_accept', 'موافقة'], ['can_sign', 'توقيع'], ['signature_required', 'التوقيع إلزامي']].map(([key, label]) => (
+                  <label key={key} className="flex items-center gap-1">
+                    <input type="checkbox" checked={Boolean(recipient[key])} disabled={key === 'signature_required' && !recipient.can_sign} onChange={event => setRecipients(rows => rows.map((row, i) => i === index ? { ...row, [key]: event.target.checked, ...(key === 'can_sign' && !event.target.checked ? { signature_required: false } : {}) } : row))} />
+                    {label}
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
+          <Button type="button" variant="outline" size="sm" onClick={() => setRecipients(rows => [...rows, { customer_id: '', name: '', email: '', role: '', is_primary: false, can_view: true, can_accept: true, can_sign: false, signature_required: false }])}><Plus size={15} /> إضافة مستلم</Button>
+          {recipients.some(recipient => recipient.signature_required) && <Input label="الحد الأدنى للتوقيعات المطلوبة" type="number" min="1" value={minimumSignatures} onChange={event => setMinimumSignatures(event.target.value)} />}
+        </section>
       </div>
     </ProposalModal>
   )
