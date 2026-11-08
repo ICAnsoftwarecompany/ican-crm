@@ -184,7 +184,7 @@ export function ProposalBuilder({ proposalId }) {
         printWindow.document.open()
         printWindow.document.write(documentHtml)
         printWindow.document.close()
-        printWindow.onload = () => { printWindow.focus(); printWindow.print() }
+        printWindow.setTimeout(() => { printWindow.focus(); printWindow.print() }, 600)
       } else {
         // Word-compatible HTML document, editable in Microsoft Word.
         const blob = new Blob(['\\ufeff', documentHtml], { type: 'application/msword;charset=utf-8' })
