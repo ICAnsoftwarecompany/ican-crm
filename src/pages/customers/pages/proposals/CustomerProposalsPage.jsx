@@ -8,7 +8,7 @@ import { PageToolbar } from '../../../../shared/components/data/PageToolbar'
 import { Button } from '../../../../shared/components/ui/Button'
 import { Input } from '../../../../shared/components/ui/Input'
 import { Select } from '../../../../shared/components/ui/Select'
-import { useProposalMutations, useProposals } from '../../../../features/proposals'
+import { useProposalMutations, useProposals, useProposalTemplates } from '../../../../features/proposals'
 import { useUsers } from '../../../../features/users/hooks/useUsers'
 import { formatDate, formatMoney, getProposalCustomer } from './utils/proposalPayloads'
 import { ProposalWizard } from './components/ProposalWizard'
@@ -25,19 +25,22 @@ export function CustomerProposalsPage() {
   const [filters, setFilters] = useState({ search: '', status: '', assigned_to: '' })
   const proposalsQuery = useProposals(filters)
   const usersQuery = useUsers()
+  const templatesQuery = useProposalTemplates()
   const mutations = useProposalMutations()
 
   const proposals = proposalsQuery.data || []
   const users = usersQuery.data || []
+  const templatesById = useMemo(() => new Map((templatesQuery.data || []).map(template => [String(template.id), template])), [templatesQuery.data])
 
   const visibleProposals = useMemo(() => {
     const search = filters.search.trim().toLowerCase()
     return proposals.filter((proposal) => {
       const customer = getProposalCustomer(proposal)
-      const haystack = [proposal.title, proposal.description, customer?.name, customer?.email].filter(Boolean).join(' ').toLowerCase()
+      const template = templatesById.get(String(proposal.template_id || proposal.metadata?.source_template_id))
+      const haystack = [proposal.title, proposal.description, customer?.name, customer?.email, template?.name, proposal.metadata?.source_template_name].filter(Boolean).join(' ').toLowerCase()
       return !search || haystack.includes(search)
     })
-  }, [filters.search, proposals])
+  }, [filters.search, proposals, templatesById])
 
   const handleDelete = async (proposal) => {
     if (!window.confirm(t('proposals.page.confirmDelete', { title: proposal.title || proposal.id }))) return
@@ -100,9 +103,10 @@ export function CustomerProposalsPage() {
       </section>
 
       <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)]">
-        <div className="grid grid-cols-[1.4fr_1fr_.7fr_.8fr_auto] gap-3 border-b border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-xs font-black text-[var(--text-muted)]">
+        <div className="grid grid-cols-[1.3fr_1fr_1fr_.7fr_.8fr_auto] gap-3 border-b border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-xs font-black text-[var(--text-muted)]">
           <div>{t('proposals.page.columnProposal')}</div>
           <div>{t('proposals.wizard.steps.customer')}</div>
+          <div>القالب / الإصدار</div>
           <div>{t('proposals.pricing.totalLabel')}</div>
           <div>{t('customers.table.status')}</div>
           <div>{t('proposals.page.columnActions')}</div>
@@ -124,6 +128,11 @@ export function CustomerProposalsPage() {
 
         {visibleProposals.map((proposal) => {
           const customer = getProposalCustomer(proposal)
+          const metadata = proposal.metadata || {}
+          const templateId = proposal.template_id || metadata.source_template_id
+          const template = templatesById.get(String(templateId))
+          const templateName = metadata.source_template_name || proposal.template?.name || template?.name
+          const sourceVersion = metadata.source_template_version_name || proposal.template_version?.name || (metadata.source_template_version_number ? `Version ${metadata.source_template_version_number}` : null)
           return (
             <div key={proposal.id} className="grid grid-cols-[1.4fr_1fr_.7fr_.8fr_auto] items-center gap-3 border-b border-[var(--border)] px-4 py-3 last:border-b-0 hover:bg-[var(--surface-2)]">
               <div className="min-w-0">
@@ -133,6 +142,10 @@ export function CustomerProposalsPage() {
               <div className="min-w-0">
                 <div className="truncate text-sm font-bold text-[var(--text)]">{customer?.name || '-'}</div>
                 <div className="truncate text-xs font-semibold text-[var(--text-muted)]">{customer?.email || customer?.phone || '-'}</div>
+              </div>
+              <div className="min-w-0">
+                <div className="truncate text-sm font-bold text-[var(--text)]">{templateName || (templateId ? `قالب #${templateId}` : 'غير محدد')}</div>
+                <div className="mt-1 truncate text-xs font-semibold text-[var(--text-muted)]">{sourceVersion || 'الإصدار غير متاح'}</div>
               </div>
               <div className="text-sm font-black text-[var(--text)]" dir="ltr">{formatMoney(proposal.total ?? proposal.current_version?.total, proposal.currency)}</div>
               <div>
