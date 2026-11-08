@@ -325,7 +325,7 @@ export function ProposalBuilder({ proposalId }) {
           </div>
 
           {rightTab === 'pricing' ? (
-            <div className="min-h-0 flex-1 overflow-y-auto p-4">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">
               <ProposalPricingPanel
                 proposal={proposal}
                 options={options}
@@ -337,7 +337,7 @@ export function ProposalBuilder({ proposalId }) {
           ) : null}
 
           {rightTab === 'recipients' ? (
-            <div className="h-[calc(100vh-7.5rem)] overflow-y-auto p-4">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">
               <ProposalRecipientsPanel proposalId={proposalId} />
             </div>
           ) : null}
