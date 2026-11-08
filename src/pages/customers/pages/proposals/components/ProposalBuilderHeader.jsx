@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, Eye, Save, Settings, WalletCards } from 'lucide-react'
+import { ArrowRight, Eye, Save, Settings, WalletCards, FileText, Printer } from 'lucide-react'
 
 import { Button } from '../../../../../shared/components/ui/Button'
 import { formatMoney } from '../utils/proposalPayloads'
@@ -12,6 +12,9 @@ export function ProposalBuilderHeader({
   onPreview,
   onCreateVersion,
   onSaveNow,
+  onExportPdf,
+  onExportWord,
+  isExporting = false,
   creatingVersion,
   isSaving = false,
 }) {
@@ -50,6 +53,10 @@ export function ProposalBuilderHeader({
               {t('proposals.header.createVersion')}
             </Button>
           )}
+          {currentVersion && <>
+            <Button variant="outline" size="sm" onClick={onExportPdf} disabled={isSaving || isExporting}><Printer size={16} />PDF</Button>
+            <Button variant="outline" size="sm" onClick={onExportWord} disabled={isSaving || isExporting}><FileText size={16} />Word</Button>
+          </>}
           <Button variant="primary" size="sm" onClick={onPreview}>
             <Eye size={16} />
             {t('proposals.page.preview')}
