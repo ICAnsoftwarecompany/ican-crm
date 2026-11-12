@@ -82,6 +82,7 @@ import { ReportsDemo } from '../../pages/playground/ReportsDemo'
 import { communicationRoutes } from '../../pages/communication/communicationRoutes'
 import { CommunicationSettingsPage } from '../../pages/settings/pages/communication/CommunicationSettingsPage'
 import { serviceRoutes } from '../../pages/service/serviceRoutes'
+import { shippingRoutes } from '../../pages/shipping/shippingRoutes'
 
 function NotFoundPage() {
   const { t } = useTranslation()
@@ -177,6 +178,7 @@ export const router = createBrowserRouter([
       // Communication hub (2026-10-01): /conversations, /calls, /meetings, /team-chat — each with
       // its shared sub-sidebar pages. /activities and /activities/calendar stay for existing links.
       ...communicationRoutes,
+      shippingRoutes,
       {
         path: 'campaigns',
         element: <CampaignsPage />,
