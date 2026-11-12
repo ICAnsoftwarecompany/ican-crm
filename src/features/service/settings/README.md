@@ -35,3 +35,8 @@ entry in `mocks/handlers/settingsHandlers.js`, a definition, list it in `SETTING
 Rules: tenant labels are `{ ar, en }` objects (never passed through `t()`); deleting something in use
 must fail on the server with 409 `RESOURCE_IN_USE` — the UI suggests deactivating instead.
 Authorization is the backend's job; the nav item is not protection.
+
+
+## Shared assignment settings (2026-11-13)
+
+`/service/settings/assignment` uses `features/service/assignment` for live GET requests: assignment rules, distribution settings and audit logs. Its API adapter also exposes create/update/delete, customer owners and manual assignment for later UI integration. This panel is intentionally read-only until backend response shapes and permission rules are verified. Unlike generic mock CRUD settings, the supplied assignment rule update uses POST, not PATCH. Arabic/English copy and theme tokens are included.
