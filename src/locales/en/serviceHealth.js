@@ -1,5 +1,5 @@
 export default {
-  title: 'Customer Hub settings health',
+  title: 'Overview',
   description: 'Review verified configuration and identify what still needs setup.',
   progress: 'Verified configuration completion',
   refresh: 'Refresh status',
