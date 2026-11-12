@@ -13,7 +13,7 @@ import { schedulingResourcesResource } from './schedulingResources'
 import { portalAccountsSection, portalBrandingSection, portalPoliciesResource, requestCatalogResource } from './portalResources'
 import { followUpProgramsResource, portfoliosSection } from './followUpResources'
 import { qualityChecklistsResource, samplingRulesResource, surveysResource } from './qualityResources'
-import { ClipboardList, Bot, FileUp, GitCompare, KeyRound, Package, Sparkles, Wand2, Webhook } from 'lucide-react'
+import { ClipboardList, Activity, Bot, FileUp, GitCompare, KeyRound, Package, Sparkles, Wand2, Webhook } from 'lucide-react'
 import { ApiClientsPanel } from '../../api-access/components/ApiClientsPanel'
 import { AiSettingsPanel } from '../../ai/components/AiSettingsPanel'
 import { AiAgentPanel } from '../../ai/components/AiAgentPanel'
@@ -21,10 +21,12 @@ import { WebhooksPanel } from '../../api-access/components/WebhooksPanel'
 import { ImportsPanel } from '../../imports/components/ImportsPanel'
 import { SetupWizardPanel } from '../../setup/components/SetupWizardPanel'
 import { TemplateVersionsPanel } from '../../setup/components/TemplateVersionsPanel'
+import { SettingsHealthPanel } from '../health/SettingsHealthPanel'
 import { AssignmentSettingsPanel } from '../../assignment/components/AssignmentSettingsPanel'
 import { CatalogItemsPanel } from '../../catalog/components/CatalogItemsPanel'
 
 /** A section can also be a custom panel (`component`) instead of a CRUD list. */
+const healthSection = { key: 'health', icon: Activity, i18nKey: 'service.settings.resources.health', component: SettingsHealthPanel }
 const assignmentSection = { key: 'assignment', icon: ClipboardList, i18nKey: 'service.settings.resources.assignment', component: AssignmentSettingsPanel }
 const setupSection = { key: 'setup', icon: Wand2, i18nKey: 'service.settings.resources.setup', component: SetupWizardPanel }
 const templateVersionsSection = { key: 'templateVersions', icon: GitCompare, i18nKey: 'service.settings.resources.templateVersions', component: TemplateVersionsPanel }
@@ -42,7 +44,7 @@ const catalogItemsSection = { key: 'catalogItems', icon: Package, i18nKey: 'serv
  * Later sub-modules (replies, knowledge…) append their own resources.
  */
 export const SETTINGS_GROUPS = [
-  { key: 'general', resources: [setupSection, templateVersionsSection, importsSection] },
+  { key: 'general', resources: [healthSection, setupSection, templateVersionsSection, importsSection] },
   { key: 'cases', resources: [caseTypesResource, queuesResource, assignmentSection] },
   { key: 'catalog', resources: [catalogItemsSection, itemTypesResource, recordTypesResource, pipelinesResource] },
   { key: 'contracts', resources: [contractTypesResource] },
@@ -61,6 +63,7 @@ export const SETTINGS_GROUPS = [
 export const SETTINGS_RESOURCES = SETTINGS_GROUPS.flatMap((group) => group.resources)
 
 const SECTION_SLUGS = {
+  health: 'health',
   assignment: 'assignment',
   caseTypes: 'case-types',
   queues: 'queues',
