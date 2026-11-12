@@ -64,3 +64,14 @@ The examples are illustrative, not a declaration that all modules or APIs are al
 7. Do not introduce new API endpoints or modify existing contracts solely to document this rule. Tenant industry selection, module catalog, dependency model, and activation APIs must be agreed with backend owners before implementation.
 
 **Interpretation:** CH-002 refines CH-001. Multiple enabled modules are allowed, but they are composed **around a mandatory primary industry** rather than treating every module as an equal tenant foundation.
+
+## Rule CH-003 — Optional industry and shipping-first navigation pilot
+
+Updated: 2026-11-13 00:19 (Africa/Cairo).
+
+- Tenant primary industry is optional: `null` means General CRM; no domain module is implicitly installed. This supersedes CH-002's mandatory-industry statement.
+- For an industry tenant, effective modules are the union of the industry's included capabilities and separately enabled modules; deduplicate by stable key. Industry composition may set navigation placement, terminology and defaults, but may not duplicate module data or bypass permissions.
+- General tenants display enabled modules independently, even when many are installed. All enabled and authorized modules remain reachable regardless of their workspace placement.
+- Shipping-first navigation pilot: a single Shipping entry under Customer Hub opens its own shared sub-sidebar; Support & Tickets is a separate group using the existing shared case engine; subscriptions reuse the existing Service route.
+- This frontend pilot is **not** a live tenant-industry/module-entitlement implementation. Until backend metadata is available, no hardcoded shipping industry or fake permission decisions should be treated as authoritative.
+- Route and API contracts must be preserved. Support SLA and shipping reports must be backed by the existing engines/API before declaring production readiness.
