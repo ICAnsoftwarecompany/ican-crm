@@ -26,11 +26,11 @@ export function SettingsWorkspace({ section, basePath }) {
   }))
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)]">
-      <SubSidebarFrame variant="framed" ariaLabel={t('service.settings.title')} className="max-h-[45vh] self-start lg:sticky lg:top-[4.5rem] lg:h-[calc(100dvh-5.5rem)] lg:max-h-[calc(100dvh-5.5rem)]">
+    <div className="grid min-h-0 gap-4 lg:h-[calc(100dvh-9rem)] lg:grid-cols-[220px_minmax(0,1fr)] lg:overflow-hidden">
+      <SubSidebarFrame variant="framed" ariaLabel={t('service.settings.title')} className="h-[45vh] max-h-[45vh] min-h-0 lg:!h-full lg:!max-h-full">
         <SubSidebarNav groups={groups} ariaLabel={t('service.settings.title')} />
       </SubSidebarFrame>
-      <div className="min-w-0">
+      <div className="min-w-0 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:pe-1 lg:[scrollbar-gutter:stable]">
         {resource?.component ? (
           <resource.component key={resource.key} resource={resource} />
         ) : resource ? (
