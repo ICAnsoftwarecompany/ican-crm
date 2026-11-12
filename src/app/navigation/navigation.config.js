@@ -60,6 +60,10 @@ import {
   BookOpen,
   BarChart3,
   Layers3,
+  Truck,
+  Ticket,
+  Clock3,
+  Repeat2,
 } from 'lucide-react'
 
 /** @type {NavigationSection[]} */
@@ -194,11 +198,20 @@ export const navigationConfig = [
         activePatterns: ['/service', '/service/overview'],
       },
       {
-        id: 'service-cases',
-        labelKey: 'nav.serviceCases',
-        icon: Inbox,
-        path: '/service/cases',
-        activePatterns: ['/service/cases', '/service/cases/*'],
+        id: 'shipping',
+        labelKey: 'nav.shipping',
+        icon: Truck,
+        path: '/shipping',
+        activePatterns: ['/shipping', '/shipping/*'],
+        module: 'shipping',
+      },
+      {
+        id: 'subscriptions-domain',
+        labelKey: 'nav.subscriptionsDomain',
+        icon: Repeat2,
+        path: '/service/subscriptions',
+        activePatterns: ['/service/subscriptions', '/service/subscriptions/*'],
+        module: 'subscriptions',
       },
       {
         id: 'service-hub',
@@ -214,13 +227,6 @@ export const navigationConfig = [
         path: '/service/my-work',
       },
       {
-        id: 'service-knowledge',
-        labelKey: 'nav.serviceKnowledge',
-        icon: BookOpen,
-        path: '/service/knowledge',
-        activePatterns: ['/service/knowledge', '/service/knowledge/*'],
-      },
-      {
         id: 'service-reports',
         labelKey: 'nav.serviceReports',
         icon: BarChart3,
@@ -233,6 +239,19 @@ export const navigationConfig = [
         path: '/service/settings',
         activePatterns: ['/service/settings', '/service/settings/*'],
       },
+    ],
+  },
+
+  // Shared support/case engine: independent navigation group; reuse existing routes.
+  {
+    id: 'support',
+    type: 'section',
+    labelKey: 'nav.sections.support',
+    module: 'support',
+    items: [
+      { id: 'support-tickets', labelKey: 'nav.supportTickets', icon: Ticket, path: '/service/cases', activePatterns: ['/service/cases', '/service/cases/*'] },
+      { id: 'support-knowledge', labelKey: 'nav.serviceKnowledge', icon: BookOpen, path: '/service/knowledge', activePatterns: ['/service/knowledge', '/service/knowledge/*'] },
+      { id: 'support-sla', labelKey: 'nav.supportSla', icon: Clock3, path: '/service/settings/sla', activePatterns: ['/service/settings/sla'] },
     ],
   },
 
