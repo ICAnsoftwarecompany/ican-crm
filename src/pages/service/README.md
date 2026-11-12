@@ -24,3 +24,10 @@ Route composition only — pages assemble components from `features/service` (im
 
 Add a page: create `<Name>Page.jsx`, add a lazy child route in `serviceRoutes.js`, list it in the
 routes table of [docs/4-CUSTOMER-SERVICE.md](../../../docs/4-CUSTOMER-SERVICE.md#routes-and-navigation).
+
+
+## Shipping-first navigation pilot
+
+Updated: 2026-11-13 00:19 (Africa/Cairo).
+
+The main sidebar now gives Support & Tickets a separate section pointing to the existing case, knowledge and SLA routes. Customer Hub keeps its operations pages and adds a shipping entry that opens `/shipping` with its own shared sub-sidebar, plus a subscription link to the existing service route. This is a frontend navigation pilot, not an implementation of tenant module entitlements.
