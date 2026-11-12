@@ -40,3 +40,8 @@ Authorization is the backend's job; the nav item is not protection.
 ## Shared assignment settings (2026-11-13)
 
 `/service/settings/assignment` uses `features/service/assignment` for live GET requests: assignment rules, distribution settings and audit logs. Its API adapter also exposes create/update/delete, customer owners and manual assignment for later UI integration. This panel is intentionally read-only until backend response shapes and permission rules are verified. Unlike generic mock CRUD settings, the supplied assignment rule update uses POST, not PATCH. Arabic/English copy and theme tokens are included.
+
+
+## First page: Customer Hub settings health (2026-11-13)
+
+The default `/service/settings` now redirects to `/service/settings/health`. The first navigation item shows live, verifiable settings-list completion with direct links to missing configurations. See `health/README.md` for the exact denominator, unknown states and limitations. This is not a fabricated tenant-wide readiness score.
