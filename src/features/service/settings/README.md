@@ -50,3 +50,8 @@ The default `/service/settings` now redirects to `/service/settings/health`. The
 ## Settings sub-sidebar scroll (2026-11-13)
 
 The Customer Hub Operations Settings sidebar is sticky on desktop (below the app header), with a viewport-bounded height. Its shared `SubSidebarNav` already owns `overflow-y-auto` and `overscroll-contain`, so only the navigation list scrolls inside the sidebar, independently from the settings content. On narrow viewports, the sidebar has a capped height and internal scroll without desktop sticky behavior. The existing shared sidebar components, routes, translations, and theme tokens are unchanged.
+
+
+## Independent settings scrolling (2026-11-13)
+
+The settings workspace now uses a viewport-bounded desktop grid (`100dvh - 9rem`) with overflow hidden at the workspace boundary. The shared `SubSidebarNav` scrolls inside the fixed-height framed sidebar; the right settings panel has its own independent `overflow-y-auto` region. On mobile the sidebar is capped at 45vh and scrolls internally, while the main content follows normal page flow. This supersedes the prior sticky-only attempt, which did not isolate scrolling. The shared sub-sidebar component is not changed.
