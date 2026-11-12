@@ -27,7 +27,7 @@ export function SettingsWorkspace({ section, basePath }) {
 
   return (
     <div className="grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)]">
-      <SubSidebarFrame variant="framed" ariaLabel={t('service.settings.title')} className="self-start">
+      <SubSidebarFrame variant="framed" ariaLabel={t('service.settings.title')} className="max-h-[45vh] self-start lg:sticky lg:top-[4.5rem] lg:h-[calc(100dvh-5.5rem)] lg:max-h-[calc(100dvh-5.5rem)]">
         <SubSidebarNav groups={groups} ariaLabel={t('service.settings.title')} />
       </SubSidebarFrame>
       <div className="min-w-0">

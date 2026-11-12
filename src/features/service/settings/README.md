@@ -45,3 +45,8 @@ Authorization is the backend's job; the nav item is not protection.
 ## First page: Customer Hub settings health (2026-11-13)
 
 The default `/service/settings` now redirects to `/service/settings/health`. The first navigation item shows live, verifiable settings-list completion with direct links to missing configurations. See `health/README.md` for the exact denominator, unknown states and limitations. This is not a fabricated tenant-wide readiness score.
+
+
+## Settings sub-sidebar scroll (2026-11-13)
+
+The Customer Hub Operations Settings sidebar is sticky on desktop (below the app header), with a viewport-bounded height. Its shared `SubSidebarNav` already owns `overflow-y-auto` and `overscroll-contain`, so only the navigation list scrolls inside the sidebar, independently from the settings content. On narrow viewports, the sidebar has a capped height and internal scroll without desktop sticky behavior. The existing shared sidebar components, routes, translations, and theme tokens are unchanged.
