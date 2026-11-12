@@ -69,3 +69,7 @@ The authoritative list (with mock/live state) is `core/constants/serviceModules.
 
 Follow [docs/4-CUSTOMER-SERVICE.md → Adding a sub-module](../../../docs/4-CUSTOMER-SERVICE.md#adding-a-sub-module),
 create its own `README.md`, and add a row to the table above.
+
+## Architecture rule CH-001 — multi-module Customer Hub
+
+Customer Hub is a parent platform for independently configurable domain modules (e.g. shipping companies), each with its own settings, workflows and domain-specific case/ticket experience while reusing shared CRM and Case engines. See [Customer Hub multi-module rule](../../../docs/customer-service/CUSTOMER-HUB-MODULE-RULE.md). Updated: 2026-11-12 20:38 (Africa/Cairo).
