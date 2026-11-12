@@ -613,3 +613,7 @@ customer drawer health card **not visually verified** (needs the real customers 
 - **Tests:** router, mock adapter, mock db, serviceHttp, capabilities utils.
 - **Checklist:** lint ✅ · i18n ✅ · architecture ✅ · service gate ✅ · vitest ✅ · build ✅ ·
   light/dark and RTL/LTR **not visually verified** (no authenticated tenant session in the build environment).
+
+## CH-001 — Multi-module Customer Hub (2026-11-12 20:38 Africa/Cairo)
+
+Customer Hub contains independently configurable domain modules, rather than one fixed industry experience. Each may own operational screens, settings and specialized ticket configuration; shared Customer, Cases and other CRM engines remain common. Canonical rule: [CUSTOMER-HUB-MODULE-RULE.md](customer-service/CUSTOMER-HUB-MODULE-RULE.md).
