@@ -252,3 +252,7 @@ Added task counts, live nearest-deadline countdown and task-list drawer to CRM/d
 tables; customer timelines now include task creation events and task detail actions.
 See [lead tasks](../src/features/lead-tasks/README.md#task-column-and-timeline).
 
+
+## Customer Hub architecture update — 2026-11-12 20:38 (Africa/Cairo)
+
+- Added [CH-001: Customer Hub multi-module domain rule](customer-service/CUSTOMER-HUB-MODULE-RULE.md): independent domain-specific modules, settings and ticket experiences built on shared CRM and case engines.
