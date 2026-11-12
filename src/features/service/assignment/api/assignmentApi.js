@@ -2,7 +2,7 @@ import httpClient from '../../../../services/httpClient'
 
 // Live tenant endpoints from the supplied Postman collection. The shared HTTP
 // client supplies authentication and api_password; never hardcode credentials.
-const root = '/tenant/service'
+const root = '/api/tenant/service'
 const data = (response) => response.data?.data ?? response.data
 export const assignmentApi = {
   rules: {
