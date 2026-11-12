@@ -73,3 +73,10 @@ create its own `README.md`, and add a row to the table above.
 ## Architecture rule CH-001 — multi-module Customer Hub
 
 Customer Hub is a parent platform for independently configurable domain modules (e.g. shipping companies), each with its own settings, workflows and domain-specific case/ticket experience while reusing shared CRM and Case engines. See [Customer Hub multi-module rule](../../../docs/customer-service/CUSTOMER-HUB-MODULE-RULE.md). Updated: 2026-11-12 20:38 (Africa/Cairo).
+
+
+## Navigation composition pilot
+
+Updated: 2026-11-13 00:19 (Africa/Cairo).
+
+Support & Tickets is a separate main-sidebar group but still reuses the existing `cases`, `knowledge`, and `settings` modules. Shipping is scaffolded separately in `features/shipping` and `pages/shipping`. Do not duplicate these engines when connecting backend APIs.

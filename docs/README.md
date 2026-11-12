@@ -6,6 +6,8 @@
 
 > **Documentation update:** 2026-11-03 23:10 (Africa/Cairo) — reusable mentions viewer in Deal Workspace; updated [mentions docs](mentions/README.md).
 
+> **Documentation update:** 2026-11-13 00:19 (Africa/Cairo) — [shipping navigation scaffold](../src/features/shipping/README.md), [shipping pages](../src/pages/shipping/README.md), [support boundary](../src/features/support/README.md), [subscriptions boundary](../src/features/subscription-domain/README.md), and [industry composition rule](customer-service/CUSTOMER-HUB-MODULE-RULE.md) (CH-003).
+
 Start here. Every doc in this folder, what it covers, and its sections. Rules for agents and contributors are in
 [../CLAUDE.md](../CLAUDE.md). **If a doc and the code disagree, the code wins.** When you change a feature, update its
 doc in the same change.

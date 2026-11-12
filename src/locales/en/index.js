@@ -32,6 +32,8 @@ import calendar from './calendar.js'
 import branding from './branding.js'
 import dealWorkspace from './dealWorkspace.js'
 import service from './service.js'
+import serviceAssignment from './serviceAssignment.js'
+import serviceHealth from './serviceHealth.js'
 import notifications from './notifications.js'
 import alerts from './alerts.js'
 import portal from './portal.js'
@@ -80,6 +82,8 @@ export default {
   branding,
   dealWorkspace,
   service,
+  serviceAssignment,
+  serviceHealth,
   notifications,
   alerts,
   portal,

@@ -51,6 +51,8 @@ export default {
       sla: 'Service levels',
     },
     resources: {
+      health: { title: 'Customer Hub settings health', one: 'Settings health', description: 'Configuration completion and required follow-up.' },
+      assignment: { title: 'Assignment & distribution', one: 'Assignment setting', description: 'Assignment rules, distribution strategies and audit history.' },
       templateVersions: { title: 'Template version', one: 'template version', description: 'Upgrade the industry template you started from without losing your own changes.' },
       aiAgent: { title: 'AI agent', one: 'AI agent', description: 'Try the agent on a customer’s data and review the conversations it handled or handed to a person.' },
       qualityChecklists: { title: 'Quality checklists', one: 'checklist', description: 'What a good request looks like: criteria with weights and a pass mark. Supervisors score samples against it.' },
