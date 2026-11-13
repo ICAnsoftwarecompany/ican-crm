@@ -34,3 +34,8 @@ The assignment rules page now has tabs for each entity_type returned by the GET 
 ## Tab-local create action (2026-11-13)
 
 The Add rule action lives inside the selected entity-type tab and uses the selected type in the POST payload; the form displays the type read-only to prevent accidental cross-tab creation. Add and Save use theme surface/text tokens and visible borders instead of white text on an undefined primary background. A fallback ticket tab is used only when the API returns no types.
+
+
+## Distribution create/delete and drawers (2026-11-13)
+
+Distribution uses live GET/POST/DELETE `/api/tenant/service/distribution-settings[/{id}]`, separate tabs per discovered entity_type, and a tab-scoped Add action. Create uses the documented `scope`, `strategy`, `fallback_strategy`, and entity type; strategy choices are the six values supplied in the API contract. Delete requires confirmation in a shared `AppDrawer`. Assignment rule create/edit also use `AppDrawer` rather than inline forms. **Distribution update is intentionally not enabled**: the provided contract does not specify an update HTTP method, so no unsupported endpoint/method was guessed. Types with no records cannot be discovered until a types API is supplied.
