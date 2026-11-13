@@ -1,9 +1,15 @@
-# Customer Hub settings health
+# Customer Hub Operations Settings — overview readiness
 
-Updated: 2026-11-13 01:25 (Africa/Cairo).
+Updated: 2026-11-13 (Africa/Cairo). Route: `/service/settings/health`.
 
-`SettingsHealthPanel` is the first Operations Settings page at `/service/settings/health`. `settingsHealth.js` defines the auditable checks and pure evaluator.
+## Live APIs and scoring
 
-**Metric definition:** completed verifiable resource lists / successfully verified resource lists × 100. A list is configured when it contains at least one active record. Unavailable, malformed and failed responses are `unknown`, excluded from the denominator and clearly disclosed. The coverage counter shows how many checks were verified. A 100% score does not certify system readiness: presence of one item does not validate business configuration, dependencies, tenant permissions or backend enforcement. Settings without a supported list API are not counted.
+The overview queries the existing generic settings resource list APIs plus the two **verified** tenant endpoints `GET /api/tenant/service/assignment-rules` and `GET /api/tenant/service/distribution-settings` via the shared authenticated `assignmentApi`. Both bare arrays and `{ success: true, data: [...] }` response shapes are accepted. No credentials or guessed endpoints are added.
 
-Uses existing `createResourceApi` and React Query keys; no new backend endpoints, mock data or credentials. Links open the existing resource screens. Add stronger per-resource validation rules only with verified backend contracts. Arabic/English translations and theme variables required.
+- Each generic resource with a working list API counts as **one** requirement: at least one active record = 100%, none = 0%.
+- Assignment rules and distribution settings are scored **per `entity_type`**, independently: active records for each known type count as configured. Known types are the union of entity types returned by both APIs; e.g. rules for ticket, distribution for ticket and shipment => rules 50%, distribution 100%. A newly returned type is included automatically, without hardcoding ticket/shipment.
+- Overall percentage = total configured requirements / total verified requirements, including each discovered entity type as one requirement. Each setting displays its own percentage. Malformed, pending and failed responses are unknown, excluded from the denominator. Zero discovered types means the two type-based settings are unknown rather than falsely 100%.
+- **Important limitation:** the supplied APIs return configured records, **not an authoritative list of required types**. An entity type absent from both APIs cannot be inferred. Thus 100% means 100% of *discovered* types, not all possible required types. When a verified types endpoint becomes available, supply `expectedTypes` per check from its response; the evaluator already supports this. Do not invent missing types or assume a fixed number.
+- This is active-record presence, not validation of assignment rule conditions, strategy semantics, dependencies, permissions, or operational readiness.
+
+Settings without confirmed list APIs are not included. The generic resources retain their prior one-requirement fallback until authoritative subtypes are documented. Query keys match existing resource and assignment panels, so refresh/invalidation can reuse cache.

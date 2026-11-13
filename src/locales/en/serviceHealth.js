@@ -1,12 +1,14 @@
 export default {
   title: 'Overview',
-  description: 'Review verified configuration and identify what still needs setup.',
+  description: 'Track the completion of each setting and its currently available types from live data.',
   progress: 'Verified configuration completion',
   refresh: 'Refresh status',
-  coverage: '{{completed}} complete out of {{verified}} verified, from {{total}} checks',
+  coverage: '{{completed}} configured requirements out of {{units}} verified, across {{verified}} of {{total}} settings',
   loading: 'Checking settings...',
   unknownNote: 'Some settings could not be verified and were excluded from the percentage.',
+  discoveryNote: 'Assignment and distribution types are currently discovered from existing records; required types without records may be invisible. A future authoritative types API can make coverage complete.',
   configure: 'Open setting',
-  status: { complete: 'Active configuration exists', missing: 'Incomplete: no active configuration', unknown: 'Unable to verify' },
-  disclaimer: 'This percentage measures presence of active settings, not full operational readiness.',
+  resources: { assignmentRules: 'Assignment rules', distributionSettings: 'Distribution settings' },
+  status: { complete: 'Configured for known types', missing: 'Needs configuration', unknown: 'Unable to verify' },
+  disclaimer: 'This score measures active configuration and discovered types, not full operational readiness.',
 }
