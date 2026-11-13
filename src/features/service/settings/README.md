@@ -60,3 +60,8 @@ The settings workspace now uses a viewport-bounded desktop grid (`100dvh - 9rem`
 ## Overview scoring by live API types (2026-11-13)
 
 The overview includes live assignment-rules and distribution-settings APIs. Each has its own percentage based on active records per discovered `entity_type`; new returned types expand the denominator automatically. Generic list-backed settings count one requirement each until a verified subtype contract is available. The overall percentage is weighted by verified requirements, not by settings cards. Unknown API responses are excluded and disclosed. **Configured-record endpoints do not enumerate unconfigured required types**; the UI explicitly warns that missing types cannot be detected until an authoritative types endpoint exists. See `health/README.md` for the scoring contract and examples.
+
+
+## Separate assignment and distribution pages (2026-11-13)
+
+`/service/settings/assignment-rules` shows only assignment rules (GET `/api/tenant/service/assignment-rules`); `/service/settings/distribution-settings` shows only distribution settings (GET `/api/tenant/service/distribution-settings`). Both are separate links in the Requests settings group, share the existing read-only live list component and React Query cache, and have separate completion links from Overview. The former combined `/service/settings/assignment` route redirects to assignment rules for backward compatibility. Assignment audit logs are not displayed on either page.

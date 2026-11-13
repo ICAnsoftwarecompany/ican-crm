@@ -41,7 +41,7 @@ export function SettingsHealthPanel() {
       </div>
       <div className="grid gap-3">
         {health.items.map((item) => {
-          const resource = item.source === 'resource' ? getSettingsResource(item.key) : getSettingsResource('assignment')
+          const resource = item.source === 'resource' ? getSettingsResource(item.key) : getSettingsResource(item.key)
           const label = item.source === 'resource' ? t(`${resource.i18nKey}.title`) : t(`serviceHealth.resources.${item.key}`)
           const Icon = item.status === 'complete' ? CheckCircle2 : item.status === 'missing' ? AlertCircle : CircleHelp
           return <div key={item.key} className="flex flex-wrap items-center gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">

@@ -13,6 +13,8 @@ import { schedulingResourcesResource } from './schedulingResources'
 import { portalAccountsSection, portalBrandingSection, portalPoliciesResource, requestCatalogResource } from './portalResources'
 import { followUpProgramsResource, portfoliosSection } from './followUpResources'
 import { qualityChecklistsResource, samplingRulesResource, surveysResource } from './qualityResources'
+import { createElement } from 'react'
+import { Navigate } from 'react-router-dom'
 import { ClipboardList, Activity, Bot, FileUp, GitCompare, KeyRound, Package, Sparkles, Wand2, Webhook } from 'lucide-react'
 import { ApiClientsPanel } from '../../api-access/components/ApiClientsPanel'
 import { AiSettingsPanel } from '../../ai/components/AiSettingsPanel'
@@ -27,7 +29,9 @@ import { CatalogItemsPanel } from '../../catalog/components/CatalogItemsPanel'
 
 /** A section can also be a custom panel (`component`) instead of a CRUD list. */
 const healthSection = { key: 'health', icon: Activity, i18nKey: 'service.settings.resources.health', component: SettingsHealthPanel }
-const assignmentSection = { key: 'assignment', icon: ClipboardList, i18nKey: 'service.settings.resources.assignment', component: AssignmentSettingsPanel }
+const assignmentRulesSection = { key: 'assignmentRules', icon: ClipboardList, i18nKey: 'service.settings.resources.assignmentRules', component: () => createElement(AssignmentSettingsPanel, { sectionKey: 'rules' }) }
+const distributionSettingsSection = { key: 'distributionSettings', icon: ClipboardList, i18nKey: 'service.settings.resources.distributionSettings', component: () => createElement(AssignmentSettingsPanel, { sectionKey: 'distribution' }) }
+const legacyAssignmentSection = { key: 'assignment', icon: ClipboardList, i18nKey: 'service.settings.resources.assignment', component: () => createElement(Navigate, { to: '/service/settings/assignment-rules', replace: true }) }
 const setupSection = { key: 'setup', icon: Wand2, i18nKey: 'service.settings.resources.setup', component: SetupWizardPanel }
 const templateVersionsSection = { key: 'templateVersions', icon: GitCompare, i18nKey: 'service.settings.resources.templateVersions', component: TemplateVersionsPanel }
 const importsSection = { key: 'imports', icon: FileUp, i18nKey: 'service.settings.resources.imports', component: ImportsPanel }
@@ -45,7 +49,7 @@ const catalogItemsSection = { key: 'catalogItems', icon: Package, i18nKey: 'serv
  */
 export const SETTINGS_GROUPS = [
   { key: 'general', resources: [healthSection, setupSection, templateVersionsSection, importsSection] },
-  { key: 'cases', resources: [caseTypesResource, queuesResource, assignmentSection] },
+  { key: 'cases', resources: [caseTypesResource, queuesResource, assignmentRulesSection, distributionSettingsSection] },
   { key: 'catalog', resources: [catalogItemsSection, itemTypesResource, recordTypesResource, pipelinesResource] },
   { key: 'contracts', resources: [contractTypesResource] },
   { key: 'billing', resources: [paymentPlansResource, planAssignmentsResource] },
@@ -60,11 +64,13 @@ export const SETTINGS_GROUPS = [
   { key: 'knowledge', resources: [kbCategoriesResource] },
 ]
 
-export const SETTINGS_RESOURCES = SETTINGS_GROUPS.flatMap((group) => group.resources)
+export const SETTINGS_RESOURCES = [...SETTINGS_GROUPS.flatMap((group) => group.resources), legacyAssignmentSection]
 
 const SECTION_SLUGS = {
   health: 'health',
   assignment: 'assignment',
+  assignmentRules: 'assignment-rules',
+  distributionSettings: 'distribution-settings',
   caseTypes: 'case-types',
   queues: 'queues',
   slaPolicies: 'sla-policies',
