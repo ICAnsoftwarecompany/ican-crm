@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { assignmentApi } from '../api/assignmentApi'
 import { AssignmentRulesPanel } from './AssignmentRulesPanel'
+import { DistributionSettingsPanel } from './DistributionSettingsPanel'
 
 export const sections = [
   { key: 'rules', fetch: assignmentApi.rules.list },
@@ -40,6 +41,7 @@ export function AssignmentSection({ section }) {
 export function AssignmentSettingsPanel({ sectionKey = 'rules' }) {
   const { t } = useTranslation()
   if (sectionKey === 'rules') return <AssignmentRulesPanel />
+  if (sectionKey === 'distribution') return <DistributionSettingsPanel />
   const section = sections.find((entry) => entry.key === sectionKey) || sections[0]
   return <div className="grid gap-4"><header><h1 className="text-xl font-bold text-[var(--text)]">{t(`serviceAssignment.${section.key}`)}</h1><p className="text-sm text-[var(--text-muted)]">{t('serviceAssignment.description')}</p></header><AssignmentSection section={section} /></div>
 }
