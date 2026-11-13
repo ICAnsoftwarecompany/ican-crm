@@ -13,6 +13,7 @@ import { schedulingResourcesResource } from './schedulingResources'
 import { portalAccountsSection, portalBrandingSection, portalPoliciesResource, requestCatalogResource } from './portalResources'
 import { followUpProgramsResource, portfoliosSection } from './followUpResources'
 import { qualityChecklistsResource, samplingRulesResource, surveysResource } from './qualityResources'
+import { createElement } from 'react'
 import { Navigate } from 'react-router-dom'
 import { ClipboardList, Activity, Bot, FileUp, GitCompare, KeyRound, Package, Sparkles, Wand2, Webhook } from 'lucide-react'
 import { ApiClientsPanel } from '../../api-access/components/ApiClientsPanel'
@@ -28,9 +29,9 @@ import { CatalogItemsPanel } from '../../catalog/components/CatalogItemsPanel'
 
 /** A section can also be a custom panel (`component`) instead of a CRUD list. */
 const healthSection = { key: 'health', icon: Activity, i18nKey: 'service.settings.resources.health', component: SettingsHealthPanel }
-const assignmentRulesSection = { key: 'assignmentRules', icon: ClipboardList, i18nKey: 'service.settings.resources.assignmentRules', component: () => <AssignmentSettingsPanel sectionKey="rules" /> }
-const distributionSettingsSection = { key: 'distributionSettings', icon: ClipboardList, i18nKey: 'service.settings.resources.distributionSettings', component: () => <AssignmentSettingsPanel sectionKey="distribution" /> }
-const legacyAssignmentSection = { key: 'assignment', icon: ClipboardList, i18nKey: 'service.settings.resources.assignment', component: () => <Navigate to="/service/settings/assignment-rules" replace /> }
+const assignmentRulesSection = { key: 'assignmentRules', icon: ClipboardList, i18nKey: 'service.settings.resources.assignmentRules', component: () => createElement(AssignmentSettingsPanel, { sectionKey: 'rules' }) }
+const distributionSettingsSection = { key: 'distributionSettings', icon: ClipboardList, i18nKey: 'service.settings.resources.distributionSettings', component: () => createElement(AssignmentSettingsPanel, { sectionKey: 'distribution' }) }
+const legacyAssignmentSection = { key: 'assignment', icon: ClipboardList, i18nKey: 'service.settings.resources.assignment', component: () => createElement(Navigate, { to: '/service/settings/assignment-rules', replace: true }) }
 const setupSection = { key: 'setup', icon: Wand2, i18nKey: 'service.settings.resources.setup', component: SetupWizardPanel }
 const templateVersionsSection = { key: 'templateVersions', icon: GitCompare, i18nKey: 'service.settings.resources.templateVersions', component: TemplateVersionsPanel }
 const importsSection = { key: 'imports', icon: FileUp, i18nKey: 'service.settings.resources.imports', component: ImportsPanel }
