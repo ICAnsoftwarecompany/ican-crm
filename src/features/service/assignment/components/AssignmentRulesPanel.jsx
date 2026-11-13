@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Plus } from 'lucide-react'
+import { AppDrawer } from '../../../../shared/components/overlays/AppDrawer'
 import { assignmentApi } from '../api/assignmentApi'
 
 const queryKey = ['service', 'assignment', 'rules']
@@ -87,7 +88,8 @@ export function AssignmentRulesPanel() {
         </article>)}
       </div>
     </>}
-    {form && <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+    <AppDrawer open={Boolean(form)} onClose={() => { if (!mutation.isPending) setForm(null) }} title={t(editing ? 'serviceAssignment.editRule' : 'serviceAssignment.addRule')} size="xl" drawerKey="service-assignment-rule" portal pushPage={false}>
+    {form && <div>
       <h2 className="mb-4 text-lg font-semibold">{t(editing ? 'serviceAssignment.editRule' : 'serviceAssignment.addRule')}</h2>
       <form onSubmit={save} className="grid gap-3 sm:grid-cols-2">
         {[
@@ -105,5 +107,6 @@ export function AssignmentRulesPanel() {
         <div className="flex gap-2 sm:col-span-2"><button disabled={mutation.isPending} type="submit" className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-4 py-2 text-sm font-semibold text-[var(--text)] hover:bg-[var(--surface)] disabled:opacity-50">{t('serviceAssignment.save')}</button><button type="button" className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm" onClick={() => setForm(null)}>{t('serviceAssignment.cancel')}</button></div>
       </form>
     </div>}
+    </AppDrawer>
   </div>
 }
