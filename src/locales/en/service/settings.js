@@ -52,7 +52,9 @@ export default {
     },
     resources: {
       health: { title: 'Overview', one: 'Settings health', description: 'Configuration completion and required follow-up.' },
-      assignment: { title: 'Assignment & distribution', one: 'Assignment setting', description: 'Assignment rules, distribution strategies and audit history.' },
+      assignment: { title: 'Assignment & distribution', one: 'Setting', description: 'Legacy link redirects to assignment rules.' },
+      assignmentRules: { title: 'Assignment rules', one: 'Assignment rule', description: 'Rules for assigning requests by type.' },
+      distributionSettings: { title: 'Distribution rules', one: 'Distribution setting', description: 'Strategies for distributing requests by type.' },
       templateVersions: { title: 'Template version', one: 'template version', description: 'Upgrade the industry template you started from without losing your own changes.' },
       aiAgent: { title: 'AI agent', one: 'AI agent', description: 'Try the agent on a customer’s data and review the conversations it handled or handed to a person.' },
       qualityChecklists: { title: 'Quality checklists', one: 'checklist', description: 'What a good request looks like: criteria with weights and a pass mark. Supervisors score samples against it.' },
