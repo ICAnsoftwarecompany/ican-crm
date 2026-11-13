@@ -29,3 +29,8 @@ The settings registry now renders the existing `AssignmentSettingsPanel` with `s
 ## Assignment rules CRUD (2026-11-13)
 
 The assignment rules page now has tabs for each entity_type returned by the GET API (fallback ticket when no records exist). It supports POST create and POST update by ID using the existing assignmentApi, with JSON-object conditions, optional team/user/timeout numeric fields, active flag, and priority. The distribution page stays read-only. Types not returned by the API cannot be discovered; users can type a new type when creating a rule. No delete endpoint was confirmed. Mutation invalidates the rules and overview caches. This UI does not claim to validate backend-specific assignment methods or condition keys.
+
+
+## Tab-local create action (2026-11-13)
+
+The Add rule action lives inside the selected entity-type tab and uses the selected type in the POST payload; the form displays the type read-only to prevent accidental cross-tab creation. Add and Save use theme surface/text tokens and visible borders instead of white text on an undefined primary background. A fallback ticket tab is used only when the API returns no types.
