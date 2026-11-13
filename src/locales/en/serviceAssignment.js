@@ -10,4 +10,13 @@ export default {
   unrecognized: "Unrecognized response shape; review required.",
   empty: "No records yet.",
   inactive: "Inactive",
+  active: "Active",
+  rulesDescription: "Create and edit assignment rules for each entity type.",
+  addRule: "Add rule", editRule: "Edit rule",
+  name: "Rule name", entityType: "Entity type", assignType: "Assignment method",
+  teamId: "Team ID", userId: "User ID", priority: "Priority",
+  timeoutMinutes: "Timeout (minutes)", conditions: "Conditions (JSON)",
+  invalidConditions: "Conditions must be a valid JSON object.",
+  requiredFields: "Check required fields.", saveError: "Could not save the rule.",
+  save: "Save", cancel: "Cancel",
 }

@@ -10,4 +10,13 @@ export default {
   unrecognized: "صيغة الاستجابة غير معروفة وتحتاج مراجعة.",
   empty: "لا توجد بيانات بعد.",
   inactive: "غير مفعّل",
+  active: "مفعّل",
+  rulesDescription: "إضافة وتعديل قواعد الإسناد لكل نوع على حدة.",
+  addRule: "إضافة قاعدة", editRule: "تعديل القاعدة",
+  name: "اسم القاعدة", entityType: "نوع الكيان", assignType: "طريقة الإسناد",
+  teamId: "رقم الفريق", userId: "رقم الموظف", priority: "الأولوية",
+  timeoutMinutes: "مدة الانتظار بالدقائق", conditions: "الشروط (JSON)",
+  invalidConditions: "الشروط لازم تكون كائن JSON صحيح.",
+  requiredFields: "راجع الحقول المطلوبة.", saveError: "تعذّر حفظ القاعدة.",
+  save: "حفظ", cancel: "إلغاء",
 }

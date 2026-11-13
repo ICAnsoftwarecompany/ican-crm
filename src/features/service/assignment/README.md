@@ -24,3 +24,8 @@ Transport: shared `httpClient` for tenant authentication and API password. Do no
 ## Settings navigation split (2026-11-13)
 
 The settings registry now renders the existing `AssignmentSettingsPanel` with `sectionKey='rules'` or `sectionKey='distribution'` on separate URLs. Only the requested API is fetched per page; no combined logs section. This remains read-only until edit contracts are verified.
+
+
+## Assignment rules CRUD (2026-11-13)
+
+The assignment rules page now has tabs for each entity_type returned by the GET API (fallback ticket when no records exist). It supports POST create and POST update by ID using the existing assignmentApi, with JSON-object conditions, optional team/user/timeout numeric fields, active flag, and priority. The distribution page stays read-only. Types not returned by the API cannot be discovered; users can type a new type when creating a rule. No delete endpoint was confirmed. Mutation invalidates the rules and overview caches. This UI does not claim to validate backend-specific assignment methods or condition keys.
