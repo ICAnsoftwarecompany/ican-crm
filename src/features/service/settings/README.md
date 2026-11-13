@@ -55,3 +55,8 @@ The Customer Hub Operations Settings sidebar is sticky on desktop (below the app
 ## Independent settings scrolling (2026-11-13)
 
 The settings workspace now uses a viewport-bounded desktop grid (`100dvh - 9rem`) with overflow hidden at the workspace boundary. The shared `SubSidebarNav` scrolls inside the fixed-height framed sidebar; the right settings panel has its own independent `overflow-y-auto` region. On mobile the sidebar is capped at 45vh and scrolls internally, while the main content follows normal page flow. This supersedes the prior sticky-only attempt, which did not isolate scrolling. The shared sub-sidebar component is not changed.
+
+
+## Overview scoring by live API types (2026-11-13)
+
+The overview includes live assignment-rules and distribution-settings APIs. Each has its own percentage based on active records per discovered `entity_type`; new returned types expand the denominator automatically. Generic list-backed settings count one requirement each until a verified subtype contract is available. The overall percentage is weighted by verified requirements, not by settings cards. Unknown API responses are excluded and disclosed. **Configured-record endpoints do not enumerate unconfigured required types**; the UI explicitly warns that missing types cannot be detected until an authoritative types endpoint exists. See `health/README.md` for the scoring contract and examples.
