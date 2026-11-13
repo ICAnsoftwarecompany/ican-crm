@@ -19,3 +19,8 @@ Transport: shared `httpClient` for tenant authentication and API password. Do no
 ## UI
 
 `components/AssignmentSettingsPanel.jsx` shows live assignment rules, distribution settings and audit logs read-only until response schemas are confirmed. No fabricated data or destructive controls.
+
+
+## Settings navigation split (2026-11-13)
+
+The settings registry now renders the existing `AssignmentSettingsPanel` with `sectionKey='rules'` or `sectionKey='distribution'` on separate URLs. Only the requested API is fetched per page; no combined logs section. This remains read-only until edit contracts are verified.
