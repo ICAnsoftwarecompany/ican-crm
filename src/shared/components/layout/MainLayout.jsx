@@ -115,7 +115,7 @@ export function MainLayout() {
   useEffect(() => {
     if (activeRightSidebar && workspaceOpen) setWorkspaceOpen(false)
   }, [activeRightSidebar])
-  const internalChatUnreadQuery = useChatUnreadCount({ per_page: 30 })
+  const internalChatUnreadQuery = useChatUnreadCount({ per_page: 30 }, { priority: 'background' })
   const internalChatUnreadCount = Number(internalChatUnreadQuery.unreadCount || 0)
   const isDealRoute = /^\/deals\//.test(location.pathname)
   const dealChatRoute = isDealRoute && !location.pathname.endsWith('/chats')

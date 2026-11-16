@@ -3,6 +3,7 @@ import { whatsappApi } from '../api/whatsappApi'
 import { messengerApi } from '../api/messengerApi'
 import { QUERY_KEYS } from '../../../shared/constants/queryKeys'
 import { extractList } from '../../../shared/utils/apiResponse'
+import { prioritizeQuery, queryPolicyOptions } from '../../../shared/query/queryPolicy'
 import { useAuthStore } from '../../../store/authStore'
 import { requireTenantId, resolveTenantId } from '../../../services/tenantResolver'
 import {
@@ -51,29 +52,35 @@ export function useConversationMutations() {
   }
 }
 
-export function useMessengerConversations(params) {
+export function useMessengerConversations(params, options = {}) {
+  const { priority = 'page', ...queryOptions } = options
   return useQuery({
+    ...queryPolicyOptions(priority, queryOptions),
     queryKey: MESSENGER_CONVERSATIONS_QUERY_KEY,
-    queryFn: () => messengerApi.getConversations(params),
+    queryFn: prioritizeQuery(() => messengerApi.getConversations(params), priority),
     select: extractMessengerConversations,
   })
 }
 
-export function useMessengerConversationInfo(conversationId, params) {
+export function useMessengerConversationInfo(conversationId, params, options = {}) {
+  const { priority = 'page', ...queryOptions } = options
   return useQuery({
     queryKey: MESSENGER_CONVERSATION_INFO_QUERY_KEY(conversationId),
-    queryFn: () => messengerApi.getConversationInfo(conversationId, params),
-    enabled: Boolean(conversationId),
+    queryFn: prioritizeQuery(() => messengerApi.getConversationInfo(conversationId, params), priority),
     select: (response) => response?.data?.data || response?.data || response || null,
+    ...queryPolicyOptions(priority, queryOptions),
+    enabled: Boolean(conversationId) && (queryOptions.enabled ?? true),
   })
 }
 
-export function useMessengerMessages(conversationId, params) {
+export function useMessengerMessages(conversationId, params, options = {}) {
+  const { priority = 'page', ...queryOptions } = options
   return useQuery({
     queryKey: MESSENGER_CONVERSATION_MESSAGES_QUERY_KEY(conversationId),
-    queryFn: () => messengerApi.getConversationMessages(conversationId, params),
-    enabled: Boolean(conversationId),
+    queryFn: prioritizeQuery(() => messengerApi.getConversationMessages(conversationId, params), priority),
     select: extractMessengerMessages,
+    ...queryPolicyOptions(priority, queryOptions),
+    enabled: Boolean(conversationId) && (queryOptions.enabled ?? true),
   })
 }
 

@@ -153,11 +153,11 @@ export function InternalChatWorkspace({ conversations: scopedConversations, scop
   const currentUser = useAuthStore((state) => state.user)
   const currentUserId = String(currentUser?.id ?? currentUser?.user_id ?? currentUser?.userId ?? '')
 
-  const conversationsQuery = useChatConversations({ per_page: 50 }, { enabled: scopedConversations === undefined })
+  const conversationsQuery = useChatConversations({ per_page: 50 }, { enabled: scopedConversations === undefined, priority: 'page' })
   const sourceConversations = scopedConversations ?? (Array.isArray(conversationsQuery.data) ? conversationsQuery.data : EMPTY_CONVERSATIONS)
   const conversations = useMemo(() => scopedConversationFilter ? sourceConversations.filter(scopedConversationFilter) : sourceConversations, [sourceConversations, scopedConversationFilter])
   const usersQuery = useUsers()
-  const onlineUsersQuery = useOnlineUsers(undefined, { refetchInterval: 30000 })
+  const onlineUsersQuery = useOnlineUsers(undefined, { refetchInterval: 30000, priority: 'background' })
   const users = Array.isArray(usersQuery.data) ? usersQuery.data : []
   const onlineUsers = Array.isArray(onlineUsersQuery.data) ? onlineUsersQuery.data : []
   const [selectedUserToAdd, setSelectedUserToAdd] = useState('')

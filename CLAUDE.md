@@ -127,12 +127,22 @@ reports were removed (see git history).
     computes `{ kpis, charts }` in `features/<area>/reports/` (tested model + `use<Area>Report(range)` hook);
     every data area with a sub-sidebar gets a "Reports & statistics" item (Settings pages are exempt). Existing
     exceptions still to migrate are listed in `shared/components/reports/README.md` §7 — don't add new ones.
+13. **Query priority and scheduling**: every new or modified server-state query must use
+    `shared/query/queryPolicy.js` (`prioritizeQuery` + `queryPolicyOptions`) and an explicit priority:
+    `page`, `supporting`, or `background`. Gate page and drawer queries with `enabled` based on route/visibility;
+    never fetch from a closed drawer just because it remains mounted. Keep query keys stable and scoped so React
+    Query can deduplicate/cache results. Do not add direct polling or bypass the scheduler; polling must be
+    visible-page aware and must not run in a background browser tab. See
+    [Query scheduling](docs/1-ARCHITECTURE.md#query-priority-and-scheduling). Existing unmigrated queries are
+    technical debt; migrate them when touching that hook. Mutations and realtime subscriptions are not queries
+    and must retain their domain-specific behavior.
 
 ## Conventions
 
 - Components `PascalCase.jsx`, hooks `useX.js`, API modules `xApi.js`, query hooks next to their API.
 - Relative imports inside a feature; `@/` alias maps to `src/`.
 - Server state = React Query. Zustand only for app-wide or genuinely shared client state.
+- New/modified server queries use `src/shared/query/queryPolicy.js`; choose a priority and gate inactive views.
 - Tests: `*.test.js` next to the code. Code that imports `services/httpClient` needs it mocked in tests
   (it throws without a tenant subdomain and `VITE_API_PASSWORD`).
 

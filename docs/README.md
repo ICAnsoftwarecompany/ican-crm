@@ -20,6 +20,7 @@ doc in the same change.
 | 3 | [3-FEATURES.md](3-FEATURES.md) | You work on conversations, campaigns, outreach, social, tasks, automation, notifications, AI agent, products, settings |
 | 4 | [4-CUSTOMER-SERVICE.md](4-CUSTOMER-SERVICE.md) | You work on the Customer Hub (`features/service`, `/service/*`) or the customer portal (`/portal/*`) |
 | 2026-10-25 01:10 (Africa/Cairo) | [PROJECT-OVERVIEW-AR.md](PROJECT-OVERVIEW-AR.md) | Arabic executive/technical overview of the project architecture, design approach, and feature map |
+| 2026-11-15 21:12 (Africa/Cairo) | [Query scheduling policy](../src/shared/query/README.md) | Shared priority queue, hook conventions, and phased adoption rules for all server-state queries |
 | — | [customer-service/SERVICE-MASTER-SPEC.md](customer-service/SERVICE-MASTER-SPEC.md) | Backend contract and business rules for Customer Service (Arabic) |
 | — | [customer-service/SERVICE-BRIEF.md](customer-service/SERVICE-BRIEF.md) | The decision brief behind the spec (Arabic) |
 | — | [tasks/TASKS-TODO-SPEC.md](tasks/TASKS-TODO-SPEC.md) | Tasks and To-Do: concepts, UI, rules, frontend code and the phased backend contract (Arabic) |
@@ -130,6 +131,7 @@ Newest first. Every docs change also carries a `YYYY-MM-DD HH:mm (Africa/Cairo)`
 
 | When | What changed | Where |
 |---|---|---|
+| 2026-11-15 21:12 (Africa/Cairo) | Added shared query priorities, bounded request scheduling, inactive-view gating rules, and project-wide adoption instructions | [Query policy](../src/shared/query/README.md), [Architecture](1-ARCHITECTURE.md#query-priority-and-scheduling), `CLAUDE.md` |
 | 2026-10-25 01:10 (Africa/Cairo) | Added a new Arabic project overview covering architecture layering, design system approach, and feature capabilities map | this index, `docs/PROJECT-OVERVIEW-AR.md` |
 | 2026-10-22 22:32 (Africa/Cairo) | Restore native compact customer drawer quick-action strip for deal leads while retaining deal-specific handlers and disabled states | `features/deals/README.md`, CustomerQuickActions, QuickActionButton, dealLeadActions |
 | 2026-10-19 19:34 (Africa/Cairo) | Header product/service shortcut, drawer explorer, hover previews, complete product fields and paginated deal-customer interest/negotiation matching | `features/deals/README.md`, product explorer, productInterests model/tests |

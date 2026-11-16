@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { usersApi } from '../api/usersApi'
 import { QUERY_KEYS } from '../../../shared/constants/queryKeys'
 import { extractList } from '../../../shared/utils/apiResponse'
+import { prioritizeQuery, queryPolicyOptions } from '../../../shared/query/queryPolicy'
 
 function findUsersArray(value, depth = 0) {
   if (depth > 5 || value === null || value === undefined) return []
@@ -27,18 +28,20 @@ function extractUsersList(response) {
 }
 
 export function useUsers(params, options = {}) {
+  const { priority = 'supporting', ...queryOptions } = options
   return useQuery({
     queryKey: params ? [...QUERY_KEYS.users.list, params] : QUERY_KEYS.users.list,
-    queryFn: () => usersApi.getUsers(params),
+    queryFn: prioritizeQuery(() => usersApi.getUsers(params), priority),
     select: extractUsersList,
-    ...options,
+    ...queryPolicyOptions(priority, queryOptions),
   })
 }
 
 export function useOnlineUsers(params, options = {}) {
+  const { priority = 'background', ...queryOptions } = options
   return useQuery({
     queryKey: ['users', 'online', params || {}],
-    queryFn: () => usersApi.getOnlineUsers(params),
+    queryFn: prioritizeQuery(() => usersApi.getOnlineUsers(params), priority),
     select: (response) => {
       const directList = extractList(response, ['online_users', 'users', 'data'])
       if (directList.length) return directList
@@ -53,7 +56,7 @@ export function useOnlineUsers(params, options = {}) {
 
       return []
     },
-    ...options,
+    ...queryPolicyOptions(priority, queryOptions),
   })
 }
 

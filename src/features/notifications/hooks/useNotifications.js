@@ -5,30 +5,33 @@ import { QUERY_KEYS } from '../../../shared/constants/queryKeys'
 import { notificationsApi } from '../api/notificationsApi'
 import { markNotificationsRead, mergeNotifications } from '../utils/notificationCache'
 import { normalizeNotificationList } from '../utils/normalizeNotification'
+import { prioritizeQuery, queryPolicyOptions } from '../../../shared/query/queryPolicy'
 
 export function useUnreadNotifications(options = {}) {
+  const { priority = 'background', ...queryOptions } = options
   const queryClient = useQueryClient()
   return useQuery({
     queryKey: QUERY_KEYS.notifications.unread,
-    queryFn: async () => mergeNotifications(
+    queryFn: prioritizeQuery(async () => mergeNotifications(
       normalizeNotificationList(await notificationsApi.getUnread()),
       queryClient.getQueryData(QUERY_KEYS.notifications.unread) || []
-    ),
+    ), priority),
     staleTime: 30_000,
-    ...options,
+    ...queryPolicyOptions(priority, queryOptions),
   })
 }
 
 export function useNotificationHistory(options = {}) {
+  const { priority = 'page', ...queryOptions } = options
   const queryClient = useQueryClient()
   return useQuery({
     queryKey: QUERY_KEYS.notifications.history,
-    queryFn: async () => mergeNotifications(
+    queryFn: prioritizeQuery(async () => mergeNotifications(
       normalizeNotificationList(await notificationsApi.getHistory()),
       queryClient.getQueryData(QUERY_KEYS.notifications.history) || []
-    ),
+    ), priority),
     staleTime: 30_000,
-    ...options,
+    ...queryPolicyOptions(priority, queryOptions),
   })
 }
 

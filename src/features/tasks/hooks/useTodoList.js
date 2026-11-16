@@ -14,9 +14,9 @@ const LIST_PARAMS = { per_page: 200 }
  * `PATCH /tasks/{id}/status`. "Mine" is filtered client-side until the backend supports
  * `assigned_to=me`.
  */
-export function useTodoList(view = 'today') {
+export function useTodoList(view = 'today', options = {}) {
   const userId = useCurrentUserId()
-  const query = useTasks(LIST_PARAMS)
+  const query = useTasks(LIST_PARAMS, options)
   const mutations = useTaskMutations()
   const [pendingIds, setPendingIds] = useState(() => new Set())
 

@@ -70,6 +70,7 @@ export function LiveMeetingIndicator() {
     {
       refetchInterval: 15000,
       staleTime: 5000,
+      priority: 'background',
     },
   )
 
@@ -84,6 +85,7 @@ export function LiveMeetingIndicator() {
   const activeMeetingInfoQuery = useMeetingInfo(activeMeetingId, undefined, {
     enabled: Boolean(activeMeetingId),
     staleTime: 5000,
+    priority: 'background',
   })
   const activeMeetingInfo = getMeetingInfoPayload(activeMeetingInfoQuery.data, activeMeeting)
   const participants = Array.isArray(activeMeetingInfo?.participants) ? activeMeetingInfo.participants : []

@@ -20,7 +20,7 @@ export function TodoSidebarPanel({ open, onClose }) {
   const [view, setView] = useState('today')
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [openTaskId, setOpenTaskId] = useState(null)
-  const todo = useTodoList(view)
+  const todo = useTodoList(view, { enabled: open, priority: 'supporting' })
   const isRtl = typeof document !== 'undefined' && document.documentElement.dir === 'rtl'
 
   return (

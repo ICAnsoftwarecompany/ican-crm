@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { scheduleQuery } from '../query/queryPolicy'
 
 const CHECK_URL = 'https://www.gstatic.com/generate_204'
 const CHECK_TIMEOUT_MS = 5000
@@ -88,11 +89,11 @@ export function useNetworkQuality() {
     setChecking(true)
 
     try {
-      await fetch(`${CHECK_URL}?t=${Date.now()}`, {
+      await scheduleQuery(() => fetch(`${CHECK_URL}?t=${Date.now()}`, {
         cache: 'no-store',
         mode: 'no-cors',
         signal: controller.signal,
-      })
+      }), { priority: 'background', signal: controller.signal })
 
       setOnline(true)
       setLatency(Math.round(performance.now() - startedAt))

@@ -7,9 +7,9 @@ import { useCurrentUserId } from './useCurrentUserId'
 const LIST_PARAMS = { per_page: 200 }
 
 /** My tasks (To-Dos excluded): all, due by end of today (overdue first), and overdue. */
-export function useMyTasks() {
+export function useMyTasks(options = {}) {
   const userId = useCurrentUserId()
-  const query = useTasks(LIST_PARAMS)
+  const query = useTasks(LIST_PARAMS, options)
 
   return useMemo(() => {
     const list = Array.isArray(query.data) ? query.data : []

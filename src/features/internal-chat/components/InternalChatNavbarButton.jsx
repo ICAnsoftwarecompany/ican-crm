@@ -6,7 +6,7 @@ import { useChatUnreadCount } from '../hooks/useChatUnreadCount'
 
 export function InternalChatNavbarButton({ active = false, onClick }) {
   useChatRealtime({ enabled: true })
-  const unreadQuery = useChatUnreadCount({ per_page: 30 })
+  const unreadQuery = useChatUnreadCount({ per_page: 30 }, { priority: 'background' })
   const unreadCount = Number(unreadQuery.unreadCount || 0)
 
   return (

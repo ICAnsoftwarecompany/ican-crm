@@ -6,7 +6,7 @@ import { useTodoList } from '../../hooks/useTodoList'
 /** Header button for "My to-do list"; the badge is today's open To-Dos (overdue included). */
 export function TodoNavbarButton({ active = false, onClick }) {
   const { t } = useTranslation()
-  const { counts } = useTodoList('today')
+  const { counts } = useTodoList('today', { priority: 'supporting' })
   const count = counts.today || 0
 
   return (

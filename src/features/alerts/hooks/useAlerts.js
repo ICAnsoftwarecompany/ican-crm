@@ -6,15 +6,17 @@ import { QUERY_KEYS } from '../../../shared/constants/queryKeys'
 import { alertsApi } from '../api/alertsApi'
 import { normalizeAlertList } from '../utils/normalizeAlert'
 import { playAlertSound } from '../utils/alertSound'
+import { prioritizeQuery, queryPolicyOptions } from '../../../shared/query/queryPolicy'
 
 export function useAlerts(options = {}) {
+  const { priority = 'background', ...queryOptions } = options
   const knownIds = useRef(null)
   const query = useQuery({
     queryKey: QUERY_KEYS.alerts.active,
-    queryFn: async () => normalizeAlertList(await alertsApi.getActive()),
+    queryFn: prioritizeQuery(async () => normalizeAlertList(await alertsApi.getActive()), priority),
     staleTime: 30_000,
     refetchOnWindowFocus: true,
-    ...options,
+    ...queryPolicyOptions(priority, queryOptions),
   })
 
   useEffect(() => {

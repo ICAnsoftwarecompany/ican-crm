@@ -19,6 +19,7 @@ Status labels used in all three docs: **CURRENT** (verified code in use) · **PA
 - [RTL and LTR](#rtl-and-ltr)
 - [Theme and dark mode](#theme-and-dark-mode)
 - [Conventions](#conventions)
+- [Query priority and scheduling](#query-priority-and-scheduling)
 - [Shared engines](#shared-engines)
   - [DataTable](#datatable)
   - [Calendar](#calendar)
@@ -173,6 +174,21 @@ app / pages  ->  features  ->  shared / services
 - Keep legacy filenames/URLs/payloads while consumers exist: add an adapter, migrate one consumer, verify, remove only when unused.
 - Code that imports `services/httpClient` must mock it in tests (`vi.mock('.../services/httpClient', () => ({ default: {} }))`). Use `// @vitest-environment jsdom` for component and hook tests.
 - Every data view handles loading, empty and error states; reuse `shared/components/data/ResourceState.jsx`, `feedback/EmptyState.jsx`, `feedback/Skeleton.jsx`.
+
+## Query priority and scheduling
+
+> **Documentation update:** 2026-11-15 21:12 (Africa/Cairo)
+
+**Status:** CURRENT for migrated hooks; legacy hooks are migrated when touched. **Policy:** [`src/shared/query/queryPolicy.js`](../src/shared/query/README.md).
+
+- React Query remains the server-state cache and request deduplicator. The shared scheduler caps participating requests at four concurrent operations and starts queued requests in priority order: `page` first, then `supporting`, then `background` (FIFO within a priority). Requests already in flight are not preempted.
+- Every new or modified query hook must wrap its `queryFn` with `prioritizeQuery(fn, priority)` and merge `queryPolicyOptions(priority, options)`. Use `page` for data needed to render the current route, `supporting` for visible secondary panels, and `background` for global badges, presence, and periodic indicators.
+- A query belonging to a route or drawer must be disabled when that route/view/drawer is inactive. Conditional rendering or CSS hiding alone is not a substitute when the component remains mounted.
+- Keep query keys canonical and stable. Identical data should share one key; do not add parameters to keys or change keys consumed by realtime handlers without migrating every consumer.
+- Polling belongs in query options, must use `refetchIntervalInBackground: false`, and should be limited to visible/needed indicators. Prefer cache updates from realtime over polling when the contract supports it.
+- The scheduler only governs query functions that opt into it. When editing a legacy hook, migrate its query function and options to the policy. Do not use it for mutations, uploads, realtime channel auth, or direct transport calls that are not React Query queries.
+- The staff CRM `QueryProvider` uses centralized defaults from this policy. The customer portal owns a separate QueryClient and is migrated independently.
+- `queryPolicyOptions` sets shared stale-time defaults (30s page, 2m supporting, 5m background); explicit hook options may override them when data freshness requires it. Use `getQuerySchedulerSnapshot()` for diagnostics, not UI behavior.
 
 ## Shared engines
 

@@ -2,19 +2,24 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { definitionsApi } from '../api/definitionsApi'
 import { QUERY_KEYS } from '../../../shared/constants/queryKeys'
 import { extractList } from '../../../shared/utils/apiResponse'
+import { prioritizeQuery, queryPolicyOptions } from '../../../shared/query/queryPolicy'
 
-export function useStatuses(params) {
+export function useStatuses(params, options = {}) {
+  const { priority = 'supporting', ...queryOptions } = options
   return useQuery({
+    ...queryPolicyOptions(priority, queryOptions),
     queryKey: [...QUERY_KEYS.statuses.list, params],
-    queryFn: () => definitionsApi.getStatuses(params),
+    queryFn: prioritizeQuery(() => definitionsApi.getStatuses(params), priority),
     select: (data) => extractList(data, ['statuses', 'status']),
   })
 }
 
-export function useTags(params) {
+export function useTags(params, options = {}) {
+  const { priority = 'supporting', ...queryOptions } = options
   return useQuery({
+    ...queryPolicyOptions(priority, queryOptions),
     queryKey: [...QUERY_KEYS.tags.list, params],
-    queryFn: () => definitionsApi.getTags(params),
+    queryFn: prioritizeQuery(() => definitionsApi.getTags(params), priority),
     select: (data) => extractList(data, ['tags']),
   })
 }

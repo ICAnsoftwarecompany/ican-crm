@@ -27,7 +27,7 @@ export function TasksSidebarPanel({ open, onClose }) {
   const [query, setQuery] = useState('')
   const [openTaskId, setOpenTaskId] = useState(null)
   const [createValues, setCreateValues] = useState(null)
-  const tasksQuery = useTasks({ per_page: 40 })
+  const tasksQuery = useTasks({ per_page: 40 }, { enabled: open, priority: 'supporting' })
   const { create } = useTaskMutations()
   const { toggle, pendingIds } = useTaskToggle()
   const list = useMemo(() => withoutTodos(tasksQuery.data), [tasksQuery.data])

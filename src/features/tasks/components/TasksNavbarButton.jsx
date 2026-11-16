@@ -7,7 +7,7 @@ import { getTaskSummaryMetrics, withoutTodos } from '../utils/taskMeta'
 
 export function TasksNavbarButton({ active = false, onClick }) {
   const { t } = useTranslation()
-  const tasksQuery = useTasks({ per_page: 40 })
+  const tasksQuery = useTasks({ per_page: 40 }, { priority: 'supporting' })
   const tasks = withoutTodos(tasksQuery.data)
   const unreadCount = getTaskSummaryMetrics(tasks).unread
 

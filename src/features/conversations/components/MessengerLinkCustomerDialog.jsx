@@ -198,12 +198,12 @@ export function MessengerLinkCustomerDialog({
   const customersQuery = useCustomers({
     per_page: 50,
     ...(query.trim() ? { search: query.trim() } : {}),
-  })
+  }, { enabled: open, priority: 'supporting' })
   const customerMutations = useCustomerMutations()
-  const statusesQuery = useStatuses({ type: 'lead' })
-  const tagsQuery = useTags()
-  const usersQuery = useUsers()
-  const productsQuery = useProducts()
+  const statusesQuery = useStatuses({ type: 'lead' }, { enabled: open })
+  const tagsQuery = useTags(undefined, { enabled: open })
+  const usersQuery = useUsers(undefined, { enabled: open })
+  const productsQuery = useProducts({ enabled: open })
 
   const statuses = statusesQuery.data || []
   const tags = tagsQuery.data || []

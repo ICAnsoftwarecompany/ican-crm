@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 import { useChatConversations } from './useChatConversations'
 
-export function useChatUnreadCount(params = {}) {
-  const conversationsQuery = useChatConversations(params)
+export function useChatUnreadCount(params = {}, options = {}) {
+  const conversationsQuery = useChatConversations(params, options)
 
   const unreadCount = useMemo(() => {
     const list = Array.isArray(conversationsQuery.data) ? conversationsQuery.data : []

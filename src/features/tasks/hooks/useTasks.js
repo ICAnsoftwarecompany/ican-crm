@@ -3,13 +3,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { tasksApi } from '../api/tasksApi'
 import { QUERY_KEYS } from '../../../shared/constants/queryKeys'
 import { extractList } from '../../../shared/utils/apiResponse'
+import { prioritizeQuery, queryPolicyOptions } from '../../../shared/query/queryPolicy'
 
 export function useTasks(params, options = {}) {
+  const { priority = 'page', ...queryOptions } = options
   return useQuery({
+    ...queryPolicyOptions(priority, queryOptions),
     queryKey: QUERY_KEYS.tasks.list(params),
-    queryFn: () => tasksApi.getTasks(params),
+    queryFn: prioritizeQuery(() => tasksApi.getTasks(params), priority),
     select: (data) => extractList(data, ['data', 'tasks', 'items']),
-    ...options,
   })
 }
 

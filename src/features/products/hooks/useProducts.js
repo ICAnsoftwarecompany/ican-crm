@@ -3,6 +3,7 @@ import { categoriesApi } from '../api/categoriesApi'
 import { productsApi } from '../api/productsApi'
 import { linkProductsApi } from '../api/linkProductsApi'
 import { extractList } from '../../../shared/utils/apiResponse'
+import { prioritizeQuery, queryPolicyOptions } from '../../../shared/query/queryPolicy'
 
 function findEntityArray(value, acceptedKeys, depth = 0) {
   if (depth > 5 || value === null || value === undefined) return []
@@ -41,10 +42,12 @@ export function useProductCategories() {
   })
 }
 
-export function useProducts() {
+export function useProducts(options = {}) {
+  const { priority = 'supporting', ...queryOptions } = options
   return useQuery({
+    ...queryPolicyOptions(priority, queryOptions),
     queryKey: ['products', 'list'],
-    queryFn: () => productsApi.getProducts(),
+    queryFn: prioritizeQuery(() => productsApi.getProducts(), priority),
     select: extractProductsList,
   })
 }

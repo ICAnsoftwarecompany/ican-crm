@@ -75,7 +75,7 @@ export function SmartWorkspacePanel({ open, mode, onClose, onModeChange, wide, o
   const [completeError, setCompleteError] = useState(false)
 
   // Always call hooks in the same order; only request alerts/notifications while open.
-  const tasks = useMyTasks()
+  const tasks = useMyTasks({ enabled: open, priority: 'supporting' })
   const alerts = useAlerts({ enabled: open })
   const notifications = useUnreadNotifications({ enabled: open })
   const taskMutations = useTaskMutations()

@@ -26,6 +26,8 @@ Leads, customers, assignment, deals, opportunities, proposals, activities, calls
 ## Rules for future work
 Follow `CLAUDE.md` and the relevant docs. Preserve API contracts, route URLs and realtime query keys unless explicitly requested. Tenant resolution must remain dynamic; backend controls authorization. Translate UI text into ar/en, support RTL/LTR and semantic theme tokens, reuse shared engines, and update docs with changes. If docs disagree with code, code wins.
 
+Server-state requests use the centralized priority/scheduling policy in `src/shared/query/queryPolicy.js`. New or modified React Query hooks must classify requests as `page`, `supporting`, or `background`, wrap their query function with `prioritizeQuery`, use `queryPolicyOptions`, and disable queries for inactive routes/panels. Full rules: `docs/1-ARCHITECTURE.md#query-priority-and-scheduling`.
+
 ## References
 `README.md`, `CLAUDE.md`, `docs/README.md`, `docs/1-ARCHITECTURE.md`, `docs/2-SALES.md`, `docs/3-FEATURES.md`, `docs/4-CUSTOMER-SERVICE.md`.
 

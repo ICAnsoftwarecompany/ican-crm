@@ -4,16 +4,18 @@ import { useAuthStore } from '../../../store/authStore'
 import { internalChatApi } from '../api/internalChatApi'
 import { chatKeys } from '../constants/chatConstants'
 import { extractConversationsList, getConversationId, normalizeConversation } from '../utils/conversationHelpers'
+import { prioritizeQuery, queryPolicyOptions } from '../../../shared/query/queryPolicy'
 
 export function useChatConversations(params = {}, options = {}) {
+  const { priority = 'page', ...queryOptions } = options
   const currentUser = useAuthStore((state) => state.user)
   const currentUserId = currentUser?.id ?? currentUser?.user_id ?? currentUser?.userId
 
   return useQuery({
     queryKey: chatKeys.conversations(params),
-    queryFn: () => internalChatApi.getConversations(params),
+    queryFn: prioritizeQuery(() => internalChatApi.getConversations(params), priority),
     select: (response) => extractConversationsList(response).map((item) => normalizeConversation(item, currentUserId)),
-    ...options,
+    ...queryPolicyOptions(priority, queryOptions),
   })
 }
 

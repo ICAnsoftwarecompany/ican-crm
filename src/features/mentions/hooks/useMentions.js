@@ -1,23 +1,45 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { QUERY_KEYS } from '../../../shared/constants/queryKeys'
 import { mentionsApi } from '../api/mentionsApi'
+import { prioritizeQuery, queryPolicyOptions } from '../../../shared/query/queryPolicy'
 
 const keys = QUERY_KEYS.mentions
 
 export function useMentionTypes(options = {}) {
-  return useQuery({ queryKey: keys.types, queryFn: mentionsApi.getTypes, staleTime: 300_000, ...options })
+  const { priority = 'supporting', ...queryOptions } = options
+  return useQuery({
+    ...queryPolicyOptions(priority, queryOptions),
+    queryKey: keys.types,
+    queryFn: prioritizeQuery(mentionsApi.getTypes, priority),
+    staleTime: 300_000,
+  })
 }
 
 export function useMyMentions(params = {}, options = {}) {
-  return useQuery({ queryKey: keys.mine(params), queryFn: () => mentionsApi.getMine(params), ...options })
+  const { priority = 'page', ...queryOptions } = options
+  return useQuery({
+    ...queryPolicyOptions(priority, queryOptions),
+    queryKey: keys.mine(params),
+    queryFn: prioritizeQuery(() => mentionsApi.getMine(params), priority),
+  })
 }
 
 export function useSentMentions(params = {}, options = {}) {
-  return useQuery({ queryKey: keys.sent(params), queryFn: () => mentionsApi.getSent(params), ...options })
+  const { priority = 'page', ...queryOptions } = options
+  return useQuery({
+    ...queryPolicyOptions(priority, queryOptions),
+    queryKey: keys.sent(params),
+    queryFn: prioritizeQuery(() => mentionsApi.getSent(params), priority),
+  })
 }
 
 export function useUnseenMentionCount(options = {}) {
-  return useQuery({ queryKey: keys.unseenCount, queryFn: mentionsApi.getUnseenCount, ...options })
+  const { priority = 'background', ...queryOptions } = options
+  return useQuery({
+    ...queryPolicyOptions(priority, queryOptions),
+    queryKey: keys.unseenCount,
+    queryFn: prioritizeQuery(mentionsApi.getUnseenCount, priority),
+  })
 }
 
 export function useEntityMentions(entityType, entityId, options = {}) {

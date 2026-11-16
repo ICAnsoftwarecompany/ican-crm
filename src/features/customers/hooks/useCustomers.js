@@ -2,12 +2,14 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import { customersApi } from '../api/customersApi'
 import { QUERY_KEYS } from '../../../shared/constants/queryKeys'
 import { extractList } from '../../../shared/utils/apiResponse'
+import { prioritizeQuery, queryPolicyOptions } from '../../../shared/query/queryPolicy'
 
 export function useCustomers(filters, options = {}) {
+  const { priority = 'page', ...queryOptions } = options
   return useInfiniteQuery({
-    ...options,
+    ...queryPolicyOptions(priority, queryOptions),
     queryKey: QUERY_KEYS.customers.list(filters),
-    queryFn: async ({ pageParam }) => {
+    queryFn: prioritizeQuery(async ({ pageParam }) => {
       const params = {
         ...(filters || {}),
         ...(pageParam ? { cursor: pageParam } : {}),
@@ -19,7 +21,7 @@ export function useCustomers(filters, options = {}) {
         ...response,
         data: Array.isArray(response?.data) ? response.data : extractList(response, ['data']),
       }
-    },
+    }, priority),
     initialPageParam: null,
     getNextPageParam: (lastPage) => (lastPage?.has_more ? lastPage?.next_cursor : undefined),
   })

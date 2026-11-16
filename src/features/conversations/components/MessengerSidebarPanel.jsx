@@ -141,7 +141,7 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {}, conve
   const { highlightedMessageId, highlightMessage } = useRealtimeMessageHighlight()
   const isRtl = typeof document !== 'undefined' && document.documentElement.dir === 'rtl'
   const markAllRead = useMessengerNotificationsStore((state) => state.markAllRead)
-  const conversationsQuery = useMessengerConversations({ per_page: 30 })
+  const conversationsQuery = useMessengerConversations({ per_page: 30 }, { enabled: open, priority: 'supporting' })
   const allConversations = conversationsQuery.data || []
   // Optional scope (e.g. a deal's customers, 2026-10-16): the list, counts and selection only see these.
   const conversations = useMemo(() => (conversationFilter ? allConversations.filter(conversationFilter) : allConversations), [allConversations, conversationFilter])
@@ -217,11 +217,11 @@ export function MessengerSidebarPanel({ open, onClose, initialTarget = {}, conve
     )) || null
   ), [conversations, selectedId])
 
-  const conversationInfoQuery = useMessengerConversationInfo(selectedId)
+  const conversationInfoQuery = useMessengerConversationInfo(selectedId, undefined, { enabled: Boolean(open && selectedId), priority: 'supporting' })
   const conversationInfo = conversationInfoQuery.data || selectedConversation
   const selectedTitle = getMessengerConversationTitle(conversationInfo || selectedConversation)
   const selectedImage = getMessengerProfilePicture(conversationInfo || selectedConversation)
-  const messagesQuery = useMessengerMessages(selectedId)
+  const messagesQuery = useMessengerMessages(selectedId, undefined, { enabled: Boolean(open && selectedId), priority: 'page' })
   const mutations = useMessengerConversationMutations(selectedId)
 
   const messages = useMemo(() => (

@@ -3,22 +3,25 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { meetingsApi } from '../api/meetingsApi'
 import { QUERY_KEYS } from '../../../shared/constants/queryKeys'
 import { extractList } from '../../../shared/utils/apiResponse'
+import { prioritizeQuery, queryPolicyOptions } from '../../../shared/query/queryPolicy'
 
 export function useMeetings(params, options = {}) {
+  const { priority = 'page', ...queryOptions } = options
   return useQuery({
     queryKey: QUERY_KEYS.meetings.list(params),
-    queryFn: () => meetingsApi.getMeetings(params),
+    queryFn: prioritizeQuery(() => meetingsApi.getMeetings(params), priority),
     select: (data) => extractList(data, ['data', 'meetings', 'items']),
-    ...options,
+    ...queryPolicyOptions(priority, queryOptions),
   })
 }
 
 export function useMeetingInfo(meetingId, params, options = {}) {
+  const { priority = 'page', ...queryOptions } = options
   return useQuery({
     queryKey: [...QUERY_KEYS.meetings.detail(meetingId), params],
-    queryFn: () => meetingsApi.getMeetingInfo(meetingId, params),
-    enabled: Boolean(meetingId) && (options.enabled ?? true),
-    ...options,
+    queryFn: prioritizeQuery(() => meetingsApi.getMeetingInfo(meetingId, params), priority),
+    ...queryPolicyOptions(priority, queryOptions),
+    enabled: Boolean(meetingId) && (queryOptions.enabled ?? true),
   })
 }
 

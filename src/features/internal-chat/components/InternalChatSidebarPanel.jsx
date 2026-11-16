@@ -147,11 +147,11 @@ export function InternalChatSidebarPanel({ open, onClose, conversationFilter: sc
   const listScrollRef = useRef(null)
   const [listScrollPercent, setListScrollPercent] = useState(0)
 
-  const conversationsQuery = useChatConversations({ per_page: 30 }, { enabled: open })
+  const conversationsQuery = useChatConversations({ per_page: 30 }, { enabled: open, priority: 'supporting' })
   const allConversations = Array.isArray(conversationsQuery.data) ? conversationsQuery.data : []
   const conversations = useMemo(() => (scopeFilter ? allConversations.filter(scopeFilter) : allConversations), [allConversations, scopeFilter])
-  const usersQuery = useUsers(undefined, { enabled: open })
-  const onlineUsersQuery = useOnlineUsers(undefined, { enabled: open, refetchInterval: open ? 30000 : false })
+  const usersQuery = useUsers(undefined, { enabled: open, priority: 'supporting' })
+  const onlineUsersQuery = useOnlineUsers(undefined, { enabled: open, refetchInterval: open ? 30000 : false, priority: 'background' })
   const users = Array.isArray(usersQuery.data) ? usersQuery.data : []
   const onlineUsers = Array.isArray(onlineUsersQuery.data) ? onlineUsersQuery.data : []
 
