@@ -1,6 +1,6 @@
 import { createElement } from 'react'
 import { ShippingLayout } from './ShippingLayout'
-import { ShippingWorkspacePlaceholder } from '../../features/shipping/components/ShippingWorkspacePlaceholder'
+import { ShippingWorkspacePlaceholder } from './ShippingWorkspacePlaceholder'
 
 export const shippingRoutes = {
   path: 'shipping',

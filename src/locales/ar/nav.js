@@ -11,6 +11,9 @@ export default {
   subscriptionsDomain: 'الاشتراكات',
   supportTickets: 'التذاكر',
   supportSla: 'إعدادات SLA',
+  customerManagement: 'مركز العملاء المحتملين',
+  customerManagementWorkspace: 'إدارة العملاء',
+  customerManagementDescription: 'الفرق والشحن وخدمات التذاكر',
 
   favorites: 'المفضلة',
   pinPage: 'تثبيت في المفضلة',

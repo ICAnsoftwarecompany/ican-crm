@@ -22,7 +22,7 @@ import { ActivityTable } from '../components/ActivityTable/ActivityTable'
 import { ActivityTabs } from '../components/ActivityTabs/ActivityTabs'
 import { ActivityViewSwitch } from '../components/ActivityTabs/ActivityViewSwitch'
 import { EmptyActivitiesState } from '../components/common/EmptyActivitiesState'
-import { extractLeadStatuses } from '../../../pages/customers/utils/customerStatus'
+import { extractLeadStatuses } from '../../../pages/LeadsCenter/utils/customerStatus'
 import { extractList, extractMessage } from '../../../shared/utils/apiResponse'
 
 function parseActivityDateTime(value) {

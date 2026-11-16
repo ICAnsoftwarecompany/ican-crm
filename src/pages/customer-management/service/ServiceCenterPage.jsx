@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Headset, Map as MapIcon, Plus, Siren } from 'lucide-react'
-import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { Button } from '../../shared/components/ui/Button'
+import { usePageHeader } from '../../../shared/hooks/usePageHeader'
+import { Button } from '../../../shared/components/ui/Button'
 import {
   ActiveIncidentsBanner,
   AtRiskCustomers,
@@ -14,7 +14,7 @@ import {
   ServiceSearch,
   useServiceCapabilities,
   useServiceTerminology,
-} from '../../features/service'
+} from '../../../features/service'
 
 /** /service — daily workspace: counters, my work preview, quick actions. */
 export function ServiceCenterPage() {

@@ -2,7 +2,7 @@ import { CalendarPlus, History, MonitorUp, Video } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { useLeadCallsMeetings } from '../../../meetings/hooks/useMeetings'
-import { QuickActionMenu } from '../../../../pages/customers/components/CustomerDetailsDrawer/quick-actions/QuickActionMenu'
+import { QuickActionMenu } from '../../../../pages/LeadsCenter/components/CustomerDetailsDrawer/quick-actions/QuickActionMenu'
 import { notifySoon, openExternalAction } from '../../utils/scheduleUiUtils'
 
 const MEETING_ALERT_WINDOW_MS = 24 * 60 * 60 * 1000

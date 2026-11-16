@@ -1,4 +1,4 @@
-import { getCustomerName } from '../../../pages/customers/components/bulk-actions/social-messaging/customerSocialMessagingUtils'
+import { getCustomerName } from '../../../pages/LeadsCenter/components/bulk-actions/social-messaging/customerSocialMessagingUtils'
 
 /**
  * Audience eligibility checks for the Campaign Wizard's Audience step.

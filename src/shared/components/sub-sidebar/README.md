@@ -46,7 +46,7 @@ column), `plain` (inside the mobile drawer).
 - `hidden: true` drops an item (plan/permission gating decided by the caller). `disabled: true` shows it greyed out
   (e.g. "coming soon"). Remember: hiding a link is UX only, never authorization.
 - Keep the area's config in one function next to the area, e.g. `getCustomersSidebarConfig(t)`
-  (`pages/customers/constants/customerNavigation.js`) or `getCommunicationSidebarConfig(moduleId, t)`
+  (`pages/LeadsCenter/constants/customerNavigation.js`) or `getCommunicationSidebarConfig(moduleId, t)`
   (`features/communication/navigation/`).
 
 ## Adding a sub-sidebar to a new area
@@ -69,13 +69,13 @@ Then use the layout as the `element` of a parent route whose children are the ar
 
 ## Current consumers (2026-10-01)
 
-Leads Center (`pages/customers/layout/CustomersLayout.jsx`), Products (`pages/products/layout/ProductsLayout.jsx`),
+Leads Center (`pages/LeadsCenter/layout/CustomersLayout.jsx`), Products (`pages/products/layout/ProductsLayout.jsx`),
 Settings (`pages/settings/layout/SettingsLayout.jsx`), Communication hub (`features/communication/components/CommunicationModuleLayout.jsx`),
 Outreach (`features/outreach-campaigns/components/OutreachSidebar.jsx`), Social Media
 (`pages/social-media/components/SocialMediaSubSidebar.jsx`), Campaign Center (`pages/campaigns/components/CampaignSubSidebar.jsx`),
 Customer Hub settings (`features/service/settings/components/SettingsWorkspace.jsx`), Deals hub + deal workspace
 (`features/deals/components/layout/`, keys `deals-hub-sidebar-collapsed`, `deal-workspace-sidebar-collapsed`; 2026-10-03 23:32 (Africa/Cairo)),
-Sales teams (`pages/sales-teams/SalesTeamsLayout.jsx`, key `sales-teams-sidebar-collapsed`; 2026-10-16 00:10 (Africa/Cairo)).
+Sales teams (`pages/customer-management/teams/SalesTeamsLayout.jsx`, key `sales-teams-sidebar-collapsed`; 2026-10-16 00:10 (Africa/Cairo)).
 
 Replaced and deleted: `CustomersSidebar.jsx`, `CustomersMobileSidebar.jsx`, `ProductsSidebar.jsx`,
 `ProductsMobileSidebar.jsx`, `SettingsSidebar.jsx`, `SettingsMobileSidebar.jsx`,

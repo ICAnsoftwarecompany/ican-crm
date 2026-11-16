@@ -1,13 +1,13 @@
 import { useTranslation } from 'react-i18next'
 import { Headset } from 'lucide-react'
-import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { ResourceState } from '../../shared/components/data/ResourceState'
+import { usePageHeader } from '../../../shared/hooks/usePageHeader'
+import { ResourceState } from '../../../shared/components/data/ResourceState'
 import {
   CapabilitiesOverview,
   ServiceMockBanner,
   ServiceRoadmap,
   useServiceCapabilities,
-} from '../../features/service'
+} from '../../../features/service'
 
 /**
  * /service — Service Operations overview (F0).

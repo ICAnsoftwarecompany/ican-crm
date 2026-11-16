@@ -5,9 +5,9 @@
 
 ## نطاق التعديل
 - الفرع: `feature/lead-360-redesign` (الفرع الأساسي `master` لم يُعدل).
-- مدخل الراوت: `src/pages/customers/pages/lead-details/CustomerLeadDetailsPage.jsx`.
+- مدخل الراوت: `src/pages/LeadsCenter/pages/lead-details/CustomerLeadDetailsPage.jsx`.
 - المكون الرئيسي: `customer-360/Customer360Page.jsx`.
-- واجهة التفاصيل الحالية: `src/pages/customers/components/CustomerDetailsDrawer/CustomerDetailsDrawer.jsx`، أضيف لها `mode="360"` بدون استبدال وضع `drawer` أو `page`.
+- واجهة التفاصيل الحالية: `src/pages/LeadsCenter/components/CustomerDetailsDrawer/CustomerDetailsDrawer.jsx`، أضيف لها `mode="360"` بدون استبدال وضع `drawer` أو `page`.
 
 ## هيكل الملفات
 ```text

@@ -11,6 +11,9 @@ export default {
   subscriptionsDomain: 'Subscriptions',
   supportTickets: 'Tickets',
   supportSla: 'SLA settings',
+  customerManagement: 'Leads Center',
+  customerManagementWorkspace: 'Customer Management',
+  customerManagementDescription: 'Teams, shipping, and ticket operations',
 
   favorites: 'Favorites',
   pinPage: 'Pin to favorites',

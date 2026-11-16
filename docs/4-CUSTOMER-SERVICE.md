@@ -15,6 +15,15 @@ keys keep the stable technical name `service` (`features/service`, `/service/*`,
 `module: 'customer_service'`). Rename copy only in the locale files; never rename folders or routes for it.
 A later option: let tenants override the section name through capabilities terminology.
 
+**Page ownership (2026-11-17).** `src/pages/customer-management/` is the canonical home for
+Customer Management / Customer Hub page components and route composition: customer operations
+outside the Leads Center, technical support/tickets, service, shipping, teams, subscriptions, and
+future industry/domain modules. Put every new page for these areas in this folder under its owning
+module; do not create sibling page roots such as `src/pages/service/` or move these screens into the
+Leads Center. `src/pages/LeadsCenter/` is reserved for the Leads Center CRM. Business logic and APIs
+remain in their owning `src/features/*` modules. Preserve existing public URLs when moving page
+implementations.
+
 ## Contents
 
 - [What it is](#what-it-is)
@@ -65,7 +74,8 @@ Frontend can run ahead of the backend: each phase ships on mock data and flips t
 
 ## Where the code lives
 
-Everything that belongs to Customer Service is under **three roots** — nothing else needs opening:
+Customer Service business logic remains under its feature root. Page ownership is shown alongside
+it so new UI goes into the canonical Customer Management page tree:
 
 ```text
 src/features/service/          ← all business code (README.md inside)
@@ -114,9 +124,23 @@ src/features/service/          ← all business code (README.md inside)
 ├── portal-transport.js        ← F5: the only Service file the portal app may import (portal endpoints + mock switch)
 └── <sub-module>/              ← one folder per sub-module as phases ship
 
-src/pages/service/             ← thin route pages + serviceRoutes.js (README.md inside)
+src/pages/customer-management/                      ← route-owned Customer Management / Hub pages
+├── service/                                         ← /service/* pages and serviceRoutes.js
+├── shipping/                                        ← shipping pages
+├── teams/                                           ← teams and rules pages
+├── customerManagementRoutes.jsx                     ← /customer-management/* route composition
+└── <industry-or-domain>/                            ← future pages, grouped by module
+
+src/pages/LeadsCenter/                              ← Leads Center CRM pages only; never Customer Hub UI
 src/locales/{ar,en}/service.js ← `service.*` copy, split into ./service/*.js parts
 ```
+
+Support and ticket pages are grouped under `src/pages/customer-management/service/` and routed
+through the Customer Management workspace. Examples include `/customer-management/tickets`,
+`/customer-management/tickets/knowledge`, and `/customer-management/tickets/settings/sla`. Existing
+service URLs remain unchanged, including `/service/subscriptions`, `/service/my-work`,
+`/service/reports`, `/service/settings/health`, and `/service/records/service_contract`.
+For the page ownership rule, see [CH-004](customer-service/CUSTOMER-HUB-MODULE-RULE.md#rule-ch-004--customer-management-page-ownership).
 
 The **customer portal** (F5) is a second app in the same repo, not part of the staff CRM bundle:
 
@@ -229,7 +253,7 @@ component → hook (React Query) → casesApi → createServiceApi('cases') → 
 | `/portal/*` (separate app) | `login`, `track` (guest), then `/`, `services/:recordId?`, `requests`, `requests/new`, `requests/:caseId`, `catalog`, `payments`, `assets`, `documents`, `help`, `company` — sections shown = tenant-enabled ∩ membership policy. F6: `help/:articleId`, KB suggestions + "this solved it" on new request, NPS/CES card, incident banner; public `/portal/help-center` (no sign-in, when enabled). F7: AI assistant chat bubble (when the AI agent is on) | F5 · F6 · F7 |
 | `/service/overview` | `ServiceOverviewPage` — manifest, mock template switcher, roadmap | F0 |
 
-- All Service routes are declared in `src/pages/service/serviceRoutes.js` and **lazy-loaded** (own chunks).
+- All Service routes are declared in `src/pages/customer-management/service/serviceRoutes.js` and **lazy-loaded** (own chunks).
 - Sidebar section **Customer Hub** (`navigation.config.js`, id `customer-service`): Operations Center, Cases,
   Services, My Work, Knowledge Base, Reports, Operations Settings (7 items — the limit).
 - **Services hub**: one sidebar item; its tabs (`core/components/ServicesHubNav.jsx`) come from record types
@@ -247,7 +271,7 @@ Customer Service plugs into existing screens without those screens importing Ser
 | Where | How | Files touched |
 |---|---|---|
 | Conversations thread header → **Create case** | Workspaces accept an optional `threadHeaderActions` prop; `ConversationThread.headerActions` may be a function receiving the thread `contactDetails`. `pages/conversations/ConversationsPage.jsx` lazy-loads `CreateCaseFromConversationButton` and passes it. Conversations code never imports Service. | `features/conversations/components/{Whatsapp,Messenger,Gmail}ConversationsWorkspace.jsx`, `shared/ConversationThread.jsx`, `pages/conversations/ConversationsPage.jsx` |
-| Customer drawer → **Service** tab | One `DRAWER_TABS` entry + one branch in `ActiveTabContent`; `tabs/CustomerServiceTabSlot.jsx` lazy-loads `CustomerServiceTab` and adapts the Leads Center row. | `pages/customers/components/CustomerDetailsDrawer/CustomerDetailsDrawer.jsx`, `tabs/CustomerServiceTabSlot.jsx` |
+| Customer drawer → **Service** tab | One `DRAWER_TABS` entry + one branch in `ActiveTabContent`; `tabs/CustomerServiceTabSlot.jsx` lazy-loads `CustomerServiceTab` and adapts the Leads Center row. | `pages/LeadsCenter/components/CustomerDetailsDrawer/CustomerDetailsDrawer.jsx`, `tabs/CustomerServiceTabSlot.jsx` |
 | Relative times | `formatRelativeTime(value, language)` added to `shared/utils/dateTime.js` (domain-neutral, tested). | `shared/utils/dateTime.js` |
 | Workflow Engine (F6) | `features/service/workflow/serviceWorkflowDefinition.js` calls `registerWorkflowModule` / `registerDataSource`; one import line loads it. The engine gained fixed `options` on data sources (returned by `useDataSourceOptions`). The engine never imports Service internals. | `features/workflow-engine/config/registerBuiltinModules.js`, `registry/workflowRegistry.js`, `hooks/useDataSourceOptions.js` |
 | Customer drawer → **Health** (F7) | `HealthScoreCard` inside the Service tab (`customer-360`). | `features/service/customer-360/*` (inside the area) |
@@ -331,7 +355,7 @@ the unified body `{ success:false, code, message, errors, meta:{ request_id } }`
 4. Add mock handlers `mocks/handlers/<key>Handlers.js` + seed via `registerSeed`, register in `mocks/handlers/index.js`.
    Seeds must work for **every** template (test by switching templates on `/service`).
 5. Add copy in `src/locales/{ar,en}/service/<key>.js` and import it in both `service.js`.
-6. Add pages + routes in `pages/service/`; export only what pages need from `features/service/index.js`.
+6. Add pages + routes in `pages/customer-management/service/`; export only what pages need from `features/service/index.js`.
 7. Run the checklist below, set `status: 'done'`, add a [Phase log](#phase-log) entry.
 
 ## Per-phase checklist
@@ -606,7 +630,7 @@ customer drawer health card **not visually verified** (needs the real customers 
 
 ### F0 — Foundation · 2026-09-28
 
-- **Added:** `features/service` (core api/capabilities/components/constants, mocks), `pages/service`
+- **Added:** `features/service` (core api/capabilities/components/constants, mocks), `pages/customer-management/service`
   (layout, overview page, lazy routes), `locales/{ar,en}/service*`, SLA/priority tokens, `check:service`,
   `VITE_SERVICE_MOCKS`, specs under `docs/customer-service/`.
 - **Mocked modules:** capabilities (all). **Live modules:** none.

@@ -3,7 +3,7 @@
 > **Documentation update:** 2026-10-15 17:25 (Africa/Cairo) — الفولدر اتعمل.
 
 لوحة جانبية (`AppDrawer`) لتصفح الكتالوج من أي مكان من غير ما تسيب الصفحة. أول استخدام: زرار "المنتجات والخدمات" في
-هيدر مركز العملاء (`pages/customers/components/CustomersHeaderTools.jsx`).
+هيدر مركز العملاء (`pages/LeadsCenter/components/CustomersHeaderTools.jsx`).
 
 | | |
 |---|---|

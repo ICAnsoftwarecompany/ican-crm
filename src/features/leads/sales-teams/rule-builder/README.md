@@ -9,7 +9,7 @@
 | | |
 |---|---|
 | **المسارات** | جديدة: `/LeadsCenter/teams/rules/new` — لفريق معين: `…/rules/new?team={teamId}` (من كارت الفريق) — تعديل: `/LeadsCenter/teams/rules/{ruleId}/edit` |
-| **صفحة الراوت** | `pages/sales-teams/SalesTeamsPages.jsx` → `SalesTeamsRuleBuilderPage` (بتقرا `ruleId` و`?team` وبترجع لقائمة القواعد بعد الحفظ أو الإلغاء) |
+| **صفحة الراوت** | `pages/customer-management/teams/SalesTeamsPages.jsx` → `SalesTeamsRuleBuilderPage` (بتقرا `ruleId` و`?team` وبترجع لقائمة القواعد بعد الحفظ أو الإلغاء) |
 | **الواجهة العامة** | `index.js`: `RuleBuilder`، `RULE_STEPS`، `placeRule`، `suggestPriority` |
 | **الدوال** | `POST /api/tenant/lead-assignment/create/rule` و`POST …/update/rule/{id}` بنفس الـ body بتاع `buildRulePayload` (`../utils/ruleModel.js`) |
 | **الترجمة** | `salesTeams.builder.*` في `locales/{ar,en}/salesTeams.js` |

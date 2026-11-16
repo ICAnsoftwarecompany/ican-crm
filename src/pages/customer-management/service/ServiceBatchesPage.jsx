@@ -1,10 +1,10 @@
 import { Navigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Layers } from 'lucide-react'
-import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { ResourceState } from '../../shared/components/data/ResourceState'
-import { EmptyState } from '../../shared/components/feedback/EmptyState'
-import { BatchDetailView, BatchesWorkspace, findRecordType, useRecordsSetup } from '../../features/service'
+import { usePageHeader } from '../../../shared/hooks/usePageHeader'
+import { ResourceState } from '../../../shared/components/data/ResourceState'
+import { EmptyState } from '../../../shared/components/feedback/EmptyState'
+import { BatchDetailView, BatchesWorkspace, findRecordType, useRecordsSetup } from '../../../features/service'
 
 /** /service/batches/:recordType?/:batchId? — batches of a record type, or one batch. */
 export function ServiceBatchesPage() {

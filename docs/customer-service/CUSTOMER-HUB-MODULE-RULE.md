@@ -75,3 +75,13 @@ Updated: 2026-11-13 00:19 (Africa/Cairo).
 - Shipping-first navigation pilot: a single Shipping entry under Customer Hub opens its own shared sub-sidebar; Support & Tickets is a separate group using the existing shared case engine; subscriptions reuse the existing Service route.
 - This frontend pilot is **not** a live tenant-industry/module-entitlement implementation. Until backend metadata is available, no hardcoded shipping industry or fake permission decisions should be treated as authoritative.
 - Route and API contracts must be preserved. Support SLA and shipping reports must be backed by the existing engines/API before declaring production readiness.
+
+## Rule CH-004 — Customer Management page ownership
+
+Updated: 2026-11-17.
+
+1. `src/pages/customer-management/` is the sole route-owned page/component root for Customer Management and Customer Hub domains: customer operations outside the Leads Center, technical support/tickets, service, shipping, teams, subscriptions, and industry-specific page modules.
+2. Any new page or industry/module screen in these domains must be added under this folder and organized in a domain subfolder. Do not create parallel page roots such as `src/pages/service/`, `src/pages/shipping/`, or an industry-specific sibling folder under `src/pages/`.
+3. `src/pages/LeadsCenter/` is reserved exclusively for Leads Center CRM pages and prospective-customer workflows. Customer Hub pages must not import page components from this folder; share reusable behavior through `src/features/*` public APIs.
+4. Keep route/page composition in `src/pages/customer-management/` and business logic, API clients, hooks, and reusable domain components in their owning `src/features/*` module. A new industry module may add its own page subfolder here while reusing the shared service/case engines.
+5. Preserve existing public URLs during moves. A page's filesystem location does not authorize changing its route or backend contract.

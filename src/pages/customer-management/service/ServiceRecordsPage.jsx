@@ -1,10 +1,10 @@
 import { Navigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Layers3 } from 'lucide-react'
-import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { ResourceState } from '../../shared/components/data/ResourceState'
-import { EmptyState } from '../../shared/components/feedback/EmptyState'
-import { RecordsWorkspace, findRecordType, useRecordsSetup } from '../../features/service'
+import { usePageHeader } from '../../../shared/hooks/usePageHeader'
+import { ResourceState } from '../../../shared/components/data/ResourceState'
+import { EmptyState } from '../../../shared/components/feedback/EmptyState'
+import { RecordsWorkspace, findRecordType, useRecordsSetup } from '../../../features/service'
 
 /** /service/records/:recordType? — records of one type (first type when omitted). */
 export function ServiceRecordsPage() {

@@ -42,9 +42,9 @@
 ## بيتفتح منين
 | المكان | الكسب | الخسارة |
 |---|---|---|
-| كارت بيانات العميل (الدرج وصفحة الليد) | ✓ | ✓ (`pages/customers/.../CustomerDetailsDrawer/CustomerOutcomeButtons.jsx`، تحت التواريخ) |
-| درج العميل (الأزرار السريعة) | `WonQuickAction` | `LostQuickAction` (`pages/customers/.../quick-actions/OutcomeQuickActions.jsx`) |
-| الكليك يمين على الصف | "كسب العميل (تسجيل بيع)" | "خسارة العميل" (`pages/customers/utils/customerRowContextActions.js`) |
+| كارت بيانات العميل (الدرج وصفحة الليد) | ✓ | ✓ (`pages/LeadsCenter/.../CustomerDetailsDrawer/CustomerOutcomeButtons.jsx`، تحت التواريخ) |
+| درج العميل (الأزرار السريعة) | `WonQuickAction` | `LostQuickAction` (`pages/LeadsCenter/.../quick-actions/OutcomeQuickActions.jsx`) |
+| الكليك يمين على الصف | "كسب العميل (تسجيل بيع)" | "خسارة العميل" (`pages/LeadsCenter/utils/customerRowContextActions.js`) |
 | قائمة كارت الـ Pipeline | ✓ | ✓ |
 | شريط التحديد | عميل واحد بس | أي عدد، نفس السبب للكل (`bulk-actions/selection-actions/outcome/OutcomeBulkActions.jsx`) |
 
@@ -67,7 +67,7 @@
 - متجرب على سيرفر حقيقي لأ؛ بالعين على بيانات وهمية بس.
 ## Customer deals destination - 2026-10-17 21:23 (Africa/Cairo)
 
-The contract document action navigates to `/customers/{customer.id}/deals?deal={dealId}` only after both win and status synchronization succeed. Uses the public `customerDealsPath` helper from `features/customers`. This destination displays all customer transactions and their contracts; it does not create another contract. See `pages/customers/customer-deals/README.md`.
+The contract document action navigates to `/customers/{customer.id}/deals?deal={dealId}` only after both win and status synchronization succeed. Uses the public `customerDealsPath` helper from `features/customers`. This destination displays all customer transactions and their contracts; it does not create another contract. See `pages/LeadsCenter/customer-deals/README.md`.
 
 ## Sale status selection - 2026-10-17 22:21 (Africa/Cairo)
 

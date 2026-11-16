@@ -5,7 +5,7 @@
 
 **What it owns:** the API and hooks of tenant definitions (lead statuses, tags) and, since 2026-10-04, the **reasons of a
 status** (each sale / lost / retarget status can carry its own reason list, offered by the lead close dialog). The Statuses
-settings page itself is still in `pages/customers/pages/customization/` (legacy, don't grow it).
+settings page itself is still in `pages/LeadsCenter/pages/customization/` (legacy, don't grow it).
 
 | Path | Owns |
 |---|---|
@@ -24,4 +24,4 @@ settings page itself is still in `pages/customers/pages/customization/` (legacy,
 (`[{ id?, key, label, active, order }]`); the status list returns `reasons[]` per status. Contract:
 [docs/backend/BACKEND-REQUESTS.md §A4](../../../docs/backend/BACKEND-REQUESTS.md).
 
-**Known gaps:** reasons are not saved until the backend ships §A4; the Statuses page still lives in `pages/customers`.
+**Known gaps:** reasons are not saved until the backend ships §A4; the Statuses page still lives in `pages/LeadsCenter`.

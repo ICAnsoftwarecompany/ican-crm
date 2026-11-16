@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Wrench } from 'lucide-react'
-import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { WorkOrderDetailView, WorkOrdersWorkspace } from '../../features/service'
+import { usePageHeader } from '../../../shared/hooks/usePageHeader'
+import { WorkOrderDetailView, WorkOrdersWorkspace } from '../../../features/service'
 
 const detailPath = (workOrder) => `/service/work-orders/${workOrder.id}`
 

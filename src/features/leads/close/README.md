@@ -18,7 +18,7 @@ Summary: [docs/2-SALES.md → Closing a lead](../../../../docs/2-SALES.md#closin
 
 **Public API** (`features/leads/index.js`): `useLeadCloseRequest`, `useLeadClose`, `LeadCloseDialog`, and the helpers above.
 
-**Wired into:** board drop (`pages/customers/components/CustomersPipelineSection.jsx`), drawer quick action
+**Wired into:** board drop (`pages/LeadsCenter/components/CustomersPipelineSection.jsx`), drawer quick action
 (`StatusQuickAction.jsx`) and status changer (`CustomerStatusChanger.jsx`), bulk actions (`CustomersBulkActions.jsx`).
 The follow-up note dialog disables won/lost statuses ("use Close").
 

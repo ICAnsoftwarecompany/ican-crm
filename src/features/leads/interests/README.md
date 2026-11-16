@@ -52,7 +52,7 @@
 | المكان | إزاي |
 |---|---|
 | درج العميل: زرار "إضافة اهتمام" وتعديل في تبويب الاهتمامات | `LeadInterestDialog customer` |
-| الكليك يمين على صف في الجدول | "إضافة اهتمام (منتج أو خدمة)" — `pages/customers/utils/customerRowContextActions.js` |
+| الكليك يمين على صف في الجدول | "إضافة اهتمام (منتج أو خدمة)" — `pages/LeadsCenter/utils/customerRowContextActions.js` |
 | قائمة كارت الـ Pipeline | نفس الاختيار (`actions.onAddInterest`) |
 | شريط التحديد فوق الجدول | "إضافة اهتمام" — `LeadInterestDialog customers={rows}`: نفس الاهتمام لكل ليد، طلب لكل واحد، واللي مالوش ليد بيتخطى (مع تنبيه)، ولو بعضهم فشل بيظهر "اتضاف لـ X وفشل لـ Y" |
 | نافذة إضافة متابعة | الجزء الجانبي "إضافة منتج مهتم به العميل" بيحط `LeadInterestFields` (الفورم من غير نافذة)؛ النافذة بتملك `useLeadInterestForm` وبتحفظ الاهتمام بعد المتابعة (`prepare()` ← `saveInterested`). في **المتابعة السريعة** الجزء ده مش بيظهر |
@@ -89,7 +89,7 @@
 
 | المكان | الملف | الشكل |
 |---|---|---|
-| تبويب الاهتمامات في الدرج | `pages/customers/.../tabs/InterestsTab/InterestsTab.jsx` | `full` + أزرار تعديل / عرض |
+| تبويب الاهتمامات في الدرج | `pages/LeadsCenter/.../tabs/InterestsTab/InterestsTab.jsx` | `full` + أزرار تعديل / عرض |
 | الخط الزمني ("المنتجات المهتم بها") | `.../CustomerActivityTimeline/renderers/InterestedProductsActivity.jsx` | `compact` لكل صنف |
 | عمود "المنتجات والاهتمامات" في الجدول | `.../customers-table/CustomerProductsCell.jsx` | `compact` لآخر اهتمام + "+N" + عرض |
 | نافذة "المنتجات والاهتمامات" | `.../CustomerProductsDialog/` (`InterestedProductsPanel`, `AvailableProductsPanel`, `productsDialogItems.js`, `KindCounts`) | `full`؛ التبويبات بقت بالـ `kind` (منتجات/خدمات/خطط/باقات) بدل نوع الفئة |

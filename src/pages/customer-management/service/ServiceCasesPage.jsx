@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Inbox } from 'lucide-react'
-import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { CasesWorkspace, useServiceTerminology } from '../../features/service'
+import { usePageHeader } from '../../../shared/hooks/usePageHeader'
+import { CasesWorkspace, useServiceTerminology } from '../../../features/service'
 
 /** /service/cases — list/board of cases with server views. */
 export function ServiceCasesPage() {

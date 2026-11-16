@@ -264,7 +264,7 @@ Since 2026-10-02 02:40 (Africa/Cairo) the thread header shows a **follow-up task
 
 **What it does:** Service Operations after the sale — cases/tickets, SLA, service records (bookings, shipments, enrollments, projects), assets and warranty, entitlements, contracts, installments, scheduling, work orders, follow-ups and a customer portal. Works with Sales (contract → handoff) or standalone. Industries are configuration: screens render from the tenant capabilities manifest.
 
-**Code:** `features/service` (public surface `index.js`), `pages/service` (lazy routes in `serviceRoutes.js`), `locales/{ar,en}/service*`.
+**Code:** `features/service` (public surface `index.js`), `pages/customer-management/service` (lazy routes in `serviceRoutes.js`), `locales/{ar,en}/service*`. All Customer Hub page composition belongs under `pages/customer-management`; `pages/LeadsCenter` is reserved for prospective-customer CRM workflows.
 
 **Feature inventory** (source of truth: `features/service/core/constants/serviceModules.js`)
 

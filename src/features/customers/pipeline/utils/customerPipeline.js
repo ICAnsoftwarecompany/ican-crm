@@ -28,7 +28,7 @@ export function getPipelineCustomerKey(customer) {
   return isPresent(key) ? String(key) : ''
 }
 
-// Same precedence as pages/customers/utils/customerStatus#getCustomerLeadStatusTypeId,
+// Same precedence as pages/LeadsCenter/utils/customerStatus#getCustomerLeadStatusTypeId,
 // kept local because features must not import from pages.
 export function getCustomerStatusId(customer) {
   const lead = getPipelineLead(customer)

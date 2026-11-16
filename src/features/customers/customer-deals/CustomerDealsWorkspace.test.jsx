@@ -7,7 +7,7 @@ import { CustomerDealsWorkspace } from './CustomerDealsWorkspace'
 import { CustomerDealsDrawerSection } from './CustomerDealsDrawerSection'
 import { CustomerDealsCount } from './CustomerDealsCount'
 import { useCustomerDealColumns } from './useCustomerDealColumns'
-import { DoneCustomerDrawer } from '../../../pages/customers/components/DoneCustomerDrawer'
+import { DoneCustomerDrawer } from '../../../pages/LeadsCenter/components/DoneCustomerDrawer'
 import { customerDealsPath, normalizeCustomerDeals } from './customerDealsModel'
 
 window.matchMedia = window.matchMedia || (() => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }))

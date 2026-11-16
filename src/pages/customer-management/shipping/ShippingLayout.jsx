@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { SubSidebarLayout } from '../../shared/components/sub-sidebar'
-import { getShippingNavigation } from '../../features/shipping/navigation/shippingNavigation'
+import { SubSidebarLayout } from '../../../shared/components/sub-sidebar'
+import { getShippingNavigation } from '../../../features/shipping/navigation/shippingNavigation'
 
 export function ShippingLayout() {
   const { t } = useTranslation()

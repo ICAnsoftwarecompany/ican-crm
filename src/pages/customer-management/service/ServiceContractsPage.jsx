@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { FileSignature } from 'lucide-react'
-import { usePageHeader } from '../../shared/hooks/usePageHeader'
-import { ContractDetailView, ContractsWorkspace } from '../../features/service'
+import { usePageHeader } from '../../../shared/hooks/usePageHeader'
+import { ContractDetailView, ContractsWorkspace } from '../../../features/service'
 
 const detailPath = (contract) => `/service/contracts/${contract.id}`
 

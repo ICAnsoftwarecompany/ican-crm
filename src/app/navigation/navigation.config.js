@@ -105,10 +105,10 @@ export const navigationConfig = [
     items: [
       {
         id: 'customers',
-        labelKey: 'nav.customers',
+        labelKey: 'nav.customerManagement',
         icon: UserCheck,
-        path: '/LeadsCenter',
-        activePatterns: ['/LeadsCenter', '/LeadsCenter/*', '/lead/*', '/leads/*'],
+        path: '/customer-management',
+        activePatterns: ['/customer-management', '/customer-management/*', '/LeadsCenter', '/LeadsCenter/*', '/lead/*', '/leads/*'],
         permission: 'customers.view',
       },
       {
@@ -201,8 +201,8 @@ export const navigationConfig = [
         id: 'shipping',
         labelKey: 'nav.shipping',
         icon: Truck,
-        path: '/shipping',
-        activePatterns: ['/shipping', '/shipping/*'],
+        path: '/customer-management/shipping',
+        activePatterns: ['/customer-management/shipping', '/customer-management/shipping/*', '/shipping', '/shipping/*'],
         module: 'shipping',
       },
       {
@@ -249,9 +249,9 @@ export const navigationConfig = [
     labelKey: 'nav.sections.support',
     module: 'support',
     items: [
-      { id: 'support-tickets', labelKey: 'nav.supportTickets', icon: Ticket, path: '/service/cases', activePatterns: ['/service/cases', '/service/cases/*'] },
-      { id: 'support-knowledge', labelKey: 'nav.serviceKnowledge', icon: BookOpen, path: '/service/knowledge', activePatterns: ['/service/knowledge', '/service/knowledge/*'] },
-      { id: 'support-sla', labelKey: 'nav.supportSla', icon: Clock3, path: '/service/settings/sla', activePatterns: ['/service/settings/sla'] },
+      { id: 'support-tickets', labelKey: 'nav.supportTickets', icon: Ticket, path: '/customer-management/tickets', activePatterns: ['/customer-management/tickets', '/customer-management/tickets/*', '/service/cases', '/service/cases/*'] },
+      { id: 'support-knowledge', labelKey: 'nav.serviceKnowledge', icon: BookOpen, path: '/customer-management/tickets/knowledge', activePatterns: ['/customer-management/tickets/knowledge', '/customer-management/tickets/knowledge/*', '/service/knowledge', '/service/knowledge/*'] },
+      { id: 'support-sla', labelKey: 'nav.supportSla', icon: Clock3, path: '/customer-management/tickets/settings/sla', activePatterns: ['/customer-management/tickets/settings/sla', '/service/settings/sla'] },
     ],
   },
 

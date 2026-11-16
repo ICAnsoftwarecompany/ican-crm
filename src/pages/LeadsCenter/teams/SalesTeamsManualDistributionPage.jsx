@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { ManualLeadDistributionAction } from '../../features/leads'
-import { CustomersPage } from '../customers/CustomersPage'
+import { ManualLeadDistributionAction } from '../../../features/leads'
+import { CustomersPage } from '../CustomersPage'
 
 const selectionToolbar = (context) => <ManualLeadDistributionAction {...context} />
 

@@ -21,7 +21,7 @@
 
 | | |
 |---|---|
-| **صفحات الراوت** | `pages/sales-teams/` (`SalesTeamsLayout` + `salesTeamsNavigation.js` + `SalesTeamsPages.jsx`) — [README](../../../pages/sales-teams/README.md) |
+| **صفحات الراوت** | `pages/customer-management/teams/` (`SalesTeamsLayout` + `salesTeamsNavigation.js` + `SalesTeamsPages.jsx`) — [README](../../../pages/customer-management/teams/README.md) |
 | **الواجهة العامة** | `index.js`: `TeamsView`، `RulesView`، `RuleBuilder`، `SalesTeamsReportView`، `SALES_TEAMS_ROUTES`، `newRuleForTeam`، `ASSIGN_TYPES`، `RULE_SOURCES`، `TEAM_TYPES`، `buildRulePayload`، `normalizeRule` (وكلهم من `features/leads`) |
 | **الترجمة** | موديول `salesTeams` في `locales/{ar,en}/salesTeams.js` |
 | **الاختبارات** | `utils/salesTeamsModel.test.js`، `utils/ruleSources.test.js`، `rule-builder/utils/ruleBuilder.test.js`، `reports/salesTeamsReportModel.test.js` |
@@ -123,7 +123,7 @@ sales-teams/
 - **مصدر ليد جديد**: ضيفه في `RULE_SOURCES` وترجمته في `salesTeams.sources.*` (ar + en).
 - **نوع فريق جديد**: `TEAM_TYPES` + `salesTeams.teamTypes.<type>.label|hint`.
 - **طريقة توزيع جديدة**: `ASSIGN_TYPES` + `ASSIGN_TYPE_TARGET` + أيقونة في `ASSIGN_TYPE_ICONS` + `salesTeams.assignTypes.<type>` + `salesTeams.builder.method.when.<type>`.
-- **صفحة جديدة في القسم**: راوت تحت `LeadsCenter/teams` في `app/router/index.jsx`، مسار في `constants/salesTeamsRoutes.js`، وعنصر في `pages/sales-teams/salesTeamsNavigation.js`.
+- **صفحة جديدة في القسم**: راوت تحت `LeadsCenter/teams` في `app/router/index.jsx`، مسار في `constants/salesTeamsRoutes.js`، وعنصر في `pages/customer-management/teams/salesTeamsNavigation.js`.
 - **شرط جديد** (منطقة، اهتمام...): `CONDITION_KEYS` و`EMPTY_RULE_FORM` و`buildRulePayload`، وحقل في `rule-builder/components/steps/ConditionsStep.jsx` — بعد ما الباك يدعمه.
 
 ## ثغرات معروفة

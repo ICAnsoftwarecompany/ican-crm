@@ -43,6 +43,8 @@ Status labels used in all three docs: **CURRENT** (verified code in use) · **PA
 |---|---|
 | `src/features/<domain>/` | Business capability: `api/`, `hooks/`, `components/`, `utils/`, `schemas/`, `store/`, `adapters/`/`channels/`, `workflow/`, optional `index.js` public surface. **New business logic goes here.** Create only folders with real code. |
 | `src/pages/` | Route composition. Thin pages that assemble feature components. |
+| `src/pages/customer-management/` | Canonical route-page root for Customer Management / Customer Hub: service, support/tickets, shipping, teams, subscriptions, and industry/domain-specific screens. Add all new pages for these areas here, grouped by module. |
+| `src/pages/LeadsCenter/` | Dedicated Leads Center pages only. Do not place Customer Hub, support, shipping, or industry-module pages here. |
 | `src/shared/` | Domain-independent UI (`components/`), hooks (`useDirection`, `useDebounce`, `usePageHeader`, `useNetworkQuality`) and utils (`dateTime`, `documentLanguage`, `apiResponse`, `cn`). Must not import `features/`. |
 | `src/app/` | Router (`app/router/index.jsx`, `PrivateRoute.jsx`), navigation (`app/navigation/`), providers (`QueryProvider`, `ThemeProvider`). |
 | `src/services/` | HTTP and tenant transport: `httpClient.js`, `apiBaseUrl.js`, `tenantResolver.js`. |
@@ -56,7 +58,7 @@ Second entry (customer portal, F5): `portal.html` → `src/portal/main.jsx` — 
 Bootstrap: `src/main.jsx` → `src/App.jsx` (`QueryProvider` → `ThemeProvider` → `TenantNotificationsRealtime` + router; `syncDocumentLanguage` runs on start and on every language change).
 
 Legacy / transitional areas (do not copy, do not grow):
-- `src/pages/customers/**` still holds much business UI (customer drawer, bulk actions, proposal builder, sales teams). Move it into features incrementally.
+- `src/pages/LeadsCenter/**` is the dedicated Leads Center route/page area and still holds substantial business UI (customer drawer, bulk actions, proposal builder). Move reusable business logic into features incrementally; do not use this folder for Customer Hub pages.
 - `features/MessegeCampaign` (misspelled) is now only a re-export of `features/outreach-campaigns`; nothing imports it. Use `outreach-campaigns`.
 - Files of 1–3 lines that only re-export are compatibility shims; update imports instead of adding more.
 
@@ -303,7 +305,7 @@ npm run check:i18n           # AR/EN key parity + locale module registration (ga
 npm run check:architecture   # blocks new shared -> features imports (gate)
 npx vitest run               # finite test run (npm test = watch mode)
 npm run build
-npm run check:service        # strict i18n/theme gate for features/service + pages/service (gate)
+npm run check:service        # strict i18n/theme gate for features/service + pages/customer-management/service (gate)
 npm run check:all            # lint + i18n + architecture + service + vitest + build
 npm run check:theme          # advisory: hardcoded colors
 npm run check:hardcoded-text # advisory: literal UI strings
@@ -335,7 +337,7 @@ One checklist for every change (human or AI). Report anything you could not veri
 - [ ] Any new internal navigation uses the shared [Sub-sidebar](#sub-sidebar).
 - [ ] Any new chart or Reports page uses the shared [Reports and charts](#reports-and-charts) engine. *(Rule added 2026-10-01 01:49 (Africa/Cairo).)*
 - [ ] Every changed section in `docs/**/*.md` has a nearby `YYYY-MM-DD HH:mm (Africa/Cairo)` timestamp reflecting the current edit.
-- [ ] **Exception — Customer Service:** it is large and phased, so it has its own doc `docs/4-CUSTOMER-SERVICE.md` (phase log updated every phase), backend specs in `docs/customer-service/`, and a `README.md` in each `features/service/*` sub-module folder and in `pages/service/`. Keep those in sync in the same change.
+- [ ] **Exception — Customer Service:** it is large and phased, so it has its own doc `docs/4-CUSTOMER-SERVICE.md` (phase log updated every phase), backend specs in `docs/customer-service/`, and a `README.md` in each `features/service/*` sub-module folder and in `pages/customer-management/service/`. Keep those in sync in the same change.
 
 ## Adding a new module
 
@@ -349,7 +351,7 @@ One checklist for every change (human or AI). Report anything you could not veri
 
 - **Security (backend-coordinated):** `VITE_API_PASSWORD` is sent as a URL query parameter on every API and realtime-auth call (visible in logs/history); access token persisted in localStorage.
 - **Authorization:** no module/permission route guards; navigation filtering is inert until the backend sends `user.modules`/`user.permissions`.
-- **Boundaries:** app-shell composition still inside `shared/components/layout` and `PageToolbar`; large route-owned domain UI in `pages/customers` (incl. proposal builder).
+- **Boundaries:** app-shell composition still inside `shared/components/layout` and `PageToolbar`; large route-owned domain UI in `pages/LeadsCenter` (incl. proposal builder).
 - **Bundle:** single large JS chunk (Vite chunk-size warning); route-level lazy loading for heavy screens (workflow builder, proposal builder, analytics) is open.
 - **i18n / theme:** thousands of advisory hardcoded-text and hex-color findings remain (`check:hardcoded-text`, `check:theme`); a full authenticated AR/EN × light/dark × desktop/mobile visual QA has not been done. Least-audited areas: outreach, conversations, internal chat, workflow, integrations, teams/users/settings, app shell.
 - **Ownership overlaps:** `features/integrations` vs `features/meta-integrations`; calls/meetings split across `features/activities`, `features/call-meetings`, `features/meetings` (their routes now live in the Communication hub, `features/communication`, which owns configuration only — the three-folder consolidation is still open). *(Updated 2026-10-01 00:25 (Africa/Cairo).)*

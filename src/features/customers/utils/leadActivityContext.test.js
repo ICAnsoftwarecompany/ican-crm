@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { leadActivityContext } from './leadActivityContext'
-import { normalizeCustomerActivities } from '../../../pages/customers/components/customers-table/CustomerActivityTimeline/utils/normalizeCustomerActivities'
+import { normalizeCustomerActivities } from '../../../pages/LeadsCenter/components/customers-table/CustomerActivityTimeline/utils/normalizeCustomerActivities'
 
 describe('lead activity context', () => {
   it('uses explicit buckets without duplicating data or inferring scope from dates', () => {

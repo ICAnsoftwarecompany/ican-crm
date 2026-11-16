@@ -1,5 +1,5 @@
 import { DealWorkspaceLayout } from '../../features/deals'
-import { CustomerDetailsDrawer } from '../customers/components/CustomerDetailsDrawer/CustomerDetailsDrawer'
+import { CustomerDetailsDrawer } from '../LeadsCenter/components/CustomerDetailsDrawer/CustomerDetailsDrawer'
 
 const renderCustomerDrawer = (props) => <CustomerDetailsDrawer {...props} />
 
