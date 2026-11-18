@@ -4,8 +4,8 @@ import { Settings2 } from 'lucide-react'
 import { usePageHeader } from '../../../shared/hooks/usePageHeader'
 import { SettingsWorkspace } from '../../../features/service'
 
-/** /service/settings/:section? — Customer Hub configuration. */
-export function ServiceSettingsPage({ basePath = '/service/settings' }) {
+/** /customer-management/service/settings/:section? — Customer Hub configuration. */
+export function ServiceSettingsPage({ basePath = '/customer-management/service/settings' }) {
   const { t } = useTranslation()
   const { section } = useParams()
   usePageHeader({ title: t('service.settings.title'), icon: Settings2 })

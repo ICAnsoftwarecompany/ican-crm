@@ -26,7 +26,7 @@ It is deliberately **not** under Sales or the Customer Hub:
 So it sits in the Overview section of the main sidebar, and **what it shows depends on the viewer** (focus +
 tenant modules), not on where it is in the navigation.
 
-The Customer Hub keeps its own full list at `/service/my-work` (backend read model, spec §20.2). My Work shows a
+The Customer Hub keeps its own full list at `/customer-management/service/my-work` (backend read model, spec §20.2). My Work shows a
 preview of it and links there. The Customer Hub nav label was renamed to **"شغل خدمة العملاء" / "Service work"**
 so there are no two items called "شغلي".
 

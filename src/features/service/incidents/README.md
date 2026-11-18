@@ -6,7 +6,7 @@ public updates to the portal and to every linked request.
 | Path | Role |
 |---|---|
 | `api/incidentsApi.js` | `GET/POST /service/incidents`, `GET /service/incidents/{id}`, `POST …/{id}/updates { status, message, public, notify_linked }`, `POST …/{id}/link { case_numbers[] }`. Query keys `serviceKeys.incidents(params)` / `incident(id)`. |
-| `components/IncidentsWorkspace.jsx` | List (active / resolved) + create dialog. Route `/service/incidents/:incidentId?`. |
+| `components/IncidentsWorkspace.jsx` | List (active / resolved) + create dialog. Route `/customer-management/service/incidents/:incidentId?`. |
 | `components/IncidentDetailView.jsx` | Timeline of updates, add an update, link cases by case number, linked cases list. |
 | `components/ActiveIncidentsBanner.jsx` | Banner in the Operations Center, and on a case's detail when you pass `caseId` (only the incident linked to that case). |
 | `components/IncidentBadges.jsx` | Severity / status chips. |

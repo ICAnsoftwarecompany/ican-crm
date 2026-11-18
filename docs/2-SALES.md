@@ -103,7 +103,7 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 | `/LeadsCenter` | All customers — **Table** (`DataTable`) or **Pipeline** (Kanban by lead status) view, stats, status tabs, bulk actions, drawer | CURRENT |
 | `/LeadsCenter/status-board` | Columns per lead status | CURRENT |
 | `/LeadsCenter/customization` | Statuses + tags tabs | CURRENT |
-| `/LeadsCenter/teams/*` | **Own area with its own sub-sidebar** (`pages/customer-management/teams`, 2026-10-16 00:10 (Africa/Cairo)): Teams (cards, filters, create / edit team dialog), Distribution rules (list, toggle) with **New rule** — a step-by-step builder page (name → target leads → assign type → receiver → priority → review, help and live summary on the side), Reports & statistics. Logic in `features/leads/sales-teams`. Linked from the main sidebar | CURRENT |
+| `/LeadsCenter/teams/*` | **Own area with its own sub-sidebar** (`pages/sales-teams`, moved out of Customer Management 2026-11-17): Teams (cards, filters, create / edit team dialog), Distribution rules (list, toggle) with **New rule** — a step-by-step builder page (name → target leads → assign type → receiver → priority → review, help and live summary on the side), Reports & statistics. Logic in `features/leads/sales-teams`. Linked from the main sidebar | CURRENT |
 | `/LeadsCenter/trash` | Deleted customers, restore / force delete | CURRENT |
 | `/LeadsCenter/activities`, `/activities/meeting/:meetingId` | Activities (calendar-first, see above) / meeting detail | CURRENT |
 | `/LeadsCenter/assignments` | Redirects to `/LeadsCenter/teams/rules` (2026-10-16 00:10 (Africa/Cairo)); the Leads Center "Lead distribution" item opens the same page | CURRENT |
@@ -205,7 +205,7 @@ Every event is written to the lead log (`leadsApi.getLeadLog`) and rendered by t
 **Status:** CURRENT
 
 - **What it does:** sales teams and members; tenant users; online users and user activity panels.
-- **Key files:** `features/teams/api/teamsApi.js`, `hooks/useTeams.js`; `features/users/api/usersApi.js`, `hooks/useUsers.js`, `components/ActiveUsersSidebarPanel.jsx`, `UserActivitySidebarPanel.jsx`; pages `pages/teams/`, `pages/users/`, `features/leads/sales-teams` (Leads Center teams page, replaced `pages/LeadsCenter/pages/SalesTeams/` 2026-10-15 23:40 (Africa/Cairo)), `/settings/users`.
+- **Key files:** `features/teams/api/teamsApi.js`, `hooks/useTeams.js`; `features/users/api/usersApi.js`, `hooks/useUsers.js`, `components/ActiveUsersSidebarPanel.jsx`, `UserActivitySidebarPanel.jsx`; pages `pages/teams/` (general teams), `pages/sales-teams/` (Leads Center sales teams), `pages/users/`, `features/leads/sales-teams`, `/settings/users`.
 - **API:** teams `POST /api/tenant/teams/create`, `POST .../update/{teamId}` (FormData), `GET .../get`, `POST .../attach-members/{teamId}`, `POST .../detach-members/{teamId}`; users `POST /api/tenant/users/create/`, `POST .../update/{id}/`, `GET .../get`, `GET /api/online/users`, `GET /api/user/history/{userId}`.
 - **Used by:** `/teams`, `/users`, `/LeadsCenter/teams`, `/settings/users`, assignee selectors (activities, tasks, deals, workflow data sources).
 - **Known issues:** Unverified: role/permission management UI — the backend does not yet expose `user.permissions`, so frontend permission checks are inert.

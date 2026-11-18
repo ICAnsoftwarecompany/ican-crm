@@ -37,7 +37,7 @@ The `/shipping` area is only a frontend navigation scaffold and placeholders; it
 
 ### Industry-related implementation found
 
-- `features/shipping` and `pages/customer-management/shipping` currently provide navigation and placeholder pages only; no shipment/claim API or business rules are connected.
+- `features/shipping` and `pages/customer-management/industry-shipping` currently provide navigation and placeholder pages only; no shipment/claim API or business rules are connected.
 - `features/service/core/capabilities` provides a Service-specific capabilities manifest, feature checks, and terminology resolution. `features/service/mocks/templates` includes a mock `shipping` template. `features/service/setup` contains template setup/versioning.
 - The Service README explicitly says its sub-modules must not branch directly on industry and should use capabilities/terminology. This is useful architectural precedent, but it covers service cases/operations and mock/demo configuration, not CRM customer/lead APIs.
 - No CRM `industry_key`, industry-to-module registry, tenant customer-management configuration API, or shipping CRM adapter was found in the inspected frontend paths.

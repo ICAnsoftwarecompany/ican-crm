@@ -51,7 +51,7 @@ export function SettingsHealthPanel() {
               <p className="text-xs text-[var(--text-muted)]">{t(`serviceHealth.status.${item.status}`)}</p>
               {item.types.length > 0 && <ul className="mt-2 flex flex-wrap gap-2">{item.types.map(({ type, complete }) => <li key={type} className="rounded-md bg-[var(--surface-2)] px-2 py-1 text-xs">{type}: {t(`serviceHealth.status.${complete ? 'complete' : 'missing'}`)}</li>)}</ul>}
             </div>
-            <Link to={`/service/settings/${getSettingsSlug(resource.key)}`} className="rounded-md border border-[var(--border)] px-3 py-1.5 text-sm hover:bg-[var(--surface-2)]">{t('serviceHealth.configure')}</Link>
+            <Link to={`/customer-management/service/settings/${getSettingsSlug(resource.key)}`} className="rounded-md border border-[var(--border)] px-3 py-1.5 text-sm hover:bg-[var(--surface-2)]">{t('serviceHealth.configure')}</Link>
           </div>
         })}
       </div>

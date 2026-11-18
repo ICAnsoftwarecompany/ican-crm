@@ -33,7 +33,7 @@ export function useMyWork() {
 
 /** Where each work item opens. New source types add one line. */
 export const WORK_ITEM_LINKS = {
-  case: (item) => `/service/cases/${item.source_id}`,
+  case: (item) => `/customer-management/service/cases/${item.source_id}`,
   task: () => '/tasks',
 }
 

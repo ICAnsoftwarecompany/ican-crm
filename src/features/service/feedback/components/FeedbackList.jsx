@@ -17,7 +17,7 @@ const MAX = { nps: 10, ces: 7 }
 const PER_PAGE = 20
 
 /** Survey answers for the period (CSAT with a score filter, NPS, CES), newest first. */
-export function FeedbackList({ period, caseBasePath = '/service/cases' }) {
+export function FeedbackList({ period, caseBasePath = '/customer-management/service/cases' }) {
   const { t, i18n } = useTranslation()
   const [score, setScore] = useState('')
   const [page, setPage] = useState(1)

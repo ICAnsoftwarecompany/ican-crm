@@ -1,5 +1,5 @@
 import { BarChart3, GitBranch, MessagesSquare, Plus, UserCheck, UserCog, UsersRound } from 'lucide-react'
-import { SALES_TEAMS_ROUTES } from '../../../features/leads'
+import { SALES_TEAMS_ROUTES } from '../../features/leads'
 
 /**
  * Sales teams sub-sidebar (2026-10-16): Teams (list + create team), Sales users (rank, manager, role, type, active),

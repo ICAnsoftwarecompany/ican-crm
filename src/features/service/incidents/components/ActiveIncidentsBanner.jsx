@@ -13,7 +13,7 @@ export function ActiveIncidentsBanner({ caseId }) {
   return (
     <div className="grid gap-2" role="status">
       {list.map((incident) => (
-        <Link key={incident.id} to={`/service/incidents/${incident.id}`} className="flex flex-wrap items-center gap-2 rounded-lg border border-sla-breached bg-[var(--surface)] px-4 py-2 text-sm hover:bg-[var(--surface-2)]">
+        <Link key={incident.id} to={`/customer-management/service/incidents/${incident.id}`} className="flex flex-wrap items-center gap-2 rounded-lg border border-sla-breached bg-[var(--surface)] px-4 py-2 text-sm hover:bg-[var(--surface-2)]">
           <Siren size={16} className="text-sla-breached" aria-hidden="true" />
           <span className="font-semibold text-[var(--text)]">{caseId ? t('service.incidents.linkedBanner', { number: incident.number }) : incident.title}</span>
           <IncidentSeverity severity={incident.severity} />

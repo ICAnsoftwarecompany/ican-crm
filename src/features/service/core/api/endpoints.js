@@ -87,7 +87,7 @@ export const serviceEndpoints = {
   subscriptions: `${TENANT_API}/subscriptions`,
 
   // Scheduling (spec §19): resources (proposed CRUD), reservations (§51 `POST /reservations`, `DELETE /reservations/{id}`
-  // + proposed `/confirm`), slots (`GET /scheduling/availability`). Work orders (§38, §51 `/service/work-orders`).
+  // + proposed `/confirm`), slots (`GET /scheduling/availability`). Work orders (§38, §51 `/customer-management/service/work-orders`).
   schedulingResources: `${TENANT_API}/scheduling/resources`,
   schedulingAvailability: `${TENANT_API}/scheduling/availability`,
   reservations: `${TENANT_API}/reservations`,
@@ -177,7 +177,7 @@ export const serviceEndpoints = {
   },
   // Surveys (F6, spec §42.1 `feedback_surveys`): CSAT / NPS / CES definitions (CRUD, proposed path).
   feedbackSurveys: `${SERVICE_API}/feedback/surveys`,
-  // Feedback & reports (F2) — spec §42, §51 (`/service/reports/{report_key}`).
+  // Feedback & reports (F2) — spec §42, §51 (`/customer-management/service/reports/{report_key}`).
   feedbackResponses: `${SERVICE_API}/feedback/responses`,
   reportOverview: `${SERVICE_API}/reports/overview`,
 

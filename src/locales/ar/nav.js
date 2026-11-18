@@ -10,10 +10,9 @@ export default {
   shippingPending: 'هذه مساحة أولية لتنظيم صفحات الشحن. سيتم ربط البيانات الفعلية بعد اعتماد واجهات API.',
   subscriptionsDomain: 'الاشتراكات',
   supportTickets: 'التذاكر',
-  supportSla: 'إعدادات SLA',
   customerManagement: 'مركز العملاء المحتملين',
   customerManagementWorkspace: 'إدارة العملاء',
-  customerManagementDescription: 'الفرق والشحن وخدمات التذاكر',
+  customerManagementDescription: 'عمليات العملاء والشحن والدعم الفني',
 
   favorites: 'المفضلة',
   pinPage: 'تثبيت في المفضلة',

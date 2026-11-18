@@ -14,7 +14,7 @@ const PREVIEW_LIMIT = 5
 
 /**
  * Customer Hub work items (cases, and whatever the backend read model adds). Renders the existing
- * `MyWorkList` from features/service — the full list stays at /service/my-work.
+ * `MyWorkList` from features/service — the full list stays at /customer-management/service/my-work.
  */
 export function ServiceWorkSection() {
   const { t } = useTranslation()
@@ -24,7 +24,7 @@ export function ServiceWorkSection() {
       id="service"
       icon={Inbox}
       title={t('myWork.sections.service.title')}
-      viewAllTo="/service/my-work"
+      viewAllTo="/customer-management/service/my-work"
     >
       <Suspense fallback={<div className="p-2"><CardSkeleton /></div>}>
         <ServiceMyWorkList limit={PREVIEW_LIMIT} />

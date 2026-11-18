@@ -44,7 +44,7 @@ export function QualityReviewDrawer({ review, onClose }) {
       {review && (
         <div className="grid gap-4 p-4">
           <div className="grid gap-0.5 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm">
-            <Link to={`/service/cases/${review.subject.id}`} className="font-medium text-[var(--text)] hover:underline"><span dir="ltr" className="font-mono text-xs text-[var(--text-muted)]">{review.subject.number}</span> <bdi>{review.subject.title}</bdi></Link>
+            <Link to={`/customer-management/service/cases/${review.subject.id}`} className="font-medium text-[var(--text)] hover:underline"><span dir="ltr" className="font-mono text-xs text-[var(--text-muted)]">{review.subject.number}</span> <bdi>{review.subject.title}</bdi></Link>
             <span className="text-xs text-[var(--text-muted)]">{t('service.quality.agentLine', { name: review.agent?.name })}</span>
           </div>
           <ul className="grid gap-3">

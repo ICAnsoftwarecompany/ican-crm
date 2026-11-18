@@ -1,6 +1,6 @@
 # features/service/setup — Setup wizard (F3)
 
-Spec §47.2. Settings → General → Setup wizard (`/service/settings/setup`). Steps: industry template →
+Spec §47.2. Settings → General → Setup wizard (`/customer-management/service/settings/setup`). Steps: industry template →
 business models (A–H) → terminology → dry-run review → apply.
 
 | Path | Role |
@@ -15,7 +15,7 @@ manifest (models/terminology) until reload.
 
 ## Template versioning (F6)
 
-Settings → General → **Template version** (`/service/settings/template-version`, `TemplateVersionsPanel`).
+Settings → General → **Template version** (`/customer-management/service/settings/template-version`, `TemplateVersionsPanel`).
 
 | API | Role |
 |---|---|

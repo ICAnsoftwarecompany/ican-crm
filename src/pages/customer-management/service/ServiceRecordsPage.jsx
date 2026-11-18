@@ -15,11 +15,11 @@ export function ServiceRecordsPage() {
   const type = findRecordType(setup.data, recordType)
   const first = setup.data?.record_types?.[0]
 
-  if (!recordType && first) return <Navigate to={`/service/records/${first.key}`} replace />
+  if (!recordType && first) return <Navigate to={`/customer-management/service/records/${first.key}`} replace />
   return (
     <ResourceState isLoading={setup.isLoading} error={setup.error} onRetry={setup.refetch}>
       {type ? (
-        <RecordsWorkspace key={type.key} recordType={type} detailPath={(record) => `/service/records/${type.key}/${record.id}`} />
+        <RecordsWorkspace key={type.key} recordType={type} detailPath={(record) => `/customer-management/service/records/${type.key}/${record.id}`} />
       ) : (
         <EmptyState icon={<Layers3 size={24} />} title={t('service.records.noTypes')} description={t('service.records.noTypesHint')} />
       )}

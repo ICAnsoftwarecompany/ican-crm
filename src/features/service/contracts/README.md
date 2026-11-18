@@ -1,7 +1,7 @@
 # features/service/contracts — Contracts (F3)
 
 Spec §27. Contracts are a **shared module** (Sales, Service, Billing use them); the Customer Hub gives it
-its first screens: `/service/contracts` and `/service/contracts/:contractId` (Services hub tab).
+its first screens: `/customer-management/service/contracts` and `/customer-management/service/contracts/:contractId` (Services hub tab).
 Contract types are a settings resource (`settings/resources/contractResources.js`, `/contract-types`).
 
 | Path | Role |

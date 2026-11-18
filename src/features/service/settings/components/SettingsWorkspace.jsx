@@ -13,7 +13,8 @@ export function SettingsWorkspace({ section, basePath }) {
   const { t } = useTranslation()
   const firstSlug = getSettingsSlug(SETTINGS_GROUPS[0].resources[0].key)
   if (!section) return <Navigate to={`${basePath}/${firstSlug}`} replace />
-  const resource = getSettingsResource(section)
+  const activeSection = section === 'sla' ? 'sla-policies' : section
+  const resource = getSettingsResource(activeSection)
   const groups = SETTINGS_GROUPS.map((group) => ({
     id: group.key,
     label: t(`service.settings.groups.${group.key}`),

@@ -15,15 +15,15 @@ export function ServiceBatchesPage() {
   const withBatches = (setup.data?.record_types || []).filter((type) => type.batch_enabled)
   const type = findRecordType(setup.data, recordType)
 
-  if (!recordType && withBatches[0]) return <Navigate to={`/service/batches/${withBatches[0].key}`} replace />
+  if (!recordType && withBatches[0]) return <Navigate to={`/customer-management/service/batches/${withBatches[0].key}`} replace />
   return (
     <ResourceState isLoading={setup.isLoading} error={setup.error} onRetry={setup.refetch}>
       {!type?.batch_enabled ? (
         <EmptyState icon={<Layers size={24} />} title={t('service.records.batches.disabled')} />
       ) : batchId ? (
-        <BatchDetailView batchId={batchId} backTo={`/service/batches/${type.key}`} recordPath={(record) => `/service/records/${type.key}/${record.id}`} />
+        <BatchDetailView batchId={batchId} backTo={`/customer-management/service/batches/${type.key}`} recordPath={(record) => `/customer-management/service/records/${type.key}/${record.id}`} />
       ) : (
-        <BatchesWorkspace key={type.key} recordType={type} detailPath={(batch) => `/service/batches/${type.key}/${batch.id}`} />
+        <BatchesWorkspace key={type.key} recordType={type} detailPath={(batch) => `/customer-management/service/batches/${type.key}/${batch.id}`} />
       )}
     </ResourceState>
   )

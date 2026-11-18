@@ -62,8 +62,6 @@ import {
   Layers3,
   Truck,
   Ticket,
-  Clock3,
-  Repeat2,
 } from 'lucide-react'
 
 /** @type {NavigationSection[]} */
@@ -107,8 +105,8 @@ export const navigationConfig = [
         id: 'customers',
         labelKey: 'nav.customerManagement',
         icon: UserCheck,
-        path: '/customer-management',
-        activePatterns: ['/customer-management', '/customer-management/*', '/LeadsCenter', '/LeadsCenter/*', '/lead/*', '/leads/*'],
+        path: '/LeadsCenter',
+        activePatterns: ['/LeadsCenter', '/LeadsCenter/*', '/lead/*', '/leads/*'],
         permission: 'customers.view',
       },
       {
@@ -190,12 +188,19 @@ export const navigationConfig = [
     module: 'customer_service',
     items: [
       {
+        id: 'customer-management',
+        labelKey: 'nav.customerManagementWorkspace',
+        icon: UsersRound,
+        path: '/customer-management',
+        activePatterns: ['/customer-management', '/customer-management/*'],
+      },
+      {
         id: 'service-center',
         labelKey: 'nav.serviceCenter',
         icon: Headset,
-        path: '/service',
+        path: '/customer-management/service',
         end: true,
-        activePatterns: ['/service', '/service/overview'],
+        activePatterns: ['/customer-management/service', '/customer-management/service/overview'],
       },
       {
         id: 'shipping',
@@ -206,38 +211,30 @@ export const navigationConfig = [
         module: 'shipping',
       },
       {
-        id: 'subscriptions-domain',
-        labelKey: 'nav.subscriptionsDomain',
-        icon: Repeat2,
-        path: '/service/subscriptions',
-        activePatterns: ['/service/subscriptions', '/service/subscriptions/*'],
-        module: 'subscriptions',
-      },
-      {
         id: 'service-hub',
         labelKey: 'nav.serviceHub',
         icon: Layers3,
-        path: '/service/records',
-        activePatterns: ['/service/records', '/service/records/*', '/service/batches/*', '/service/assets/*', '/service/entitlements/*', '/service/contracts/*', '/service/handoffs/*', '/service/batches', '/service/assets', '/service/entitlements', '/service/contracts', '/service/handoffs'],
+        path: '/customer-management/service/records',
+        activePatterns: ['/customer-management/service/records', '/customer-management/service/records/*', '/customer-management/service/batches/*', '/customer-management/service/assets/*', '/customer-management/service/entitlements/*', '/customer-management/service/contracts/*', '/customer-management/service/handoffs/*', '/customer-management/service/batches', '/customer-management/service/assets', '/customer-management/service/entitlements', '/customer-management/service/contracts', '/customer-management/service/handoffs'],
       },
       {
         id: 'service-my-work',
         labelKey: 'nav.serviceMyWork',
         icon: ListChecks,
-        path: '/service/my-work',
+        path: '/customer-management/service/my-work',
       },
       {
         id: 'service-reports',
         labelKey: 'nav.serviceReports',
         icon: BarChart3,
-        path: '/service/reports',
+        path: '/customer-management/service/reports',
       },
       {
         id: 'service-settings',
         labelKey: 'nav.serviceSettings',
         icon: Settings2,
-        path: '/service/settings',
-        activePatterns: ['/service/settings', '/service/settings/*'],
+        path: '/customer-management/service/settings/health',
+        activePatterns: ['/customer-management/service/settings', '/customer-management/service/settings/*'],
       },
     ],
   },
@@ -249,9 +246,8 @@ export const navigationConfig = [
     labelKey: 'nav.sections.support',
     module: 'support',
     items: [
-      { id: 'support-tickets', labelKey: 'nav.supportTickets', icon: Ticket, path: '/customer-management/tickets', activePatterns: ['/customer-management/tickets', '/customer-management/tickets/*', '/service/cases', '/service/cases/*'] },
-      { id: 'support-knowledge', labelKey: 'nav.serviceKnowledge', icon: BookOpen, path: '/customer-management/tickets/knowledge', activePatterns: ['/customer-management/tickets/knowledge', '/customer-management/tickets/knowledge/*', '/service/knowledge', '/service/knowledge/*'] },
-      { id: 'support-sla', labelKey: 'nav.supportSla', icon: Clock3, path: '/customer-management/tickets/settings/sla', activePatterns: ['/customer-management/tickets/settings/sla', '/service/settings/sla'] },
+      { id: 'support-tickets', labelKey: 'nav.supportTickets', icon: Ticket, path: '/customer-management/tickets', activePatterns: ['/customer-management/tickets', '/customer-management/tickets/*', '/customer-management/service/cases', '/customer-management/service/cases/*'] },
+      { id: 'support-knowledge', labelKey: 'nav.serviceKnowledge', icon: BookOpen, path: '/customer-management/tickets/knowledge', activePatterns: ['/customer-management/tickets/knowledge', '/customer-management/tickets/knowledge/*', '/customer-management/service/knowledge', '/customer-management/service/knowledge/*'] },
     ],
   },
 

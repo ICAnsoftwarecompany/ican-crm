@@ -10,11 +10,11 @@ into dated lines; the frontend never computes an installment. In mock mode the e
 | `components/PlanComponentsField.jsx` | Settings editor for plan components (down payment, installments, delivery, maintenance…, due rules, outside-the-price flag). |
 | `components/PlanPreviewTable.jsx` | Renders a preview/schedule: totals, warnings, approval flag, dated lines (collapsed after 12). |
 | `api/schedulesApi.js` | Schedules list/detail, `POST /billing/schedules/{id}/payments|reschedule|reschedule/approve|reschedule/reject|cancel|promises|payoff-quote`, `POST /billing/payments/{id}/reverse`, `POST /billing/lines/{id}/waive-fee`, `GET /billing/collections?view=`. |
-| `components/SchedulesList.jsx`, `ScheduleDetailView.jsx` | `/service/billing/schedules[/:id]`: totals, lines (paid / remaining / late fee / status), payments, promises. |
+| `components/SchedulesList.jsx`, `ScheduleDetailView.jsx` | `/customer-management/service/billing/schedules[/:id]`: totals, lines (paid / remaining / late fee / status), payments, promises. |
 | `components/ScheduleActions.jsx` + dialogs | Record payment (`RecordPaymentDialog`, also in payoff mode), promise to pay, payoff quote, reschedule request, cancel (`ReasonDialog`). |
 | `components/PendingReschedule.jsx` | Server-built new lines of a pending reschedule + approve / reject. |
-| `components/CollectionsWorkspace.jsx` | `/service/billing/collections`: overdue · due today · next 7 days · promises, aging buckets (1–30 / 31–60 / 61–90 / 90+). |
-| `components/PlanCalculator.jsx` | Reusable calculator (item → plan → price/qty/dates/overrides → server preview). Accepts `itemId`, `price`, `compact` so a deal or quote screen can embed it later. Shown at `/service/billing/calculator` (Services hub tab "Payments"). |
+| `components/CollectionsWorkspace.jsx` | `/customer-management/service/billing/collections`: overdue · due today · next 7 days · promises, aging buckets (1–30 / 31–60 / 61–90 / 90+). |
+| `components/PlanCalculator.jsx` | Reusable calculator (item → plan → price/qty/dates/overrides → server preview). Accepts `itemId`, `price`, `compact` so a deal or quote screen can embed it later. Shown at `/customer-management/service/billing/calculator` (Services hub tab "Payments"). |
 
 Settings resources (`settings/resources/billingResources.js`): **Payment plans** (`/payment-plans`, editing bumps the
 plan version; an assigned plan cannot be deleted → 409) and **Plan assignments** (`/plan-assignments`: scope = item type

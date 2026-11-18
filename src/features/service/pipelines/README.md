@@ -1,7 +1,7 @@
 # features/service/pipelines — Pipeline editor (F3)
 
 Spec §11. One engine for request (case) and service-record pipelines; contracts/components can reuse it.
-Edited in Settings → Catalog → Pipelines (`/service/settings/pipelines`) as a settings resource
+Edited in Settings → Catalog → Pipelines (`/customer-management/service/settings/pipelines`) as a settings resource
 (`settings/resources/catalogResources.js → pipelinesResource`).
 
 | Path | Role |

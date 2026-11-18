@@ -1,6 +1,6 @@
 # features/service/deliveries — Courier dispatch, proof of delivery, COD (F4)
 
-Spec §38.4 (couriers) and §29.14 (COD). Hub tab **Deliveries** (`/service/deliveries`, feature `courierAssignment`).
+Spec §38.4 (couriers) and §29.14 (COD). Hub tab **Deliveries** (`/customer-management/service/deliveries`, feature `courierAssignment`).
 A shipment stays a service record; this module adds its dispatch state. Couriers are scheduling resources of type `courier`
 (zones, vehicle, daily capacity).
 
@@ -19,4 +19,4 @@ Rules (server-enforced, mirrored by `mocks/handlers/deliveriesHandlers.js` + tes
 - Remittance = all collected, unremitted COD of one merchant; fees are the merchant plan's (mock: 55 per shipment + 1%).
   Accounting lives in the ERP.
 
-Proposed (confirm with backend): the `/service/deliveries` endpoints and `/billing/cod-remittances/pending`.
+Proposed (confirm with backend): the `/customer-management/service/deliveries` endpoints and `/billing/cod-remittances/pending`.

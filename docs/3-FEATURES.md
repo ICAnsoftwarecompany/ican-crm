@@ -33,7 +33,7 @@ Every module section uses: **Status · What it does · Key files · API · Used 
 
 **Status:** PARTIAL (live on real APIs; "mine" filtering client-side; focus chosen by the viewer until the backend sends roles)
 
-- **What it does:** `/my-work` (Overview → **شغلي / My work**) — one page per user with everything waiting now, across Sales, Customer Hub and Communication: summary tiles (overdue, today's calls & meetings, tasks due, unread) and registered sections: Overdue, Today's calls & meetings, My tasks due, My to-do list (To-Dos only, since 2026-10-02), Newest leads assigned to me (Sales), Customer service work (Customer Hub preview of `/service/my-work`), Messages (WhatsApp, Messenger, Gmail, team chat). A focus switch (All / Sales / Customer service) filters sections; `module` gating is inert until the backend sends `user.modules`.
+- **What it does:** `/my-work` (Overview → **شغلي / My work**) — one page per user with everything waiting now, across Sales, Customer Hub and Communication: summary tiles (overdue, today's calls & meetings, tasks due, unread) and registered sections: Overdue, Today's calls & meetings, My tasks due, My to-do list (To-Dos only, since 2026-10-02), Newest leads assigned to me (Sales), Customer service work (Customer Hub preview of `/customer-management/service/my-work`), Messages (WhatsApp, Messenger, Gmail, team chat). A focus switch (All / Sales / Customer service) filters sections; `module` gating is inert until the backend sends `user.modules`.
 - **Key files:** `features/my-work/` — registry (`registerMyWorkSection`), rules (`utils/myWorkItems.js`, tested), hooks (`useMyActivities`, `useMyTasks`, `useMyWorkFocus`, `useMyWorkPreview`), sections, `MyWorkBoard`/`MyWorkSummary`; page `pages/my-work/MyWorkPage.jsx`; locale `myWork.js`. Full reference: [features/my-work/README.md](../src/features/my-work/README.md).
 - **API:** none of its own — activities (`/api/tenant/meetings`), tasks, `sales/dashboard/my-leads`, `/api/tenant/my-work` (Customer Hub), conversation lists, internal chat conversations. Same list params as the calendar/inbox, so caches are shared.
 - **Added public exports:** `features/tasks/index.js`, `features/calendar/index.js`, `features/analytics/index.js`, `useConversationUnreadSummary` in `features/conversations`.
@@ -271,24 +271,24 @@ Since 2026-10-02 02:40 (Africa/Cairo) the thread header shows a **follow-up task
 | Feature | Phase | Status | Data |
 |---|---|---|---|
 | Capabilities manifest, terminology, industry templates (demo) | F0 | CURRENT | mock |
-| Service overview `/service` (roadmap, template switcher) | F0 | CURRENT | mock |
-| Operations Center `/service` (counters incl. SLA at risk / breached, My Work preview) | F1–F2 | CURRENT | mock |
-| Cases `/service/cases` (views, list, board, create) and case detail (timeline, reply, internal note, status, properties) | F1 | CURRENT | mock |
+| Service overview `/customer-management/service` (roadmap, template switcher) | F0 | CURRENT | mock |
+| Operations Center `/customer-management/service` (counters incl. SLA at risk / breached, My Work preview) | F1–F2 | CURRENT | mock |
+| Cases `/customer-management/service/cases` (views, list, board, create) and case detail (timeline, reply, internal note, status, properties) | F1 | CURRENT | mock |
 | Queues (filter + assign) | F1 | CURRENT | mock |
-| My Work `/service/my-work` | F1 | CURRENT | mock |
+| My Work `/customer-management/service/my-work` | F1 | CURRENT | mock |
 | Contacts & relationships (case detail, drawer) | F1 | CURRENT | mock |
 | Conversation → Case (thread header in `/conversations`) | F1 | CURRENT | mock |
 | Customer drawer **Services** tab | F1 | CURRENT | mock |
-| Operations settings `/service/settings/*` (case types, queues, SLA policies, business hours, escalation, saved replies, macros, KB categories) | F2 | CURRENT | mock |
+| Operations settings `/customer-management/service/settings/*` (case types, queues, SLA policies, business hours, escalation, saved replies, macros, KB categories) | F2 | CURRENT | mock |
 | SLA on cases (badge, panel, views, escalation timeline) | F2 | CURRENT | mock |
 | Saved replies in the composer, macros on the case | F2 | CURRENT | mock |
-| Knowledge base `/service/knowledge` + suggested articles on cases | F2 | CURRENT | mock |
+| Knowledge base `/customer-management/service/knowledge` + suggested articles on cases | F2 | CURRENT | mock |
 | CSAT on cases + feedback list | F2 | CURRENT | mock |
-| Reports `/service/reports` (KPIs, trend, breakdowns, agents) | F2 | CURRENT | mock |
+| Reports `/customer-management/service/reports` (KPIs, trend, breakdowns, agents) | F2 | CURRENT | mock |
 | Case filters + saved views (private / shared) | F2 | CURRENT | mock |
 | Setup wizard (industry templates) | F3 | CURRENT | mock |
 | Catalog service setup: capabilities, item types, record types, pipelines (editor), catalog items' fulfillment & attached services | F3 | CURRENT | mock |
-| Services hub `/service/records…`: service records (participants, components, entries, documents, timeline, customer updates) and batches | F3 | CURRENT | mock |
+| Services hub `/customer-management/service/records…`: service records (participants, components, entries, documents, timeline, customer updates) and batches | F3 | CURRENT | mock |
 | Assets & warranty, entitlements with ledger, case coverage | F3 | CURRENT | mock |
 | Contracts (versions, signatures, amendments) and Sales → Service handoffs | F3 | CURRENT | mock |
 | Payment plans & installments, collections, subscriptions, scheduling, work orders, courier dispatch + COD | F4 | CURRENT | mock |

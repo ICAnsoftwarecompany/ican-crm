@@ -1,5 +1,7 @@
 # pages/sales-teams — قسم فرق السيلز
 
+> **Structure update:** 2026-11-17 — this route-page module moved from `pages/customer-management/teams/` to `pages/sales-teams/`. Public routes remain `/LeadsCenter/teams/*`.
+
 > **Documentation update:** 2026-10-16 02:40 (Africa/Cairo) — صفحتين جداد: مستخدمين السيلز (`users`) وتوزيع المحادثات (`channels`).
 > 2026-10-16 00:10 (Africa/Cairo) — الفولدر اتعمل.
 

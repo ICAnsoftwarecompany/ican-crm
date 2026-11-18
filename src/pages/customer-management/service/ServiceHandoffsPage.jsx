@@ -10,9 +10,9 @@ export function ServiceHandoffsPage() {
   const { handoffId } = useParams()
   usePageHeader({ title: t('service.hub.title'), icon: FileCheck2 })
   return handoffId ? (
-    <HandoffDetailView handoffId={handoffId} backTo="/service/handoffs" contractPath={(contract) => `/service/contracts/${contract.id}`} />
+    <HandoffDetailView handoffId={handoffId} backTo="/customer-management/service/handoffs" contractPath={(contract) => `/customer-management/service/contracts/${contract.id}`} />
   ) : (
-    <HandoffsWorkspace detailPath={(handoff) => `/service/handoffs/${handoff.id}`} />
+    <HandoffsWorkspace detailPath={(handoff) => `/customer-management/service/handoffs/${handoff.id}`} />
   )
 }
 

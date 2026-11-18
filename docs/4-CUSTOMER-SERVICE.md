@@ -11,7 +11,7 @@ change as the code (see [Phase log](#phase-log)).
 **Naming.** Users see this area as **Customer Hub / إدارة العملاء** (sidebar section), with
 **Operations Center / مركز العمليات** as its home and **Services / الخدمات** as the customer-drawer tab —
 it covers the whole customer relationship after the sale, not only support tickets. Code, routes and
-keys keep the stable technical name `service` (`features/service`, `/service/*`, `service.*`,
+keys keep the stable technical name `service` (`features/service`, `/customer-management/service/*`, `service.*`,
 `module: 'customer_service'`). Rename copy only in the locale files; never rename folders or routes for it.
 A later option: let tenants override the section name through capabilities terminology.
 
@@ -57,7 +57,7 @@ that needs `if (industry === 'tourism')` is a design bug.
 ## Phases
 
 Eight frontend phases, numbered like the backend phases so both sides line up. The same list lives in
-code (`features/service/core/constants/serviceModules.js`) and is rendered live on `/service`.
+code (`features/service/core/constants/serviceModules.js`) and is rendered live on `/customer-management/service`.
 
 | Phase | Name | Frontend scope | Milestone | Status |
 |---|---|---|---|---|
@@ -126,20 +126,28 @@ src/features/service/          ← all business code (README.md inside)
 
 src/pages/customer-management/                      ← route-owned Customer Management / Hub pages
 ├── service/                                         ← /service/* pages and serviceRoutes.js
-├── shipping/                                        ← shipping pages
-├── teams/                                           ← teams and rules pages
+├── industry-shipping/                               ← shipping pages
+├── ticket-module/                                   ← ticket list/detail page components
+├── knowledge-base/                                  ← shared knowledge list/article pages
+├── reports/                                         ← shared reports page component
+├── my-work/                                         ← shared My Work page component
+├── operations-settings/                             ← shared operations settings page component
 ├── customerManagementRoutes.jsx                     ← /customer-management/* route composition
 └── <industry-or-domain>/                            ← future pages, grouped by module
 
 src/pages/LeadsCenter/                              ← Leads Center CRM pages only; never Customer Hub UI
+src/pages/sales-teams/                              ← Sales Teams pages for /LeadsCenter/teams/*
 src/locales/{ar,en}/service.js ← `service.*` copy, split into ./service/*.js parts
 ```
 
-Support and ticket pages are grouped under `src/pages/customer-management/service/` and routed
-through the Customer Management workspace. Examples include `/customer-management/tickets`,
+Ticket list and detail page components live in `src/pages/customer-management/ticket-module/`;
+shared ticket behavior remains in `src/features/service/`. They are routed through the Customer
+Management workspace. Examples include `/customer-management/tickets`,
 `/customer-management/tickets/knowledge`, and `/customer-management/tickets/settings/sla`. Existing
-service URLs remain unchanged, including `/service/subscriptions`, `/service/my-work`,
-`/service/reports`, `/service/settings/health`, and `/service/records/service_contract`.
+Customer Hub service page URLs now live under `/customer-management/service`, including `/customer-management/service/subscriptions`, `/customer-management/service/my-work`,
+`/customer-management/service/reports`, and `/customer-management/service/records/service_contract`. Customer Hub settings use
+`/customer-management/service/settings/:section?`, with health at `/customer-management/service/settings/health`.
+The previous standalone service route prefix has been retired.
 For the page ownership rule, see [CH-004](customer-service/CUSTOMER-HUB-MODULE-RULE.md#rule-ch-004--customer-management-page-ownership).
 
 The **customer portal** (F5) is a second app in the same repo, not part of the staff CRM bundle:
@@ -188,7 +196,7 @@ component → hook (React Query) → casesApi → createServiceApi('cases') → 
   `'live'`, test, log it below. No page/hook change.
 - `VITE_SERVICE_MOCKS`: `auto` (default, follows the registry) · `all` (demos) · `none` (verify live).
 - Mock state is in memory (resets on reload). The selected **industry template** (devices, tourism,
-  school, shipping) persists in localStorage and is switched from the banner on `/service`.
+  school, shipping) persists in localStorage and is switched from the banner on `/customer-management/service`.
 - Never put business rules in the frontend to "make the mock work" (installment math, SLA due dates,
   entitlement checks). Mocks return results; the backend owns the logic.
 
@@ -228,30 +236,30 @@ component → hook (React Query) → casesApi → createServiceApi('cases') → 
 
 | Route | Page | Phase |
 |---|---|---|
-| `/service` | `ServiceCenterPage` — counters per view, My Work preview, new case, demo banner | F1 |
-| `/service/cases` | `ServiceCasesPage` — views (`?view=`), search (`?q=`), list or board (`?mode=board`) | F1 |
-| `/service/cases/:caseId` | `ServiceCaseDetailPage` — timeline, reply / internal note, status, properties, contacts | F1 |
-| `/service/my-work` | `ServiceMyWorkPage` — everything assigned to me (nav label "شغل خدمة العملاء / Service work" since 2026-10-01 00:55 (Africa/Cairo); a preview of this list is the `service` section of the app-wide [My Work](3-FEATURES.md#my-work) page) | F1 |
-| `/service/cases?saved=&priority=&queue=&type=` | Cases filters + saved views (same page) | F2 |
-| `/service/knowledge` | `ServiceKnowledgePage` — search, category/status filters, article list; F6: views `?status=changes|expiring`, stats (views, helpful rate, deflections, content gaps) | F2 · F6 |
-| `/service/knowledge/:articleId` | `ServiceKnowledgeArticlePage` — editor; `new` creates a draft. F6: type, expiry date, reviewer, review workflow (submit → approve/reject → publish → archive), versions drawer with restore | F2 · F6 |
-| `/service/reports` | `ServiceReportsPage` — `?tab=overview|feedback|quality|advanced&period=7d|30d|90d` (quality = F6 review workspace, advanced = F7 analytics) | F2 · F6 · F7 |
-| `/service/incidents/:incidentId?` | `ServiceIncidentsPage` — major incidents list + detail (linked from the Operations Center) | F6 |
-| `/service/settings/:section?` | `ServiceSettingsPage` — setup wizard, import data, case types, queues, catalog (items, item types, record types, pipelines), contract types, payment plans + assignments, scheduling resources, follow-up programs, portfolios, portal (accounts, policies, request catalog, branding), API clients, webhooks, SLA policies, business hours, escalation, saved replies, macros, KB categories; F6: template version, quality checklists, sampling rules, surveys, case-type form fields; F7: AI settings, AI agent | F2–F7 |
-| `/service/records/:recordType?/:recordId?` | `ServiceRecordsPage` / `ServiceRecordDetailPage` inside `ServicesHubLayout` (Services hub) | F3 |
-| `/service/batches/:recordType?/:batchId?` | `ServiceBatchesPage` (Services hub) | F3 |
-| `/service/assets/:assetId?` | `ServiceAssetsPage` (Services hub, feature `assets`) | F3 |
-| `/service/entitlements` | `ServiceEntitlementsPage` (Services hub, feature `entitlements`) | F3 |
-| `/service/contracts/:contractId?` | `ServiceContractsPage` (Services hub) | F3 |
-| `/service/handoffs/:handoffId?` | `ServiceHandoffsPage` (Services hub) | F3 |
-| `/service/billing/:view?` (`schedules`, `collections`, `calculator`), `/service/billing/schedules/:scheduleId` | `ServiceBillingPage` (Services hub tab "Payments") | F4 |
-| `/service/subscriptions/:subscriptionId?` | `ServiceSubscriptionsPage` (Services hub, feature `subscriptions`) | F4 |
-| `/service/work-orders/:workOrderId?` | `ServiceWorkOrdersPage` (Services hub, feature `workOrders`) | F4 |
-| `/service/scheduling` | `ServiceSchedulingPage` (Services hub, features `scheduling` / `workOrders` / `courierAssignment`) | F4 |
-| `/service/deliveries` | `ServiceDeliveriesPage` (Services hub, feature `courierAssignment`) | F4 |
-| `/service/follow-ups` | `ServiceFollowUpsPage` (Services hub tab "Follow-ups") — due buckets, outcome drawer, manual enroll | F5 |
+| `/customer-management/service` | `ServiceCenterPage` — counters per view, My Work preview, new case, demo banner | F1 |
+| `/customer-management/service/cases` | `ServiceCasesPage` — views (`?view=`), search (`?q=`), list or board (`?mode=board`) | F1 |
+| `/customer-management/service/cases/:caseId` | `ServiceCaseDetailPage` — timeline, reply / internal note, status, properties, contacts | F1 |
+| `/customer-management/service/my-work` | `ServiceMyWorkPage` — everything assigned to me (nav label "شغل خدمة العملاء / Service work" since 2026-10-01 00:55 (Africa/Cairo); a preview of this list is the `service` section of the app-wide [My Work](3-FEATURES.md#my-work) page) | F1 |
+| `/customer-management/service/cases?saved=&priority=&queue=&type=` | Cases filters + saved views (same page) | F2 |
+| `/customer-management/service/knowledge` | `ServiceKnowledgePage` — search, category/status filters, article list; F6: views `?status=changes|expiring`, stats (views, helpful rate, deflections, content gaps) | F2 · F6 |
+| `/customer-management/service/knowledge/:articleId` | `ServiceKnowledgeArticlePage` — editor; `new` creates a draft. F6: type, expiry date, reviewer, review workflow (submit → approve/reject → publish → archive), versions drawer with restore | F2 · F6 |
+| `/customer-management/service/reports` | `ServiceReportsPage` — `?tab=overview|feedback|quality|advanced&period=7d|30d|90d` (quality = F6 review workspace, advanced = F7 analytics) | F2 · F6 · F7 |
+| `/customer-management/service/incidents/:incidentId?` | `ServiceIncidentsPage` — major incidents list + detail (linked from the Operations Center) | F6 |
+| `/customer-management/service/settings/:section?` | `ServiceSettingsPage` — setup wizard, import data, case types, queues, catalog (items, item types, record types, pipelines), contract types, payment plans + assignments, scheduling resources, follow-up programs, portfolios, portal (accounts, policies, request catalog, branding), API clients, webhooks, SLA policies, business hours, escalation, saved replies, macros, KB categories; F6: template version, quality checklists, sampling rules, surveys, case-type form fields; F7: AI settings, AI agent | F2–F7 |
+| `/customer-management/service/records/:recordType?/:recordId?` | `ServiceRecordsPage` / `ServiceRecordDetailPage` inside `ServicesHubLayout` (Services hub) | F3 |
+| `/customer-management/service/batches/:recordType?/:batchId?` | `ServiceBatchesPage` (Services hub) | F3 |
+| `/customer-management/service/assets/:assetId?` | `ServiceAssetsPage` (Services hub, feature `assets`) | F3 |
+| `/customer-management/service/entitlements` | `ServiceEntitlementsPage` (Services hub, feature `entitlements`) | F3 |
+| `/customer-management/service/contracts/:contractId?` | `ServiceContractsPage` (Services hub) | F3 |
+| `/customer-management/service/handoffs/:handoffId?` | `ServiceHandoffsPage` (Services hub) | F3 |
+| `/customer-management/service/billing/:view?` (`schedules`, `collections`, `calculator`), `/customer-management/service/billing/schedules/:scheduleId` | `ServiceBillingPage` (Services hub tab "Payments") | F4 |
+| `/customer-management/service/subscriptions/:subscriptionId?` | `ServiceSubscriptionsPage` (Services hub, feature `subscriptions`) | F4 |
+| `/customer-management/service/work-orders/:workOrderId?` | `ServiceWorkOrdersPage` (Services hub, feature `workOrders`) | F4 |
+| `/customer-management/service/scheduling` | `ServiceSchedulingPage` (Services hub, features `scheduling` / `workOrders` / `courierAssignment`) | F4 |
+| `/customer-management/service/deliveries` | `ServiceDeliveriesPage` (Services hub, feature `courierAssignment`) | F4 |
+| `/customer-management/service/follow-ups` | `ServiceFollowUpsPage` (Services hub tab "Follow-ups") — due buckets, outcome drawer, manual enroll | F5 |
 | `/portal/*` (separate app) | `login`, `track` (guest), then `/`, `services/:recordId?`, `requests`, `requests/new`, `requests/:caseId`, `catalog`, `payments`, `assets`, `documents`, `help`, `company` — sections shown = tenant-enabled ∩ membership policy. F6: `help/:articleId`, KB suggestions + "this solved it" on new request, NPS/CES card, incident banner; public `/portal/help-center` (no sign-in, when enabled). F7: AI assistant chat bubble (when the AI agent is on) | F5 · F6 · F7 |
-| `/service/overview` | `ServiceOverviewPage` — manifest, mock template switcher, roadmap | F0 |
+| `/customer-management/service/overview` | `ServiceOverviewPage` — manifest, mock template switcher, roadmap | F0 |
 
 - All Service routes are declared in `src/pages/customer-management/service/serviceRoutes.js` and **lazy-loaded** (own chunks).
 - Sidebar section **Customer Hub** (`navigation.config.js`, id `customer-service`): Operations Center, Cases,
@@ -261,7 +269,7 @@ component → hook (React Query) → casesApi → createServiceApi('cases') → 
   belong to "what the customer has" (subscriptions, schedules, work orders) become tabs here, not sidebar items.
 - Sidebar section id `customer-service` (`module: 'customer_service'`, label `nav.sections.customerService`)
   in `app/navigation/navigation.config.js`. Keep it at 3–7 items; new destinations (incidents F6, quality and
-  advanced reports F6/F7, AI settings F7) go inside `/service` pages — Operations Center links, Reports tabs, settings groups —
+  advanced reports F6/F7, AI settings F7) go inside `/customer-management/service` pages — Operations Center links, Reports tabs, settings groups —
   never as new sidebar items.
 
 ## Integration points outside the area
@@ -301,15 +309,15 @@ the unified body `{ success:false, code, message, errors, meta:{ request_id } }`
 | `GET /my-work` | `[{ id, source_type, source_id, title, reference, customer, priority, status, due_at, updated_at }]` | Read model for the signed-in user. For cases `due_at` = `sla.next_due_at`. |
 | `GET/POST /customers/{id}/contacts` | Contacts `{ id, name, phone, email, role{key,label}, is_primary, relationships[{id,relation_type,to_contact{id,name}}] }`; create `{ name, phone?, email?, role_key, relation?{ from_contact_id, relation_type } }` | |
 | `GET /contacts/setup` | `{ roles[{key,label}], relation_types[{key,label}] }` | Tenant configuration. |
-| `CRUD /service/case-types`, `/service/queues` | Case type `{ key, label, icon, default_priority, default_queue_id, sla_policy_id, active }`; queue `{ key, label, assignment_strategy: manual|round_robin|least_loaded, agent_ids[] }` | F2. Feed `cases/setup`. Delete in use → 409 `RESOURCE_IN_USE`. |
+| `CRUD /service/case-types`, `/customer-management/service/queues` | Case type `{ key, label, icon, default_priority, default_queue_id, sla_policy_id, active }`; queue `{ key, label, assignment_strategy: manual|round_robin|least_loaded, agent_ids[] }` | F2. Feed `cases/setup`. Delete in use → 409 `RESOURCE_IN_USE`. |
 | `CRUD /service/sla-policies` | `{ name, order, priorities[], case_type_ids[], first_response_minutes, resolution_minutes, business_calendar_id, pause_on_pending_customer, active }` | F2. First active match by `order`; empty list = all. A case type may pin a policy. |
 | `CRUD /service/business-calendars` | `{ name, timezone, working_hours[{day, enabled, start, end}], holidays[{date, name}] }` | F2. Used by SLA on the server. |
 | `CRUD /service/escalation-rules` | `{ name, priorities[], triggers[{ at: % of SLA, action: notify|escalate, target }], active }` | F2. Server scheduler writes `sla_escalated` activities. |
-| `CRUD /service/saved-replies`, `/service/macros` | See `replies/README.md` | F2. |
+| `CRUD /service/saved-replies`, `/customer-management/service/macros` | See `replies/README.md` | F2. |
 | `POST /service/cases/{id}/apply-macro` | `{ macro_id, version, language }` → case | F2. Atomic; 409/422 = nothing changed. |
-| `CRUD /service/kb/categories`, `/service/kb/articles`, `POST …/articles/{id}/publish` | See `knowledge/README.md` | F2. Create = draft; publish needs `kb.publish`. |
+| `CRUD /service/kb/categories`, `/customer-management/service/kb/articles`, `POST …/articles/{id}/publish` | See `knowledge/README.md` | F2. Create = draft; publish needs `kb.publish`. |
 | `GET /service/cases/{id}/suggested-articles` | Published articles for the case | F2. Proposed (not in spec §51 yet). |
-| `GET /service/reports/overview?period=` | See `reports/README.md` | F2. Spec `/service/reports/{report_key}`. |
+| `GET /service/reports/overview?period=` | See `reports/README.md` | F2. Spec `/customer-management/service/reports/{report_key}`. |
 | `GET /service/feedback/responses?score=&period=&page=` | See `feedback/README.md` | F2. Proposed read endpoint (spec has `POST /feedback/responses`). |
 | `CRUD /saved-views?entity=` | `{ entity, name, filters, visibility: private|shared, owner_id }` | F2. Core, cross-module. |
 | `GET /catalog/capabilities`, `GET /catalog/service-models` | Capability registry (`config_fields`) and model presets A–H | F3. Code-owned on the backend; proposed read endpoints. |
@@ -317,8 +325,8 @@ the unified body `{ success:false, code, message, errors, meta:{ request_id } }`
 | `GET /catalog/items`, `PATCH /catalog/items/{id} { service_config }` | Existing Products & Services + service config (type, fulfillment, relations) | F3. Product fields stay on the existing Products endpoints (unchanged). |
 | `CRUD /pipelines` | Statuses + transitions; every save = new version; `tmp-*` status ids remapped by the server | F3. Status in use removed → 409 `PIPELINE_STATUS_IN_USE`. Case types gain `pipeline_id`. |
 | `CRUD /service/record-types` | `{ key, label, icon, pipeline_id, participant_roles[{key,label,min,max}], component_types[], entry_types[], batch_enabled, batch_label, fields[], portal_visible }` | F3. |
-| `/service/records…`, `/service/batches…` | See `records/README.md` | F3. |
-| `/service/assets…`, `/service/warranties/{id}/void`, `/service/entitlements…` (+ `/check`, `/{id}/transactions`) | See `assets/README.md`, `entitlements/README.md` | F3. |
+| `/customer-management/service/records…`, `/customer-management/service/batches…` | See `records/README.md` | F3. |
+| `/customer-management/service/assets…`, `/customer-management/service/warranties/{id}/void`, `/customer-management/service/entitlements…` (+ `/check`, `/{id}/transactions`) | See `assets/README.md`, `entitlements/README.md` | F3. |
 | `CRUD /contract-types`, `/contracts…` (+ send/sign/activate/terminate/cancel/renew/amendments) | See `contracts/README.md` | F3. |
 | `GET /service/handoffs`, `GET|PATCH /service/handoffs/{id}`, `POST …/accept|reject|reprocess` | See `handoffs/README.md` | F3. |
 | `GET /settings/templates`, `POST /settings/templates/{key}/apply { models, terminology, dry_run }` | Setup wizard | F3. Idempotent; dry run previews. |
@@ -353,7 +361,7 @@ the unified body `{ success:false, code, message, errors, meta:{ request_id } }`
 2. Create `features/service/<folder>/` with `README.md`, `api/` (via `createServiceApi('<key>')`), hooks, components.
 3. Add query keys under `serviceKeys` in `core/constants/queryKeys.js`.
 4. Add mock handlers `mocks/handlers/<key>Handlers.js` + seed via `registerSeed`, register in `mocks/handlers/index.js`.
-   Seeds must work for **every** template (test by switching templates on `/service`).
+   Seeds must work for **every** template (test by switching templates on `/customer-management/service`).
 5. Add copy in `src/locales/{ar,en}/service/<key>.js` and import it in both `service.js`.
 6. Add pages + routes in `pages/customer-management/service/`; export only what pages need from `features/service/index.js`.
 7. Run the checklist below, set `status: 'done'`, add a [Phase log](#phase-log) entry.

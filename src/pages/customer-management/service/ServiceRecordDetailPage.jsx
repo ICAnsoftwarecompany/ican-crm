@@ -9,7 +9,7 @@ export function ServiceRecordDetailPage() {
   const { t } = useTranslation()
   const { recordType, recordId } = useParams()
   usePageHeader({ title: t('service.hub.title'), icon: Layers3 })
-  return <RecordDetailView recordId={recordId} backTo={`/service/records/${recordType}`} />
+  return <RecordDetailView recordId={recordId} backTo={`/customer-management/service/records/${recordType}`} />
 }
 
 export default ServiceRecordDetailPage

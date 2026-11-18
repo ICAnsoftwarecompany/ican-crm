@@ -1,5 +1,5 @@
 /**
- * All /service/* routes, lazy-loaded so the Service area ships in its own
+ * All /customer-management/service/* routes, nested under Customer Management so the Service area ships in its own
  * chunks. The app router spreads this object once; add new Service screens
  * HERE (not in app/router/index.jsx) to keep merges with other areas clean.
  *
@@ -14,14 +14,13 @@ export const serviceRoutes = {
   children: [
     // F1
     { index: true, lazy: page(() => import('./ServiceCenterPage'), 'ServiceCenterPage') },
-    { path: 'cases', lazy: page(() => import('./ServiceCasesPage'), 'ServiceCasesPage') },
-    { path: 'cases/:caseId', lazy: page(() => import('./ServiceCaseDetailPage'), 'ServiceCaseDetailPage') },
-    { path: 'my-work', lazy: page(() => import('./ServiceMyWorkPage'), 'ServiceMyWorkPage') },
+    { path: 'cases', lazy: page(() => import('../ticket-module/ServiceCasesPage'), 'ServiceCasesPage') },
+    { path: 'cases/:caseId', lazy: page(() => import('../ticket-module/ServiceCaseDetailPage'), 'ServiceCaseDetailPage') },
+    { path: 'my-work', lazy: page(() => import('../my-work/ServiceMyWorkPage'), 'ServiceMyWorkPage') },
     // F2
-    { path: 'reports', lazy: page(() => import('./ServiceReportsPage'), 'ServiceReportsPage') },
-    { path: 'knowledge', lazy: page(() => import('./ServiceKnowledgePage'), 'ServiceKnowledgePage') },
-    { path: 'knowledge/:articleId', lazy: page(() => import('./ServiceKnowledgeArticlePage'), 'ServiceKnowledgeArticlePage') },
-    { path: 'settings/:section?', lazy: page(() => import('./ServiceSettingsPage'), 'ServiceSettingsPage') },
+    { path: 'reports', lazy: page(() => import('../reports/ServiceReportsPage'), 'ServiceReportsPage') },
+    { path: 'knowledge', lazy: page(() => import('../knowledge-base/ServiceKnowledgePage'), 'ServiceKnowledgePage') },
+    { path: 'knowledge/:articleId', lazy: page(() => import('../knowledge-base/ServiceKnowledgeArticlePage'), 'ServiceKnowledgeArticlePage') },
     // F3 — Services hub (one sidebar item, tabs in ServicesHubLayout)
     {
       lazy: page(() => import('./ServicesHubLayout'), 'ServicesHubLayout'),

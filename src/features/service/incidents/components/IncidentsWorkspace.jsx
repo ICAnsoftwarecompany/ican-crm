@@ -25,7 +25,7 @@ export function IncidentsWorkspace() {
   const incidents = useIncidents({ status: status || undefined })
   const { create } = useIncidentMutations()
   const errors = getServiceFieldErrors(create.error)
-  const submit = () => create.mutate(form, { onSuccess: (incident) => { setCreating(false); navigate(`/service/incidents/${incident.id}`) } })
+  const submit = () => create.mutate(form, { onSuccess: (incident) => { setCreating(false); navigate(`/customer-management/service/incidents/${incident.id}`) } })
   return (
     <div className="grid gap-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -40,7 +40,7 @@ export function IncidentsWorkspace() {
         <ul className="divide-y divide-[var(--border)] rounded-lg border border-[var(--border)] bg-[var(--surface)]">
           {(incidents.data || []).map((incident) => (
             <li key={incident.id}>
-              <Link to={`/service/incidents/${incident.id}`} className="flex flex-wrap items-center gap-3 px-4 py-3 hover:bg-[var(--surface-2)]">
+              <Link to={`/customer-management/service/incidents/${incident.id}`} className="flex flex-wrap items-center gap-3 px-4 py-3 hover:bg-[var(--surface-2)]">
                 <span className="grid min-w-0 flex-1">
                   <span className="text-sm font-medium text-[var(--text)]"><span dir="ltr" className="font-mono text-xs text-[var(--text-muted)]">{incident.number}</span> <bdi>{incident.title}</bdi></span>
                   <span className="text-xs text-[var(--text-muted)]">{[t('service.incidents.linkedCount', { count: incident.linked_count, open: incident.open_linked }), formatRelativeTime(incident.started_at, i18n.language)].join(' · ')}</span>

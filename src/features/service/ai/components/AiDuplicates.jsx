@@ -19,7 +19,7 @@ export function AiDuplicates({ caseItem, enabled }) {
       <ul className="grid gap-1.5">
         {items.map((entry) => (
           <li key={entry.case.id} className="grid gap-0.5 rounded-md border border-[var(--border)] p-2 text-sm">
-            <Link to={`/service/cases/${entry.case.id}`} className="font-medium text-[var(--text)] hover:underline"><span dir="ltr" className="font-mono text-xs text-[var(--text-muted)]">{entry.case.case_number}</span> <bdi>{entry.case.subject}</bdi></Link>
+            <Link to={`/customer-management/service/cases/${entry.case.id}`} className="font-medium text-[var(--text)] hover:underline"><span dir="ltr" className="font-mono text-xs text-[var(--text-muted)]">{entry.case.case_number}</span> <bdi>{entry.case.subject}</bdi></Link>
             <span className="text-xs text-[var(--text-muted)]">{[t('service.ai.match', { value: Math.round(entry.score * 100) }), ...entry.reasons.map((reason) => t(`service.ai.duplicates.reasons.${reason}`))].join(' · ')}</span>
             <button type="button" className="w-fit text-xs font-medium text-brand-accent hover:underline" onClick={() => setTarget(entry.case)}>{t('service.ai.duplicates.mark')}</button>
           </li>

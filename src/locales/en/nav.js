@@ -10,10 +10,9 @@ export default {
   shippingPending: 'This is a navigation scaffold. Live data will be connected after the API contract is confirmed.',
   subscriptionsDomain: 'Subscriptions',
   supportTickets: 'Tickets',
-  supportSla: 'SLA settings',
   customerManagement: 'Leads Center',
   customerManagementWorkspace: 'Customer Management',
-  customerManagementDescription: 'Teams, shipping, and ticket operations',
+  customerManagementDescription: 'Customer operations, shipping, and technical support',
 
   favorites: 'Favorites',
   pinPage: 'Pin to favorites',

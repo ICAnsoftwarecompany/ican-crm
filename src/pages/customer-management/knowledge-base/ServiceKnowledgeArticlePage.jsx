@@ -6,7 +6,7 @@ import { ResourceState } from '../../../shared/components/data/ResourceState'
 import { ArticleEditor, useKbArticle } from '../../../features/service'
 
 /** /service/knowledge/:articleId — edit an article; `new` creates one. */
-export function ServiceKnowledgeArticlePage({ basePath = '/service/knowledge' }) {
+export function ServiceKnowledgeArticlePage({ basePath = '/customer-management/service/knowledge' }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { articleId } = useParams()

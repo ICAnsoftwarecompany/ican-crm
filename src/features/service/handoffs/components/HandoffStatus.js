@@ -9,11 +9,11 @@ export const HANDOFF_STATUS_TONE = {
 
 /** Where a created entity opens (records route by type key; others by id). */
 export function entityPath(entity, { recordTypeKeyOf } = {}) {
-  if (entity.type === 'asset') return `/service/assets/${entity.id}`
+  if (entity.type === 'asset') return `/customer-management/service/assets/${entity.id}`
   if (['booking', 'enrollment', 'shipment', 'project'].includes(entity.type)) {
     const key = entity.record_type_key || recordTypeKeyOf?.(entity.type)
-    return key ? `/service/records/${key}/${entity.id}` : null
+    return key ? `/customer-management/service/records/${key}/${entity.id}` : null
   }
-  if (entity.type === 'entitlement') return '/service/entitlements'
+  if (entity.type === 'entitlement') return '/customer-management/service/entitlements'
   return null
 }

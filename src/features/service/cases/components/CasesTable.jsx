@@ -105,7 +105,7 @@ export function CasesTable({ query, emptyMessage }) {
       error={query.error}
       onRetry={query.refetch}
       emptyMessage={emptyMessage}
-      onRowClick={(row) => navigate(`/service/cases/${row.id}`)}
+      onRowClick={(row) => navigate(`/customer-management/service/cases/${row.id}`)}
       hasNextPage={Boolean(query.hasNextPage)}
       isFetchingNextPage={query.isFetchingNextPage}
       onLoadMore={() => query.fetchNextPage()}

@@ -65,7 +65,7 @@ export function CustomerServiceTab({ customer }) {
             {cases.cases.map((item) => (
               <li key={item.id}>
                 <Link
-                  to={`/service/cases/${item.id}`}
+                  to={`/customer-management/service/cases/${item.id}`}
                   className="flex items-center gap-3 rounded-md bg-[var(--surface-2)] px-3 py-2 transition-colors hover:bg-[var(--shell-hover)]"
                 >
                   <div className="min-w-0 flex-1">

@@ -14,9 +14,9 @@ import { InactiveCustomersPage } from '../../pages/LeadsCenter/pages/InactiveCus
 import { DoneCustomersPage } from '../../pages/LeadsCenter/pages/DoneCustomersPage'
 import { RetargetingCustomersPage } from '../../pages/LeadsCenter/pages/RetargetingCustomersPage'
 import { CustomerSegmentsPage } from '../../pages/LeadsCenter/pages/CustomerSegmentsPage'
-import { SalesTeamsLayout } from '../../pages/customer-management/teams/SalesTeamsLayout'
+import { SalesTeamsLayout } from '../../pages/sales-teams/SalesTeamsLayout'
 import { SalesTeamsManualDistributionPage } from '../../pages/LeadsCenter/teams/SalesTeamsManualDistributionPage'
-import { SalesTeamsChannelsPage, SalesTeamsPage, SalesTeamsReportsPage, SalesTeamsRuleBuilderPage, SalesTeamsRulesPage, SalesTeamsUsersPage } from '../../pages/customer-management/teams/SalesTeamsPages'
+import { SalesTeamsChannelsPage, SalesTeamsPage, SalesTeamsReportsPage, SalesTeamsRuleBuilderPage, SalesTeamsRulesPage, SalesTeamsUsersPage } from '../../pages/sales-teams/SalesTeamsPages'
 import { DuplicateCustomersPage } from '../../pages/LeadsCenter/pages/DuplicateCustomersPage'
 import { CustomerCustomizationPage } from '../../pages/LeadsCenter/pages/customization/CustomerCustomizationPage'
 import { CustomerImportExportPage } from '../../pages/LeadsCenter/pages/CustomerImportExportPage'
@@ -81,8 +81,7 @@ import { VisualFlowDemo } from '../../pages/playground/VisualFlowDemo'
 import { ReportsDemo } from '../../pages/playground/ReportsDemo'
 import { communicationRoutes } from '../../pages/communication/communicationRoutes'
 import { CommunicationSettingsPage } from '../../pages/settings/pages/communication/CommunicationSettingsPage'
-import { serviceRoutes } from '../../pages/customer-management/service/serviceRoutes'
-import { shippingRoutes } from '../../pages/customer-management/shipping/shippingRoutes'
+import { shippingRoutes } from '../../pages/customer-management/industry-shipping/shippingRoutes'
 import { customerManagementRoutes } from '../../pages/customer-management/customerManagementRoutes'
 
 function NotFoundPage() {
@@ -248,7 +247,6 @@ export const router = createBrowserRouter([
           { path: 'communication/:moduleId', element: <CommunicationSettingsPage /> },
         ],
       },
-      serviceRoutes,
       { path: 'integrations/facebook/callback', element: <FacebookCallbackPage /> },
       { path: 'playground/datatable', element: <DataTableDemo /> },
       { path: 'playground/visual-flow', element: <VisualFlowDemo /> },

@@ -7,7 +7,7 @@ import { SchedulingWorkspace } from '../../../features/service'
 export function ServiceSchedulingPage() {
   const { t } = useTranslation()
   usePageHeader({ title: t('service.hub.title'), icon: CalendarRange })
-  return <SchedulingWorkspace workOrderPath={(workOrder) => `/service/work-orders/${workOrder.id}`} />
+  return <SchedulingWorkspace workOrderPath={(workOrder) => `/customer-management/service/work-orders/${workOrder.id}`} />
 }
 
 export default ServiceSchedulingPage

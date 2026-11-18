@@ -1,6 +1,6 @@
 # features/service/imports — Import engine (F5)
 
-Spec §15.1. Operations settings → General → **Import data** (`/service/settings/imports`).
+Spec §15.1. Operations settings → General → **Import data** (`/customer-management/service/settings/imports`).
 
 | Path | Role |
 |---|---|

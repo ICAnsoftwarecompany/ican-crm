@@ -4,7 +4,7 @@ import { Repeat } from 'lucide-react'
 import { usePageHeader } from '../../../shared/hooks/usePageHeader'
 import { SubscriptionDetailView, SubscriptionsWorkspace } from '../../../features/service'
 
-const detailPath = (subscription) => `/service/subscriptions/${subscription.id}`
+const detailPath = (subscription) => `/customer-management/service/subscriptions/${subscription.id}`
 
 /** /service/subscriptions/:subscriptionId? */
 export function ServiceSubscriptionsPage() {
@@ -12,7 +12,7 @@ export function ServiceSubscriptionsPage() {
   const { subscriptionId } = useParams()
   usePageHeader({ title: t('service.hub.title'), icon: Repeat })
   return subscriptionId ? (
-    <SubscriptionDetailView subscriptionId={subscriptionId} backTo="/service/subscriptions" contractPath={(contractId) => `/service/contracts/${contractId}`} />
+    <SubscriptionDetailView subscriptionId={subscriptionId} backTo="/customer-management/service/subscriptions" contractPath={(contractId) => `/customer-management/service/contracts/${contractId}`} />
   ) : (
     <SubscriptionsWorkspace detailPath={detailPath} />
   )

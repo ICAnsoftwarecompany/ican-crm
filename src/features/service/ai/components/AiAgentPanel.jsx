@@ -68,7 +68,7 @@ export function AiAgentPanel({ resource }) {
                   </span>
                   <span className={cn('text-xs font-medium', entry.status === 'ai' ? 'text-sla-on-track' : 'text-sla-at-risk')}>{entry.status === 'ai' ? t('service.ai.agent.statuses.ai') : t('service.ai.agent.handedBecause', { reason: t(`service.ai.agent.reasons.${entry.handoff_reason}`) })}</span>
                 </button>
-                {entry.case && <Link to={`/service/cases/${entry.case.id}`} className="w-fit text-xs font-medium text-brand-accent hover:underline"><span dir="ltr">{entry.case.case_number}</span></Link>}
+                {entry.case && <Link to={`/customer-management/service/cases/${entry.case.id}`} className="w-fit text-xs font-medium text-brand-accent hover:underline"><span dir="ltr">{entry.case.case_number}</span></Link>}
                 {openId === entry.id && detail.data && <div className="rounded-md border border-[var(--border)] p-3"><AgentChatLog messages={detail.data.messages} /></div>}
               </li>
             ))}

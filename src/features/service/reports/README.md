@@ -1,7 +1,7 @@
 # features/service/reports — Reports dashboard (F2)
 
-`/service/reports?tab=overview|feedback&period=7d|30d|90d`. The **server aggregates**; the UI only
-renders `GET /service/reports/overview?period=` (spec §51 `/service/reports/{report_key}`).
+`/customer-management/service/reports?tab=overview|feedback&period=7d|30d|90d`. The **server aggregates**; the UI only
+renders `GET /service/reports/overview?period=` (spec §51 `/customer-management/service/reports/{report_key}`).
 
 | Path | Role |
 |---|---|

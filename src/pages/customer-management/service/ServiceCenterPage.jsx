@@ -34,13 +34,13 @@ export function ServiceCenterPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Link
-            to="/service/overview"
+            to="/customer-management/service/overview"
             className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border)] px-3 text-sm text-[var(--text)] hover:bg-[var(--surface-2)]"
           >
             <MapIcon size={16} aria-hidden="true" />
             {t('service.center.setupOverview')}
           </Link>
-          <Link to="/service/incidents" className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border)] px-3 text-sm text-[var(--text)] hover:bg-[var(--surface-2)]">
+          <Link to="/customer-management/service/incidents" className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border)] px-3 text-sm text-[var(--text)] hover:bg-[var(--surface-2)]">
             <Siren size={16} aria-hidden="true" />
             {t('service.incidents.title')}
           </Link>
@@ -59,7 +59,7 @@ export function ServiceCenterPage() {
       <section className="grid gap-3">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-[var(--text)]">{t('service.center.myWork')}</h2>
-          <Link to="/service/my-work" className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] hover:underline">
+          <Link to="/customer-management/service/my-work" className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] hover:underline">
             {t('service.center.viewAll')}
           </Link>
         </div>
@@ -69,7 +69,7 @@ export function ServiceCenterPage() {
       <section className="grid gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-[var(--text)]">{t('service.health.atRisk')}</h2>
-          <Link to="/service/reports?tab=advanced" className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] hover:underline">{t('service.center.viewAll')}</Link>
+          <Link to="/customer-management/service/reports?tab=advanced" className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] hover:underline">{t('service.center.viewAll')}</Link>
         </div>
         <AtRiskCustomers limit={5} />
       </section>

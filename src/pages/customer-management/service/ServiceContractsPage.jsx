@@ -4,7 +4,7 @@ import { FileSignature } from 'lucide-react'
 import { usePageHeader } from '../../../shared/hooks/usePageHeader'
 import { ContractDetailView, ContractsWorkspace } from '../../../features/service'
 
-const detailPath = (contract) => `/service/contracts/${contract.id}`
+const detailPath = (contract) => `/customer-management/service/contracts/${contract.id}`
 
 /** /service/contracts/:contractId? */
 export function ServiceContractsPage() {
@@ -12,7 +12,7 @@ export function ServiceContractsPage() {
   const { contractId } = useParams()
   usePageHeader({ title: t('service.hub.title'), icon: FileSignature })
   return contractId ? (
-    <ContractDetailView contractId={contractId} backTo="/service/contracts" detailPath={detailPath} handoffPath={(handoff) => `/service/handoffs/${handoff.id}`} schedulePath={(schedule) => `/service/billing/schedules/${schedule.id}`} />
+    <ContractDetailView contractId={contractId} backTo="/customer-management/service/contracts" detailPath={detailPath} handoffPath={(handoff) => `/customer-management/service/handoffs/${handoff.id}`} schedulePath={(schedule) => `/customer-management/service/billing/schedules/${schedule.id}`} />
   ) : (
     <ContractsWorkspace detailPath={detailPath} />
   )

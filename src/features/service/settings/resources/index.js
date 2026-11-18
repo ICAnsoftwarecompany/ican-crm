@@ -14,7 +14,6 @@ import { portalAccountsSection, portalBrandingSection, portalPoliciesResource, r
 import { followUpProgramsResource, portfoliosSection } from './followUpResources'
 import { qualityChecklistsResource, samplingRulesResource, surveysResource } from './qualityResources'
 import { createElement } from 'react'
-import { Navigate } from 'react-router-dom'
 import { ClipboardList, Activity, Bot, FileUp, GitCompare, KeyRound, Package, Sparkles, Wand2, Webhook } from 'lucide-react'
 import { ApiClientsPanel } from '../../api-access/components/ApiClientsPanel'
 import { AiSettingsPanel } from '../../ai/components/AiSettingsPanel'
@@ -31,7 +30,6 @@ import { CatalogItemsPanel } from '../../catalog/components/CatalogItemsPanel'
 const healthSection = { key: 'health', icon: Activity, i18nKey: 'service.settings.resources.health', component: SettingsHealthPanel }
 const assignmentRulesSection = { key: 'assignmentRules', icon: ClipboardList, i18nKey: 'service.settings.resources.assignmentRules', component: () => createElement(AssignmentSettingsPanel, { sectionKey: 'rules' }) }
 const distributionSettingsSection = { key: 'distributionSettings', icon: ClipboardList, i18nKey: 'service.settings.resources.distributionSettings', component: () => createElement(AssignmentSettingsPanel, { sectionKey: 'distribution' }) }
-const legacyAssignmentSection = { key: 'assignment', icon: ClipboardList, i18nKey: 'service.settings.resources.assignment', component: () => createElement(Navigate, { to: '/service/settings/assignment-rules', replace: true }) }
 const setupSection = { key: 'setup', icon: Wand2, i18nKey: 'service.settings.resources.setup', component: SetupWizardPanel }
 const templateVersionsSection = { key: 'templateVersions', icon: GitCompare, i18nKey: 'service.settings.resources.templateVersions', component: TemplateVersionsPanel }
 const importsSection = { key: 'imports', icon: FileUp, i18nKey: 'service.settings.resources.imports', component: ImportsPanel }
@@ -42,7 +40,7 @@ const aiAgentSection = { key: 'aiAgent', icon: Bot, i18nKey: 'service.settings.r
 const catalogItemsSection = { key: 'catalogItems', icon: Package, i18nKey: 'service.settings.resources.catalogItems', component: CatalogItemsPanel }
 
 /**
- * Every configuration screen under /service/settings/:section.
+ * Every configuration screen under /customer-management/service/settings/:section.
  * Adding a screen = add a resource definition + list it in a group here +
  * add `service.settings.resources.<key>` copy. No new page or dialog needed.
  * Later sub-modules (replies, knowledge…) append their own resources.
@@ -64,7 +62,7 @@ export const SETTINGS_GROUPS = [
   { key: 'knowledge', resources: [kbCategoriesResource] },
 ]
 
-export const SETTINGS_RESOURCES = [...SETTINGS_GROUPS.flatMap((group) => group.resources), legacyAssignmentSection]
+export const SETTINGS_RESOURCES = SETTINGS_GROUPS.flatMap((group) => group.resources)
 
 const SECTION_SLUGS = {
   health: 'health',

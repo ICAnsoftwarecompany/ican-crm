@@ -7,7 +7,7 @@ follow_up_enrollment`), and the outcome the agent records decides what happens n
 | Piece | Where |
 |---|---|
 | Program editor (settings → Follow-ups → Follow-up programs) | `settings/resources/followUpResources.js` + `components/FollowUpStepsField.jsx`, `FollowUpStepEditor.jsx` |
-| Workspace `/service/follow-ups` (Services hub tab) | `components/FollowUpsWorkspace.jsx`, `FollowUpDrawer.jsx`, `FollowUpHistory.jsx` |
+| Workspace `/customer-management/service/follow-ups` (Services hub tab) | `components/FollowUpsWorkspace.jsx`, `FollowUpDrawer.jsx`, `FollowUpHistory.jsx` |
 | Manual enrollment | `components/EnrollFollowUpDialog.jsx` (exported; can be embedded with a fixed `customer`) |
 | Rule / offset mapping for the editor | `constants/followUps.js` (+ test) |
 | Mock engine | `mocks/state/followUpEngine.js` (+ test), `mocks/handlers/followUpsHandlers.js` (+ test) |

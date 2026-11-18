@@ -4,7 +4,7 @@ import { usePageHeader } from '../../../shared/hooks/usePageHeader'
 import { KnowledgeWorkspace } from '../../../features/service'
 
 /** /service/knowledge — internal knowledge base. */
-export function ServiceKnowledgePage({ basePath = '/service/knowledge' }) {
+export function ServiceKnowledgePage({ basePath = '/customer-management/service/knowledge' }) {
   const { t } = useTranslation()
   usePageHeader({ title: t('service.knowledge.title'), icon: BookOpen })
 

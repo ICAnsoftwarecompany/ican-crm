@@ -2,11 +2,11 @@
 
 Spec §33. A **service record** is the customer-facing service instance (booking, shipment, enrollment,
 project, service contract…) — not a case, task, work order or asset. Everything a screen shows comes from
-the **record type configuration** (`/service/record-types`): pipeline, participant roles, component types,
+the **record type configuration** (`/customer-management/service/record-types`): pipeline, participant roles, component types,
 entry types, batches, field schema. No industry branching.
 
 Lives in the **Services hub** (one sidebar item, tabs from `core/components/ServicesHubNav.jsx`):
-`/service/records/:recordType`, `/service/records/:recordType/:recordId`, `/service/batches/:recordType/:batchId?`.
+`/customer-management/service/records/:recordType`, `/customer-management/service/records/:recordType/:recordId`, `/customer-management/service/batches/:recordType/:batchId?`.
 
 | Path | Role |
 |---|---|

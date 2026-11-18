@@ -2,7 +2,7 @@
 
 Spec §30. A subscription is created by the handoff processor when a signed contract line's item has
 `fulfillment.creates = subscription` (recurrence taken from the item type's `recurrence` capability, price from the
-contract line). Services hub tab **Subscriptions** (`/service/subscriptions[/:id]`, shown when the tenant has the
+contract line). Services hub tab **Subscriptions** (`/customer-management/service/subscriptions[/:id]`, shown when the tenant has the
 `subscriptions` feature) and a Customer 360 section.
 
 | Path | Role |

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { SubSidebarLayout } from '../../../shared/components/sub-sidebar'
+import { SubSidebarLayout } from '../../shared/components/sub-sidebar'
 import { getSalesTeamsSidebarConfig } from './salesTeamsNavigation'
 
 /** /LeadsCenter/teams/* — the sales teams area with its own sub-sidebar (2026-10-16). */

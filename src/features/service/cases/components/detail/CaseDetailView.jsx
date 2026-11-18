@@ -37,7 +37,7 @@ export function CaseDetailView({ caseId }) {
 
   return (
     <div className="grid gap-4">
-      <Link to="/service/cases" className="inline-flex w-fit items-center gap-1 text-sm text-[var(--text-muted)] hover:text-[var(--text)]">
+      <Link to="/customer-management/service/cases" className="inline-flex w-fit items-center gap-1 text-sm text-[var(--text-muted)] hover:text-[var(--text)]">
         <ArrowLeft size={16} aria-hidden="true" className="rtl:-scale-x-100" />
         {t('service.cases.detail.back', { entity: term('case', 'other') })}
       </Link>
@@ -67,7 +67,7 @@ export function CaseDetailView({ caseId }) {
                   <span className="min-w-0 break-words">{caseItem.subject}</span>
                 </h1>
                 {caseItem.description && <p className="mt-1 text-sm text-[var(--text-muted)]">{caseItem.description}</p>}
-                {caseItem.duplicate_of && <Link to={`/service/cases/${caseItem.duplicate_of.id}`} className="mt-1 inline-block text-xs font-medium text-brand-accent hover:underline">{t('service.ai.duplicates.closedAs', { number: caseItem.duplicate_of.case_number })}</Link>}
+                {caseItem.duplicate_of && <Link to={`/customer-management/service/cases/${caseItem.duplicate_of.id}`} className="mt-1 inline-block text-xs font-medium text-brand-accent hover:underline">{t('service.ai.duplicates.closedAs', { number: caseItem.duplicate_of.case_number })}</Link>}
               </div>
               <div className="flex shrink-0 flex-wrap items-center gap-2">
                 {['resolved', 'closed'].includes(caseItem.status?.category) && <SendToQualityButton caseItem={caseItem} />}

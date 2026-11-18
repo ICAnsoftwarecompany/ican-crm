@@ -5,10 +5,10 @@ Tenants rename it (Ticket, Request…) through terminology — always show it wi
 
 ## What it does
 
-- **Workspace** (`/service/cases`): built-in views with live counts, server search, list (DataTable,
+- **Workspace** (`/customer-management/service/cases`): built-in views with live counts, server search, list (DataTable,
   paged on scroll) or board (grouped by status **category**), create dialog. State in the URL:
   `?view=&mode=board&q=`.
-- **Detail** (`/service/cases/:caseId`): header + "Change status" menu, activity timeline (customer
+- **Detail** (`/customer-management/service/cases/:caseId`): header + "Change status" menu, activity timeline (customer
   messages, replies, internal notes, system events), reply / internal-note composer, editable properties
   (assignee, queue, priority, severity), customer contacts.
 - **Create** from anywhere: `CaseCreateDialog` (`defaults` pre-fill), `CreateCaseFromConversationButton`

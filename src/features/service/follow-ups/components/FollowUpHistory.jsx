@@ -18,7 +18,7 @@ export function FollowUpHistory({ enrollment }) {
             <span className="text-xs text-[var(--text-muted)]">{[entry.by?.name, formatDate(entry.at, i18n.language)].filter(Boolean).join(' · ')}</span>
             {entry.note && <span className="text-xs text-[var(--text)]">{entry.note}</span>}
             {entry.checklist?.length > 0 && <span className="text-xs text-[var(--text-muted)]">{t('service.followUps.checkedCount', { count: entry.checklist.length })}</span>}
-            {entry.case && <Link to={`/service/cases/${entry.case.id}`} className="w-fit text-xs font-medium text-brand-accent hover:underline"><span dir="ltr">{entry.case.case_number}</span></Link>}
+            {entry.case && <Link to={`/customer-management/service/cases/${entry.case.id}`} className="w-fit text-xs font-medium text-brand-accent hover:underline"><span dir="ltr">{entry.case.case_number}</span></Link>}
           </li>
         ))}
       </ol>

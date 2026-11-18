@@ -1,6 +1,6 @@
 # Customer Hub Operations Settings — overview readiness
 
-Updated: 2026-11-13 (Africa/Cairo). Route: `/service/settings/health`.
+Updated: 2026-11-17 (Africa/Cairo). Canonical route: `/customer-management/service/settings/health`. SLA policies are managed in the same Operations Settings workspace at `/customer-management/service/settings/sla-policies`, not a separate sidebar page. The former standalone settings route is no longer registered.
 
 ## Live APIs and scoring
 

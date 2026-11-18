@@ -75,7 +75,7 @@ export function CaseCreateDialog({ open, onClose, defaults, navigateOnCreate = t
           toast.success(t('service.cases.create.done', { number: created.case_number }))
           onCreated?.(created)
           onClose()
-          if (navigateOnCreate) navigate(`/service/cases/${created.id}`)
+          if (navigateOnCreate) navigate(`/customer-management/service/cases/${created.id}`)
         },
         onError: (error) => {
           if (error?.response?.status !== 422) toast.error(getServiceErrorMessage(error, t))

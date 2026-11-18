@@ -64,7 +64,7 @@ export function CasesBoard({ cases, setup, onRequestTransition }) {
               <CasePriorityBadge priority={item.priority} showLabel={false} />
             </span>
           </div>
-          <Link to={`/service/cases/${item.id}`} className="flex items-start gap-2 text-sm font-medium text-[var(--text)] hover:underline">
+          <Link to={`/customer-management/service/cases/${item.id}`} className="flex items-start gap-2 text-sm font-medium text-[var(--text)] hover:underline">
             <CaseTypeIcon icon={item.type?.icon} className="mt-0.5 shrink-0 text-[var(--text-muted)]" />
             <span className="line-clamp-2">{item.subject}</span>
           </Link>

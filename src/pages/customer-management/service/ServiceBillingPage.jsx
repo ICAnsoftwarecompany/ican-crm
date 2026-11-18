@@ -4,9 +4,9 @@ import { Wallet } from 'lucide-react'
 import { usePageHeader } from '../../../shared/hooks/usePageHeader'
 import { BillingNav, CollectionsWorkspace, PlanCalculator, ScheduleDetailView, SchedulesList } from '../../../features/service'
 
-const BASE = '/service/billing'
+const BASE = '/customer-management/service/billing'
 const detailPath = (schedule) => `${BASE}/schedules/${schedule.id}`
-const contractPath = (contractId) => `/service/contracts/${contractId}`
+const contractPath = (contractId) => `/customer-management/service/contracts/${contractId}`
 const VIEWS = ['schedules', 'collections', 'calculator']
 
 /** /service/billing/:view? and /service/billing/schedules/:scheduleId (Payments tab of the Services hub). */

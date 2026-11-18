@@ -22,7 +22,7 @@ export function ServiceCenterCounters() {
         {SERVICE_CENTER_VIEWS.map((view) => (
           <Link
             key={view}
-            to={`/service/cases?view=${view}`}
+            to={`/customer-management/service/cases?view=${view}`}
             className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4 transition-colors hover:border-brand-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
           >
             <p className="text-xs text-[var(--text-muted)]">{t(`service.cases.views.${view}`)}</p>

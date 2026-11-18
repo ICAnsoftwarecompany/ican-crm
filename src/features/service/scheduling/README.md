@@ -1,7 +1,7 @@
 # features/service/scheduling — Scheduling & resource capacity (F4)
 
 Spec §19. One engine for anything with time and capacity: technicians, couriers, guides, rooms, vehicles, seats.
-Services hub tab **Scheduling** (`/service/scheduling`, shown with the `scheduling`, `workOrders` or `courierAssignment` feature).
+Services hub tab **Scheduling** (`/customer-management/service/scheduling`, shown with the `scheduling`, `workOrders` or `courierAssignment` feature).
 
 | Path | Role |
 |---|---|

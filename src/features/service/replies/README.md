@@ -7,7 +7,7 @@
 | `utils/renderTemplate.js` | Preview-only variable filling (`{{customer.name}}`, `{{case.number}}`, `{{agent.name}}`); unknown variables stay as-is. `repliesForCase()`. |
 
 Settings screens (CRUD) are resource definitions in `../settings/resources/communicationResources.js`
-(`/service/settings/saved-replies`, `/service/settings/macros`).
+(`/customer-management/service/settings/saved-replies`, `/customer-management/service/settings/macros`).
 
 Contracts:
 

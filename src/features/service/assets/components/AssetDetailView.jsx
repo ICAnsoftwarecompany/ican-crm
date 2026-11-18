@@ -33,7 +33,7 @@ function Section({ title, children, action }) {
 }
 
 /** Asset: ownership, warranties, entitlements, service history, transfers. */
-export function AssetDetailView({ assetId, backTo, casePath = (id) => `/service/cases/${id}` }) {
+export function AssetDetailView({ assetId, backTo, casePath = (id) => `/customer-management/service/cases/${id}` }) {
   const { t, i18n } = useTranslation()
   const term = useServiceTerminology()
   const asset = useAsset(assetId)

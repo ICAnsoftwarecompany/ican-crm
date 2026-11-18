@@ -14,7 +14,7 @@ Operations settings → **Customer portal** group, plus a **Portal access** sect
 | `constants/portalObjects.js` | Objects, actions, membership types, B2B roles, sections. |
 
 Settings resources: `settings/resources/portalResources.js` — **Portal policies** (`/portal/policies`, a policy in use can't be
-deleted → 409) and **Request catalog** (`/service/catalog-items`: case type, form, required documents, optional slot booking,
+deleted → 409) and **Request catalog** (`/customer-management/service/catalog-items`: case type, form, required documents, optional slot booking,
 paid flag, audience by policy).
 
 Rules (server-enforced): one person = one portal account (phone/email unique, 409 `PORTAL_ACCOUNT_EXISTS` → add a membership

@@ -1,6 +1,6 @@
 # features/service/work-orders — Work orders & field visits (F4)
 
-Spec §38. Case = the problem, work order = the visit. Hub tab **Work orders** (`/service/work-orders[/:id]`, feature `workOrders`).
+Spec §38. Case = the problem, work order = the visit. Hub tab **Work orders** (`/customer-management/service/work-orders[/:id]`, feature `workOrders`).
 
 | Path | Role |
 |---|---|

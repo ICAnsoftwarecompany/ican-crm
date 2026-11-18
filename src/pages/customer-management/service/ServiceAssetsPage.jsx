@@ -9,7 +9,7 @@ export function ServiceAssetsPage() {
   const { t } = useTranslation()
   const { assetId } = useParams()
   usePageHeader({ title: t('service.hub.title'), icon: Cpu })
-  return assetId ? <AssetDetailView assetId={assetId} backTo="/service/assets" /> : <AssetsWorkspace detailPath={(asset) => `/service/assets/${asset.id}`} />
+  return assetId ? <AssetDetailView assetId={assetId} backTo="/customer-management/service/assets" /> : <AssetsWorkspace detailPath={(asset) => `/customer-management/service/assets/${asset.id}`} />
 }
 
 export default ServiceAssetsPage

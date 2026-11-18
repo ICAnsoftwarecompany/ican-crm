@@ -75,7 +75,7 @@ Outreach (`features/outreach-campaigns/components/OutreachSidebar.jsx`), Social 
 (`pages/social-media/components/SocialMediaSubSidebar.jsx`), Campaign Center (`pages/campaigns/components/CampaignSubSidebar.jsx`),
 Customer Hub settings (`features/service/settings/components/SettingsWorkspace.jsx`), Deals hub + deal workspace
 (`features/deals/components/layout/`, keys `deals-hub-sidebar-collapsed`, `deal-workspace-sidebar-collapsed`; 2026-10-03 23:32 (Africa/Cairo)),
-Sales teams (`pages/customer-management/teams/SalesTeamsLayout.jsx`, key `sales-teams-sidebar-collapsed`; 2026-10-16 00:10 (Africa/Cairo)).
+Sales teams (`pages/sales-teams/SalesTeamsLayout.jsx`, key `sales-teams-sidebar-collapsed`; 2026-10-16 00:10 (Africa/Cairo)).
 
 Replaced and deleted: `CustomersSidebar.jsx`, `CustomersMobileSidebar.jsx`, `ProductsSidebar.jsx`,
 `ProductsMobileSidebar.jsx`, `SettingsSidebar.jsx`, `SettingsMobileSidebar.jsx`,

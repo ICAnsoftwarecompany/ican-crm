@@ -28,7 +28,7 @@ export function IncidentDetailView({ incidentId }) {
   const addLinks = () => link.mutate({ id: incidentId, case_numbers: numbers.split(/[\s,]+/).filter(Boolean) }, { onSuccess: () => { toast.success(t('service.incidents.done.linked')); setNumbers('') } })
   return (
     <div className="grid gap-4">
-      <Link to="/service/incidents" className="inline-flex w-fit items-center gap-1 text-sm text-[var(--text-muted)] hover:text-[var(--text)]"><ArrowLeft size={16} aria-hidden="true" className="rtl:-scale-x-100" />{t('service.incidents.back')}</Link>
+      <Link to="/customer-management/service/incidents" className="inline-flex w-fit items-center gap-1 text-sm text-[var(--text-muted)] hover:text-[var(--text)]"><ArrowLeft size={16} aria-hidden="true" className="rtl:-scale-x-100" />{t('service.incidents.back')}</Link>
       <ResourceState isLoading={incident.isLoading} error={incident.error} onRetry={incident.refetch}>
         {data && (
           <>
@@ -67,7 +67,7 @@ export function IncidentDetailView({ incidentId }) {
                 </div>
                 <ul className="grid gap-1.5">
                   {data.cases.map((item) => (
-                    <li key={item.id}><Link to={`/service/cases/${item.id}`} className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-[var(--surface-2)]"><span className="grid min-w-0"><bdi className="truncate text-[var(--text)]">{item.subject}</bdi><span className="text-xs text-[var(--text-muted)]"><span dir="ltr">{item.case_number}</span> · {item.customer?.name}</span></span><CaseStatusBadge status={item.status} /></Link></li>
+                    <li key={item.id}><Link to={`/customer-management/service/cases/${item.id}`} className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-[var(--surface-2)]"><span className="grid min-w-0"><bdi className="truncate text-[var(--text)]">{item.subject}</bdi><span className="text-xs text-[var(--text-muted)]"><span dir="ltr">{item.case_number}</span> · {item.customer?.name}</span></span><CaseStatusBadge status={item.status} /></Link></li>
                   ))}
                 </ul>
               </section>

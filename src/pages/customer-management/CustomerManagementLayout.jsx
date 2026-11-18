@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
+import { Outlet, useLocation } from 'react-router-dom'
 import { BookOpen, Headset, Ticket, Truck, UsersRound } from 'lucide-react'
 import { SubSidebarLayout } from '../../shared/components/sub-sidebar'
-import { getSalesTeamsSidebarConfig } from './teams/salesTeamsNavigation'
 import { getShippingNavigation } from '../../features/shipping/navigation/shippingNavigation'
 
 const CUSTOMER_BASE = '/customer-management'
@@ -23,11 +23,6 @@ function prefixSidebar(sidebar, from, to) {
 }
 
 function getCustomerManagementSidebar(t) {
-  const teams = prefixSidebar(getSalesTeamsSidebarConfig(t), '/LeadsCenter/teams', `${CUSTOMER_BASE}/teams`)
-  teams.groups = teams.groups.map((group) => ({
-    ...group,
-    items: group.items.filter((item) => item.id !== 'manual'),
-  }))
   const shipping = prefixSidebar(getShippingNavigation(t), '/shipping', `${CUSTOMER_BASE}/shipping`)
 
   return {
@@ -40,7 +35,6 @@ function getCustomerManagementSidebar(t) {
     },
     ariaLabel: t('nav.customerManagementWorkspace'),
     groups: [
-      ...teams.groups,
       ...shipping.groups,
       {
         id: 'customer-tickets',
@@ -50,7 +44,7 @@ function getCustomerManagementSidebar(t) {
           { id: 'ticket-work', to: `${CUSTOMER_BASE}/tickets/my-work`, label: t('nav.serviceMyWork'), icon: Headset },
           { id: 'ticket-reports', to: `${CUSTOMER_BASE}/tickets/reports`, label: t('nav.serviceReports'), icon: BookOpen },
           { id: 'ticket-knowledge', to: `${CUSTOMER_BASE}/tickets/knowledge`, label: t('nav.serviceKnowledge'), icon: BookOpen },
-          { id: 'ticket-settings', to: `${CUSTOMER_BASE}/tickets/settings`, label: t('nav.serviceSettings'), icon: Headset },
+          { id: 'ticket-settings', to: `${CUSTOMER_BASE}/service/settings/health`, label: t('nav.serviceSettings'), icon: Headset },
         ],
       },
     ],
@@ -62,6 +56,9 @@ function getCustomerManagementSidebar(t) {
 
 export function CustomerManagementLayout() {
   const { t } = useTranslation()
+  const { pathname } = useLocation()
+
+  if (pathname.startsWith(`${CUSTOMER_BASE}/service/settings`)) return <Outlet />
 
   return (
     <SubSidebarLayout

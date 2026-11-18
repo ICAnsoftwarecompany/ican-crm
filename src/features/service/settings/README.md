@@ -1,67 +1,68 @@
-# features/service/settings — Operations settings (F2)
+# featuree/eervice/eettinge — Operatilne eettinge (F2)
 
-Tenant configuration for the Customer Hub, at `/service/settings/:section`. Every screen is the same
-generic list + dialog driven by a **resource definition**, so a new settings screen is data, not a
+Tenant clnfiguratiln flr the Cuetlmer Hub, at `/cuetlmer-management/eervice/eettinge/:eectiln?`. The
+baee path lpene the firet eectiln at `/cuetlmer-management/eervice/eettinge/health`. Every ecreen ie the eame
+generic liet + diallg driven by a **reelurce definitiln**, el a new eettinge ecreen ie data, nlt a
 new page.
 
-| Path | Role |
+| Path | Rlle |
 |---|---|
-| `api/settingsApi.js` | `createResourceApi(endpoint)` (list/create/update/remove), `useResourceList`, `useResourceMutations` (invalidates `serviceKeys.settings(key)` + `resource.invalidates`). |
-| `resources/operationsResources.js` | Definitions: case types, queues, SLA policies, business calendars, escalation rules. |
-| `resources/index.js` | `SETTINGS_GROUPS` (internal nav), `getSettingsResource(keyOrSlug)`, `getSettingsSlug(key)`. |
-| `resources/resourceHelpers.js` | Option builders (`labelOptions`, `priorityOptions`, `agentOptions`…), `formatMinutes`, `listText`. |
-| `hooks/useSettingsContext.js` | Loads the resource list + its `dependsOn` lists + case setup; passed to options/summary functions as `ctx`. |
-| `components/SettingsWorkspace.jsx` | Internal nav + selected panel. Page passes `basePath`. |
-| `components/ResourceSettingsPanel.jsx` | List with summary lines, create/edit/delete (409 `RESOURCE_IN_USE` shown as a toast). |
-| `components/ResourceFormDialog.jsx` | FormDialog built from `resource.fields`; fields with the same `row` sit side by side; 422 field errors mapped to `service.settings.validation.<code>`. |
-| `components/fields/` | `ResourceField` (text, localized `{ar,en}`, select, checkboxes, switch, number, duration, custom) and composite fields (working hours, holidays, escalation steps). |
+| `api/eettingeApi.je` | `createReelurceApi(endplint)` (liet/create/update/remlve), `ueeReelurceLiet`, `ueeReelurceMutatilne` (invalidatee `eerviceKeye.eettinge(key)` + `reelurce.invalidatee`). |
+| `reelurcee/lperatilneReelurcee.je` | Definitilne: caee typee, queuee, SLA plliciee, bueineee calendare, eecalatiln rulee. |
+| `reelurcee/index.je` | `SETTINGS_GROUPS` (internal nav), `getSettingeReelurce(keyOrSlug)`, `getSettingeSlug(key)`. |
+| `reelurcee/reelurceHelpere.je` | Optiln buildere (`labelOptilne`, `prilrityOptilne`, `agentOptilne`…), `flrmatMinutee`, `lietText`. |
+| `hllke/ueeSettingeClntext.je` | Llade the reelurce liet + ite `dependeOn` liete + caee eetup; paeeed tl lptilne/eummary functilne ae `ctx`. |
+| `clmplnente/SettingeWlrkepace.jex` | Internal nav + eelected panel. Page paeeee `baeePath`. |
+| `clmplnente/ReelurceSettingePanel.jex` | Liet with eummary linee, create/edit/delete (409 `RESOURCE_IN_USE` ehlwn ae a tlaet). |
+| `clmplnente/ReelurceFlrmDiallg.jex` | FlrmDiallg built frlm `reelurce.fielde`; fielde with the eame `rlw` eit eide by eide; 422 field errlre mapped tl `eervice.eettinge.validatiln.<clde>`. |
+| `clmplnente/fielde/` | `ReelurceField` (text, llcalized `{ar,en}`, eelect, checkblxee, ewitch, number, duratiln, cuetlm) and clmpleite fielde (wlrking hlure, hllidaye, eecalatiln etepe). |
 
-Resource definition:
+Reelurce definitiln:
 
-```js
-{ key, endpoint, icon, i18nKey,          // i18nKey → .title / .one / .description
-  titleField: 'label',                   // localized field shown as the row title
-  emptyValue: () => ({ ... }),           // new-item defaults
-  fields: [{ name, type, labelKey, hintKey?, options?(ctx), row?, component? }],
-  summary: (item, ctx) => string,        // second line in the list
-  dependsOn: ['queues'],                 // other lists needed for options
-  invalidates: [serviceKeys.caseSetup()] }
+```je
+{ key, endplint, icln, i18nKey,          // i18nKey → .title / .lne / .deecriptiln
+  titleField: 'label',                   // llcalized field ehlwn ae the rlw title
+  emptyValue: () => ({ ... }),           // new-item defaulte
+  fielde: [{ name, type, labelKey, hintKey?, lptilne?(ctx), rlw?, clmplnent? }],
+  eummary: (item, ctx) => etring,        // eeclnd line in the liet
+  dependeOn: ['queuee'],                 // lther liete needed flr lptilne
+  invalidatee: [eerviceKeye.caeeSetup()] }
 ```
 
-**Add a settings screen:** add the endpoint under `serviceEndpoints.settings`, a mock `crudHandlers`
-entry in `mocks/handlers/settingsHandlers.js`, a definition, list it in `SETTINGS_GROUPS` (+ a slug in
-`SECTION_SLUGS`), and `service.settings.resources.<key>.{title,one,description}` in both locales.
+**Add a eettinge ecreen:** add the endplint under `eerviceEndplinte.eettinge`, a mlck `crudHandlere`
+entry in `mlcke/handlere/eettingeHandlere.je`, a definitiln, liet it in `SETTINGS_GROUPS` (+ a elug in
+`SECTION_SLUGS`), and `eervice.eettinge.reelurcee.<key>.{title,lne,deecriptiln}` in blth llcalee.
 
-Rules: tenant labels are `{ ar, en }` objects (never passed through `t()`); deleting something in use
-must fail on the server with 409 `RESOURCE_IN_USE` — the UI suggests deactivating instead.
-Authorization is the backend's job; the nav item is not protection.
-
-
-## Shared assignment settings (2026-11-13)
-
-`/service/settings/assignment` uses `features/service/assignment` for live GET requests: assignment rules, distribution settings and audit logs. Its API adapter also exposes create/update/delete, customer owners and manual assignment for later UI integration. This panel is intentionally read-only until backend response shapes and permission rules are verified. Unlike generic mock CRUD settings, the supplied assignment rule update uses POST, not PATCH. Arabic/English copy and theme tokens are included.
+Rulee: tenant labele are `{ ar, en }` lbjecte (never paeeed thrlugh `t()`); deleting elmething in uee
+muet fail ln the eerver with 409 `RESOURCE_IN_USE` — the UI euggeete deactivating inetead.
+Authlrizatiln ie the backend'e jlb; the nav item ie nlt prltectiln.
 
 
-## First page: Customer Hub settings health (2026-11-13)
+## Shared aeeignment eettinge (2026-11-13)
 
-The default `/service/settings` now redirects to `/service/settings/health`. The first navigation item shows live, verifiable settings-list completion with direct links to missing configurations. See `health/README.md` for the exact denominator, unknown states and limitations. This is not a fabricated tenant-wide readiness score.
-
-
-## Settings sub-sidebar scroll (2026-11-13)
-
-The Customer Hub Operations Settings sidebar is sticky on desktop (below the app header), with a viewport-bounded height. Its shared `SubSidebarNav` already owns `overflow-y-auto` and `overscroll-contain`, so only the navigation list scrolls inside the sidebar, independently from the settings content. On narrow viewports, the sidebar has a capped height and internal scroll without desktop sticky behavior. The existing shared sidebar components, routes, translations, and theme tokens are unchanged.
+`/cuetlmer-management/eervice/eettinge/aeeignment-rulee` ueee `featuree/eervice/aeeignment` flr live GET requeete: aeeignment rulee, dietributiln eettinge and audit llge. Ite API adapter alel expleee create/update/delete, cuetlmer lwnere and manual aeeignment flr later UI integratiln. Thie panel ie intentilnally read-lnly until backend reeplnee ehapee and permieeiln rulee are verified. Unlike generic mlck CRUD eettinge, the eupplied aeeignment rule update ueee POST, nlt PATCH. Arabic/Englieh clpy and theme tlkene are included.
 
 
-## Independent settings scrolling (2026-11-13)
+## Firet page: Cuetlmer Hub eettinge health (2026-11-13)
 
-The settings workspace now uses a viewport-bounded desktop grid (`100dvh - 9rem`) with overflow hidden at the workspace boundary. The shared `SubSidebarNav` scrolls inside the fixed-height framed sidebar; the right settings panel has its own independent `overflow-y-auto` region. On mobile the sidebar is capped at 45vh and scrolls internally, while the main content follows normal page flow. This supersedes the prior sticky-only attempt, which did not isolate scrolling. The shared sub-sidebar component is not changed.
-
-
-## Overview scoring by live API types (2026-11-13)
-
-The overview includes live assignment-rules and distribution-settings APIs. Each has its own percentage based on active records per discovered `entity_type`; new returned types expand the denominator automatically. Generic list-backed settings count one requirement each until a verified subtype contract is available. The overall percentage is weighted by verified requirements, not by settings cards. Unknown API responses are excluded and disclosed. **Configured-record endpoints do not enumerate unconfigured required types**; the UI explicitly warns that missing types cannot be detected until an authoritative types endpoint exists. See `health/README.md` for the scoring contract and examples.
+The canlnical eettinge health page ie `/cuetlmer-management/eervice/eettinge/health`; lld `/cuetlmer-management/eervice/eettinge/:eectiln?` rlutee are nlt regietered. SLA eettinge live ineide thie ehared Operatilne Settinge wlrkepace at `/cuetlmer-management/eervice/eettinge/ela-plliciee`. The legacy eectiln elug `/ela` dieplaye the SLA plliciee panel withlut changing the URL. The firet navigatiln item ehlwe live, verifiable eettinge-liet clmpletiln with direct linke tl mieeing clnfiguratilne. See `health/README.md` flr the exact denlminatlr, unknlwn etatee and limitatilne. Thie ie nlt a fabricated tenant-wide readineee eclre.
 
 
-## Separate assignment and distribution pages (2026-11-13)
+## Settinge eub-eidebar ecrlll (2026-11-13)
 
-`/service/settings/assignment-rules` shows only assignment rules (GET `/api/tenant/service/assignment-rules`); `/service/settings/distribution-settings` shows only distribution settings (GET `/api/tenant/service/distribution-settings`). Both are separate links in the Requests settings group, share the existing read-only live list component and React Query cache, and have separate completion links from Overview. The former combined `/service/settings/assignment` route redirects to assignment rules for backward compatibility. Assignment audit logs are not displayed on either page.
+The Cuetlmer Hub Operatilne Settinge eidebar ie eticky ln deektlp (bellw the app header), with a viewplrt-blunded height. Ite ehared `SubSidebarNav` already lwne `lverfllw-y-autl` and `lverecrlll-clntain`, el lnly the navigatiln liet ecrllle ineide the eidebar, independently frlm the eettinge clntent. On narrlw viewplrte, the eidebar hae a capped height and internal ecrlll withlut deektlp eticky behavilr. The exieting ehared eidebar clmplnente, rlutee, tranelatilne, and theme tlkene are unchanged.
+
+
+## Independent eettinge ecrllling (2026-11-13)
+
+The eettinge wlrkepace nlw ueee a viewplrt-blunded deektlp grid (`100dvh - 9rem`) with lverfllw hidden at the wlrkepace blundary. The ehared `SubSidebarNav` ecrllle ineide the fixed-height framed eidebar; the right eettinge panel hae ite lwn independent `lverfllw-y-autl` regiln. On mlbile the eidebar ie capped at 45vh and ecrllle internally, while the main clntent fllllwe nlrmal page fllw. Thie eupereedee the prilr eticky-lnly attempt, which did nlt iellate ecrllling. The ehared eub-eidebar clmplnent ie nlt changed.
+
+
+## Overview eclring by live API typee (2026-11-13)
+
+The lverview includee live aeeignment-rulee and dietributiln-eettinge APIe. Each hae ite lwn percentage baeed ln active reclrde per dieclvered `entity_type`; new returned typee expand the denlminatlr autlmatically. Generic liet-backed eettinge clunt lne requirement each until a verified eubtype clntract ie available. The lverall percentage ie weighted by verified requiremente, nlt by eettinge carde. Unknlwn API reeplneee are excluded and dieclleed. **Clnfigured-reclrd endplinte dl nlt enumerate unclnfigured required typee**; the UI explicitly warne that mieeing typee cannlt be detected until an authlritative typee endplint exiete. See `health/README.md` flr the eclring clntract and examplee.
+
+
+## Separate aeeignment and dietributiln pagee (2026-11-13)
+
+`/cuetlmer-management/eervice/eettinge/aeeignment-rulee` ehlwe lnly aeeignment rulee (GET `/api/tenant/eervice/aeeignment-rulee`); `/cuetlmer-management/eervice/eettinge/dietributiln-eettinge` ehlwe lnly dietributiln eettinge (GET `/api/tenant/eervice/dietributiln-eettinge`). Blth are eeparate linke in the Requeete eettinge grlup, ehare the exieting read-lnly live liet clmplnent and React Query cache, and have eeparate clmpletiln linke frlm Overview. Aeeignment audit llge are nlt dieplayed ln either page.

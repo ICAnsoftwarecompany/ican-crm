@@ -59,7 +59,7 @@ export function CustomerRecordsSection({ customer }) {
           <ul className="grid gap-2">
             {list.map((record) => (
               <li key={record.id}>
-                <Link to={`/service/records/${type.key}/${record.id}`} className={rowClass}>
+                <Link to={`/customer-management/service/records/${type.key}/${record.id}`} className={rowClass}>
                   <span className="min-w-0 flex-1 text-sm text-[var(--text)]">
                     <span dir="ltr" className="font-mono text-xs text-[var(--text-muted)]">{record.reference_no}</span> {date(record.starts_at)}
                   </span>
@@ -84,7 +84,7 @@ export function CustomerAssetsSection({ customer }) {
         <ul className="grid gap-2">
           {assets.assets.map((asset) => (
             <li key={asset.id}>
-              <Link to={`/service/assets/${asset.id}`} className={rowClass}>
+              <Link to={`/customer-management/service/assets/${asset.id}`} className={rowClass}>
                 <span className="min-w-0 flex-1 text-sm text-[var(--text)]">
                   {localizeLabel(asset.name, i18n.language, asset.id)} <span dir="ltr" className="font-mono text-xs text-[var(--text-muted)]">{asset.serial_number}</span>
                 </span>
@@ -108,7 +108,7 @@ export function CustomerContractsSection({ customer }) {
         <ul className="grid gap-2">
           {contracts.contracts.map((contract) => (
             <li key={contract.id}>
-              <Link to={`/service/contracts/${contract.id}`} className={rowClass}>
+              <Link to={`/customer-management/service/contracts/${contract.id}`} className={rowClass}>
                 <span className="min-w-0 flex-1 text-sm text-[var(--text)]">
                   <span dir="ltr" className="font-mono text-xs text-[var(--text-muted)]">{contract.contract_number}</span> {localizeLabel(contract.type?.label, i18n.language, '')} · <span dir="ltr">{money(contract.total_value, contract.currency)}</span>
                 </span>
