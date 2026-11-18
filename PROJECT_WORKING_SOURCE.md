@@ -1,6 +1,6 @@
 # ICAN CRM — Working Source Reference
 
-Updated: 2026-10-31 (Africa/Cairo).
+Updated: 2026-11-18 22:10 (Africa/Cairo).
 
 This is a living project reference, not a completed source-code audit.
 
@@ -23,13 +23,18 @@ React 19, Vite 5, React Router 6, TanStack Query 5, Axios, Zustand, Tailwind CSS
 ## Functional domains
 Leads, customers, assignment, deals, opportunities, proposals, activities, calls, meetings, WhatsApp/Messenger/Gmail conversations, team chat, Meta ads, outreach, social media, tasks, workflow automation, reports, customer service, alerts, integrations and settings.
 
+Customer Management industry presentation uses the active setup template and one declarative registry at
+`src/features/customer-management/industryTemplateConfig.js`. Directory columns, ticket terminology, and
+existing report tabs may vary by template; data models, API behavior, permissions, and report data sources
+remain shared. See `src/features/customer-management/INDUSTRY-TEMPLATES.md` before extending this area.
+
 ## Rules for future work
 Follow `CLAUDE.md` and the relevant docs. Preserve API contracts, route URLs and realtime query keys unless explicitly requested. Tenant resolution must remain dynamic; backend controls authorization. Translate UI text into ar/en, support RTL/LTR and semantic theme tokens, reuse shared engines, and update docs with changes. If docs disagree with code, code wins.
 
 Server-state requests use the centralized priority/scheduling policy in `src/shared/query/queryPolicy.js`. New or modified React Query hooks must classify requests as `page`, `supporting`, or `background`, wrap their query function with `prioritizeQuery`, use `queryPolicyOptions`, and disable queries for inactive routes/panels. Full rules: `docs/1-ARCHITECTURE.md#query-priority-and-scheduling`.
 
 ## References
-`README.md`, `CLAUDE.md`, `docs/README.md`, `docs/1-ARCHITECTURE.md`, `docs/2-SALES.md`, `docs/3-FEATURES.md`, `docs/4-CUSTOMER-SERVICE.md`.
+`README.md`, `CLAUDE.md`, `docs/README.md`, `docs/1-ARCHITECTURE.md`, `docs/2-SALES.md`, `docs/3-FEATURES.md`, `docs/4-CUSTOMER-SERVICE.md`, `src/features/customer-management/INDUSTRY-TEMPLATES.md`.
 
 ## Checks
 `npm run lint`, `npm run check:i18n`, `npm run check:architecture`, `npm run check:service`, `npx vitest run`, `npm run build`.

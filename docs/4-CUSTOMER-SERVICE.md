@@ -34,6 +34,7 @@ implementations.
 - [i18n rules for Service](#i18n-rules-for-service)
 - [Theme and dark mode](#theme-and-dark-mode)
 - [Routes and navigation](#routes-and-navigation)
+- [Industry-specific presentation](#industry-specific-presentation)
 - [Integration points outside the area](#integration-points-outside-the-area)
 - [API used by the frontend](#api-used-by-the-frontend)
 - [Adding a sub-module](#adding-a-sub-module)
@@ -271,6 +272,35 @@ component → hook (React Query) → casesApi → createServiceApi('cases') → 
   in `app/navigation/navigation.config.js`. Keep it at 3–7 items; new destinations (incidents F6, quality and
   advanced reports F6/F7, AI settings F7) go inside `/customer-management/service` pages — Operations Center links, Reports tabs, settings groups —
   never as new sidebar items.
+
+## Industry-specific presentation
+
+Updated: 2026-11-18 22:10 (Africa/Cairo).
+
+Customer Management supports industry-specific presentation without copying the directory,
+ticket, or report engines. The implementation and extension contract are documented in
+[`src/features/customer-management/INDUSTRY-TEMPLATES.md`](../src/features/customer-management/INDUSTRY-TEMPLATES.md).
+
+The active template is read from the existing Service setup-template query (`meta.active`) by
+`useCustomerManagementTemplate()`. This shares the setup wizard's React Query cache; applying a
+template invalidates the setup query and the workspaces resolve the current selection again.
+Missing or unknown keys resolve to the `devices` fallback. No browser-local industry selection is
+authoritative.
+
+The current configuration is intentionally presentation-only:
+
+- Customer directory: selects among columns the shared table already supports.
+- Tickets: selects existing terminology and labels while retaining the shared case behavior,
+  filters, forms, and API.
+- Reports: selects existing report tabs; it does not create industry-specific metrics or data.
+
+The configuration does not grant permissions, add backend fields, change API contracts, or imply
+that the backend has enabled an industry-specific workflow. Backend authorization remains
+authoritative. Add a separate feature workspace only when an industry's actual workflow or layout
+cannot be represented by the shared engine and declared configuration; keep route composition in
+`src/pages/customer-management/` and business logic in its owning feature. Update the feature guide,
+this document, the Customer Hub rule, and `docs/README.md` in the same change when extending the
+template registry.
 
 ## Integration points outside the area
 

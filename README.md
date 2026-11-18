@@ -30,4 +30,6 @@ npm run build
 3. [docs/3-FEATURES.md](docs/3-FEATURES.md) — conversations, chat, campaigns, outreach, social media, tasks, automation, integrations, settings.
 4. [docs/4-CUSTOMER-SERVICE.md](docs/4-CUSTOMER-SERVICE.md) — Customer Hub (Customer Service / Service Operations; UI name "إدارة العملاء"): phases F0–F7, structure, mock data layer, i18n/theme rules, phase log. Backend specs: [docs/customer-service/](docs/customer-service/).
 
+Customer Management industry presentation rules and extension steps: [industry template guide](src/features/customer-management/INDUSTRY-TEMPLATES.md).
+
 AI coding agents: see [CLAUDE.md](CLAUDE.md).

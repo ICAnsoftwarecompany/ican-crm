@@ -13,9 +13,9 @@ import { SlaBadge } from '../../sla'
  * Case list on the shared DataTable. Server-side view/search; rows are
  * appended page by page (cursor mode) as the user scrolls.
  */
-export function CasesTable({ query, emptyMessage }) {
+export function CasesTable({ query, emptyMessage, industryTemplate }) {
   const { t, i18n } = useTranslation()
-  const term = useServiceTerminology()
+  const term = useServiceTerminology(industryTemplate?.termKey)
   const navigate = useNavigate()
   const language = i18n.language
 
@@ -44,7 +44,7 @@ export function CasesTable({ query, emptyMessage }) {
       },
       {
         id: 'subject',
-        header: t('service.cases.fields.subject'),
+        header: t(industryTemplate?.key === 'shipping' ? 'service.cases.industry.shipping.subject' : industryTemplate?.key === 'devices' ? 'service.cases.industry.devices.subject' : 'service.cases.fields.subject'),
         accessor: 'subject',
         width: 280,
         render: (row) => (
@@ -55,7 +55,7 @@ export function CasesTable({ query, emptyMessage }) {
         ),
       },
       { id: 'customer', header: term('customer'), accessor: 'customer_name', filterType: 'text' },
-      { id: 'type', header: t('service.cases.fields.type'), accessor: 'type_label', filterType: 'select' },
+      { id: 'type', header: t(industryTemplate?.key === 'shipping' ? 'service.cases.industry.shipping.type' : industryTemplate?.key === 'devices' ? 'service.cases.industry.devices.type' : 'service.cases.fields.type'), accessor: 'type_label', filterType: 'select' },
       {
         id: 'status',
         header: t('service.cases.fields.status'),
@@ -93,7 +93,7 @@ export function CasesTable({ query, emptyMessage }) {
         render: (row) => <span className="text-xs text-[var(--text-muted)]">{formatRelativeTime(row.updated_at, language)}</span>,
       },
     ],
-    [t, term, language]
+    [t, term, language, industryTemplate]
   )
 
   return (

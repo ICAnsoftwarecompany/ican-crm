@@ -10,10 +10,12 @@ import { AdvancedReport } from '../../health/components/AdvancedReport'
 const TABS = ['overview', 'feedback', 'quality', 'advanced']
 
 /** Reports shell: tab + period in the URL (?tab=&period=), filters in one row. */
-export function ReportsWorkspace() {
+export function ReportsWorkspace({ allowedTabs }) {
   const { t } = useTranslation()
   const [params, setParams] = useSearchParams()
-  const tab = TABS.includes(params.get('tab')) ? params.get('tab') : 'overview'
+  const tabs = TABS.filter((key) => !allowedTabs || allowedTabs.includes(key))
+  const requestedTab = params.get('tab')
+  const tab = tabs.includes(requestedTab) ? requestedTab : tabs[0] || 'overview'
   const period = REPORT_PERIODS.includes(params.get('period')) ? params.get('period') : '30d'
   const update = (key, value, fallback) => {
     const next = new URLSearchParams(params)
@@ -26,7 +28,7 @@ export function ReportsWorkspace() {
     <div className="grid gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)]">
         <div role="tablist" aria-label={t('service.reports.title')} className="flex gap-1">
-          {TABS.map((key) => (
+          {tabs.map((key) => (
             <button
               key={key}
               type="button"

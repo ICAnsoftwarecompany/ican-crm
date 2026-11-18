@@ -27,13 +27,15 @@ export function useServiceCapabilities() {
  * Tenant terminology: `term('case')` → "Ticket" / "تذكرة" / tenant label.
  * Use it for every entity name shown in Service screens.
  */
-export function useServiceTerminology() {
+export function useServiceTerminology(caseTermKey) {
   const { t, i18n } = useTranslation()
   const { manifest } = useServiceCapabilities()
   const language = i18n.resolvedLanguage || i18n.language || 'ar'
-
   return useCallback(
-    (entity, form = 'one') => resolveTerm({ terminology: manifest.terminology, entity, form, language, t }),
-    [manifest.terminology, language, t]
+    (entity, form = 'one') => {
+      if (entity === 'case' && caseTermKey) return t(`service.terms.${caseTermKey}.${form}`, { defaultValue: t(`service.terms.case.${form}`) })
+      return resolveTerm({ terminology: manifest.terminology, entity, form, language, t })
+    },
+    [manifest.terminology, caseTermKey, language, t]
   )
 }

@@ -85,3 +85,13 @@ Updated: 2026-11-17.
 3. `src/pages/LeadsCenter/` is reserved exclusively for Leads Center CRM pages and prospective-customer workflows. Customer Hub pages must not import page components from this folder; share reusable behavior through `src/features/*` public APIs.
 4. Keep route/page composition in `src/pages/customer-management/` and business logic, API clients, hooks, and reusable domain components in their owning `src/features/*` module. A new industry module may add its own page subfolder here while reusing the shared service/case engines.
 5. Preserve existing public URLs during moves. A page's filesystem location does not authorize changing its route or backend contract.
+
+## Rule CH-005 — Industry presentation configuration first
+
+Updated: 2026-11-18 22:10 (Africa/Cairo).
+
+1. Resolve the current Customer Management industry through `useCustomerManagementTemplate()` in `src/features/customer-management/industryTemplates.js`; its source is the existing Service setup-template query and `meta.active`. Keep the shared query/cache and fallback behavior; do not introduce a competing local-storage selection.
+2. Put declarative, presentation-only differences in `industryTemplateConfig.js`. The shared customer directory, ticket-case workspace, and reports workspace consume their own configuration slices. Do not duplicate these workspaces or add industry pass-through wrappers for columns, terminology, or existing tabs.
+3. A template is not authorization and does not establish backend support. Keep permissions in the backend contract; do not infer access from the active industry. The current config does not add fields, API behavior, or industry-specific report metrics.
+4. Add a dedicated industry workspace only for a demonstrably different workflow or layout that the shared engine cannot express. Keep route composition in `src/pages/customer-management/` and domain behavior in `src/features/`.
+5. When extending the template registry, update `src/features/customer-management/INDUSTRY-TEMPLATES.md`, the feature/module READMEs, `docs/4-CUSTOMER-SERVICE.md`, `docs/PROJECT-OVERVIEW-AR.md`, and `docs/README.md` in the same change. Treat this list as the durable maintenance checklist.

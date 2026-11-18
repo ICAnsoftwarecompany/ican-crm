@@ -23,9 +23,9 @@ import { SavedViewTabs } from './SavedViewTabs'
  * State lives in the URL (?view=&mode=&q=&priority=&queue=&type=&saved=) so
  * views are shareable; a saved view is just a named set of these params.
  */
-export function CasesWorkspace() {
+export function CasesWorkspace({ industryTemplate }) {
   const { t } = useTranslation()
-  const term = useServiceTerminology()
+  const term = useServiceTerminology(industryTemplate?.termKey)
   const [params, setParams] = useSearchParams()
   const [createOpen, setCreateOpen] = useState(false)
   const view = CASE_VIEWS.includes(params.get('view')) ? params.get('view') : DEFAULT_CASE_VIEW
@@ -95,8 +95,8 @@ export function CasesWorkspace() {
               setSearch(event.target.value)
               updateFilters({ q: event.target.value })
             }}
-            placeholder={t('service.cases.searchPlaceholder')}
-            aria-label={t('service.cases.searchPlaceholder')}
+            placeholder={t(industryTemplate?.key === 'shipping' ? 'service.cases.industry.shipping.searchPlaceholder' : industryTemplate?.key === 'devices' ? 'service.cases.industry.devices.searchPlaceholder' : 'service.cases.searchPlaceholder')}
+            aria-label={t(industryTemplate?.key === 'shipping' ? 'service.cases.industry.shipping.searchPlaceholder' : industryTemplate?.key === 'devices' ? 'service.cases.industry.devices.searchPlaceholder' : 'service.cases.searchPlaceholder')}
             startIcon={<Search size={16} />}
           />
         </div>
@@ -112,14 +112,14 @@ export function CasesWorkspace() {
         </div>
       </div>
 
-      <CaseViewTabs view={view} onChange={(key) => updateFilters({ view: key === DEFAULT_CASE_VIEW ? '' : key })} counts={summary.data?.views} />
+      <CaseViewTabs view={view} onChange={(key) => updateFilters({ view: key === DEFAULT_CASE_VIEW ? '' : key })} counts={summary.data?.views} industryTemplate={industryTemplate} />
       <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:items-center">
         <SavedViewTabs activeId={params.get('saved')} currentFilters={currentFilters} canSave={hasFilters} onSelect={applySavedView} />
-        <CaseFilters setup={setup.data} values={filters} onChange={updateFilters} />
+        <CaseFilters setup={setup.data} values={filters} onChange={updateFilters} industryTemplate={industryTemplate} />
       </div>
 
       {mode === 'list' ? (
-        <CasesTable query={list} emptyMessage={emptyMessage} />
+        <CasesTable query={list} emptyMessage={emptyMessage} industryTemplate={industryTemplate} />
       ) : (
         <ResourceState
           isLoading={list.isLoading || setup.isLoading}
@@ -140,7 +140,7 @@ export function CasesWorkspace() {
         </ResourceState>
       )}
 
-      <CaseCreateDialog open={createOpen} onClose={() => setCreateOpen(false)} />
+      <CaseCreateDialog open={createOpen} onClose={() => setCreateOpen(false)} industryTemplate={industryTemplate} />
       {transitionDialog}
     </div>
   )

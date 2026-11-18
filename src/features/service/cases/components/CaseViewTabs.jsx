@@ -3,10 +3,10 @@ import { cn } from '../../../../shared/utils/cn'
 import { CASE_VIEWS } from '../constants/caseViews'
 
 /** Built-in view tabs with live counts from `useCaseSummary()`. */
-export function CaseViewTabs({ view, onChange, counts = {} }) {
+export function CaseViewTabs({ view, onChange, counts = {}, industryTemplate }) {
   const { t } = useTranslation()
   return (
-    <div role="tablist" aria-label={t('service.cases.views.label')} className="flex gap-1 overflow-x-auto border-b border-[var(--border)]">
+    <div role="tablist" aria-label={industryTemplate?.key === 'shipping' ? t('service.cases.industry.shipping.entityPlural') : industryTemplate?.key === 'devices' ? t('service.cases.industry.devices.entityPlural') : t('service.cases.views.label')} className="flex gap-1 overflow-x-auto border-b border-[var(--border)]">
       {CASE_VIEWS.map((key) => {
         const active = key === view
         return (

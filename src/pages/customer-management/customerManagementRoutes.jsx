@@ -15,7 +15,8 @@ export const customerManagementRoutes = {
   path: 'customer-management',
   element: <CustomerManagementLayout />,
   children: [
-    { index: true, lazy: lazyPage(() => import('./service/ServiceCenterPage'), 'ServiceCenterPage') },
+    { index: true, lazy: lazyPage(() => import('./customer-directory/CustomerDirectoryPage'), 'CustomerDirectoryPage') },
+    { path: 'customers', lazy: lazyPage(() => import('./customer-directory/CustomerDirectoryPage'), 'CustomerDirectoryPage') },
     { path: 'shipping', element: <ShippingWorkspacePlaceholder /> },
     ...['shipments', 'claims', 'reports', 'settings'].map((path) => ({ path: `shipping/${path}`, element: <ShippingWorkspacePlaceholder /> })),
     { path: 'tickets', lazy: lazyPage(() => import('./ticket-module/ServiceCasesPage'), 'ServiceCasesPage') },

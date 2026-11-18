@@ -1,5 +1,23 @@
 export default {
   cases: {
+    industry: {
+      shipping: {
+        entityPlural: 'طلبات الشحن',
+        subject: 'موضوع الشحنة أو طلب الشحن',
+        type: 'نوع طلب الشحن',
+        anyType: 'كل أنواع طلبات الشحن',
+        searchPlaceholder: 'ابحث برقم الشحنة أو العميل أو الطلب',
+        createDescription: 'سجّل طلب شحن أو مشكلة توصيل ليتابعها فريق الشحن حتى التسليم.',
+      },
+      devices: {
+        entityPlural: 'طلبات الصيانة',
+        subject: 'موضوع طلب الصيانة',
+        type: 'نوع العطل أو الصيانة',
+        anyType: 'كل أنواع الأعطال والصيانة',
+        searchPlaceholder: 'ابحث برقم البلاغ أو الجهاز أو العميل',
+        createDescription: 'سجّل عطل جهاز أو طلب صيانة ليتابعه الفريق حتى إتمام الإصلاح.',
+      },
+    },
     pageTitle: '{{entity}}',
     empty: 'مفيش {{entity}} في العرض ده.',
     searchPlaceholder: 'ابحث بالرقم أو الموضوع أو العميل',

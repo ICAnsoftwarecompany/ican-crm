@@ -4,7 +4,7 @@ import { localizeLabel } from '../../core/utils/localizeLabel'
 import { CASE_PRIORITIES } from '../constants/caseViews'
 
 /** Server-side filters (priority, queue, type) in one row; values come from the case setup. */
-export function CaseFilters({ setup, values, onChange }) {
+export function CaseFilters({ setup, values, onChange, industryTemplate }) {
   const { t, i18n } = useTranslation()
   const labeled = (items = [], fallbackKey = 'key') =>
     items.map((item) => ({ value: item.id, label: localizeLabel(item.label, i18n.language, item[fallbackKey]) }))
@@ -26,8 +26,8 @@ export function CaseFilters({ setup, values, onChange }) {
         options={labeled(setup?.queues)}
       />
       <Select
-        aria-label={t('service.cases.fields.type')}
-        placeholder={t('service.cases.filters.anyType')}
+        aria-label={t(industryTemplate?.key === 'shipping' ? 'service.cases.industry.shipping.type' : industryTemplate?.key === 'devices' ? 'service.cases.industry.devices.type' : 'service.cases.fields.type')}
+        placeholder={t(industryTemplate?.key === 'shipping' ? 'service.cases.industry.shipping.anyType' : industryTemplate?.key === 'devices' ? 'service.cases.industry.devices.anyType' : 'service.cases.filters.anyType')}
         value={values.type}
         onChange={(value) => onChange({ type: value })}
         options={labeled(setup?.case_types)}

@@ -10,6 +10,8 @@
 
 > **Documentation update:** 2026-11-17 — Customer Management page ownership is consolidated under [`src/pages/customer-management`](../src/pages/customer-management/README.md); Leads Center pages live separately under `src/pages/LeadsCenter`. See [CH-004](customer-service/CUSTOMER-HUB-MODULE-RULE.md#rule-ch-004--customer-management-page-ownership).
 
+> **Documentation update:** 2026-11-18 22:10 (Africa/Cairo) — industry-driven Customer Management presentation and extension rules: [feature guide](../src/features/customer-management/INDUSTRY-TEMPLATES.md), [Customer Hub](4-CUSTOMER-SERVICE.md#industry-specific-presentation), [CH-005](customer-service/CUSTOMER-HUB-MODULE-RULE.md#rule-ch-005--industry-presentation-configuration-first).
+
 > **Current page ownership:** Customer Management, Customer Hub, service/support, shipping, and future industry page composition belong under `src/pages/customer-management/`; Leads Center CRM pages belong under `src/pages/LeadsCenter/`. Historical change-log entries below may retain the path that was true when that change shipped.
 
 Start here. Every doc in this folder, what it covers, and its sections. Rules for agents and contributors are in
@@ -26,6 +28,7 @@ doc in the same change.
 | — | [Customer Management page map](../src/pages/customer-management/README.md) | You add or move pages for Customer Management, service/support, shipping, teams, subscriptions, or an industry module |
 | 2026-10-25 01:10 (Africa/Cairo) | [PROJECT-OVERVIEW-AR.md](PROJECT-OVERVIEW-AR.md) | Arabic executive/technical overview of the project architecture, design approach, and feature map |
 | 2026-11-15 21:12 (Africa/Cairo) | [Query scheduling policy](../src/shared/query/README.md) | Shared priority queue, hook conventions, and phased adoption rules for all server-state queries |
+| 2026-11-18 22:10 (Africa/Cairo) | [Customer Management industry templates](../src/features/customer-management/INDUSTRY-TEMPLATES.md) | Active industry resolution, shared directory/ticket/report configuration, extension procedure, boundaries and known gaps |
 | — | [customer-service/SERVICE-MASTER-SPEC.md](customer-service/SERVICE-MASTER-SPEC.md) | Backend contract and business rules for Customer Service (Arabic) |
 | — | [customer-service/SERVICE-BRIEF.md](customer-service/SERVICE-BRIEF.md) | The decision brief behind the spec (Arabic) |
 | — | [tasks/TASKS-TODO-SPEC.md](tasks/TASKS-TODO-SPEC.md) | Tasks and To-Do: concepts, UI, rules, frontend code and the phased backend contract (Arabic) |

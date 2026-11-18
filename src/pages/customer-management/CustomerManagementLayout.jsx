@@ -35,6 +35,12 @@ function getCustomerManagementSidebar(t) {
     },
     ariaLabel: t('nav.customerManagementWorkspace'),
     groups: [
+      {
+        id: 'customer-directory',
+        items: [
+          { id: 'customers', to: CUSTOMER_BASE, label: t('nav.customerManagementWorkspace'), icon: UsersRound, end: true },
+        ],
+      },
       ...shipping.groups,
       {
         id: 'customer-tickets',

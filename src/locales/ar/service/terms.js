@@ -3,6 +3,8 @@
  * (customer, case, record, batch) بمفتاح من دول، أو يبعت مسمى خاص `{ ar, en }`.
  */
 export default {
+  maintenanceRequest: { one: 'طلب صيانة', other: 'طلبات الصيانة' },
+  shippingRequest: { one: 'طلب شحن', other: 'طلبات الشحن' },
   customer: { one: 'عميل', other: 'العملاء' },
   case: { one: 'طلب', other: 'الطلبات' },
   record: { one: 'سجل خدمة', other: 'سجلات الخدمة' },

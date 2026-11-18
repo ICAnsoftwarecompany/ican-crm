@@ -4,6 +4,8 @@
  * `{ ar, en }` label. Add a term here when a new template needs one.
  */
 export default {
+  maintenanceRequest: { one: 'Maintenance request', other: 'Maintenance requests' },
+  shippingRequest: { one: 'Shipping request', other: 'Shipping requests' },
   customer: { one: 'Customer', other: 'Customers' },
   case: { one: 'Case', other: 'Cases' },
   record: { one: 'Service record', other: 'Service records' },

@@ -44,6 +44,7 @@ Status labels used in all three docs: **CURRENT** (verified code in use) · **PA
 | `src/features/<domain>/` | Business capability: `api/`, `hooks/`, `components/`, `utils/`, `schemas/`, `store/`, `adapters/`/`channels/`, `workflow/`, optional `index.js` public surface. **New business logic goes here.** Create only folders with real code. |
 | `src/pages/` | Route composition. Thin pages that assemble feature components. |
 | `src/pages/customer-management/` | Canonical route-page root for Customer Management / Customer Hub: service, support/tickets, shipping, subscriptions, and industry/domain-specific screens. Add all new pages for these areas here, grouped by module. |
+| `src/features/customer-management/` | Customer Management shared feature composition and industry presentation config. Keep the template registry declarative; use shared workspaces until a domain needs truly distinct behavior. See [industry template guide](../src/features/customer-management/INDUSTRY-TEMPLATES.md). |
 | `src/pages/sales-teams/` | Sales-team workspace pages and sidebar for `/LeadsCenter/teams/*`; separate from Customer Management pages. |
 | `src/pages/LeadsCenter/` | Dedicated Leads Center pages only. Do not place Customer Hub, support, shipping, or industry-module pages here. |
 | `src/shared/` | Domain-independent UI (`components/`), hooks (`useDirection`, `useDebounce`, `usePageHeader`, `useNetworkQuality`) and utils (`dateTime`, `documentLanguage`, `apiResponse`, `cn`). Must not import `features/`. |
@@ -64,6 +65,11 @@ Legacy / transitional areas (do not copy, do not grow):
 - Files of 1–3 lines that only re-export are compatibility shims; update imports instead of adding more.
 
 ## Dependency rules
+
+**Customer Management industry presentation (2026-11-18 22:10 Africa/Cairo):** a single active-template
+resolver feeds existing shared directory, ticket, and report workspaces. Industry wrappers are not a
+default extension mechanism; add industry-specific UI only for a real workflow or layout difference. The
+current frontend config does not define backend permissions, new fields, or industry-specific report data.
 
 ```text
 app / pages  ->  features  ->  shared / services

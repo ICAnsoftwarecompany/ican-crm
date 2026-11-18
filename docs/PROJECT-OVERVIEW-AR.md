@@ -154,6 +154,17 @@ app/pages -> features -> shared/services
 - نطاقات تشمل: cases, SLA, knowledge, feedback, records, assets, billing, subscriptions, portal, quality, AI
 - كثير من أجزاء هذه الوحدة تعمل على Mock/Live switch حسب جاهزية API
 
+## 4.8 تهيئة عرض إدارة العملاء حسب المجال
+
+Updated: 2026-11-18 22:10 (Africa/Cairo).
+
+- إعداد المجال النشط يأتي من معالج إعدادات التشغيل، ويُقرأ عبر `useCustomerManagementTemplate()`؛ لا تعتمد الواجهة على اختيار محلي مستقل.
+- ملف `src/features/customer-management/industryTemplateConfig.js` هو سجل إعدادات العرض، و`industryTemplates.js` يحل المجال النشط إلى إعداد معروف مع fallback إلى `devices`.
+- دليل العملاء يغيّر الأعمدة المدعومة، والتذاكر تغيّر المصطلحات والعناوين مع بقاء محرك الحالات وواجهاته المشتركة، والتقارير تعرض التبويبات المتاحة الموجودة فقط.
+- اختلاف المجال لا يمنح صلاحيات ولا يغيّر API أو مخطط البيانات أو مقاييس التقارير. هذه التغييرات تحتاج دعمًا صريحًا من عقود الخادم والميزات المالكة.
+- يظل التنفيذ المشترك هو الأصل. لا يُنشأ workspace خاص بمجال إلا عند اختلاف حقيقي في سير العمل أو التخطيط، مع إبقاء الصفحات تحت `src/pages/customer-management/` والمنطق في `src/features/`.
+- التفاصيل وخطوات إضافة مجال أو قدرة جديدة: [`INDUSTRY-TEMPLATES.md`](../src/features/customer-management/INDUSTRY-TEMPLATES.md) وقاعدة [CH-005](customer-service/CUSTOMER-HUB-MODULE-RULE.md#rule-ch-005--industry-presentation-configuration-first).
+
 ## 5) مميزات هندسية قوية
 
 - بنية واضحة بالملكية (Ownership) لكل Feature.

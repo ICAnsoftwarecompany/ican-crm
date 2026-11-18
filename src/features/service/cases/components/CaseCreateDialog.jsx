@@ -31,9 +31,9 @@ const emptyForm = (defaults = {}) => ({
  * Create a case. `defaults` pre-fills it (e.g. from a conversation:
  * { customer, subject, source_channel, conversation_id }).
  */
-export function CaseCreateDialog({ open, onClose, defaults, navigateOnCreate = true, onCreated }) {
+export function CaseCreateDialog({ open, onClose, defaults, navigateOnCreate = true, onCreated, industryTemplate }) {
   const { t, i18n } = useTranslation()
-  const term = useServiceTerminology()
+  const term = useServiceTerminology(industryTemplate?.termKey)
   const navigate = useNavigate()
   const { data: setup } = useCaseSetup()
   const { create } = useCaseMutations()
@@ -90,7 +90,7 @@ export function CaseCreateDialog({ open, onClose, defaults, navigateOnCreate = t
       onClose={onClose}
       size="lg"
       title={t('service.cases.create.title', { entity: term('case') })}
-      description={t('service.cases.create.description')}
+      description={t(industryTemplate?.key === 'shipping' ? 'service.cases.industry.shipping.createDescription' : industryTemplate?.key === 'devices' ? 'service.cases.industry.devices.createDescription' : 'service.cases.create.description')}
       submitText={t('service.cases.create.submit')}
       loading={create.isPending}
       submitDisabled={!form.customer_id || !form.subject.trim() || !form.type_id}
@@ -112,13 +112,13 @@ export function CaseCreateDialog({ open, onClose, defaults, navigateOnCreate = t
         />
       </div>
       <Input
-        label={t('service.cases.fields.subject')}
+        label={t(industryTemplate?.key === 'shipping' ? 'service.cases.industry.shipping.subject' : industryTemplate?.key === 'devices' ? 'service.cases.industry.devices.subject' : 'service.cases.fields.subject')}
         value={form.subject}
         onChange={(event) => update('subject')(event.target.value)}
         error={fieldErrors.subject && required}
       />
       <div className="grid gap-3 sm:grid-cols-3">
-        <Select label={t('service.cases.fields.type')} options={typeOptions} value={form.type_id} onChange={update('type_id')} error={fieldErrors.type_id && required} />
+        <Select label={t(industryTemplate?.key === 'shipping' ? 'service.cases.industry.shipping.type' : industryTemplate?.key === 'devices' ? 'service.cases.industry.devices.type' : 'service.cases.fields.type')} options={typeOptions} value={form.type_id} onChange={update('type_id')} error={fieldErrors.type_id && required} />
         <Select
           label={t('service.cases.fields.priority')}
           options={priorityOptions}

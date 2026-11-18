@@ -1,5 +1,23 @@
 export default {
   cases: {
+    industry: {
+      shipping: {
+        entityPlural: 'Shipping requests',
+        subject: 'Shipment or request subject',
+        type: 'Shipping request type',
+        anyType: 'Any shipping request type',
+        searchPlaceholder: 'Search by shipment number, customer or request',
+        createDescription: 'Log a shipping or delivery request for the team to track through delivery.',
+      },
+      devices: {
+        entityPlural: 'Maintenance requests',
+        subject: 'Maintenance request subject',
+        type: 'Issue or maintenance type',
+        anyType: 'Any issue or maintenance type',
+        searchPlaceholder: 'Search by case number, device or customer',
+        createDescription: 'Log a device issue or maintenance request for the team to track through repair.',
+      },
+    },
     pageTitle: '{{entity}}',
     empty: 'No {{entity}} in this view.',
     searchPlaceholder: 'Search by number, subject or customer',

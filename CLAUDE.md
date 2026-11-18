@@ -56,6 +56,7 @@ Legacy/transitional (don't copy these patterns, don't add to them):
 |---|---|---|
 | Leads & customers (`/LeadsCenter/*`, `/lead/:customerId`, `/leads/:customerId`; bare `/leads` redirects) | `features/leads`, `features/customers`, `pages/customers` | [Leads Center](docs/2-SALES.md#leads-center-pages), [Customer drawer](docs/2-SALES.md#customer-details-drawer), [Domain model](docs/2-SALES.md#domain-model) |
 | Lead assignment | `features/leads/api/leadAssignmentApi.js`, `/LeadsCenter/assignments` | [Leads & assignment](docs/2-SALES.md#leads-page-and-lead-assignment) |
+| Customer Management industry presentation (`/customer-management`) | `features/customer-management` | [Industry template guide](src/features/customer-management/INDUSTRY-TEMPLATES.md), [Customer Hub rule CH-005](docs/customer-service/CUSTOMER-HUB-MODULE-RULE.md#rule-ch-005--industry-presentation-configuration-first) |
 | Statuses / definitions | `features/definitions` | [Statuses & tags](docs/2-SALES.md#statuses-tags-and-pipeline) |
 | My Work (`/my-work`, شغلي) | `features/my-work` (section registry + rules), `pages/my-work` | [My Work](docs/3-FEATURES.md#my-work), [README](src/features/my-work/README.md) |
 | Communication hub (`/conversations`, `/calls`, `/meetings`, `/team-chat` + their sub-pages) | `features/communication` (config only), `pages/communication` | [Communication hub](docs/3-FEATURES.md#communication-hub), [README](src/features/communication/README.md) |
@@ -136,6 +137,12 @@ reports were removed (see git history).
     [Query scheduling](docs/1-ARCHITECTURE.md#query-priority-and-scheduling). Existing unmigrated queries are
     technical debt; migrate them when touching that hook. Mutations and realtime subscriptions are not queries
     and must retain their domain-specific behavior.
+14. **Customer Management industry variation (Updated: 2026-11-18 22:10 Africa/Cairo)**: read `src/features/customer-management/INDUSTRY-TEMPLATES.md`.
+    Resolve the active template through `useCustomerManagementTemplate()` and put declarative presentation
+    differences in `industryTemplateConfig.js`. Keep directory, ticket, and report engines shared for column,
+    terminology, and existing-tab changes. Do not add per-industry pass-through wrappers or treat UI configuration
+    as permissions. Add dedicated industry workspaces only for real workflow/layout differences, and update the
+    template guide and docs when extending the registry.
 
 ## Conventions
 
